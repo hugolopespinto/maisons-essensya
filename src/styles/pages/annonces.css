@@ -1,0 +1,65 @@
+/* ════ 6. LISTING ANNONCES (.l-) ════ */
+.l-filters{position:sticky;top:var(--header-h);z-index:60;background:rgba(243,241,236,.95);backdrop-filter:blur(10px);border-top:var(--line);border-bottom:var(--line);padding:var(--s-2) 0}
+.l-filters .container{display:flex;flex-wrap:wrap;gap:var(--s-2);align-items:end}
+.l-filter{display:flex;flex-direction:column;gap:.35rem}
+.l-filter label{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase;color:var(--pierre)}
+.l-filter select{font-family:var(--f-body);font-size:.92rem;padding:.6rem 2.2rem .6rem .8rem;background:transparent;border:1px solid var(--beton);border-radius:var(--radius);appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23867E70' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer}
+.l-filter select:focus{outline:none;border-color:var(--bois)}
+.l-filters__count{margin-left:auto;font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre)}
+.l-filters__reset{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.1em;text-transform:uppercase;color:var(--bois);padding:.6rem 0;border-bottom:1px solid transparent}
+.l-filters__reset:hover{border-color:var(--bois)}
+.l-view-toggle{display:none;gap:0;border:var(--line);border-radius:var(--radius);overflow:hidden}
+.l-view-toggle button{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.12em;text-transform:uppercase;padding:.6rem 1rem;color:var(--pierre)}
+.l-view-toggle button.is-on{background:var(--anthracite);color:var(--craie)}
+.l-body{padding:var(--s-4) 0 var(--s-6)}
+.l-body .container{display:grid;grid-template-columns:7fr 5fr;gap:var(--s-4);align-items:start}
+.l-results{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-3)}
+.l-results__empty{grid-column:1/-1;font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre);border:1px dashed var(--beton);border-radius:var(--radius);padding:var(--s-4);text-align:center}
+.l-map{position:sticky;top:calc(var(--header-h) + 92px)}
+/* z-index:0 → contexte d'empilement local : les panes Leaflet (z 400+)
+   ne peuvent plus passer devant la barre de filtres ni le header. */
+.l-map__frame{border:var(--line);border-radius:var(--radius);background:var(--sable);overflow:hidden;position:relative;z-index:0;aspect-ratio:4/5}
+.l-map__canvas{position:absolute;inset:0}
+.l-map__frame--loading{aspect-ratio:4/5}
+.leaflet-container{width:100%;height:100%;font-family:var(--f-body);background:var(--sable)}
+.leaflet-container a{color:var(--bois)}
+.leaflet-control-attribution{font-family:var(--f-mono);font-size:.62rem;background:rgba(243,241,236,.85);color:var(--pierre)}
+
+/* ════ POINTS & BULLES D'AGRÉGATION ════
+   Une bulle par groupe d'annonces proches, chiffrée et dimensionnée
+   selon le nombre. Zoomer la scinde jusqu'aux points individuels.   */
+/* Leaflet positionne l'icône par un `transform` inline et lui impose
+   display:block : le rond est donc porté par le <span> intérieur, seul
+   endroit où l'on peut styler et animer librement. */
+.map-cluster,.map-pin{cursor:pointer}
+.map-cluster > span,.map-pin > span{display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:50%;font-family:var(--f-mono);line-height:1;transition:transform var(--dur-fast) var(--ease),background var(--dur-fast) var(--ease)}
+.map-cluster > span{background:var(--bois);color:var(--craie);border:2px solid rgba(243,241,236,.9);box-shadow:0 2px 10px rgba(19,18,16,.28);font-weight:500;font-size:.82rem}
+.map-cluster:hover > span,.map-cluster.is-hl > span{background:var(--anthracite);transform:scale(1.08)}
+.map-pin > span{background:var(--anthracite);color:var(--craie);border:2px solid var(--craie);box-shadow:0 2px 8px rgba(19,18,16,.28);font-size:.72rem}
+.map-pin:hover > span,.map-pin.is-hl > span{background:var(--bois);transform:scale(1.18)}
+.map-tip{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.04em;background:var(--anthracite);color:var(--craie);border:none;border-radius:var(--radius);box-shadow:0 4px 14px rgba(19,18,16,.25);padding:.4rem .6rem;white-space:nowrap}
+.map-tip::before{border-top-color:var(--anthracite)}
+@media (prefers-reduced-motion:reduce){
+  .map-cluster > span,.map-pin > span{transition:none}
+}
+
+.l-map__controls{position:absolute;top:var(--s-2);right:var(--s-2);z-index:900;display:flex;flex-direction:column;gap:6px}
+.l-map__controls button{width:36px;height:36px;background:var(--craie);border:var(--line);border-radius:var(--radius);font-family:var(--f-mono);font-size:1rem;line-height:1}
+.l-map__controls button:hover{border-color:var(--anthracite)}
+.l-map__sync{display:flex;gap:.6rem;align-items:center;margin-top:var(--s-2);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.08em;color:var(--pierre);cursor:pointer}
+.l-map__sync input{accent-color:var(--bois)}
+.l-map__hint{margin-top:.5rem;font-family:var(--f-mono);font-size:var(--fs-label);color:var(--pierre);opacity:.7}
+@media (max-width:1000px){
+  .l-filter select{padding-top:.85rem;padding-bottom:.85rem}
+  .l-map__controls button{width:44px;height:44px}
+  .l-view-toggle button{padding:.85rem 1.1rem}
+  .l-body .container{grid-template-columns:1fr}
+  .l-view-toggle{display:inline-flex}
+  .l-map{position:static;display:none}
+  .l-results{grid-template-columns:1fr}
+  .l-body.is-map-mode .l-map{display:block}
+  .l-body.is-map-mode .l-results{display:none}
+  /* En vue Carte, la carte prend la hauteur utile de l'écran. */
+  .l-body.is-map-mode .l-map__frame{aspect-ratio:auto;height:calc(100svh - var(--header-h) - 150px)}
+}
+

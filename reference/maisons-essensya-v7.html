@@ -1,0 +1,2035 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maisons Essensya — Des maisons pensées pour l'essentiel</title>
+<meta name="description" content="Maisons Essensya, constructeur nouvelle génération. Des maisons catalogues conçues intelligemment : maîtrise du produit, maîtrise du prix.">
+
+<!--
+════════════════════════════════════════════════════════════════════
+  MAISONS ESSENSYA — ITÉRATION 7 · animations mobile
+
+  NOUVEAUTÉS v7 (vs v6) — vie sur mobile, sans scroll-jacking
+  • HERO MOBILE : l'image n'est plus figée. Entrée séquencée du
+    bloc de marque au chargement (label → titre → invite) +
+    parallaxe douce de l'image au scroll (transform en rAF, pas de
+    pinning → fluide, pas de conflit barre d'adresse). La plaque de
+    specs sous le hero apparaît en fondu.
+  • CASCADE : les cartes/blocs d'une même rangée (collection,
+    opportunités, engagements, agences…) se révèlent en balayage
+    (délais 0/65/130ms…) au lieu d'apparaître d'un bloc. En mono-
+    colonne (mobile) la révélation séquentielle au scroll suffit.
+    Délais explicites du hero préservés.
+  • prefers-reduced-motion neutralise tout (image figée, pas de fondu).
+
+  NOUVEAUTÉS v6 (vs v5) — d'après le doc FLUX_ANNONCES_PROSPECTS
+  • ANNONCES : AnnoncesAdapter mappe désormais le format Vitahome
+    réel (onglet DONNEES FLUX). Les annonces de démo sont stockées
+    AU FORMAT PASSERELLE (reference, land{}, house{}|false, media[])
+    et passent par le vrai map() → preuve du câblage.
+    Flux : pack-26 (terrains), pack-1860 (T+M), pack-3402 (maisons).
+    fetchLive() tente les flux réels ; repli sur les données locales
+    (CORS / réseau). En prod WP : récupération CÔTÉ SERVEUR (cron +
+    cache transient), jamais côté navigateur.
+  • PROSPECTS : ProspectsAdapter construit le payload exact de
+    /api/ajout-contact.json avec ENTITY-ID (11 en démo) et les
+    ORIGIN-ID de l'onglet ENVOI PROSPECT :
+      122 Demande de rappel · 53 Annonce terrain · 54 Annonce T+M
+      52 Modèle maison · 56 Contact général · 71 Contact agence
+      250 Landing page · 74 Demande de RDV
+    + champs importants : construction-location-id / -insee,
+    history-ad-content, history-link, history-content.
+    ⚠ SÉCURITÉ : le TOKEN ne doit JAMAIS être exposé côté client.
+    En prod, les formulaires POSTent vers le serveur WP qui relaie
+    vers Vitahome. Ici le payload est loggé en console (démo).
+
+  LES 10 PAGES DU PÉRIMÈTRE (inchangé)
+  1 Home #/            2 Listing annonces #/annonces
+  3 Fiche annonce      4 Listing modèles #/maisons
+  5 Fiche modèle       6 Listing agences #/agences
+  7 Fiche agence       8 Page froide #/concept
+  9 Landing #/lp/…    10 Contact #/contact
+
+  Hooks GTM en commentaires : model_view, annonce_view, agency_view,
+  search_filter, lead_* (un event par ORIGIN-ID).
+════════════════════════════════════════════════════════════════════
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ════ 1. TOKENS ════ */
+:root{
+  --craie:#F3F1EC; --sable:#E8E3D9; --beton:#CFC9BD; --pierre:#867E70;
+  --anthracite:#21201C; --noir:#131210; --bois:#9A6B3C; --blanc:#FFFFFF;
+  --f-display:"Archivo",sans-serif; --f-body:"Instrument Sans",sans-serif; --f-mono:"IBM Plex Mono",monospace;
+  --fs-hero:clamp(2.6rem,8vw,6.8rem); --fs-h2:clamp(2rem,4.6vw,3.6rem); --fs-h3:clamp(1.4rem,2.6vw,2rem);
+  --fs-body:clamp(1rem,1.15vw,1.125rem); --fs-small:.875rem; --fs-label:.72rem;
+  --container:1280px; --gutter:clamp(1.25rem,4vw,3rem);
+  --s-1:.5rem; --s-2:1rem; --s-3:1.5rem; --s-4:2.5rem; --s-5:4rem; --s-6:6.5rem; --s-7:clamp(6rem,12vw,10rem);
+  --radius:2px; --line:1px solid var(--beton);
+  --ease:cubic-bezier(.22,.8,.24,1); --dur:.8s; --dur-fast:.35s;
+  --header-h:76px;
+}
+
+/* ════ 2. BASE ════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--f-body);font-size:var(--fs-body);line-height:1.6;color:var(--anthracite);background:var(--craie);-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+button{font:inherit;cursor:pointer;background:none;border:none}
+h1,h2,h3{font-family:var(--f-display);font-variation-settings:"wdth" 118;font-weight:600;line-height:1.02;letter-spacing:-.015em;text-transform:uppercase}
+h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3)}
+.container{width:100%;max-width:var(--container);margin-inline:auto;padding-inline:var(--gutter)}
+.u-muted{color:var(--pierre)} .u-measure{max-width:34em}
+.c-label{font-family:var(--f-mono);font-size:var(--fs-label);font-weight:500;text-transform:uppercase;letter-spacing:.18em;color:var(--pierre)}
+.c-label--accent{color:var(--bois)}
+:focus-visible{outline:2px solid var(--bois);outline-offset:3px}
+.page{display:none} .page.is-active{display:block}
+
+/* Tête de page standard (pages intérieures) */
+.p-head{padding:calc(var(--header-h) + var(--s-5)) 0 var(--s-4)}
+.p-head h1{font-size:clamp(2.2rem,5.5vw,4.2rem);margin-top:var(--s-2)}
+.p-head .c-breadcrumb{color:var(--pierre)}
+.p-head p{margin-top:var(--s-2);color:var(--pierre);max-width:40em}
+
+/* ════ 3. COMPOSANTS ════ */
+.c-btn{display:inline-flex;align-items:center;gap:.75rem;font-family:var(--f-mono);font-size:var(--fs-label);font-weight:500;text-transform:uppercase;letter-spacing:.16em;padding:1.05rem 1.8rem;border-radius:var(--radius);border:1px solid var(--anthracite);color:var(--anthracite);transition:background var(--dur-fast) var(--ease),color var(--dur-fast) var(--ease),border-color var(--dur-fast) var(--ease)}
+.c-btn:hover{background:var(--anthracite);color:var(--craie)}
+.c-btn--solid{background:var(--anthracite);color:var(--craie)}
+.c-btn--solid:hover{background:var(--bois);border-color:var(--bois)}
+.c-btn--light{border-color:var(--craie);color:var(--craie)}
+.c-btn--light:hover{background:var(--craie);color:var(--anthracite)}
+.c-btn .arrow{transition:transform var(--dur-fast) var(--ease)}
+.c-btn:hover .arrow{transform:translateX(4px)}
+.c-link{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--f-mono);font-size:var(--fs-label);text-transform:uppercase;letter-spacing:.16em;border-bottom:1px solid var(--beton);padding-bottom:.35rem;transition:border-color var(--dur-fast),color var(--dur-fast)}
+.c-link:hover{border-color:var(--bois);color:var(--bois)}
+.c-section-head{margin-bottom:var(--s-5)}
+.c-section-head .c-label{display:block;margin-bottom:var(--s-2)}
+.c-breadcrumb{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.12em;text-transform:uppercase}
+.c-breadcrumb a{opacity:.7;transition:opacity var(--dur-fast)}
+.c-breadcrumb a:hover{opacity:1}
+.c-breadcrumb .sep{opacity:.4}
+.c-plate{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s-3) var(--s-4);border-top:var(--line);border-bottom:var(--line);padding:var(--s-2) 0;font-family:var(--f-mono);font-size:var(--fs-small)}
+.c-plate__name{font-family:var(--f-display);font-variation-settings:"wdth" 125;font-weight:700;text-transform:uppercase;font-size:1.1rem;letter-spacing:.02em}
+.c-plate__spec{color:var(--pierre);white-space:nowrap}
+.c-plate__spec strong{color:var(--anthracite);font-weight:500}
+.c-pictos{display:flex;flex-wrap:wrap;gap:var(--s-3) var(--s-4)}
+.c-picto{display:flex;align-items:center;gap:.65rem;font-family:var(--f-mono);font-size:var(--fs-small)}
+.c-picto svg{stroke:var(--bois);flex:none}
+.c-picto span small{display:block;font-size:var(--fs-label);letter-spacing:.12em;text-transform:uppercase;color:var(--pierre)}
+.c-tag{display:inline-block;font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase;padding:.35rem .7rem;border-radius:var(--radius);background:var(--anthracite);color:var(--craie)}
+.c-tag--terrain{background:var(--bois)}
+.c-annonce{display:block;border:var(--line);border-radius:var(--radius);overflow:hidden;background:var(--blanc);transition:border-color var(--dur-fast)}
+.c-annonce:hover,.c-annonce.is-hl{border-color:var(--anthracite)}
+.c-annonce__media{position:relative;aspect-ratio:16/10;overflow:hidden;background:var(--sable)}
+.c-annonce__media img{width:100%;height:100%;object-fit:cover;transition:transform 1s var(--ease)}
+.c-annonce:hover .c-annonce__media img{transform:scale(1.04)}
+.c-annonce__media .c-tag{position:absolute;top:var(--s-2);left:var(--s-2)}
+.c-annonce__body{padding:var(--s-3)}
+.c-annonce__loc{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.15em;text-transform:uppercase;color:var(--bois)}
+.c-annonce__title{font-family:var(--f-display);font-variation-settings:"wdth" 118;font-weight:600;text-transform:uppercase;font-size:1.05rem;margin:.4rem 0 .6rem}
+.c-annonce__specs{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.06em;color:var(--pierre);display:flex;flex-wrap:wrap;gap:.4rem 1rem}
+.c-annonce__price{margin-top:var(--s-2);padding-top:var(--s-2);border-top:var(--line);font-family:var(--f-mono);font-size:var(--fs-small)}
+.c-annonce__price strong{font-weight:500;font-size:1.05rem}
+.c-annonce__price small{color:var(--pierre)}
+.c-opp{border:var(--line);border-radius:var(--radius);padding:var(--s-3);display:flex;flex-direction:column;gap:var(--s-2);background:var(--craie);transition:border-color var(--dur-fast)}
+.c-opp:hover{border-color:var(--anthracite)}
+.c-opp__loc{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.15em;text-transform:uppercase;color:var(--bois)}
+.c-opp__title{font-family:var(--f-display);font-variation-settings:"wdth" 118;font-weight:600;text-transform:uppercase;font-size:1.05rem}
+.c-opp__meta{font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre)}
+/* Agency card */
+.c-agency-card{display:block;border:var(--line);border-radius:var(--radius);overflow:hidden;background:var(--blanc);transition:border-color var(--dur-fast)}
+.c-agency-card:hover{border-color:var(--anthracite)}
+.c-agency-card__media{aspect-ratio:16/9;overflow:hidden;background:var(--sable)}
+.c-agency-card__media img{width:100%;height:100%;object-fit:cover;transition:transform 1s var(--ease)}
+.c-agency-card:hover .c-agency-card__media img{transform:scale(1.04)}
+.c-agency-card__body{padding:var(--s-3)}
+.c-agency-card__zone{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.15em;text-transform:uppercase;color:var(--bois)}
+.c-agency-card__name{font-family:var(--f-display);font-variation-settings:"wdth" 120;font-weight:700;text-transform:uppercase;font-size:1.2rem;margin:.4rem 0 .5rem}
+.c-agency-card__meta{font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre)}
+/* Formulaire */
+.c-form{display:grid;gap:var(--s-3);text-align:left}
+.c-form__row{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-3)}
+@media (max-width:640px){.c-form__row{grid-template-columns:1fr}}
+.c-field{display:flex;flex-direction:column;gap:.5rem}
+.c-field label{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.16em;text-transform:uppercase;color:var(--pierre)}
+.c-field input,.c-field select,.c-field textarea{font-family:var(--f-body);font-size:1rem;padding:.95rem 1rem;background:transparent;border:1px solid var(--beton);border-radius:var(--radius);color:inherit;transition:border-color var(--dur-fast);appearance:none;-webkit-appearance:none;resize:vertical}
+.c-field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23867E70' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center}
+.c-field input:focus,.c-field select:focus,.c-field textarea:focus{outline:none;border-color:var(--bois)}
+.c-form--dark .c-field input,.c-form--dark .c-field select,.c-form--dark .c-field textarea{border-color:rgba(243,241,236,.3);color:var(--craie)}
+.c-form--dark .c-field input:focus,.c-form--dark .c-field select:focus,.c-form--dark .c-field textarea:focus{border-color:var(--bois)}
+.c-form--dark .c-field label{color:var(--sable);opacity:.7}
+.c-form--dark option{color:var(--anthracite)}
+.c-form__note{font-size:var(--fs-label);font-family:var(--f-mono);letter-spacing:.05em;opacity:.55}
+.c-form__success{display:none;font-family:var(--f-mono);font-size:var(--fs-small);border:1px solid var(--bois);border-radius:var(--radius);color:var(--bois);padding:var(--s-3);text-align:center;letter-spacing:.08em}
+.c-form.is-sent .c-form__success{display:block}
+.c-form.is-sent .c-form__row,.c-form.is-sent .c-form__actions,.c-form.is-sent .c-form__note,.c-form.is-sent .c-field{display:none}
+/* Sticky CTA mobile */
+.c-sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:90;display:none;padding:.85rem var(--gutter);padding-bottom:calc(.85rem + env(safe-area-inset-bottom));background:rgba(19,18,16,.92);backdrop-filter:blur(10px);transform:translateY(110%);transition:transform var(--dur-fast) var(--ease)}
+.c-sticky-cta.is-visible{transform:none}
+.c-sticky-cta .c-btn{width:100%;justify-content:center}
+@media (max-width:768px){.c-sticky-cta{display:block}}
+/* Reveal */
+[data-reveal]{opacity:0;transform:translateY(28px);transition:opacity var(--dur) var(--ease),transform var(--dur) var(--ease);transition-delay:var(--reveal-delay,0s)}
+[data-reveal].is-visible{opacity:1;transform:none}
+.c-reveal-img{overflow:hidden;border-radius:var(--radius)}
+.c-reveal-img img{transform:scale(1.08);transition:transform 1.4s var(--ease)}
+.c-reveal-img.is-visible img{transform:scale(1)}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  [data-reveal]{opacity:1;transform:none;transition:none}
+  .c-reveal-img img{transform:none;transition:none}
+  .c-sticky-cta{transition:none}
+}
+
+/* ════ HEADER ════ */
+.site-header{position:fixed;inset:0 0 auto 0;z-index:100;height:var(--header-h);display:flex;align-items:center;transition:background var(--dur-fast) var(--ease),border-color var(--dur-fast) var(--ease),color var(--dur-fast) var(--ease);color:var(--craie);border-bottom:1px solid transparent}
+.site-header.is-solid{background:rgba(243,241,236,.92);backdrop-filter:blur(10px);color:var(--anthracite);border-color:var(--beton)}
+.site-header .container{display:flex;align-items:center;justify-content:space-between;gap:var(--s-3)}
+.logo{font-family:var(--f-display);font-variation-settings:"wdth" 125;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:1.05rem;line-height:1}
+.logo small{display:block;font-family:var(--f-mono);font-weight:400;font-size:.55rem;letter-spacing:.42em;margin-top:.25rem;opacity:.7}
+.main-nav{display:flex;gap:2.2rem}
+.main-nav a{font-family:var(--f-mono);font-size:var(--fs-label);text-transform:uppercase;letter-spacing:.14em;opacity:.85;transition:opacity var(--dur-fast);padding:.5rem 0}
+.main-nav a:hover{opacity:1}
+.header-cta{padding:.75rem 1.3rem}
+.site-header:not(.is-solid) .header-cta{border-color:var(--craie);color:var(--craie)}
+.site-header:not(.is-solid) .header-cta:hover{background:var(--craie);color:var(--anthracite)}
+.nav-toggle{display:none;flex-direction:column;gap:5px;padding:.5rem}
+.nav-toggle span{display:block;width:24px;height:2px;background:currentColor;transition:transform var(--dur-fast),opacity var(--dur-fast)}
+.mobile-nav{position:fixed;inset:0;z-index:99;background:var(--anthracite);color:var(--craie);display:flex;flex-direction:column;justify-content:center;padding:var(--gutter);opacity:0;visibility:hidden;transition:opacity var(--dur-fast),visibility var(--dur-fast)}
+.mobile-nav.is-open{opacity:1;visibility:visible}
+.mobile-nav a{font-family:var(--f-display);font-variation-settings:"wdth" 118;font-weight:600;text-transform:uppercase;font-size:clamp(1.6rem,7vw,2.4rem);line-height:1.4}
+.mobile-nav .c-btn{margin-top:var(--s-4);align-self:flex-start}
+@media (max-width:900px){.main-nav,.header-cta{display:none}.nav-toggle{display:flex}}
+/* Mode landing : chrome réduit */
+body.lp-mode .main-nav, body.lp-mode .nav-toggle{display:none}
+body.lp-mode .header-cta{display:inline-flex}
+
+/* ════ 4. HOME ════ */
+.hero-scroll{position:relative;height:320vh;background:var(--noir)}
+.hero-scroll__stage{position:sticky;top:0;height:100svh;overflow:hidden;display:flex;align-items:flex-end;color:var(--craie)}
+.hero-scroll__bg{position:absolute;inset:0}
+.hero-scroll__bg img{width:100%;height:100%;object-fit:cover;transform:scale(1.18);will-change:transform}
+.hero-scroll__stage::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(19,18,16,.45) 0%,rgba(19,18,16,.05) 42%,rgba(19,18,16,.75) 100%)}
+.hero-scroll .container{position:relative;z-index:2;padding-bottom:var(--s-6)}
+.hero-brand{will-change:transform,opacity}
+.hero-brand .c-label{color:var(--craie);opacity:.8;display:block;margin-bottom:var(--s-3)}
+.hero-brand h1{max-width:11ch}
+.hero-brand__scroll{margin-top:var(--s-5);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.2em;text-transform:uppercase;opacity:.7;display:flex;align-items:center;gap:.75rem}
+.hero-brand__scroll::after{content:"";width:1px;height:42px;background:var(--craie);animation:scrollhint 2.2s var(--ease) infinite;transform-origin:top}
+@keyframes scrollhint{0%{transform:scaleY(0)}45%{transform:scaleY(1)}100%{transform:scaleY(0);transform-origin:bottom}}
+.hero-model{position:absolute;inset:0;z-index:2;display:flex;align-items:flex-end;pointer-events:none}
+.hero-model .container{padding-bottom:var(--s-6)}
+.hero-model__item{opacity:0;transform:translateY(24px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.hero-model__item.is-on{opacity:1;transform:none;pointer-events:auto}
+.hero-model__name{font-family:var(--f-display);font-variation-settings:"wdth" 125;font-weight:700;text-transform:uppercase;font-size:clamp(2rem,5.5vw,4.2rem);line-height:1}
+.hero-model__specs{display:flex;flex-wrap:wrap;gap:var(--s-2) var(--s-4);margin:var(--s-3) 0 var(--s-4);border-top:1px solid rgba(243,241,236,.28);padding-top:var(--s-3);max-width:640px}
+.hero-model__spec{font-family:var(--f-mono)}
+.hero-model__spec b{display:block;font-weight:500;font-size:clamp(1.3rem,2.6vw,1.9rem)}
+.hero-model__spec span{font-size:var(--fs-label);letter-spacing:.16em;text-transform:uppercase;color:var(--sable);opacity:.7}
+.hero-scroll.is-static{height:auto}
+.hero-scroll.is-static .hero-scroll__stage{position:relative;height:100svh}
+/* Image pilotée en JS (parallaxe douce au scroll) — état initial légèrement zoomé */
+.hero-scroll.is-static .hero-scroll__bg img{transform:scale(1.06);transition:none;will-change:transform}
+.hero-scroll.is-static .hero-model{display:none}
+/* Entrée séquencée du bloc de marque au chargement (mobile) */
+.hero-scroll.is-static .hero-brand > *{opacity:0;transform:translateY(22px);animation:heroIn .9s var(--ease) forwards}
+.hero-scroll.is-static .hero-brand .c-label{animation-delay:.2s}
+.hero-scroll.is-static .hero-brand h1{animation-delay:.36s}
+.hero-scroll.is-static .hero-brand__scroll{animation-delay:.72s}
+@keyframes heroIn{to{opacity:1;transform:none}}
+.hero-static-plate{display:none}
+.hero-scroll.is-static + .hero-static-plate{display:block;background:var(--noir);color:var(--craie);padding:var(--s-4) 0}
+.hero-scroll.is-static + .hero-static-plate .c-plate{border-color:rgba(243,241,236,.25)}
+.hero-scroll.is-static + .hero-static-plate .c-plate__spec{color:var(--sable)}
+.hero-scroll.is-static + .hero-static-plate .c-plate__spec strong{color:var(--craie)}
+@media (prefers-reduced-motion:reduce){
+  .hero-brand__scroll::after{animation:none}
+  .hero-scroll.is-static .hero-scroll__bg img{animation:none;transform:none}
+  .hero-scroll.is-static .hero-brand > *{animation:none;opacity:1;transform:none}
+}
+
+.s-idea{padding:var(--s-7) 0}
+.s-idea p.big{font-family:var(--f-display);font-variation-settings:"wdth" 105;font-weight:500;font-size:clamp(1.5rem,3.2vw,2.5rem);line-height:1.25;letter-spacing:-.01em;max-width:24ch}
+.s-idea .grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-5);align-items:start}
+@media (max-width:900px){.s-idea .grid{grid-template-columns:1fr}}
+.s-product{padding-bottom:var(--s-7)}
+.s-product__main .c-reveal-img{aspect-ratio:16/9}
+.s-product__main img{width:100%;height:100%;object-fit:cover}
+.s-product__main .c-plate{margin-top:var(--s-3)}
+.s-product__duo{margin-top:var(--s-6);display:grid;grid-template-columns:5fr 7fr;gap:var(--s-5);align-items:end}
+.s-product__duo figure:first-child .c-reveal-img{aspect-ratio:4/5}
+.s-product__duo figure:last-child .c-reveal-img{aspect-ratio:4/3}
+.s-product__duo img{width:100%;height:100%;object-fit:cover}
+.caption{margin-top:var(--s-2);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase;color:var(--pierre)}
+.s-product__text{margin-top:var(--s-6);display:grid;grid-template-columns:1fr 1fr;gap:var(--s-5)}
+.s-product__text p{color:var(--pierre);max-width:34em}
+@media (max-width:900px){.s-product__duo,.s-product__text{grid-template-columns:1fr}}
+.s-philo{background:var(--anthracite);color:var(--craie);padding:var(--s-7) 0}
+.s-philo .c-label{color:var(--sable);opacity:.65}
+.s-philo__grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(243,241,236,.16)}
+.s-philo__item{padding:var(--s-4) var(--s-3) var(--s-4) 0;border-bottom:1px solid rgba(243,241,236,.16)}
+.s-philo__item:not(:nth-child(3n)){border-right:1px solid rgba(243,241,236,.16);padding-right:var(--s-3)}
+.s-philo__item + .s-philo__item{padding-left:var(--s-3)}
+.s-philo__item:nth-child(3n+1){padding-left:0}
+.s-philo__num{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.2em;color:var(--bois);display:block;margin-bottom:var(--s-2)}
+.s-philo__item h3{font-size:1.15rem;margin-bottom:.6rem}
+.s-philo__item p{font-size:var(--fs-small);color:var(--sable);opacity:.75;max-width:30ch}
+@media (max-width:900px){.s-philo__grid{grid-template-columns:1fr}.s-philo__item{border-right:none !important;padding-left:0 !important}}
+.s-collection{padding:var(--s-7) 0}
+.s-collection__list{display:flex;flex-direction:column;gap:var(--s-7)}
+.c-model-row{display:grid;grid-template-columns:5fr 7fr;gap:var(--s-5);align-items:center}
+.c-model-row:nth-child(even){direction:rtl}
+.c-model-row:nth-child(even) > *{direction:ltr}
+.c-model-row__media{position:relative}
+.c-model-row__media .c-reveal-img{aspect-ratio:4/3;display:block}
+.c-model-row__media img{width:100%;height:100%;object-fit:cover;transition:transform 1.1s var(--ease)}
+.c-model-row:hover .c-model-row__media img{transform:scale(1.04)}
+.c-model-row__num{position:absolute;top:-.55em;left:-.06em;z-index:2;font-family:var(--f-display);font-variation-settings:"wdth" 125;font-weight:800;line-height:1;font-size:clamp(4rem,9vw,8rem);color:transparent;-webkit-text-stroke:1px var(--pierre);pointer-events:none}
+.c-model-row__body .c-label{display:block;margin-bottom:var(--s-2)}
+.c-model-row__name{font-family:var(--f-display);font-variation-settings:"wdth" 122;font-weight:700;text-transform:uppercase;font-size:clamp(2rem,4vw,3.2rem);line-height:1}
+.c-model-row__tagline{margin-top:var(--s-2);color:var(--pierre);font-size:1.05rem;max-width:28em}
+.c-model-row .c-plate{margin:var(--s-3) 0 var(--s-3)}
+@media (max-width:900px){.c-model-row{grid-template-columns:1fr;gap:var(--s-3)}.c-model-row:nth-child(even){direction:ltr}.c-model-row__num{font-size:4rem;top:auto;bottom:-.4em}}
+.s-featured{position:relative;color:var(--craie);overflow:hidden;background:var(--noir)}
+.s-featured__media{position:absolute;inset:0}
+.s-featured__media img{width:100%;height:100%;object-fit:cover;opacity:.82}
+.s-featured::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(19,18,16,.8) 0%,rgba(19,18,16,.15) 65%)}
+.s-featured .container{position:relative;z-index:2;padding-top:var(--s-7);padding-bottom:var(--s-7);min-height:82vh;display:flex;flex-direction:column;justify-content:flex-end}
+.s-featured h2{max-width:14ch}
+.s-featured .c-plate{border-color:rgba(243,241,236,.28);margin:var(--s-4) 0;max-width:640px}
+.s-featured .c-plate__spec{color:var(--sable)}
+.s-featured .c-plate__spec strong{color:var(--craie)}
+.s-steps{padding:var(--s-7) 0;background:var(--sable)}
+.s-steps__list{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--beton)}
+.s-steps__item{padding:var(--s-4) var(--s-3) 0 0}
+.s-steps__item + .s-steps__item{border-left:1px solid var(--beton);padding-left:var(--s-3)}
+.s-steps__num{font-family:var(--f-mono);color:var(--bois);font-size:var(--fs-label);letter-spacing:.2em;display:block;margin-bottom:var(--s-2)}
+.s-steps__item h3{font-size:1.05rem;margin-bottom:.5rem}
+.s-steps__item p{font-size:var(--fs-small);color:var(--pierre)}
+@media (max-width:900px){.s-steps__list{grid-template-columns:1fr}.s-steps__item{border-left:none !important;padding-left:0 !important;border-bottom:1px solid var(--beton);padding-bottom:var(--s-3)}}
+.s-opps{padding:var(--s-7) 0}
+.s-opps__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-3)}
+@media (max-width:900px){.s-opps__grid{grid-template-columns:1fr}}
+.s-opps__foot{margin-top:var(--s-4)}
+.s-trust{padding:var(--s-7) 0;background:var(--sable)}
+.s-trust__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s-4)}
+.s-trust__item svg{margin-bottom:var(--s-2);stroke:var(--anthracite)}
+.s-trust__item h3{font-size:.98rem;margin-bottom:.4rem}
+.s-trust__item p{font-size:var(--fs-small);color:var(--pierre)}
+@media (max-width:900px){.s-trust__grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.s-trust__grid{grid-template-columns:1fr}}
+.s-cta{background:var(--anthracite);color:var(--craie);padding:var(--s-7) 0}
+.s-cta__grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-6);align-items:start}
+@media (max-width:900px){.s-cta__grid{grid-template-columns:1fr}}
+.s-cta h2{max-width:14ch;margin-top:var(--s-2)}
+.s-cta p{margin-top:var(--s-3);max-width:30em;color:var(--sable);opacity:.8}
+
+/* ════ 5. FICHE MODÈLE (.m-) ════ */
+.m-hero{position:relative;min-height:92svh;display:flex;align-items:flex-end;color:var(--craie);background:var(--noir);overflow:hidden}
+.m-hero__bg{position:absolute;inset:0}
+.m-hero__bg img{width:100%;height:100%;object-fit:cover}
+.m-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(19,18,16,.5) 0%,rgba(19,18,16,.08) 40%,rgba(19,18,16,.78) 100%)}
+.m-hero .container{position:relative;z-index:2;padding-bottom:var(--s-5)}
+.m-hero .c-breadcrumb{margin-bottom:var(--s-4);color:var(--craie)}
+.m-hero h1{font-size:clamp(3rem,9vw,7.5rem)}
+.m-hero .c-plate{margin-top:var(--s-4);max-width:720px;border-color:rgba(243,241,236,.28)}
+.m-hero .c-plate__spec{color:var(--sable)}
+.m-hero .c-plate__spec strong{color:var(--craie)}
+.m-quote{padding:var(--s-7) 0}
+.m-quote p{font-family:var(--f-display);font-variation-settings:"wdth" 105;font-weight:500;font-size:clamp(1.6rem,3.6vw,2.8rem);line-height:1.22;letter-spacing:-.01em;max-width:22ch}
+.m-quote .c-label{display:block;margin-bottom:var(--s-3)}
+.m-gallery{padding-bottom:var(--s-7)}
+.m-gallery__main .c-reveal-img{aspect-ratio:16/9}
+.m-gallery img{width:100%;height:100%;object-fit:cover}
+.m-gallery__duo{margin-top:var(--s-5);display:grid;grid-template-columns:7fr 5fr;gap:var(--s-5);align-items:start}
+.m-gallery__duo figure:last-child{margin-top:var(--s-6)}
+.m-gallery__duo .c-reveal-img{aspect-ratio:4/3}
+.m-gallery__duo figure:last-child .c-reveal-img{aspect-ratio:4/5}
+@media (max-width:900px){.m-gallery__duo{grid-template-columns:1fr}.m-gallery__duo figure:last-child{margin-top:0}}
+.m-arch{background:var(--anthracite);color:var(--craie);padding:var(--s-7) 0}
+.m-arch .c-label{color:var(--sable);opacity:.65}
+.m-arch__grid{display:grid;grid-template-columns:5fr 7fr;gap:var(--s-6);align-items:center}
+.m-arch__grid .c-reveal-img{aspect-ratio:4/5}
+.m-arch__grid img{width:100%;height:100%;object-fit:cover}
+.m-arch p{color:var(--sable);opacity:.8;margin-top:var(--s-3);max-width:32em}
+.m-arch__materials{margin-top:var(--s-4);border-top:1px solid rgba(243,241,236,.16)}
+.m-arch__materials li{display:flex;justify-content:space-between;gap:var(--s-3);padding:var(--s-2) 0;border-bottom:1px solid rgba(243,241,236,.16);font-family:var(--f-mono);font-size:var(--fs-small)}
+.m-arch__materials li span:first-child{color:var(--sable);opacity:.6;text-transform:uppercase;font-size:var(--fs-label);letter-spacing:.14em}
+@media (max-width:900px){.m-arch__grid{grid-template-columns:1fr}}
+.m-plan{padding:var(--s-7) 0}
+.m-plan__grid{display:grid;grid-template-columns:7fr 5fr;gap:var(--s-6);align-items:start}
+.m-plan__grid .c-reveal-img{aspect-ratio:4/3;background:var(--sable)}
+.m-plan__grid img{width:100%;height:100%;object-fit:cover}
+.m-plan__rooms{border-top:var(--line)}
+.m-plan__rooms li{display:flex;justify-content:space-between;align-items:baseline;padding:var(--s-2) 0;border-bottom:var(--line);font-family:var(--f-mono);font-size:var(--fs-small)}
+.m-plan__rooms li span:last-child{color:var(--pierre)}
+@media (max-width:900px){.m-plan__grid{grid-template-columns:1fr}}
+.m-features{padding-bottom:var(--s-7)}
+.m-features__grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:var(--line)}
+.m-features__item{padding:var(--s-3) var(--s-3) var(--s-3) 0;border-bottom:var(--line);font-size:var(--fs-small);color:var(--pierre)}
+.m-features__item b{display:block;color:var(--anthracite);font-weight:600;margin-bottom:.3rem}
+.m-features__item:not(:nth-child(3n)){border-right:var(--line)}
+.m-features__item + .m-features__item{padding-left:var(--s-3)}
+.m-features__item:nth-child(3n+1){padding-left:0}
+@media (max-width:900px){.m-features__grid{grid-template-columns:1fr}.m-features__item{border-right:none !important;padding-left:0 !important}}
+.m-price{background:var(--sable);padding:var(--s-7) 0}
+.m-price__grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-6);align-items:start}
+.m-price__amount{font-family:var(--f-mono);font-weight:500;font-size:clamp(2.2rem,5vw,3.6rem);line-height:1;margin-top:var(--s-3)}
+.m-price__amount small{display:block;font-size:var(--fs-label);letter-spacing:.16em;text-transform:uppercase;color:var(--pierre);margin-top:.6rem}
+.m-price__included{border-top:1px solid var(--beton)}
+.m-price__included li{padding:var(--s-2) 0;border-bottom:1px solid var(--beton);font-size:var(--fs-small);display:flex;gap:.8rem;align-items:baseline}
+.m-price__included li::before{content:"—";color:var(--bois);font-family:var(--f-mono)}
+.m-price__note{margin-top:var(--s-3);font-size:var(--fs-label);font-family:var(--f-mono);color:var(--pierre);letter-spacing:.05em}
+@media (max-width:900px){.m-price__grid{grid-template-columns:1fr}}
+.m-opps{padding:var(--s-7) 0}
+.m-opps__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-3)}
+@media (max-width:900px){.m-opps__grid{grid-template-columns:1fr}}
+.m-agency{margin-top:var(--s-6);border:var(--line);border-radius:var(--radius);padding:var(--s-4);display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s-3);align-items:center}
+.m-agency__name{font-family:var(--f-display);font-variation-settings:"wdth" 120;font-weight:700;text-transform:uppercase;font-size:1.2rem}
+.m-agency__meta{font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre);margin-top:.4rem}
+.m-next{border-top:var(--line);padding:var(--s-5) 0}
+.m-next a{display:flex;justify-content:space-between;align-items:center;gap:var(--s-3)}
+.m-next__label{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.18em;text-transform:uppercase;color:var(--pierre)}
+.m-next__name{font-family:var(--f-display);font-variation-settings:"wdth" 122;font-weight:700;text-transform:uppercase;font-size:clamp(1.8rem,4.5vw,3.4rem);transition:color var(--dur-fast)}
+.m-next a:hover .m-next__name{color:var(--bois)}
+
+/* ════ 6. LISTING ANNONCES (.l-) ════ */
+.l-filters{position:sticky;top:var(--header-h);z-index:60;background:rgba(243,241,236,.95);backdrop-filter:blur(10px);border-top:var(--line);border-bottom:var(--line);padding:var(--s-2) 0}
+.l-filters .container{display:flex;flex-wrap:wrap;gap:var(--s-2);align-items:end}
+.l-filter{display:flex;flex-direction:column;gap:.35rem}
+.l-filter label{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase;color:var(--pierre)}
+.l-filter select{font-family:var(--f-body);font-size:.92rem;padding:.6rem 2.2rem .6rem .8rem;background:transparent;border:1px solid var(--beton);border-radius:var(--radius);appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23867E70' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer}
+.l-filter select:focus{outline:none;border-color:var(--bois)}
+.l-filters__count{margin-left:auto;font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre)}
+.l-filters__reset{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.1em;text-transform:uppercase;color:var(--bois);padding:.6rem 0;border-bottom:1px solid transparent}
+.l-filters__reset:hover{border-color:var(--bois)}
+.l-view-toggle{display:none;gap:0;border:var(--line);border-radius:var(--radius);overflow:hidden}
+.l-view-toggle button{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.12em;text-transform:uppercase;padding:.6rem 1rem;color:var(--pierre)}
+.l-view-toggle button.is-on{background:var(--anthracite);color:var(--craie)}
+.l-body{padding:var(--s-4) 0 var(--s-6)}
+.l-body .container{display:grid;grid-template-columns:7fr 5fr;gap:var(--s-4);align-items:start}
+.l-results{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-3)}
+.l-results__empty{grid-column:1/-1;font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre);border:1px dashed var(--beton);border-radius:var(--radius);padding:var(--s-4);text-align:center}
+.l-map{position:sticky;top:calc(var(--header-h) + 92px)}
+.l-map__frame{border:var(--line);border-radius:var(--radius);background:var(--sable);overflow:hidden;position:relative;aspect-ratio:4/5}
+.l-map__frame svg{display:block;width:100%;height:100%}
+.map-pin{cursor:pointer}
+.map-pin circle{fill:var(--anthracite);stroke:var(--craie);stroke-width:1.2;transition:fill .2s}
+.map-pin text{font-family:var(--f-mono);font-size:3.2px;fill:var(--craie);text-anchor:middle;pointer-events:none}
+.map-pin.is-hl circle,.map-pin:hover circle{fill:var(--bois)}
+.map-pin.is-out{opacity:.18;pointer-events:none}
+.l-map__controls{position:absolute;top:var(--s-2);right:var(--s-2);display:flex;flex-direction:column;gap:6px}
+.l-map__controls button{width:36px;height:36px;background:var(--craie);border:var(--line);border-radius:var(--radius);font-family:var(--f-mono);font-size:1rem;line-height:1}
+.l-map__controls button:hover{border-color:var(--anthracite)}
+.l-map__sync{display:flex;gap:.6rem;align-items:center;margin-top:var(--s-2);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.08em;color:var(--pierre);cursor:pointer}
+.l-map__sync input{accent-color:var(--bois)}
+.l-map__hint{margin-top:.5rem;font-family:var(--f-mono);font-size:var(--fs-label);color:var(--pierre);opacity:.7}
+@media (max-width:1000px){
+  .l-filter select{padding-top:.85rem;padding-bottom:.85rem}
+  .l-map__controls button{width:44px;height:44px}
+  .l-view-toggle button{padding:.85rem 1.1rem}
+  .l-body .container{grid-template-columns:1fr}
+  .l-view-toggle{display:inline-flex}
+  .l-map{position:static;display:none}
+  .l-results{grid-template-columns:1fr}
+  body.map-mode .l-map{display:block}
+  body.map-mode .l-results{display:none}
+}
+
+/* ════ 7. FICHE ANNONCE (.a-) ════ */
+.a-head{padding:calc(var(--header-h) + var(--s-5)) 0 var(--s-4)}
+.a-head .c-breadcrumb{color:var(--pierre);margin-bottom:var(--s-3)}
+.a-head__top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s-3);align-items:end}
+.a-head h1{font-size:clamp(1.9rem,4.5vw,3.4rem);max-width:18ch}
+.a-head__price{font-family:var(--f-mono);font-weight:500;font-size:clamp(1.6rem,3.4vw,2.4rem);line-height:1}
+.a-head__price small{display:block;font-size:var(--fs-label);letter-spacing:.16em;text-transform:uppercase;color:var(--pierre);margin-top:.5rem}
+.a-head .c-pictos{margin-top:var(--s-4);border-top:var(--line);padding-top:var(--s-3)}
+.a-gallery{padding-bottom:var(--s-5)}
+.a-gallery .container{display:grid;grid-template-columns:2fr 1fr;gap:var(--s-2)}
+.a-gallery .c-reveal-img{aspect-ratio:16/10}
+.a-gallery__side{display:grid;gap:var(--s-2)}
+.a-gallery__side .c-reveal-img{aspect-ratio:16/9.8}
+.a-gallery img{width:100%;height:100%;object-fit:cover}
+@media (max-width:900px){.a-gallery .container{grid-template-columns:1fr}.a-gallery__side{grid-template-columns:1fr 1fr}}
+.a-body{padding-bottom:var(--s-7)}
+.a-body .container{display:grid;grid-template-columns:7fr 5fr;gap:var(--s-6);align-items:start}
+@media (max-width:900px){.a-body .container{grid-template-columns:1fr}}
+.a-content h2{font-size:clamp(1.4rem,2.6vw,2rem);margin-bottom:var(--s-3)}
+.a-content > p{color:var(--pierre);max-width:38em}
+.a-model{margin-top:var(--s-5);border:var(--line);border-radius:var(--radius);overflow:hidden;display:grid;grid-template-columns:5fr 7fr}
+.a-model__media{aspect-ratio:4/3;overflow:hidden}
+.a-model__media img{width:100%;height:100%;object-fit:cover;transition:transform 1s var(--ease)}
+.a-model:hover .a-model__media img{transform:scale(1.04)}
+.a-model__body{padding:var(--s-3);display:flex;flex-direction:column;justify-content:center;gap:var(--s-2)}
+.a-model__name{font-family:var(--f-display);font-variation-settings:"wdth" 122;font-weight:700;text-transform:uppercase;font-size:1.5rem}
+.a-model__meta{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.08em;color:var(--pierre)}
+@media (max-width:640px){.a-model{grid-template-columns:1fr}}
+.a-land{margin-top:var(--s-5);border-top:var(--line)}
+.a-land li{display:flex;justify-content:space-between;padding:var(--s-2) 0;border-bottom:var(--line);font-family:var(--f-mono);font-size:var(--fs-small)}
+.a-land li span:first-child{color:var(--pierre);text-transform:uppercase;font-size:var(--fs-label);letter-spacing:.14em;flex:none;padding-right:1rem}
+.a-land li span:last-child{text-align:right}
+.a-aside{position:sticky;top:calc(var(--header-h) + var(--s-3))}
+.a-aside__card{background:var(--anthracite);color:var(--craie);border-radius:var(--radius);padding:var(--s-4)}
+.a-aside__card h3{font-size:1.15rem;margin-bottom:.4rem}
+.a-aside__card > p{font-size:var(--fs-small);color:var(--sable);opacity:.75;margin-bottom:var(--s-3)}
+.a-aside__ref{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase;color:var(--bois);display:block;margin-bottom:var(--s-2)}
+.a-aside__agency{margin-top:var(--s-3);padding-top:var(--s-3);border-top:1px solid rgba(243,241,236,.16);font-family:var(--f-mono);font-size:var(--fs-small);color:var(--sable);opacity:.8}
+
+/* ════ 8. AGENCES (.g-) — v5 ════ */
+.g-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-4);padding-bottom:var(--s-7)}
+@media (max-width:900px){.g-grid{grid-template-columns:1fr}}
+.g-hero{position:relative;min-height:56svh;display:flex;align-items:flex-end;color:var(--craie);background:var(--noir);overflow:hidden}
+.g-hero__bg{position:absolute;inset:0}
+.g-hero__bg img{width:100%;height:100%;object-fit:cover;opacity:.75}
+.g-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(19,18,16,.45) 0%,rgba(19,18,16,.15) 45%,rgba(19,18,16,.8) 100%)}
+.g-hero .container{position:relative;z-index:2;padding-bottom:var(--s-5)}
+.g-hero .c-breadcrumb{color:var(--craie);margin-bottom:var(--s-3)}
+.g-hero h1{font-size:clamp(2.2rem,6vw,4.6rem)}
+.g-body{padding:var(--s-6) 0}
+.g-body .container{display:grid;grid-template-columns:7fr 5fr;gap:var(--s-6);align-items:start}
+@media (max-width:900px){.g-body .container{grid-template-columns:1fr}}
+.g-info{border-top:var(--line);margin-top:var(--s-4)}
+.g-info li{display:flex;justify-content:space-between;gap:var(--s-3);padding:var(--s-2) 0;border-bottom:var(--line);font-family:var(--f-mono);font-size:var(--fs-small)}
+.g-info li span:first-child{color:var(--pierre);text-transform:uppercase;font-size:var(--fs-label);letter-spacing:.14em;flex:none}
+.g-info li span:last-child{text-align:right}
+.g-cities{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:var(--s-3)}
+.g-cities span{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.08em;border:var(--line);border-radius:var(--radius);padding:.4rem .7rem;color:var(--pierre)}
+.g-annonces{padding:var(--s-6) 0 var(--s-7);background:var(--sable)}
+.g-annonces .m-opps__grid{background:none}
+
+/* ════ 9. PAGE CONCEPT (.pc-) — v5 ════ */
+.pc-manifesto{padding:var(--s-6) 0 var(--s-7)}
+.pc-manifesto p{font-family:var(--f-display);font-variation-settings:"wdth" 105;font-weight:500;font-size:clamp(1.5rem,3.4vw,2.6rem);line-height:1.25;letter-spacing:-.01em;max-width:26ch}
+.pc-figures{background:var(--anthracite);color:var(--craie);padding:var(--s-6) 0}
+.pc-figures__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-4);border-top:1px solid rgba(243,241,236,.16);padding-top:var(--s-4)}
+.pc-figure b{font-family:var(--f-mono);font-weight:500;font-size:clamp(1.8rem,4vw,3rem);display:block}
+.pc-figure span{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.16em;text-transform:uppercase;color:var(--sable);opacity:.7}
+@media (max-width:700px){.pc-figures__grid{grid-template-columns:1fr}}
+.pc-commit{padding:var(--s-7) 0}
+.pc-commit__list{border-top:var(--line)}
+.pc-commit__item{display:grid;grid-template-columns:80px 1fr 2fr;gap:var(--s-4);padding:var(--s-4) 0;border-bottom:var(--line);align-items:start}
+.pc-commit__num{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.2em;color:var(--bois)}
+.pc-commit__item h3{font-size:1.15rem}
+.pc-commit__item p{color:var(--pierre);font-size:var(--fs-small);max-width:42em}
+@media (max-width:800px){.pc-commit__item{grid-template-columns:1fr}}
+
+/* ════ 10. CONTACT (.ct-) — v5 ════ */
+.ct-body{padding-bottom:var(--s-7)}
+.ct-body .container{display:grid;grid-template-columns:7fr 5fr;gap:var(--s-6);align-items:start}
+@media (max-width:900px){.ct-body .container{grid-template-columns:1fr}}
+.ct-form-card{background:var(--anthracite);color:var(--craie);border-radius:var(--radius);padding:var(--s-4)}
+.ct-form-card h2{font-size:1.3rem;margin-bottom:var(--s-3)}
+.ct-aside .c-agency-card + .c-agency-card{margin-top:var(--s-3)}
+.ct-direct{margin-top:var(--s-4);border-top:var(--line);padding-top:var(--s-3);font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre)}
+.ct-direct a{color:var(--bois)}
+
+/* ════ 11. LANDING (.lp-) — v5 ════ */
+.lp-hero{position:relative;min-height:100svh;display:flex;align-items:center;color:var(--craie);background:var(--noir);overflow:hidden;padding:calc(var(--header-h) + var(--s-4)) 0 var(--s-5)}
+.lp-hero__bg{position:absolute;inset:0}
+.lp-hero__bg img{width:100%;height:100%;object-fit:cover;opacity:.55}
+.lp-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(19,18,16,.85) 0%,rgba(19,18,16,.35) 100%)}
+.lp-hero .container{position:relative;z-index:2;display:grid;grid-template-columns:7fr 5fr;gap:var(--s-6);align-items:center}
+@media (max-width:900px){.lp-hero .container{grid-template-columns:1fr}}
+.lp-hero h1{font-size:clamp(2.2rem,5.5vw,4.4rem);max-width:14ch}
+.lp-hero__sub{margin-top:var(--s-3);color:var(--sable);opacity:.85;max-width:32em}
+.lp-hero__price{font-family:var(--f-mono);font-weight:500;font-size:clamp(1.8rem,4vw,2.8rem);margin-top:var(--s-4)}
+.lp-hero__price small{display:block;font-size:var(--fs-label);letter-spacing:.16em;text-transform:uppercase;color:var(--sable);opacity:.7;margin-top:.4rem}
+.lp-hero__bullets{margin-top:var(--s-4);border-top:1px solid rgba(243,241,236,.25)}
+.lp-hero__bullets li{padding:var(--s-2) 0;border-bottom:1px solid rgba(243,241,236,.25);font-size:var(--fs-small);color:var(--sable);display:flex;gap:.8rem}
+.lp-hero__bullets li::before{content:"—";color:var(--bois);font-family:var(--f-mono)}
+.lp-form-card{background:var(--craie);color:var(--anthracite);border-radius:var(--radius);padding:var(--s-4)}
+.lp-form-card h2{font-size:1.2rem;margin-bottom:.4rem}
+.lp-form-card > p{font-size:var(--fs-small);color:var(--pierre);margin-bottom:var(--s-3)}
+.lp-strip{background:var(--sable);padding:var(--s-6) 0}
+
+/* ════ 12. FOOTER ════ */
+.site-footer{background:var(--noir);color:var(--sable);padding:var(--s-6) 0 var(--s-4)}
+.site-footer .logo{color:var(--craie)}
+.footer-grid{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:var(--s-4);padding-bottom:var(--s-5);border-bottom:1px solid rgba(243,241,236,.14)}
+.footer-col h4{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.18em;text-transform:uppercase;color:var(--pierre);margin-bottom:var(--s-2);font-weight:500}
+.footer-col a{display:block;font-size:var(--fs-small);padding:.3rem 0;opacity:.8;transition:opacity var(--dur-fast),color var(--dur-fast)}
+.footer-col a:hover{opacity:1;color:var(--bois)}
+.footer-brand p{font-size:var(--fs-small);opacity:.65;margin-top:var(--s-2);max-width:26em}
+.footer-legal{display:flex;flex-wrap:wrap;gap:var(--s-3);justify-content:space-between;padding-top:var(--s-3);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.1em;opacity:.55}
+.footer-legal nav{display:flex;gap:var(--s-3);flex-wrap:wrap}
+@media (max-width:900px){.footer-grid{grid-template-columns:1fr 1fr}.footer-brand{grid-column:1/-1}}
+
+/* ════ 13. STYLEGUIDE ════ */
+.styleguide{display:none;padding:var(--s-7) 0;border-top:var(--line)}
+body.show-styleguide .styleguide{display:block}
+.sg-block{margin-bottom:var(--s-6)}
+.sg-block > .c-label{display:block;margin-bottom:var(--s-3)}
+.sg-swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:var(--s-2)}
+.sg-swatch{border:var(--line);border-radius:var(--radius);overflow:hidden}
+.sg-swatch div{height:88px}
+.sg-swatch span{display:block;padding:.6rem .8rem;font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.08em}
+.sg-row{display:flex;flex-wrap:wrap;gap:var(--s-2);align-items:center}
+</style>
+</head>
+<body>
+
+<header class="site-header" id="siteHeader">
+  <div class="container">
+    <a class="logo" href="#/" aria-label="Maisons Essensya — accueil">Essensya<small>Maisons</small></a>
+    <nav class="main-nav" aria-label="Navigation principale">
+      <a href="#/maisons">Maisons</a>
+      <a href="#/annonces">Terrains &amp; opportunités</a>
+      <a href="#/concept">Notre concept</a>
+      <a href="#/agences">Nos agences</a>
+    </nav>
+    <a href="#/contact" class="c-btn header-cta">Parler de mon projet</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mobileNav"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<nav class="mobile-nav" id="mobileNav" aria-label="Navigation mobile">
+  <a href="#/maisons">Maisons</a>
+  <a href="#/annonces">Terrains &amp; opportunités</a>
+  <a href="#/concept">Notre concept</a>
+  <a href="#/agences">Nos agences</a>
+  <a href="#/contact">Contact</a>
+  <a href="#/contact" class="c-btn c-btn--light">Parler de mon projet</a>
+</nav>
+
+<!-- ═══════════ VUE : HOME ═══════════ -->
+<main class="page is-active" id="viewHome">
+
+  <section class="hero-scroll" id="heroScroll" aria-label="Découverte du modèle du moment">
+    <div class="hero-scroll__stage">
+      <div class="hero-scroll__bg">
+        <img id="heroImg" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1920&auto=format&fit=crop" alt="Maison contemporaine Essensya au crépuscule" fetchpriority="high">
+      </div>
+      <div class="container hero-brand" id="heroBrand">
+        <span class="c-label">Constructeur nouvelle génération</span>
+        <h1>La maison juste. Le prix juste.</h1>
+        <div class="hero-brand__scroll">Défiler pour découvrir</div>
+      </div>
+      <div class="hero-model" id="heroModel" aria-hidden="true">
+        <div class="container">
+          <div class="hero-model__item" data-step="0">
+            <span class="c-label" style="color:var(--sable)">Le modèle du moment</span>
+            <div class="hero-model__name" id="heroModelName"></div>
+          </div>
+          <div class="hero-model__specs">
+            <div class="hero-model__spec hero-model__item" data-step="1"><b id="heroSpecSurface"></b><span>Surface</span></div>
+            <div class="hero-model__spec hero-model__item" data-step="2"><b id="heroSpecBedrooms"></b><span>Chambres</span></div>
+            <div class="hero-model__spec hero-model__item" data-step="3"><b id="heroSpecPrice"></b><span>À partir de</span></div>
+          </div>
+          <div class="hero-model__item" data-step="4">
+            <a href="#" class="c-btn c-btn--light" id="heroModelCta">Découvrir ce modèle <span class="arrow">→</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="hero-static-plate"><div class="container"><div class="c-plate" id="heroStaticPlate" data-reveal></div></div></div>
+
+  <section class="s-idea" id="idee">
+    <div class="container grid">
+      <div data-reveal><span class="c-label c-label--accent">L'idée</span></div>
+      <div>
+        <p class="big" data-reveal>Construire mieux en choisissant l'essentiel. Des modèles peu nombreux, pensés dans le détail, optimisés jusqu'au dernier mètre carré — pour un prix maîtrisé, sans compromis sur la qualité.</p>
+        <p class="u-muted u-measure" style="margin-top:var(--s-3)" data-reveal>Chez Essensya, chaque maison est un produit conçu, pas une addition d'options. Moins de choix inutiles, plus d'intelligence dans chaque choix.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="s-product">
+    <div class="container">
+      <figure class="s-product__main">
+        <div class="c-reveal-img"><img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1920&auto=format&fit=crop" alt="Séjour lumineux du modèle Essen" loading="lazy"></div>
+        <figcaption class="c-plate" data-reveal id="productPlate"></figcaption>
+      </figure>
+      <div class="s-product__duo">
+        <figure>
+          <div class="c-reveal-img"><img src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?q=80&w=1200&auto=format&fit=crop" alt="Détail de façade" loading="lazy"></div>
+          <figcaption class="caption" data-reveal>Détail — enduit minéral, menuiserie aluminium</figcaption>
+        </figure>
+        <figure>
+          <div class="c-reveal-img"><img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1400&auto=format&fit=crop" alt="Volume de vie ouvert" loading="lazy"></div>
+          <figcaption class="caption" data-reveal>Volume de vie — cuisine ouverte, 5,40 m de baie</figcaption>
+        </figure>
+      </div>
+      <div class="s-product__text">
+        <h3 data-reveal>Chaque mètre carré a une raison d'être</h3>
+        <p data-reveal>Un modèle Essensya n'est pas un plan générique : c'est une conception aboutie, où chaque volume, chaque ouverture et chaque matériau a été arbitré pour maximiser la qualité de vie au juste prix. Ce que nous ne dépensons pas en options superflues, nous l'investissons là où ça compte.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="s-philo">
+    <div class="container">
+      <div class="c-section-head" data-reveal>
+        <span class="c-label">Pourquoi le catalogue</span>
+        <h2>Moins de choix.<br>Mieux choisis.</h2>
+      </div>
+      <div class="s-philo__grid" id="philoGrid"></div>
+    </div>
+  </section>
+
+  <section class="s-collection" id="collection">
+    <div class="container">
+      <div class="c-section-head" data-reveal>
+        <span class="c-label c-label--accent">La collection</span>
+        <h2>Trois maisons.<br>Zéro superflu.</h2>
+      </div>
+      <div class="s-collection__list" id="collectionList"></div>
+    </div>
+  </section>
+
+  <section class="s-featured" id="featured" data-cms="featured">
+    <div class="s-featured__media"><img id="featuredImg" src="" alt="" loading="lazy"></div>
+    <div class="container">
+      <span class="c-label" style="color:var(--sable)" data-reveal>En ce moment</span>
+      <h2 id="featuredTitle" data-reveal style="--reveal-delay:.1s"></h2>
+      <div class="c-plate" id="featuredPlate" data-reveal style="--reveal-delay:.2s"></div>
+      <div data-reveal style="--reveal-delay:.3s">
+        <a href="#" class="c-btn c-btn--light" id="featuredCta">Découvrir ce modèle <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="s-steps">
+    <div class="container">
+      <div class="c-section-head" data-reveal>
+        <span class="c-label c-label--accent">Comment ça marche</span>
+        <h2>Du modèle au projet</h2>
+      </div>
+      <div class="s-steps__list" id="stepsList"></div>
+    </div>
+  </section>
+
+  <section class="s-opps" id="opportunites">
+    <div class="container">
+      <div class="c-section-head" data-reveal>
+        <span class="c-label c-label--accent">Terrains &amp; opportunités</span>
+        <h2>Rendre votre maison concrète</h2>
+        <p class="u-muted u-measure" style="margin-top:var(--s-2)">Nos agences sélectionnent des terrains compatibles avec chaque modèle. Choisissez la maison, nous trouvons le lieu.</p>
+      </div>
+      <div class="s-opps__grid" id="oppsGrid"></div>
+      <div class="s-opps__foot" data-reveal>
+        <a href="#/annonces" class="c-link">Voir toutes les opportunités →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="s-trust" id="agences">
+    <div class="container">
+      <div class="c-section-head" data-reveal>
+        <span class="c-label c-label--accent">Nos engagements</span>
+        <h2>Construire en confiance</h2>
+      </div>
+      <div class="s-trust__grid" id="trustGrid"></div>
+    </div>
+  </section>
+
+  <section class="s-cta" id="projet">
+    <div class="container s-cta__grid">
+      <div>
+        <span class="c-label" style="color:var(--bois)" data-reveal>Votre projet</span>
+        <h2 data-reveal style="--reveal-delay:.1s">Et si votre maison était déjà dessinée&nbsp;?</h2>
+        <p data-reveal style="--reveal-delay:.2s">Parlez-nous de votre projet. Une agence Essensya vous rappelle sous 48&nbsp;h, sans engagement.</p>
+      </div>
+      <form class="c-form c-form--dark" id="callbackForm" data-reveal style="--reveal-delay:.25s" novalidate>
+        <div class="c-form__row">
+          <div class="c-field"><label for="f-name">Prénom &amp; nom</label><input type="text" id="f-name" required></div>
+          <div class="c-field"><label for="f-phone">Téléphone</label><input type="tel" id="f-phone" required></div>
+        </div>
+        <div class="c-form__row">
+          <div class="c-field"><label for="f-zone">Secteur du projet</label><input type="text" id="f-zone" placeholder="Ville ou code postal"></div>
+          <div class="c-field"><label for="f-stage">Où en êtes-vous&nbsp;?</label>
+            <select id="f-stage"><option>Je découvre</option><option>Je cherche un terrain</option><option>J'ai déjà un terrain</option><option>Je compare des constructeurs</option></select>
+          </div>
+        </div>
+        <div class="c-form__actions"><button type="submit" class="c-btn c-btn--light">Être rappelé <span class="arrow">→</span></button></div>
+        <p class="c-form__note">Vos données ne servent qu'à vous recontacter. Jamais revendues.</p>
+        <p class="c-form__success" role="status">Merci — une agence Essensya vous rappelle sous 48 h.</p>
+      </form>
+    </div>
+  </section>
+
+  <section class="styleguide" id="styleguide" aria-label="Design system">
+    <div class="container">
+      <div class="c-section-head">
+        <span class="c-label c-label--accent">Interne</span>
+        <h2>Design system</h2>
+        <p class="u-muted" style="margin-top:var(--s-2)">Documentation des tokens et composants — non destinée à la production.</p>
+      </div>
+      <div class="sg-block"><span class="c-label">Palette</span><div class="sg-swatches" id="sgSwatches"></div></div>
+      <div class="sg-block sg-type">
+        <span class="c-label">Typographie</span>
+        <h1>Archivo — Display</h1>
+        <h3 style="margin-top:var(--s-2)">Archivo — Titres secondaires</h3>
+        <p style="margin-top:var(--s-2)">Instrument Sans — corps de texte.</p>
+        <p class="c-label">IBM Plex Mono — labels &amp; données produit</p>
+      </div>
+      <div class="sg-block"><span class="c-label">Boutons</span>
+        <div class="sg-row"><a href="#" class="c-btn">Bouton défaut</a><a href="#" class="c-btn c-btn--solid">Bouton solide <span class="arrow">→</span></a><a href="#" class="c-link">Lien texte →</a></div>
+      </div>
+      <div class="sg-block"><span class="c-label">Plaque modèle (signature)</span><div class="c-plate" id="sgPlate"></div></div>
+      <div class="sg-block"><span class="c-label">Pictos annonce</span><div class="c-pictos" id="sgPictos"></div></div>
+      <div class="sg-block"><span class="c-label">Annonce card</span><div style="max-width:380px" id="sgAnnonce"></div></div>
+      <div class="sg-block"><span class="c-label">Agency card</span><div style="max-width:380px" id="sgAgency"></div></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══════════ VUE : PAGES DYNAMIQUES ═══════════ -->
+<main class="page" id="viewPage"></main>
+
+<div class="c-sticky-cta" id="stickyCta">
+  <a href="#/contact" class="c-btn c-btn--light">Parler de mon projet</a>
+</div>
+
+<footer class="site-footer" id="siteFooter">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="logo" href="#/">Essensya<small>Maisons</small></a>
+        <p>Constructeur de maisons individuelles nouvelle génération. Des modèles catalogues conçus intelligemment, pour une maîtrise totale du produit et du prix.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Maisons</h4>
+        <a href="#/maisons">Tous les modèles</a>
+        <a href="#/maisons">Trouver ma maison</a>
+        <a href="#/concept">Nos maisons catalogues</a>
+      </div>
+      <div class="footer-col">
+        <h4>Projets</h4>
+        <a href="#/annonces">Terrains</a>
+        <a href="#/annonces">Terrain + maison</a>
+        <a href="#/concept">Comment ça marche</a>
+        <a href="#/contact">Demander un rappel</a>
+      </div>
+      <div class="footer-col">
+        <h4>Essensya</h4>
+        <a href="#/concept">Notre concept</a>
+        <a href="#/concept">Nos engagements</a>
+        <a href="#/agences">Nos agences</a>
+        <a href="#/contact">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4>Informations</h4>
+        <a href="#">Mentions légales</a>
+        <a href="#">Politique de confidentialité</a>
+        <a href="#">Gestion des cookies</a>
+        <a href="#styleguide">Design system</a>
+      </div>
+    </div>
+    <div class="footer-legal">
+      <span>© 2026 Maisons Essensya — Constructeur de maisons individuelles</span>
+      <nav><a href="#">Instagram</a><a href="#">LinkedIn</a><a href="#">Pinterest</a></nav>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ════════ DONNÉES ════════ */
+const ESSENSYA_DATA = {
+  models: [
+    {
+      id:"essen-01", index:"01", name:"Essen",
+      tagline:"Pensée pour l'essentiel. Un plain-pied compact où chaque mètre carré travaille : volumes traversants, lumière naturelle, rangements intégrés.",
+      philosophy:"Essen part d'une conviction : une maison n'a pas besoin d'être grande pour être généreuse. Elle a besoin d'être juste.",
+      surface:92, bedrooms:3, priceFrom:168900,
+      image:"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1400&auto=format&fit=crop",
+      heroImage:"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1920&auto=format&fit=crop",
+      alt:"Modèle Essen — maison contemporaine de plain-pied",
+      gallery:[
+        {src:"https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1920&auto=format&fit=crop",alt:"Séjour traversant du modèle Essen",caption:"Séjour traversant — 38 m²"},
+        {src:"https://images.unsplash.com/photo-1600585154526-990dced4db0d?q=80&w=1400&auto=format&fit=crop",alt:"Cuisine ouverte du modèle Essen",caption:"Cuisine ouverte — plan de travail 3,20 m"},
+        {src:"https://images.unsplash.com/photo-1600121848594-d8644e57abab?q=80&w=1200&auto=format&fit=crop",alt:"Détail matériaux du modèle Essen",caption:"Détail — bois clair, enduit minéral"}
+      ],
+      archText:"Un volume simple et précis : toiture monopente, façade enduite, menuiseries aluminium au nu extérieur. La sobriété n'est pas une économie, c'est un choix architectural.",
+      archImage:"https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?q=80&w=1200&auto=format&fit=crop",
+      materials:[["Structure","Brique rectifiée R+0"],["Toiture","Monopente bac acier isolé"],["Menuiseries","Aluminium double vitrage"],["Chauffage","Pompe à chaleur air/eau"],["Isolation","RE2020 — ITI renforcée"]],
+      planImage:"https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1400&auto=format&fit=crop",
+      rooms:[["Séjour / cuisine","38,4 m²"],["Chambre 1","12,1 m²"],["Chambre 2","10,8 m²"],["Chambre 3","10,2 m²"],["Salle de bain","6,3 m²"],["Cellier","4,9 m²"],["Entrée / dégagements","9,3 m²"]],
+      features:[
+        {t:"RE2020",d:"Conception conforme à la réglementation environnementale en vigueur."},
+        {t:"Plain-pied",d:"Aucune marche, accessible dès la conception."},
+        {t:"Traversant",d:"Double orientation du séjour, lumière du matin au soir."},
+        {t:"Rangements intégrés",d:"Placards dessinés dans le plan, pas ajoutés après coup."},
+        {t:"Garage en option",d:"Extension prévue dès la conception, sans reprendre le plan."},
+        {t:"Terrain dès 350 m²",d:"Une emprise compacte compatible avec les parcelles courantes."}
+      ],
+      included:["Étude de sol et adaptation au terrain","Cuisine aménagée (hors électroménager)","Salle de bain équipée","Pompe à chaleur et plancher chauffant","Volets roulants motorisés","Garanties CCMI, décennale, parfait achèvement"]
+    },
+    {
+      id:"alba-02", index:"02", name:"Alba",
+      tagline:"La lumière avant tout. Une maison familiale à étage, orientée vers le sud, pensée pour les grandes tablées et les matins pressés.",
+      philosophy:"Alba organise la vie de famille autour d'une évidence : en bas on se retrouve, en haut on se retire. Et partout, la lumière.",
+      surface:104, bedrooms:4, priceFrom:189500,
+      image:"https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1400&auto=format&fit=crop",
+      heroImage:"https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1920&auto=format&fit=crop",
+      alt:"Modèle Alba — maison familiale à étage",
+      gallery:[
+        {src:"https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=1920&auto=format&fit=crop",alt:"Pièce de vie du modèle Alba",caption:"Pièce de vie — double hauteur partielle"},
+        {src:"https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?q=80&w=1400&auto=format&fit=crop",alt:"Salle de bain du modèle Alba",caption:"Salle d'eau parentale"},
+        {src:"https://images.unsplash.com/photo-1600607687644-c7171b42498f?q=80&w=1200&auto=format&fit=crop",alt:"Chambre du modèle Alba",caption:"Chambre — orientation sud-est"}
+      ],
+      archText:"Un volume à étage compact et bien orienté : les pièces de vie captent le sud, les chambres respirent à l'étage. La façade claire et les grandes baies signent une architecture contemporaine sans surenchère.",
+      archImage:"https://images.unsplash.com/photo-1600585152915-d208bec867a1?q=80&w=1200&auto=format&fit=crop",
+      materials:[["Structure","Brique rectifiée R+1"],["Toiture","Deux pentes, tuile plate"],["Menuiseries","Aluminium double vitrage"],["Chauffage","Pompe à chaleur air/eau"],["Isolation","RE2020 — combles perdus renforcés"]],
+      planImage:"https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1400&auto=format&fit=crop",
+      rooms:[["Séjour / cuisine","42,6 m²"],["Chambre parentale + SDE","16,8 m²"],["Chambre 2","11,2 m²"],["Chambre 3","10,9 m²"],["Chambre 4","10,4 m²"],["Salle de bain","6,8 m²"],["Cellier / entrée","5,3 m²"]],
+      features:[
+        {t:"RE2020",d:"Conception conforme à la réglementation environnementale en vigueur."},
+        {t:"Suite parentale",d:"Chambre, salle d'eau et dressing au même niveau."},
+        {t:"4 chambres",d:"La famille qui grandit sans déménager."},
+        {t:"Orientation étudiée",d:"Pièces de vie au sud, chambres à l'est."},
+        {t:"Emprise compacte",d:"Un étage pour préserver le jardin."},
+        {t:"Garage intégré",d:"Inclus dans le volume principal."}
+      ],
+      included:["Étude de sol et adaptation au terrain","Cuisine aménagée (hors électroménager)","Deux salles d'eau équipées","Pompe à chaleur et plancher chauffant","Volets roulants motorisés","Garanties CCMI, décennale, parfait achèvement"]
+    },
+    {
+      id:"nova-03", index:"03", name:"Nova",
+      tagline:"Compacte, jamais à l'étroit. Le premier achat intelligent : une conception dense et généreuse à la fois, au prix le plus juste de la collection.",
+      philosophy:"Nova prouve qu'un budget serré n'oblige pas à un compromis sur l'architecture. Juste à une conception plus intelligente.",
+      surface:78, bedrooms:2, priceFrom:142000,
+      image:"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1400&auto=format&fit=crop",
+      heroImage:"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1920&auto=format&fit=crop",
+      alt:"Modèle Nova — maison compacte contemporaine",
+      gallery:[
+        {src:"https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1920&auto=format&fit=crop",alt:"Séjour du modèle Nova",caption:"Séjour — 32 m² d'un seul tenant"},
+        {src:"https://images.unsplash.com/photo-1600566752355-35792bedcfea?q=80&w=1400&auto=format&fit=crop",alt:"Cuisine du modèle Nova",caption:"Cuisine linéaire intégrée"},
+        {src:"https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=1200&auto=format&fit=crop",alt:"Extérieur du modèle Nova",caption:"Terrasse couverte — prolongement du séjour"}
+      ],
+      archText:"Le plan le plus dense de la collection : zéro couloir, zéro mètre carré perdu. Le séjour occupe toute la largeur de la maison et s'ouvre sur une terrasse couverte.",
+      archImage:"https://images.unsplash.com/photo-1600121848594-d8644e57abab?q=80&w=1200&auto=format&fit=crop",
+      materials:[["Structure","Brique rectifiée R+0"],["Toiture","Monopente bac acier isolé"],["Menuiseries","PVC/alu double vitrage"],["Chauffage","Pompe à chaleur air/air"],["Isolation","RE2020 — ITI standard renforcée"]],
+      planImage:"https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1400&auto=format&fit=crop",
+      rooms:[["Séjour / cuisine","32,2 m²"],["Chambre 1","11,8 m²"],["Chambre 2","10,6 m²"],["Salle de bain","5,4 m²"],["Cellier","4,2 m²"],["Entrée","3,8 m²"],["Terrasse couverte","12,0 m²"]],
+      features:[
+        {t:"RE2020",d:"Conception conforme à la réglementation environnementale en vigueur."},
+        {t:"Zéro couloir",d:"Un plan dense : 100 % de la surface est habitée."},
+        {t:"Terrasse couverte",d:"12 m² de vie extérieure incluse dans la conception."},
+        {t:"Premier achat",d:"Le ticket d'entrée le plus juste de la collection."},
+        {t:"Évolutive",d:"Extension chambre 3 prévue au plan d'origine."},
+        {t:"Petites parcelles",d:"Compatible terrains dès 300 m²."}
+      ],
+      included:["Étude de sol et adaptation au terrain","Cuisine linéaire aménagée (hors électroménager)","Salle de bain équipée","Pompe à chaleur air/air","Terrasse couverte","Garanties CCMI, décennale, parfait achèvement"]
+    }
+  ],
+
+  hero:{refId:"essen-01"},
+  featured:{type:"model",refId:"alba-02",title:"Alba — 02",image:"https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=1920&auto=format&fit=crop",alt:"Intérieur du modèle Alba",ctaLabel:"Découvrir ce modèle"},
+
+  philosophy:[
+    {num:"01",title:"Conception maîtrisée",text:"Chaque modèle est optimisé plan par plan, poste par poste. Rien n'est laissé au hasard."},
+    {num:"02",title:"Moins d'options, plus de justesse",text:"Nous avons déjà fait les bons choix : matériaux, volumes, équipements."},
+    {num:"03",title:"Prix annoncé, prix tenu",text:"Un modèle maîtrisé, c'est un budget sans surprise, du premier rendez-vous à la remise des clés."},
+    {num:"04",title:"Processus simplifié",text:"Moins d'étapes, moins d'allers-retours : votre projet avance vite et bien."},
+    {num:"05",title:"Qualité constructive",text:"Des modèles éprouvés, construits en série maîtrisée, avec les mêmes exigences à chaque chantier."},
+    {num:"06",title:"Garanties constructeur",text:"CCMI, garantie décennale, livraison à prix et délais convenus."}
+  ],
+
+  steps:[
+    {num:"01",title:"Je choisis ma maison",text:"Parmi une collection courte de modèles conçus intelligemment."},
+    {num:"02",title:"Je trouve mon terrain",text:"Nos agences sélectionnent des terrains compatibles avec votre modèle."},
+    {num:"03",title:"Je rencontre mon agence",text:"Un interlocuteur unique, un chiffrage clair, un planning précis."},
+    {num:"04",title:"Je construis",text:"Un chantier maîtrisé, des garanties complètes, une maison livrée au prix convenu."}
+  ],
+
+  agencies:[
+    {
+      id:"montpellier", name:"Agence de Montpellier", zone:"Montpellier & couronne ouest",
+      address:"12 av. de la Méditerranée, 34000 Montpellier", phone:"04 67 00 00 00",
+      email:"montpellier@essensya.fr", hours:"Lun – Sam · 9h–12h / 14h–18h30",
+      lat:43.61, lng:3.88,
+      image:"https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1200&auto=format&fit=crop",
+      cities:["Montpellier","Fabrègues","Gigean","Cournonterral","Pignan","Saint-Jean-de-Védas"],
+      description:"L'agence de Montpellier couvre la métropole et sa couronne ouest. Son équipe connaît chaque commune, chaque PLU et chaque lotissement du secteur — c'est elle qui repère les terrains compatibles avec les modèles de la collection avant même leur mise sur le marché."
+    },
+    {
+      id:"sete", name:"Agence du Bassin de Thau", zone:"Sète, Frontignan & étang de Thau",
+      address:"3 quai de la Résistance, 34200 Sète", phone:"04 67 00 00 01",
+      email:"thau@essensya.fr", hours:"Lun – Sam · 9h–12h / 14h–18h30",
+      lat:43.40, lng:3.70,
+      image:"https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop",
+      cities:["Sète","Frontignan","Balaruc-le-Vieux","Mèze","Poussan","Bouzigues"],
+      description:"Du port de Sète aux villages de l'étang, l'agence du Bassin de Thau accompagne les projets sur un territoire où le foncier est rare et précieux. Sa spécialité : les parcelles compactes parfaitement exploitées par les modèles Nova et Essen."
+    }
+  ],
+
+  trust:[
+    {icon:"shield",title:"Contrat CCMI",text:"Le cadre légal le plus protecteur pour faire construire."},
+    {icon:"ruler",title:"Constructeur-concepteur",text:"Nos modèles sont conçus, chiffrés et construits par nos équipes."},
+    {icon:"pin",title:"Agences locales",text:"Des interlocuteurs proches de votre terrain, du premier jour à la livraison."},
+    {icon:"key",title:"Livraison garantie",text:"Prix et délais convenus contractuellement, garanties décennales incluses."}
+  ],
+
+  /* Page concept */
+  concept:{
+    manifesto:"Le marché de la construction pousse à l'infini des options, des gammes et des suppléments. Nous avons pris le chemin inverse : trois modèles, conçus obsessionnellement, au prix annoncé dès le premier jour. Parce qu'une maison bien pensée n'a pas besoin d'être repensée par chaque client.",
+    figures:[["3","modèles, pas trente"],["100 %","des plans optimisés poste par poste"],["48 h","pour une première réponse d'agence"]],
+    commitments:[
+      {t:"Le prix annoncé est le prix tenu",d:"Chaque modèle est chiffré dans le détail avant sa commercialisation. Le contrat CCMI fige le prix et les délais : pas d'avenant surprise, pas de « supplément indispensable » découvert en cours de route."},
+      {t:"La qualité ne se négocie pas",d:"Matériaux éprouvés, conformité RE2020, mêmes exigences sur chaque chantier. Construire en série maîtrisée, c'est répéter ce qui fonctionne — pas rogner sur ce qui compte."},
+      {t:"Un interlocuteur, pas un standard",d:"De la première visite à la remise des clés, votre agence locale suit votre projet. Elle connaît votre terrain, votre commune et votre chantier."},
+      {t:"Toutes les garanties du CCMI",d:"Garantie de livraison à prix et délais convenus, garantie décennale, biennale, parfait achèvement, dommages-ouvrage. Le cadre le plus protecteur qui existe pour faire construire en France."},
+      {t:"La transparence comme méthode",d:"Ce qui est inclus est listé noir sur blanc sur chaque fiche modèle. Ce qui ne l'est pas aussi. Vous comparez en connaissance de cause."}
+    ]
+  },
+
+  /* Landing pages (data-driven → CPT WordPress "landing") */
+  landings:{
+    "essen-lancement":{
+      title:"Essen à prix de lancement",
+      subtitle:"Pour l'ouverture de nos agences de l'Hérault, le modèle Essen — 92 m², 3 chambres — est proposé à un prix de lancement sur une sélection de terrains.",
+      image:"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1920&auto=format&fit=crop",
+      price:159900, priceNote:"au lieu de 168 900 € — maison seule, hors terrain",
+      bullets:["Offre valable sur les 10 premiers contrats signés","Terrains compatibles déjà sélectionnés par nos agences","Toutes les garanties CCMI incluses","Livraison à prix et délais convenus"],
+      formTitle:"Recevoir le dossier Essen",
+      formText:"Plans, prestations détaillées et terrains compatibles. Réponse sous 48 h."
+    }
+  }
+};
+
+/* ════════════════════════════════════════════════════════════
+   PASSERELLE VITAHOME — d'après FLUX_ANNONCES_PROSPECTS-MAISONS
+   ════════════════════════════════════════════════════════════ */
+const VITAHOME = {
+  base: "https://pro.vitahome.fr/api",
+  /* ⚠ Le token de démo ne doit JAMAIS être exposé côté client en
+     production. Les appels (flux + prospects) passent par le
+     serveur WordPress (cron + cache pour les flux, proxy REST
+     pour les leads). Placeholder ici. */
+  token: "«TOKEN_COTE_SERVEUR»",
+  entityId: 11, /* MAISONS DEMO (onglet ENVOI PROSPECT) */
+  feeds: { terrain: "pack-26", tm: "pack-1860", maison: "pack-3402" },
+  prospectEndpoint: "/ajout-contact.json",
+  citiesEndpoint: "/villes.json", /* pour construction-location-id */
+  /* ORIGIN-ID par type de formulaire (onglet ENVOI PROSPECT) */
+  origins: {
+    model: 52, annonceTerrain: 53, annonceTM: 54, contact: 56,
+    agence: 71, rdv: 74, rappel: 122, landing: 250
+  }
+};
+/* Correspondance slugs modèles Vitahome → collection Essensya */
+const MODEL_SLUG_MAP = { "essen":"essen-01", "alba":"alba-02", "nova":"nova-03" };
+
+const IMG = {
+  land1:"https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1200&auto=format&fit=crop",
+  land2:"https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=80&w=1200&auto=format&fit=crop",
+  land3:"https://images.unsplash.com/photo-1444858291040-58f756a3bdd6?q=80&w=1200&auto=format&fit=crop"
+};
+const media = (id,path,name)=>({ id, name, path, type:"image", slug:id });
+
+/* Annonces de démo AU FORMAT PASSERELLE (onglet DONNEES FLUX) :
+   racine { reference, price, title, description, media[], land{}, house{}|false }
+   land.latitude/longitude = String · postCode = Number (spec Vitahome) */
+const LOCAL_ANNONCES_RAW = [
+  {
+    reference:"ES-1001", price:289000,
+    title:"Terrain + Essen à Montpellier",
+    description:"À l'ouest de Montpellier, dans un quartier résidentiel calme à 15 minutes du centre, ce terrain plat de 420 m² accueille le modèle Essen dans sa configuration 3 chambres. Exposition sud-ouest, viabilisation complète, écoles et commerces à pied.",
+    media:[ media(1,"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop","essen-montpellier") ],
+    land:{ id:9001, price:130000, surface:420, isServicing:"Terrain viabilisé", landConfiguration:"Plat", landType:"Lotissement", landState:"Disponible",
+      city:"Montpellier", cityId:34172, citySlug:"montpellier", postCode:34070, longitude:"3.87", latitude:"43.61", inseeCode:"34172",
+      departmentName:"Hérault", inseeDepartmentCode:"34",
+      agencyId:1, agencySlug:"montpellier", agencyName:"Agence de Montpellier", agencyPhone:"04 67 00 00 00", agencyEmail:"montpellier@essensya.fr",
+      agencyAdresse:"12 av. de la Méditerranée", agencyPostcode:"34000", agencyCity:"Montpellier", media:[] },
+    house:{ id:501, name:"Essen 92", slug:"essen-92", model:"Essen", modelSlug:"essen", area:92, bedroomNumber:3, roomNumber:4,
+      adImage:{ path:"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200&auto=format&fit=crop" }, media:[] }
+  },
+  {
+    reference:"ES-1002", price:145000,
+    title:"Terrain à Sète — la Corniche",
+    description:"Sur les hauteurs de la Corniche, terrain viabilisé de 512 m² avec vue dégagée. Compatible avec l'ensemble des modèles de la collection. Étude d'implantation offerte.",
+    media:[ media(2,IMG.land1,"terrain-sete") ],
+    land:{ id:9002, price:145000, surface:512, isServicing:"Terrain viabilisé", landConfiguration:"Pente douce", landType:"Diffus", landState:"Disponible",
+      city:"Sète", cityId:34301, citySlug:"sete", postCode:34200, longitude:"3.70", latitude:"43.40", inseeCode:"34301",
+      departmentName:"Hérault", inseeDepartmentCode:"34",
+      agencyId:2, agencySlug:"sete", agencyName:"Agence du Bassin de Thau", agencyPhone:"04 67 00 00 01", agencyEmail:"thau@essensya.fr",
+      agencyAdresse:"3 quai de la Résistance", agencyPostcode:"34200", agencyCity:"Sète", media:[] },
+    house:false
+  },
+  {
+    reference:"ES-1003", price:254000,
+    title:"Terrain + Nova à Frontignan",
+    description:"À 10 minutes de la plage, parcelle compacte idéale pour le modèle Nova et sa terrasse couverte. Le premier achat malin sur le bassin de Thau.",
+    media:[ media(3,"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&auto=format&fit=crop","nova-frontignan") ],
+    land:{ id:9003, price:112000, surface:350, isServicing:"Terrain viabilisé", landConfiguration:"Plat", landType:"Lotissement", landState:"Disponible",
+      city:"Frontignan", cityId:34108, citySlug:"frontignan", postCode:34110, longitude:"3.75", latitude:"43.45", inseeCode:"34108",
+      departmentName:"Hérault", inseeDepartmentCode:"34",
+      agencyId:2, agencySlug:"sete", agencyName:"Agence du Bassin de Thau", agencyPhone:"04 67 00 00 01", agencyEmail:"thau@essensya.fr",
+      agencyAdresse:"3 quai de la Résistance", agencyPostcode:"34200", agencyCity:"Sète", media:[] },
+    house:{ id:503, name:"Nova 78", slug:"nova-78", model:"Nova", modelSlug:"nova", area:78, bedroomNumber:2, roomNumber:3,
+      adImage:{ path:"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&auto=format&fit=crop" }, media:[] }
+  },
+  {
+    reference:"ES-1004", price:315000,
+    title:"Terrain + Alba à Gigean",
+    description:"Au pied du massif de la Gardiole, terrain de 480 m² parfaitement orienté pour le modèle Alba : pièces de vie au sud, jardin préservé. Village avec écoles, à 20 minutes de Montpellier et de Sète.",
+    media:[ media(4,"https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1200&auto=format&fit=crop","alba-gigean") ],
+    land:{ id:9004, price:126000, surface:480, isServicing:"Terrain viabilisé", landConfiguration:"Plat", landType:"Lotissement", landState:"Disponible",
+      city:"Gigean", cityId:34113, citySlug:"gigean", postCode:34770, longitude:"3.71", latitude:"43.50", inseeCode:"34113",
+      departmentName:"Hérault", inseeDepartmentCode:"34",
+      agencyId:1, agencySlug:"montpellier", agencyName:"Agence de Montpellier", agencyPhone:"04 67 00 00 00", agencyEmail:"montpellier@essensya.fr",
+      agencyAdresse:"12 av. de la Méditerranée", agencyPostcode:"34000", agencyCity:"Montpellier", media:[] },
+    house:{ id:502, name:"Alba 104", slug:"alba-104", model:"Alba", modelSlug:"alba", area:104, bedroomNumber:4, roomNumber:5,
+      adImage:{ path:"https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1200&auto=format&fit=crop" }, media:[] }
+  },
+  {
+    reference:"ES-1005", price:128000,
+    title:"Terrain à Mèze",
+    description:"À deux pas de l'étang de Thau, terrain de 395 m² dans un secteur pavillonnaire recherché. Compatible Essen et Nova. Viabilisation en bordure.",
+    media:[ media(5,IMG.land2,"terrain-meze") ],
+    land:{ id:9005, price:128000, surface:395, isServicing:"Viabilisation en bordure", landConfiguration:"Plat", landType:"Diffus", landState:"Disponible",
+      city:"Mèze", cityId:34157, citySlug:"meze", postCode:34140, longitude:"3.60", latitude:"43.42", inseeCode:"34157",
+      departmentName:"Hérault", inseeDepartmentCode:"34",
+      agencyId:2, agencySlug:"sete", agencyName:"Agence du Bassin de Thau", agencyPhone:"04 67 00 00 01", agencyEmail:"thau@essensya.fr",
+      agencyAdresse:"3 quai de la Résistance", agencyPostcode:"34200", agencyCity:"Sète", media:[] },
+    house:false
+  },
+  {
+    reference:"ES-1006", price:298000,
+    title:"Terrain + Essen à Fabrègues",
+    description:"Entre vignes et garrigue, offre terrain + Essen dans un lotissement à taille humaine. Dernier lot disponible avec cette orientation.",
+    media:[ media(6,"https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1200&auto=format&fit=crop","essen-fabregues") ],
+    land:{ id:9006, price:138000, surface:410, isServicing:"Terrain viabilisé", landConfiguration:"Plat", landType:"Lotissement", landState:"Disponible",
+      city:"Fabrègues", cityId:34095, citySlug:"fabregues", postCode:34690, longitude:"3.77", latitude:"43.55", inseeCode:"34095",
+      departmentName:"Hérault", inseeDepartmentCode:"34",
+      agencyId:1, agencySlug:"montpellier", agencyName:"Agence de Montpellier", agencyPhone:"04 67 00 00 00", agencyEmail:"montpellier@essensya.fr",
+      agencyAdresse:"12 av. de la Méditerranée", agencyPostcode:"34000", agencyCity:"Montpellier", media:[] },
+    house:{ id:501, name:"Essen 92", slug:"essen-92", model:"Essen", modelSlug:"essen", area:92, bedroomNumber:3, roomNumber:4,
+      adImage:{ path:"https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1200&auto=format&fit=crop" }, media:[] }
+  },
+  {
+    reference:"ES-1007", price:139000,
+    title:"Terrain à Poussan",
+    description:"Terrain plat de 445 m² en sortie de village, exposition sud. Compatible avec tous les modèles de la collection, y compris Alba avec garage intégré.",
+    media:[ media(7,IMG.land3,"terrain-poussan") ],
+    land:{ id:9007, price:139000, surface:445, isServicing:"Terrain viabilisé", landConfiguration:"Plat", landType:"Diffus", landState:"Disponible",
+      city:"Poussan", cityId:34213, citySlug:"poussan", postCode:34560, longitude:"3.67", latitude:"43.49", inseeCode:"34213",
+      departmentName:"Hérault", inseeDepartmentCode:"34",
+      agencyId:2, agencySlug:"sete", agencyName:"Agence du Bassin de Thau", agencyPhone:"04 67 00 00 01", agencyEmail:"thau@essensya.fr",
+      agencyAdresse:"3 quai de la Résistance", agencyPostcode:"34200", agencyCity:"Sète", media:[] },
+    house:false
+  },
+  {
+    reference:"ES-1008", price:342000,
+    title:"Terrain + Alba à Balaruc-le-Vieux",
+    description:"Belle parcelle de 520 m² dominant le bassin, configurée pour le modèle Alba 4 chambres. Vue, calme et commodités du village.",
+    media:[ media(8,"https://images.unsplash.com/photo-1600585152915-d208bec867a1?q=80&w=1200&auto=format&fit=crop","alba-balaruc") ],
+    land:{ id:9008, price:152500, surface:520, isServicing:"Terrain viabilisé", landConfiguration:"Pente douce", landType:"Diffus", landState:"Disponible",
+      city:"Balaruc-le-Vieux", cityId:34024, citySlug:"balaruc-le-vieux", postCode:34540, longitude:"3.68", latitude:"43.44", inseeCode:"34024",
+      departmentName:"Hérault", inseeDepartmentCode:"34",
+      agencyId:2, agencySlug:"sete", agencyName:"Agence du Bassin de Thau", agencyPhone:"04 67 00 00 01", agencyEmail:"thau@essensya.fr",
+      agencyAdresse:"3 quai de la Résistance", agencyPostcode:"34200", agencyCity:"Sète", media:[] },
+    house:{ id:502, name:"Alba 104", slug:"alba-104", model:"Alba", modelSlug:"alba", area:104, bedroomNumber:4, roomNumber:5,
+      adImage:{ path:"https://images.unsplash.com/photo-1600585152915-d208bec867a1?q=80&w=1200&auto=format&fit=crop" }, media:[] }
+  }
+];
+
+/* ════ ADAPTATEUR ANNONCES : format Vitahome → contrat interne ════ */
+const AnnoncesAdapter = {
+  /* map(raw) : une annonce Vitahome → objet normalisé pour l'UI.
+     Points d'attention issus du spec :
+     — house === false pour un terrain seul
+     — land.latitude / longitude sont des Strings → parseFloat
+     — land.postCode est un Number → String pour l'affichage
+     — price racine = prix terrain seul, ou addition T+M            */
+  map(raw){
+    const land = raw.land || {};
+    const house = raw.house && raw.house !== false ? raw.house : null;
+    const mainMedia = (raw.media && raw.media[0]?.path)
+      || (house && house.adImage?.path)
+      || (land.media && land.media[0]?.path) || IMG.land1;
+    const gallery = [
+      ...(raw.media || []).map(x=>x.path),
+      ...(house?.media || []).map(x=>x.path),
+      ...(land.media || []).map(x=>x.path)
+    ].filter(Boolean);
+    return {
+      id: raw.reference,                    /* la référence sert d'id d'URL */
+      ref: raw.reference,
+      type: house ? "terrain-maison" : "terrain",
+      title: raw.title || null,
+      description: raw.description || house?.description || "",
+      price: raw.price,
+      landPrice: land.price ?? null,
+      landSurface: land.surface ?? null,
+      servicing: land.isServicing || null,
+      landConfiguration: land.landConfiguration || null,
+      landType: land.landType || null,
+      city: land.city,
+      cityId: land.cityId ?? null,          /* → construction-location-id */
+      insee: land.inseeCode || null,        /* → construction-location-insee */
+      zip: String(land.postCode ?? ""),
+      dept: land.departmentName || "",
+      deptCode: land.inseeDepartmentCode || "",
+      lat: parseFloat(land.latitude),
+      lng: parseFloat(land.longitude),
+      houseSurface: house?.area ?? null,
+      bedrooms: house?.bedroomNumber ?? null,
+      rooms: house?.roomNumber ?? null,
+      houseName: house?.name || null,
+      modelId: house ? (MODEL_SLUG_MAP[house.modelSlug] || null) : null,
+      planImage: house?.groundFloorImage?.path || null,
+      agency: {
+        slug: land.agencySlug, name: land.agencyName,
+        phone: land.agencyPhone, email: land.agencyEmail,
+        address: `${land.agencyAdresse || ""}, ${land.agencyPostcode || ""} ${land.agencyCity || ""}`.replace(/^, /,"")
+      },
+      image: mainMedia,
+      gallery,
+      raw /* conservé pour debug / champs additionnels (entityMetadatas…) */
+    };
+  },
+  mapAll(list){ return (list || []).map(r=>this.map(r)); },
+
+  /* fetchLive() : appelle les flux réels. En PROD WORDPRESS ce code
+     vit CÔTÉ SERVEUR (cron toutes les N heures + cache transient),
+     le front consomme l'API REST WP — le token n'atteint jamais le
+     navigateur. Ici : tentative directe, repli local si CORS/réseau. */
+  async fetchLive(){
+    try{
+      const urls = [VITAHOME.feeds.terrain, VITAHOME.feeds.tm]
+        .map(p=>`${VITAHOME.base}/${p}/annonces.json?token=${VITAHOME.token}`);
+      const res = await Promise.all(urls.map(u=>fetch(u).then(r=>r.json())));
+      const items = res.flat();
+      return items.length ? this.mapAll(items) : null;
+    }catch(e){ return null; /* repli sur les données de démo */ }
+  }
+};
+
+/* Contrat interne : les templates ne consomment QUE ce format */
+let ANNONCES = AnnoncesAdapter.mapAll(LOCAL_ANNONCES_RAW);
+AnnoncesAdapter.fetchLive().then(live=>{
+  if (live){ ANNONCES = live; if (location.hash.startsWith("#/annonces")) route(); }
+});
+
+/* ════ ADAPTATEUR PROSPECTS : POST /api/ajout-contact.json ════ */
+const ProspectsAdapter = {
+  /* Construit le payload conforme à l'onglet ENVOI PROSPECT.
+     Champs "IMPORTANT" du doc :
+     — construction-location-id : ID Vitahome de la commune (villes.json)
+     — construction-location-insee : code INSEE
+     — history-ad-content : contenu de l'annonce (type, surface…)
+     — history-link : lien vers l'annonce sur le site
+     — history-content : message du prospect                          */
+  buildPayload(originKey, fields, ctx = {}){
+    return {
+      "entity-id": VITAHOME.entityId,
+      "origin-id": VITAHOME.origins[originKey],
+      ...fields, /* name, phone, email… — noms exacts : doc pro.vitahome.fr/doc/api */
+      "construction-location-id": ctx.cityId ?? null,
+      "construction-location-insee": ctx.insee ?? null,
+      "history-ad-content": ctx.adContent ?? null,
+      "history-link": ctx.link ?? null,
+      "history-content": fields.message ?? null
+    };
+  },
+  async send(payload){
+    /* PROD : POST vers le proxy WordPress (ex. /wp-json/essensya/v1/lead)
+       qui ajoute le token et relaie vers VITAHOME.prospectEndpoint.
+       DÉMO : payload loggé pour validation du mapping. */
+    console.info("[Vitahome → ajout-contact.json]", payload);
+    return { ok:true };
+  }
+};
+
+/* ════════ HELPERS ════════ */
+const fmtPrice = n => new Intl.NumberFormat("fr-FR").format(n) + " €";
+const byId = id => document.getElementById(id);
+const modelUrl = m => `#/modele/${m.id}`;
+const annonceUrl = a => `#/annonce/${a.id}`;
+const agencyUrl = g => `#/agence/${g.id}`;
+const modelById = id => ESSENSYA_DATA.models.find(m=>m.id===id);
+
+const icons = {
+  shield:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6l7-3z"/></svg>',
+  ruler:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-width="1.4"><rect x="3" y="9" width="18" height="6"/><path d="M7 9v3M11 9v3M15 9v3M19 9v3"/></svg>',
+  pin:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M12 21s-6-5.2-6-10a6 6 0 1112 0c0 4.8-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>',
+  key:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-width="1.4"><circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M15 12v2"/></svg>',
+  surface:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.4"><rect x="4" y="4" width="16" height="16"/><path d="M4 9h16M9 4v16"/></svg>',
+  bed:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M3 18v-7h18v7M3 11V6M3 15h18"/><path d="M6 11V9h5v2"/></svg>',
+  land:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M4 20l4-12 4 6 3-4 5 10z"/></svg>',
+  loc:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M12 21s-6-5.2-6-10a6 6 0 1112 0c0 4.8-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>',
+  price:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.4"><circle cx="12" cy="12" r="8"/><path d="M9 12h5M9 15h4M14 8l-3 4"/></svg>'
+};
+
+const picto = (icon,value,label)=>`<div class="c-picto">${icons[icon]}<span><strong>${value}</strong><small>${label}</small></span></div>`;
+
+function renderPlate(m,{withName=true}={}){
+  return `
+    ${withName ? `<span class="c-plate__name">${m.name} — ${m.index}</span>` : ""}
+    <span class="c-plate__spec">Surface <strong>${m.surface} m²</strong></span>
+    <span class="c-plate__spec">Chambres <strong>${m.bedrooms}</strong></span>
+    <span class="c-plate__spec">À partir de <strong>${fmtPrice(m.priceFrom)}</strong></span>`;
+}
+
+function renderModelRow(m){
+  return `
+  <article class="c-model-row">
+    <div class="c-model-row__media" data-reveal>
+      <span class="c-model-row__num" aria-hidden="true">${m.index}</span>
+      <a href="${modelUrl(m)}" class="c-reveal-img" aria-label="Découvrir ${m.name}"><img src="${m.image}" alt="${m.alt}" loading="lazy"></a>
+    </div>
+    <div class="c-model-row__body">
+      <span class="c-label c-label--accent" data-reveal>Modèle ${m.index}</span>
+      <div class="c-model-row__name" data-reveal>${m.name}</div>
+      <p class="c-model-row__tagline" data-reveal>${m.tagline}</p>
+      <div class="c-plate" data-reveal>${renderPlate(m,{withName:false})}</div>
+      <a href="${modelUrl(m)}" class="c-link" data-reveal>Découvrir ${m.name} →</a>
+    </div>
+  </article>`;
+}
+
+const annonceTitle = a => a.type==="terrain" ? `Terrain à ${a.city}` : `Terrain + ${modelById(a.modelId)?.name || "maison"} à ${a.city}`;
+
+function renderAnnonceCard(a,{reveal=true}={}){
+  const specs = a.type==="terrain"
+    ? `<span>Terrain ${a.landSurface} m²</span><span>Tous modèles</span>`
+    : `<span>Terrain ${a.landSurface} m²</span><span>Maison ${a.houseSurface} m²</span><span>${a.bedrooms} ch.</span>`;
+  return `
+  <a class="c-annonce" href="${annonceUrl(a)}" data-annonce="${a.id}" ${reveal?"data-reveal":""}>
+    <div class="c-annonce__media">
+      <span class="c-tag ${a.type==="terrain"?"c-tag--terrain":""}">${a.type==="terrain"?"Terrain":"Terrain + maison"}</span>
+      <img src="${a.image}" alt="${annonceTitle(a)}" loading="lazy">
+    </div>
+    <div class="c-annonce__body">
+      <span class="c-annonce__loc">${a.city} (${a.zip.slice(0,2)})</span>
+      <div class="c-annonce__title">${annonceTitle(a)}</div>
+      <div class="c-annonce__specs">${specs}</div>
+      <div class="c-annonce__price"><small>à partir de </small><strong>${fmtPrice(a.price)}</strong></div>
+    </div>
+  </a>`;
+}
+
+function renderAgencyCard(g,{reveal=true}={}){
+  return `
+  <a class="c-agency-card" href="${agencyUrl(g)}" ${reveal?"data-reveal":""}>
+    <div class="c-agency-card__media"><img src="${g.image}" alt="${g.name}" loading="lazy"></div>
+    <div class="c-agency-card__body">
+      <span class="c-agency-card__zone">${g.zone}</span>
+      <div class="c-agency-card__name">${g.name}</div>
+      <div class="c-agency-card__meta">${g.address}<br>${g.phone} · ${g.hours}</div>
+    </div>
+  </a>`;
+}
+
+const renderPhilosophy = items => items.map(i=>`<div class="s-philo__item" data-reveal><span class="s-philo__num">${i.num}</span><h3>${i.title}</h3><p>${i.text}</p></div>`).join("");
+const renderSteps = items => items.map(i=>`<div class="s-steps__item" data-reveal><span class="s-steps__num">${i.num}</span><h3>${i.title}</h3><p>${i.text}</p></div>`).join("");
+const renderTrust = items => items.map(t=>`<div class="s-trust__item" data-reveal>${icons[t.icon]||""}<h3>${t.title}</h3><p>${t.p||t.text}</p></div>`).join("");
+
+const formFields = (prefix)=>`
+  <div class="c-field"><label for="${prefix}-name">Prénom &amp; nom</label><input type="text" id="${prefix}-name" required></div>
+  <div class="c-field"><label for="${prefix}-phone">Téléphone</label><input type="tel" id="${prefix}-phone" required></div>
+  <div class="c-field"><label for="${prefix}-email">E-mail</label><input type="email" id="${prefix}-email"></div>`;
+
+/* ——— TEMPLATES DE PAGES ——— */
+
+function renderModelPage(m){
+  const next = ESSENSYA_DATA.models[(ESSENSYA_DATA.models.indexOf(m)+1)%ESSENSYA_DATA.models.length];
+  const opps = ANNONCES.filter(a=>a.modelId===m.id || a.type==="terrain").slice(0,3);
+  const agency = ESSENSYA_DATA.agencies[0];
+  const [g1,g2,g3] = m.gallery;
+  return `
+  <section class="m-hero">
+    <div class="m-hero__bg"><img src="${m.heroImage}" alt="${m.alt}"></div>
+    <div class="container">
+      <nav class="c-breadcrumb" aria-label="Fil d'ariane"><a href="#/">Accueil</a><span class="sep">/</span><a href="#/maisons">Maisons</a><span class="sep">/</span><span>${m.name}</span></nav>
+      <span class="c-label" style="color:var(--sable)">Modèle ${m.index}</span>
+      <h1>${m.name}</h1>
+      <div class="c-plate">${renderPlate(m,{withName:false})}</div>
+    </div>
+  </section>
+  <section class="m-quote"><div class="container">
+    <span class="c-label c-label--accent" data-reveal>La philosophie du modèle</span>
+    <p data-reveal>${m.philosophy}</p>
+  </div></section>
+  <section class="m-gallery"><div class="container">
+    <figure class="m-gallery__main"><div class="c-reveal-img"><img src="${g1.src}" alt="${g1.alt}" loading="lazy"></div><figcaption class="caption" data-reveal>${g1.caption}</figcaption></figure>
+    <div class="m-gallery__duo">
+      <figure><div class="c-reveal-img"><img src="${g2.src}" alt="${g2.alt}" loading="lazy"></div><figcaption class="caption" data-reveal>${g2.caption}</figcaption></figure>
+      <figure><div class="c-reveal-img"><img src="${g3.src}" alt="${g3.alt}" loading="lazy"></div><figcaption class="caption" data-reveal>${g3.caption}</figcaption></figure>
+    </div>
+  </div></section>
+  <section class="m-arch"><div class="container m-arch__grid">
+    <div class="c-reveal-img"><img src="${m.archImage}" alt="Détail architectural du modèle ${m.name}" loading="lazy"></div>
+    <div>
+      <span class="c-label" data-reveal>Architecture</span>
+      <h2 data-reveal style="margin-top:var(--s-2)">Un volume précis</h2>
+      <p data-reveal>${m.archText}</p>
+      <ul class="m-arch__materials" data-reveal>${m.materials.map(([k,v])=>`<li><span>${k}</span><span>${v}</span></li>`).join("")}</ul>
+    </div>
+  </div></section>
+  <section class="m-plan"><div class="container">
+    <div class="c-section-head" data-reveal><span class="c-label c-label--accent">Le plan</span><h2>${m.surface} m² qui travaillent</h2></div>
+    <div class="m-plan__grid">
+      <div class="c-reveal-img"><img src="${m.planImage}" alt="Plan architectural du modèle ${m.name}" loading="lazy"></div>
+      <ul class="m-plan__rooms" data-reveal>${m.rooms.map(([k,v])=>`<li><span>${k}</span><span>${v}</span></li>`).join("")}</ul>
+    </div>
+  </div></section>
+  <section class="m-features"><div class="container">
+    <div class="c-section-head" data-reveal><span class="c-label c-label--accent">Caractéristiques</span><h2>Ce qui fait ${m.name}</h2></div>
+    <div class="m-features__grid">${m.features.map(x=>`<div class="m-features__item" data-reveal><b>${x.t}</b>${x.d}</div>`).join("")}</div>
+  </div></section>
+  <section class="m-price"><div class="container m-price__grid">
+    <div>
+      <span class="c-label c-label--accent" data-reveal>Le prix</span>
+      <h2 data-reveal style="margin-top:var(--s-2)">Un prix annoncé,<br>un prix tenu</h2>
+      <div class="m-price__amount" data-reveal>${fmtPrice(m.priceFrom)}<small>Maison seule, hors terrain — à partir de</small></div>
+      <p class="m-price__note" data-reveal>Prix indicatif selon terrain et département. Chiffrage précis et définitif dès le premier rendez-vous.</p>
+    </div>
+    <div>
+      <span class="c-label" data-reveal style="display:block;margin-bottom:var(--s-2)">Inclus dans le prix</span>
+      <ul class="m-price__included">${m.included.map(i=>`<li data-reveal>${i}</li>`).join("")}</ul>
+    </div>
+  </div></section>
+  <section class="m-opps"><div class="container">
+    <div class="c-section-head" data-reveal><span class="c-label c-label--accent">Construire ${m.name}</span><h2>Opportunités compatibles</h2></div>
+    <div class="m-opps__grid">${opps.map(a=>renderAnnonceCard(a)).join("")}</div>
+    <div class="m-agency" data-reveal>
+      <div>
+        <span class="c-label c-label--accent">Votre agence</span>
+        <div class="m-agency__name">${agency.name}</div>
+        <div class="m-agency__meta">${agency.address} · ${agency.phone}</div>
+      </div>
+      <a href="#/contact" class="c-btn c-btn--solid">Parler de mon projet <span class="arrow">→</span></a>
+    </div>
+  </div></section>
+  <section class="m-next"><div class="container">
+    <a href="${modelUrl(next)}">
+      <span><span class="m-next__label">Modèle suivant — ${next.index}</span><div class="m-next__name">${next.name}</div></span>
+      <span class="m-next__name" aria-hidden="true">→</span>
+    </a>
+  </div></section>`;
+}
+
+function renderModelsListingPage(){
+  return `
+  <section class="p-head"><div class="container">
+    <nav class="c-breadcrumb"><a href="#/">Accueil</a><span class="sep">/</span><span>Maisons</span></nav>
+    <h1>La collection</h1>
+    <p>Trois modèles, pas trente. Chacun conçu, optimisé et chiffré dans le détail — pour que le choix soit simple et le prix maîtrisé.</p>
+  </div></section>
+  <section class="s-collection" style="padding-top:var(--s-5)"><div class="container">
+    <div class="s-collection__list">${ESSENSYA_DATA.models.map(renderModelRow).join("")}</div>
+  </div></section>`;
+}
+
+/* Listing annonces + carte */
+const MAP_BOUNDS = {latMin:43.35,latMax:43.70,lngMin:3.50,lngMax:4.00};
+const project = a => ({x:(a.lng-MAP_BOUNDS.lngMin)/(MAP_BOUNDS.lngMax-MAP_BOUNDS.lngMin)*100, y:(MAP_BOUNDS.latMax-a.lat)/(MAP_BOUNDS.latMax-MAP_BOUNDS.latMin)*100});
+const listingState = {type:"all",city:"all",bedrooms:"all",maxPrice:"all",modelId:"all",sort:"recent",syncMap:true,vb:{x:0,y:0,w:100,h:100},all:[]};
+
+function renderListingPage(){
+  const cities = [...new Set(ANNONCES.map(a=>a.city))].sort();
+  return `
+  <section class="p-head"><div class="container">
+    <nav class="c-breadcrumb"><a href="#/">Accueil</a><span class="sep">/</span><span>Terrains &amp; opportunités</span></nav>
+    <h1>Terrains &amp; maisons</h1>
+    <p>Des terrains sélectionnés par nos agences, seuls ou associés à un modèle de la collection. Choisissez la maison, nous avons déjà repéré le lieu.</p>
+  </div></section>
+  <div class="l-filters"><div class="container">
+    <div class="l-filter"><label for="fl-type">Type</label><select id="fl-type" data-filter="type"><option value="all">Tout</option><option value="terrain-maison">Terrain + maison</option><option value="terrain">Terrain seul</option></select></div>
+    <div class="l-filter"><label for="fl-city">Localité</label><select id="fl-city" data-filter="city"><option value="all">Toutes</option>${cities.map(c=>`<option value="${c}">${c}</option>`).join("")}</select></div>
+    <div class="l-filter"><label for="fl-bed">Chambres</label><select id="fl-bed" data-filter="bedrooms"><option value="all">Indifférent</option><option value="2">2+</option><option value="3">3+</option><option value="4">4+</option></select></div>
+    <div class="l-filter"><label for="fl-price">Budget max</label><select id="fl-price" data-filter="maxPrice"><option value="all">Indifférent</option><option value="150000">150 000 €</option><option value="260000">260 000 €</option><option value="300000">300 000 €</option><option value="350000">350 000 €</option></select></div>
+    <div class="l-filter"><label for="fl-model">Modèle</label><select id="fl-model" data-filter="modelId"><option value="all">Tous</option>${ESSENSYA_DATA.models.map(m=>`<option value="${m.id}">${m.name}</option>`).join("")}</select></div>
+    <div class="l-filter"><label for="fl-sort">Trier</label><select id="fl-sort" data-filter="sort"><option value="recent">Plus récentes</option><option value="price-asc">Prix croissant</option><option value="price-desc">Prix décroissant</option></select></div>
+    <button class="l-filters__reset" id="flReset">Réinitialiser</button>
+    <div class="l-view-toggle" role="group" aria-label="Affichage"><button id="vtList" class="is-on">Liste</button><button id="vtMap">Carte</button></div>
+    <span class="l-filters__count" id="flCount"></span>
+  </div></div>
+  <div class="l-body"><div class="container">
+    <div class="l-results" id="lResults"></div>
+    <div class="l-map">
+      <div class="l-map__frame">
+        <svg id="lMapSvg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Carte des opportunités">
+          <rect x="-50" y="-50" width="200" height="200" fill="#E8E3D9"/>
+          <path d="M-10 78 Q 20 70 45 80 T 110 74 L 110 130 L -10 130 Z" fill="#D8D2C4" opacity=".8"/>
+          <path d="M28 60 q 10 -6 22 -2 q 8 3 12 -2" fill="none" stroke="#CFC9BD" stroke-width=".6"/>
+          <path d="M10 30 q 18 8 30 2 q 14 -7 28 2" fill="none" stroke="#CFC9BD" stroke-width=".6"/>
+          <g id="lMapPins"></g>
+        </svg>
+        <div class="l-map__controls"><button id="mapZoomIn" aria-label="Zoomer">+</button><button id="mapZoomOut" aria-label="Dézoomer">−</button></div>
+      </div>
+      <label class="l-map__sync"><input type="checkbox" id="mapSync" checked> Rechercher quand je déplace la carte</label>
+      <p class="l-map__hint">Prototype — la carte finale (Leaflet / Google Maps) reprendra ce pattern : zoom → résultats limités à la zone visible.</p>
+    </div>
+  </div></div>`;
+}
+
+function applyListingFilters(){
+  const s = listingState;
+  let items = [...s.all];
+  if (s.type!=="all") items = items.filter(a=>a.type===s.type);
+  if (s.city!=="all") items = items.filter(a=>a.city===s.city);
+  if (s.bedrooms!=="all") items = items.filter(a=>(a.bedrooms||0)>=+s.bedrooms);
+  if (s.maxPrice!=="all") items = items.filter(a=>a.price<=+s.maxPrice);
+  if (s.modelId!=="all") items = items.filter(a=>a.modelId===s.modelId || a.type==="terrain");
+  if (s.sort==="price-asc") items.sort((a,b)=>a.price-b.price);
+  if (s.sort==="price-desc") items.sort((a,b)=>b.price-a.price);
+  const inView = a=>{const p=project(a),vb=s.vb;return p.x>=vb.x&&p.x<=vb.x+vb.w&&p.y>=vb.y&&p.y<=vb.y+vb.h;};
+  const visible = s.syncMap ? items.filter(inView) : items;
+  byId("lResults").innerHTML = visible.length
+    ? visible.map(a=>renderAnnonceCard(a,{reveal:false})).join("")
+    : `<div class="l-results__empty">Aucune opportunité dans cette zone avec ces critères.<br>Élargissez la carte ou réinitialisez les filtres.</div>`;
+  byId("flCount").textContent = `${visible.length} opportunité${visible.length>1?"s":""}`;
+  byId("lMapPins").innerHTML = items.map(a=>{
+    const p = project(a);
+    return `<g class="map-pin ${inView(a)?"":"is-out"}" data-pin="${a.id}" tabindex="0" role="link" aria-label="${annonceTitle(a)}"><circle cx="${p.x}" cy="${p.y}" r="3.4"/><text x="${p.x}" y="${p.y+1.1}">${a.type==="terrain"?"T":"M"}</text></g>`;
+  }).join("");
+  byId("lMapPins").querySelectorAll(".map-pin").forEach(pin=>{
+    const id = pin.dataset.pin;
+    pin.addEventListener("mouseenter",()=>document.querySelector(`[data-annonce="${id}"]`)?.classList.add("is-hl"));
+    pin.addEventListener("mouseleave",()=>document.querySelector(`[data-annonce="${id}"]`)?.classList.remove("is-hl"));
+    pin.addEventListener("click",()=>{location.hash=`#/annonce/${id}`;});
+    pin.addEventListener("keydown",e=>{if(e.key==="Enter")location.hash=`#/annonce/${id}`;});
+  });
+  byId("lResults").querySelectorAll("[data-annonce]").forEach(card=>{
+    const id = card.dataset.annonce;
+    card.addEventListener("mouseenter",()=>document.querySelector(`[data-pin="${id}"]`)?.classList.add("is-hl"));
+    card.addEventListener("mouseleave",()=>document.querySelector(`[data-pin="${id}"]`)?.classList.remove("is-hl"));
+  });
+  /* dataLayer.push({event:"search_filter",...s}) — GTM ready */
+}
+
+function mountListing(){
+  listingState.vb = {x:0,y:0,w:100,h:100};
+  listingState.all = ANNONCES; /* déjà normalisé par AnnoncesAdapter.map() */
+  applyListingFilters();
+  document.querySelectorAll("[data-filter]").forEach(sel=>{
+    sel.value = listingState[sel.dataset.filter];
+    sel.addEventListener("change",()=>{listingState[sel.dataset.filter]=sel.value;applyListingFilters();});
+  });
+  byId("flReset").addEventListener("click",()=>{
+    Object.assign(listingState,{type:"all",city:"all",bedrooms:"all",maxPrice:"all",modelId:"all",sort:"recent",vb:{x:0,y:0,w:100,h:100}});
+    document.querySelectorAll("[data-filter]").forEach(sel=>sel.value=listingState[sel.dataset.filter]);
+    updateVB();applyListingFilters();
+  });
+  const svg = byId("lMapSvg");
+  const updateVB = ()=>{const v=listingState.vb;svg.setAttribute("viewBox",`${v.x} ${v.y} ${v.w} ${v.h}`);};
+  const zoom = f=>{
+    const v=listingState.vb,cx=v.x+v.w/2,cy=v.y+v.h/2;
+    const w=Math.min(100,Math.max(24,v.w*f));
+    listingState.vb={x:cx-w/2,y:cy-w/2,w,h:w};
+    updateVB();applyListingFilters();
+  };
+  byId("mapZoomIn").addEventListener("click",()=>zoom(.72));
+  byId("mapZoomOut").addEventListener("click",()=>zoom(1/.72));
+  byId("mapSync").addEventListener("change",e=>{listingState.syncMap=e.target.checked;applyListingFilters();});
+  byId("mapSync").checked = listingState.syncMap;
+  byId("vtList")?.addEventListener("click",()=>{document.body.classList.remove("map-mode");byId("vtList").classList.add("is-on");byId("vtMap").classList.remove("is-on");});
+  byId("vtMap")?.addEventListener("click",()=>{document.body.classList.add("map-mode");byId("vtMap").classList.add("is-on");byId("vtList").classList.remove("is-on");});
+}
+
+function renderAnnoncePage(a){
+  const m = a.modelId ? modelById(a.modelId) : null;
+  /* Agence : données du FLUX (land.agency*) ; la fiche éditoriale WP
+     est retrouvée par slug pour le lien */
+  const agency = a.agency;
+  const agencyPage = ESSENSYA_DATA.agencies.find(x=>x.id===a.agency.slug);
+  const isTM = a.type==="terrain-maison";
+  const gallery = a.gallery.length >= 3 ? a.gallery.slice(0,3)
+    : isTM && m ? [a.image,m.gallery[0].src,m.gallery[1].src]
+    : [a.image,IMG.land2,IMG.land3];
+  const pictos = [
+    isTM ? picto("surface",a.houseSurface+" m²","Maison") : "",
+    isTM ? picto("bed",a.bedrooms,"Chambres") : "",
+    picto("land",a.landSurface+" m²","Terrain"),
+    picto("loc",`${a.city} (${a.zip.slice(0,2)})`,"Localisation"),
+    picto("price",fmtPrice(a.price),"À partir de")
+  ].join("");
+  return `
+  <section class="a-head"><div class="container">
+    <nav class="c-breadcrumb" aria-label="Fil d'ariane"><a href="#/">Accueil</a><span class="sep">/</span><a href="#/annonces">Terrains &amp; opportunités</a><span class="sep">/</span><span>${a.city}</span></nav>
+    <div class="a-head__top">
+      <div>
+        <span class="c-tag ${a.type==="terrain"?"c-tag--terrain":""}">${a.type==="terrain"?"Terrain":"Terrain + maison"}</span>
+        <h1 style="margin-top:var(--s-2)">${annonceTitle(a)}</h1>
+      </div>
+      <div class="a-head__price">${fmtPrice(a.price)}<small>à partir de — réf. ${a.ref}</small></div>
+    </div>
+    <div class="c-pictos">${pictos}</div>
+  </div></section>
+  <section class="a-gallery"><div class="container">
+    <div class="c-reveal-img"><img src="${gallery[0]}" alt="${annonceTitle(a)}" loading="lazy"></div>
+    <div class="a-gallery__side">
+      <div class="c-reveal-img"><img src="${gallery[1]}" alt="Visuel complémentaire" loading="lazy"></div>
+      <div class="c-reveal-img"><img src="${gallery[2]}" alt="Visuel complémentaire" loading="lazy"></div>
+    </div>
+  </div></section>
+  <section class="a-body"><div class="container">
+    <div class="a-content">
+      <h2>L'opportunité</h2>
+      <p>${a.description}</p>
+      <ul class="a-land">
+        <li><span>Terrain</span><span>${a.landSurface} m²${a.servicing ? " · " + a.servicing.toLowerCase() : ""}</span></li>
+        ${a.landConfiguration ? `<li><span>Configuration</span><span>${a.landConfiguration}${a.landType ? " · " + a.landType : ""}</span></li>` : ""}
+        <li><span>Secteur</span><span>${a.city} (${a.zip}) — ${a.dept}</span></li>
+        ${isTM ? `<li><span>Maison</span><span>${m ? m.name : a.houseName} — ${a.houseSurface} m², ${a.bedrooms} chambres</span></li>` : `<li><span>Compatibilité</span><span>Tous les modèles de la collection</span></li>`}
+        ${isTM && a.landPrice ? `<li><span>Dont terrain</span><span>${fmtPrice(a.landPrice)}</span></li>` : ""}
+        <li><span>Prix</span><span>à partir de ${fmtPrice(a.price)} ${isTM ? "(terrain + maison, hors frais annexes)" : "(terrain seul)"}</span></li>
+      </ul>
+      ${m ? `
+      <a class="a-model" href="${modelUrl(m)}">
+        <div class="a-model__media"><img src="${m.image}" alt="${m.alt}" loading="lazy"></div>
+        <div class="a-model__body">
+          <span class="c-label c-label--accent">Le modèle associé</span>
+          <div class="a-model__name">${m.name} — ${m.index}</div>
+          <div class="a-model__meta">${m.surface} m² · ${m.bedrooms} chambres · à partir de ${fmtPrice(m.priceFrom)}</div>
+          <span class="c-link">Découvrir ${m.name} →</span>
+        </div>
+      </a>` : `
+      <div style="margin-top:var(--s-5)">
+        <span class="c-label c-label--accent" style="display:block;margin-bottom:var(--s-2)">Quelle maison sur ce terrain ?</span>
+        <p class="u-muted u-measure">Ce terrain est compatible avec l'ensemble de la collection. Votre agence réalise gratuitement l'étude d'implantation du modèle de votre choix.</p>
+        <a href="#/maisons" class="c-link" style="margin-top:var(--s-2)">Voir les modèles →</a>
+      </div>`}
+    </div>
+    <aside class="a-aside">
+      <div class="a-aside__card">
+        <span class="a-aside__ref">Réf. ${a.ref}</span>
+        <h3>Intéressé par cette opportunité&nbsp;?</h3>
+        <p>Une réponse de votre agence sous 48 h. Visite du terrain et étude d'implantation gratuites.</p>
+        <form class="c-form c-form--dark" id="annonceForm" novalidate>
+          ${formFields("af")}
+          <div class="c-form__actions"><button type="submit" class="c-btn c-btn--light" style="width:100%;justify-content:center">Être recontacté <span class="arrow">→</span></button></div>
+          <p class="c-form__note">Vos données ne servent qu'à vous recontacter. Jamais revendues.</p>
+          <p class="c-form__success" role="status">Merci — ${agency.name} vous recontacte sous 48 h au sujet de la réf. ${a.ref}.</p>
+        </form>
+        <div class="a-aside__agency">${agencyPage ? `<a href="${agencyUrl(agencyPage)}">${agency.name}</a>` : agency.name}<br>${agency.address}<br>${agency.phone}</div>
+      </div>
+    </aside>
+  </div></section>`;
+}
+
+/* ——— AGENCES ——— */
+function renderAgenciesPage(){
+  return `
+  <section class="p-head"><div class="container">
+    <nav class="c-breadcrumb"><a href="#/">Accueil</a><span class="sep">/</span><span>Nos agences</span></nav>
+    <h1>Nos agences</h1>
+    <p>Des équipes locales qui connaissent le terrain — au sens propre. Chaque agence sélectionne les parcelles de son secteur et suit votre projet de la première visite à la remise des clés.</p>
+  </div></section>
+  <section style="padding-top:var(--s-4)"><div class="container">
+    <div class="g-grid">${ESSENSYA_DATA.agencies.map(g=>renderAgencyCard(g)).join("")}</div>
+  </div></section>`;
+}
+
+function renderAgencyPage(g){
+  const annonces = ANNONCES.filter(a=>a.agency.slug===g.id).slice(0,3);
+  return `
+  <section class="g-hero">
+    <div class="g-hero__bg"><img src="${g.image}" alt="${g.name}"></div>
+    <div class="container">
+      <nav class="c-breadcrumb"><a href="#/">Accueil</a><span class="sep">/</span><a href="#/agences">Nos agences</a><span class="sep">/</span><span>${g.zone}</span></nav>
+      <span class="c-label" style="color:var(--sable)">${g.zone}</span>
+      <h1>${g.name}</h1>
+    </div>
+  </section>
+  <section class="g-body"><div class="container">
+    <div>
+      <h2 style="font-size:clamp(1.4rem,2.6vw,2rem)" data-reveal>Votre interlocuteur local</h2>
+      <p class="u-muted" style="margin-top:var(--s-2);max-width:38em" data-reveal>${g.description}</p>
+      <ul class="g-info" data-reveal>
+        <li><span>Adresse</span><span>${g.address}</span></li>
+        <li><span>Téléphone</span><span>${g.phone}</span></li>
+        <li><span>E-mail</span><span>${g.email}</span></li>
+        <li><span>Horaires</span><span>${g.hours}</span></li>
+      </ul>
+      <div data-reveal>
+        <span class="c-label c-label--accent" style="display:block;margin:var(--s-4) 0 0">Communes couvertes</span>
+        <div class="g-cities">${g.cities.map(c=>`<span>${c}</span>`).join("")}</div>
+      </div>
+    </div>
+    <aside class="a-aside">
+      <div class="a-aside__card">
+        <h3>Contacter l'agence</h3>
+        <p>Un projet dans le secteur ${g.zone} ? Réponse sous 48 h.</p>
+        <form class="c-form c-form--dark" id="agencyForm" novalidate>
+          ${formFields("gf")}
+          <div class="c-form__actions"><button type="submit" class="c-btn c-btn--light" style="width:100%;justify-content:center">Être recontacté <span class="arrow">→</span></button></div>
+          <p class="c-form__note">Vos données ne servent qu'à vous recontacter. Jamais revendues.</p>
+          <p class="c-form__success" role="status">Merci — ${g.name} vous recontacte sous 48 h.</p>
+        </form>
+      </div>
+    </aside>
+  </div></section>
+  <section class="g-annonces"><div class="container">
+    <div class="c-section-head" data-reveal><span class="c-label c-label--accent">En ce moment dans le secteur</span><h2>Les opportunités de l'agence</h2></div>
+    <div class="m-opps__grid">${annonces.map(a=>renderAnnonceCard(a)).join("")}</div>
+    <div style="margin-top:var(--s-4)" data-reveal><a href="#/annonces" class="c-link">Voir toutes les opportunités →</a></div>
+  </div></section>`;
+}
+
+/* ——— PAGE CONCEPT (froide / réassurance) ——— */
+function renderConceptPage(){
+  const c = ESSENSYA_DATA.concept;
+  return `
+  <section class="p-head"><div class="container">
+    <nav class="c-breadcrumb"><a href="#/">Accueil</a><span class="sep">/</span><span>Notre concept</span></nav>
+    <h1>Le concept Essensya</h1>
+    <p>Pourquoi des maisons catalogues, pourquoi si peu de modèles, et pourquoi c'est une bonne nouvelle pour votre budget.</p>
+  </div></section>
+  <section class="pc-manifesto"><div class="container">
+    <span class="c-label c-label--accent" data-reveal style="display:block;margin-bottom:var(--s-3)">Le manifeste</span>
+    <p data-reveal>${c.manifesto}</p>
+  </div></section>
+  <section class="pc-figures"><div class="container">
+    <span class="c-label" style="color:var(--sable);opacity:.65;display:block;margin-bottom:var(--s-3)" data-reveal>En chiffres</span>
+    <div class="pc-figures__grid">${c.figures.map(([b,s])=>`<div class="pc-figure" data-reveal><b>${b}</b><span>${s}</span></div>`).join("")}</div>
+  </div></section>
+  <section class="s-philo" style="background:var(--craie);color:var(--anthracite)"><div class="container">
+    <div class="c-section-head" data-reveal><span class="c-label c-label--accent">La méthode</span><h2>Moins de choix.<br>Mieux choisis.</h2></div>
+    <div class="s-philo__grid" style="border-color:var(--beton)" id="conceptPhilo"></div>
+  </div></section>
+  <section class="s-steps"><div class="container">
+    <div class="c-section-head" data-reveal><span class="c-label c-label--accent">Comment ça marche</span><h2>Du modèle au projet</h2></div>
+    <div class="s-steps__list" id="conceptSteps"></div>
+  </div></section>
+  <section class="pc-commit"><div class="container">
+    <div class="c-section-head" data-reveal><span class="c-label c-label--accent">Nos engagements</span><h2>Écrits noir sur blanc</h2></div>
+    <div class="pc-commit__list">
+      ${c.commitments.map((x,i)=>`<div class="pc-commit__item" data-reveal><span class="pc-commit__num">0${i+1}</span><h3>${x.t}</h3><p>${x.d}</p></div>`).join("")}
+    </div>
+  </div></section>
+  <section class="s-cta"><div class="container" style="text-align:center">
+    <span class="c-label" style="color:var(--bois)" data-reveal>Et maintenant</span>
+    <h2 data-reveal style="margin:var(--s-2) auto 0;max-width:16ch">Découvrez les maisons</h2>
+    <div style="margin-top:var(--s-4);display:flex;gap:var(--s-2);justify-content:center;flex-wrap:wrap" data-reveal>
+      <a href="#/maisons" class="c-btn c-btn--light">Voir la collection <span class="arrow">→</span></a>
+      <a href="#/contact" class="c-btn c-btn--light" style="border-color:rgba(243,241,236,.35)">Parler de mon projet</a>
+    </div>
+  </div></section>`;
+}
+
+/* ——— CONTACT ——— */
+function renderContactPage(){
+  return `
+  <section class="p-head"><div class="container">
+    <nav class="c-breadcrumb"><a href="#/">Accueil</a><span class="sep">/</span><span>Contact</span></nav>
+    <h1>Parler de votre projet</h1>
+    <p>Un formulaire, pas un parcours du combattant. Dites-nous où vous en êtes, une agence vous répond sous 48 h — sans engagement et sans démarchage.</p>
+  </div></section>
+  <section class="ct-body" style="padding-top:var(--s-4)"><div class="container">
+    <div class="ct-form-card" data-reveal>
+      <h2>Être recontacté</h2>
+      <form class="c-form c-form--dark" id="contactForm" novalidate>
+        <div class="c-form__row">
+          <div class="c-field"><label for="cf-name">Prénom &amp; nom</label><input type="text" id="cf-name" required></div>
+          <div class="c-field"><label for="cf-phone">Téléphone</label><input type="tel" id="cf-phone" required></div>
+        </div>
+        <div class="c-form__row">
+          <div class="c-field"><label for="cf-email">E-mail</label><input type="email" id="cf-email"></div>
+          <div class="c-field"><label for="cf-reason">Votre demande</label>
+            <select id="cf-reason"><option>Être rappelé</option><option>Prendre rendez-vous en agence</option><option>Question sur un modèle</option><option>Question sur une annonce</option><option>Autre</option></select>
+          </div>
+        </div>
+        <div class="c-field"><label for="cf-msg">Votre message (facultatif)</label><textarea id="cf-msg" rows="4"></textarea></div>
+        <div class="c-form__actions"><button type="submit" class="c-btn c-btn--light">Envoyer <span class="arrow">→</span></button></div>
+        <p class="c-form__note">Vos données ne servent qu'à vous recontacter. Jamais revendues.</p>
+        <p class="c-form__success" role="status">Merci — nous revenons vers vous sous 48 h.</p>
+      </form>
+    </div>
+    <aside class="ct-aside">
+      <span class="c-label c-label--accent" style="display:block;margin-bottom:var(--s-3)" data-reveal>Ou directement en agence</span>
+      ${ESSENSYA_DATA.agencies.map(g=>renderAgencyCard(g)).join("")}
+      <p class="ct-direct" data-reveal>Une question rapide ? Écrivez-nous à <a href="mailto:contact@essensya.fr">contact@essensya.fr</a></p>
+    </aside>
+  </div></section>`;
+}
+
+/* ——— LANDING (template data-driven) ——— */
+function renderLandingPage(lp){
+  return `
+  <section class="lp-hero">
+    <div class="lp-hero__bg"><img src="${lp.image}" alt="${lp.title}"></div>
+    <div class="container">
+      <div>
+        <span class="c-label" style="color:var(--bois)">Offre limitée</span>
+        <h1 style="margin-top:var(--s-2)">${lp.title}</h1>
+        <p class="lp-hero__sub">${lp.subtitle}</p>
+        <div class="lp-hero__price">${fmtPrice(lp.price)}<small>${lp.priceNote}</small></div>
+        <ul class="lp-hero__bullets">${lp.bullets.map(b=>`<li>${b}</li>`).join("")}</ul>
+      </div>
+      <div class="lp-form-card">
+        <h2>${lp.formTitle}</h2>
+        <p>${lp.formText}</p>
+        <form class="c-form" id="landingForm" novalidate>
+          ${formFields("lf")}
+          <div class="c-form__actions"><button type="submit" class="c-btn c-btn--solid" style="width:100%;justify-content:center">Recevoir le dossier <span class="arrow">→</span></button></div>
+          <p class="c-form__note">Vos données ne servent qu'à vous recontacter. Jamais revendues.</p>
+          <p class="c-form__success" role="status">Merci — le dossier arrive sous 48 h.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+  <section class="lp-strip"><div class="container">
+    <div class="s-trust__grid" id="lpTrust"></div>
+  </div></section>`;
+}
+
+/* ════════ MONTAGE HOME ════════ */
+const D = ESSENSYA_DATA;
+byId("collectionList").innerHTML = D.models.map(renderModelRow).join("");
+byId("productPlate").innerHTML = renderPlate(D.models[0]);
+byId("philoGrid").innerHTML = renderPhilosophy(D.philosophy);
+byId("stepsList").innerHTML = renderSteps(D.steps);
+byId("trustGrid").innerHTML = renderTrust(D.trust);
+byId("oppsGrid").innerHTML = ANNONCES.slice(0,3).map(a=>`
+  <a class="c-opp" href="${annonceUrl(a)}" data-reveal>
+    <span class="c-opp__loc">${a.city} (${a.zip.slice(0,2)})</span>
+    <span class="c-opp__title">${annonceTitle(a)}</span>
+    <span class="c-opp__meta">${a.type==="terrain" ? `Terrain ${a.landSurface} m²` : `Terrain ${a.landSurface} m² · Maison ${a.houseSurface} m²`} · à partir de ${fmtPrice(a.price)}</span>
+  </a>`).join("");
+
+const heroModelData = D.models.find(m=>m.id===D.hero.refId) || D.models[0];
+byId("heroModelName").textContent = `${heroModelData.name} — ${heroModelData.index}`;
+byId("heroSpecSurface").textContent = heroModelData.surface + " m²";
+byId("heroSpecBedrooms").textContent = heroModelData.bedrooms;
+byId("heroSpecPrice").textContent = fmtPrice(heroModelData.priceFrom);
+byId("heroStaticPlate").innerHTML = renderPlate(heroModelData);
+byId("heroModelCta").href = modelUrl(heroModelData);
+
+const f = D.featured;
+const fRef = D.models.find(m=>m.id===f.refId);
+byId("featuredImg").src = f.image;
+byId("featuredImg").alt = f.alt;
+byId("featuredTitle").textContent = f.title;
+if (fRef){ byId("featuredPlate").innerHTML = renderPlate(fRef,{withName:false}); byId("featuredCta").href = modelUrl(fRef); }
+byId("featuredCta").firstChild.textContent = f.ctaLabel + " ";
+
+byId("sgSwatches").innerHTML = [["Craie","#F3F1EC"],["Sable","#E8E3D9"],["Béton","#CFC9BD"],["Pierre","#867E70"],["Anthracite","#21201C"],["Noir","#131210"],["Bois (accent)","#9A6B3C"]].map(([n,c])=>`<div class="sg-swatch"><div style="background:${c}"></div><span>${n}<br>${c}</span></div>`).join("");
+byId("sgPlate").innerHTML = renderPlate(D.models[0]);
+byId("sgPictos").innerHTML = picto("surface","92 m²","Maison")+picto("bed","3","Chambres")+picto("land","420 m²","Terrain")+picto("loc","Montpellier","Localisation")+picto("price","289 000 €","À partir de");
+byId("sgAnnonce").innerHTML = renderAnnonceCard(ANNONCES[0],{reveal:false});
+byId("sgAgency").innerHTML = renderAgencyCard(D.agencies[0],{reveal:false});
+
+/* ════════ ANIMATIONS ════════ */
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const isMobile = window.matchMedia("(max-width: 768px)").matches;
+const io = new IntersectionObserver(entries=>{
+  /* Cascade : les éléments frères entrant dans le même lot sont échelonnés.
+     On respecte les délais explicites (--reveal-delay des blocs hero). */
+  const arriving = entries.filter(e=>e.isIntersecting);
+  arriving.forEach((e,i)=>{
+    if(i>0 && !e.target.style.getPropertyValue("--reveal-delay")){
+      e.target.style.transitionDelay = Math.min(i*65, 320) + "ms";
+    }
+    e.target.classList.add("is-visible");
+    io.unobserve(e.target);
+  });
+},{threshold:.15,rootMargin:"0px 0px -8% 0px"});
+const observeReveals = root=>root.querySelectorAll("[data-reveal], .c-reveal-img").forEach(el=>io.observe(el));
+observeReveals(document);
+
+/* ════════ HEADER & NAV ════════ */
+const header = byId("siteHeader");
+const viewHome = byId("viewHome");
+const viewPage = byId("viewPage");
+const heroWrap = byId("heroScroll");
+let headerAlwaysSolid = false;
+function headerScroll(){ header.classList.toggle("is-solid", headerAlwaysSolid || window.scrollY > 40); }
+window.addEventListener("scroll", headerScroll, {passive:true});
+
+const toggle = byId("navToggle");
+const mobileNav = byId("mobileNav");
+toggle.addEventListener("click",()=>{
+  const open = mobileNav.classList.toggle("is-open");
+  toggle.setAttribute("aria-expanded", open);
+  document.body.style.overflow = open ? "hidden" : "";
+  if (open) header.classList.add("is-solid");
+});
+mobileNav.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{
+  mobileNav.classList.remove("is-open");
+  toggle.setAttribute("aria-expanded","false");
+  document.body.style.overflow = "";
+}));
+
+/* ════════ HERO SCROLL-DRIVEN ════════ */
+if (reduceMotion || isMobile){
+  heroWrap.classList.add("is-static");
+  /* Mobile : parallaxe douce de l'image au scroll (sans pinning → pas de
+     saccade, pas de conflit avec la barre d'adresse). Neutralisée en
+     reduced-motion (l'image reste à scale(1.06) figée). */
+  if (!reduceMotion){
+    const bgImg = heroWrap.querySelector(".hero-scroll__bg img");
+    const stage = heroWrap.querySelector(".hero-scroll__stage");
+    let tick = false;
+    const parallax = () => {
+      tick = false;
+      if (!viewHome.classList.contains("is-active")) return;
+      const h = stage.offsetHeight || window.innerHeight;
+      const p = Math.min(1, Math.max(0, window.scrollY / h));
+      bgImg.style.transform = `scale(${(1.06 + p*0.12).toFixed(4)}) translateY(${(p*7).toFixed(2)}%)`;
+    };
+    window.addEventListener("scroll", () => { if(!tick){ tick = true; requestAnimationFrame(parallax); } }, {passive:true});
+    parallax();
+  }
+} else {
+  const heroImg = byId("heroImg");
+  const heroBrand = byId("heroBrand");
+  const heroModelEl = byId("heroModel");
+  const steps = [...heroModelEl.querySelectorAll("[data-step]")];
+  const thresholds = [.45,.55,.63,.71,.80];
+  let ticking = false;
+  function heroTick(){
+    ticking = false;
+    if (!viewHome.classList.contains("is-active")) return;
+    const rect = heroWrap.getBoundingClientRect();
+    const total = heroWrap.offsetHeight - window.innerHeight;
+    const p = Math.min(1, Math.max(0, -rect.top/total));
+    heroImg.style.transform = `scale(${(1.18 - p*.18).toFixed(4)})`;
+    const fade = Math.min(1, Math.max(0,(p-.28)/.17));
+    heroBrand.style.opacity = (1-fade).toFixed(3);
+    heroBrand.style.transform = `translateY(${(-40*fade).toFixed(1)}px)`;
+    heroBrand.style.visibility = fade>=1 ? "hidden" : "visible";
+    heroModelEl.setAttribute("aria-hidden", p<thresholds[0]);
+    steps.forEach((el,i)=>el.classList.toggle("is-on", p>=thresholds[i]));
+  }
+  window.addEventListener("scroll",()=>{if(!ticking){ticking=true;requestAnimationFrame(heroTick);}},{passive:true});
+  heroTick();
+}
+
+/* ════════ STICKY CTA MOBILE ════════ */
+const stickyCta = byId("stickyCta");
+const ctaSection = byId("projet");
+window.addEventListener("scroll",()=>{
+  let show;
+  if (viewPage.classList.contains("is-active")){
+    /* Masqué dès que la page contient son propre formulaire */
+    show = window.scrollY > window.innerHeight*.9 && !viewPage.querySelector("form") && !document.body.classList.contains("map-mode");
+  } else {
+    const past = window.innerHeight*(heroWrap.classList.contains("is-static") ? .9 : 2.6);
+    const r = ctaSection.getBoundingClientRect();
+    show = window.scrollY > past && !(r.top < window.innerHeight && r.bottom > 0);
+  }
+  stickyCta.classList.toggle("is-visible", show);
+},{passive:true});
+
+/* ════════ FORMULAIRES → PROSPECTS VITAHOME ════════
+   Chaque formulaire est lié à un ORIGIN-ID (onglet ENVOI PROSPECT).
+   ctx transporte le contexte annonce : construction-location-id/-insee,
+   history-ad-content, history-link.                                   */
+function collectFields(form){
+  const fields = {};
+  form.querySelectorAll("input,select,textarea").forEach(el=>{
+    const key = (el.id || "").split("-").pop() || el.tagName.toLowerCase();
+    if (el.value) fields[key === "msg" ? "message" : key] = el.value;
+  });
+  return fields;
+}
+function bindForm(form, originKey, gtmEvent, ctx = {}){
+  if (!form) return;
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const missing = [...form.querySelectorAll("input[required]")].find(i=>!i.value.trim());
+    if (missing){ missing.focus(); return; }
+    const payload = ProspectsAdapter.buildPayload(originKey, collectFields(form), ctx);
+    ProspectsAdapter.send(payload).then(()=>form.classList.add("is-sent"));
+    /* dataLayer.push({ event: gtmEvent, origin_id: payload["origin-id"] }) — GTM ready */
+  });
+}
+bindForm(byId("callbackForm"), "rappel", "lead_callback_request");
+
+/* ════════ ROUTER ════════
+   #/ home · #/maisons · #/modele/{id} · #/annonces · #/annonce/{id}
+   #/agences · #/agence/{id} · #/concept · #/contact · #/lp/{slug}   */
+function showView(view){
+  viewHome.classList.toggle("is-active", view==="home");
+  viewPage.classList.toggle("is-active", view==="page");
+  headerAlwaysSolid = false;
+  document.body.classList.remove("map-mode","lp-mode");
+}
+function mountPage(html,{solidHeader=false,lpMode=false}={}){
+  viewPage.innerHTML = html;
+  observeReveals(viewPage);
+  showView("page");
+  headerAlwaysSolid = solidHeader;
+  if (lpMode) document.body.classList.add("lp-mode");
+  window.scrollTo({top:0});
+  headerScroll();
+}
+
+function route(){
+  const hash = location.hash || "#/";
+  document.body.classList.toggle("show-styleguide", hash==="#styleguide");
+  let m;
+
+  if ((m = hash.match(/^#\/modele\/([\w-]+)/))){
+    const model = D.models.find(x=>x.id===m[1]);
+    if (model){ mountPage(renderModelPage(model)); /* GTM: model_view */ return; }
+  }
+  if (hash.startsWith("#/annonces")){
+    mountPage(renderListingPage(),{solidHeader:true}); mountListing(); return;
+  }
+  if ((m = hash.match(/^#\/annonce\/([\w-]+)/))){
+    const a = ANNONCES.find(x=>x.id===m[1]);
+    if (a){
+      mountPage(renderAnnoncePage(a),{solidHeader:true});
+      /* ORIGIN-ID 53 (terrain) ou 54 (T+M) + champs "IMPORTANT" du doc */
+      bindForm(byId("annonceForm"),
+        a.type==="terrain" ? "annonceTerrain" : "annonceTM",
+        "lead_annonce_request",
+        { cityId:a.cityId, insee:a.insee,
+          adContent:`${annonceTitle(a)} — réf. ${a.ref} — terrain ${a.landSurface} m²${a.houseSurface ? `, maison ${a.houseSurface} m², ${a.bedrooms} ch.` : ""} — ${fmtPrice(a.price)}`,
+          link: location.href });
+      /* GTM: annonce_view */
+      return;
+    }
+  }
+  if (hash.startsWith("#/maisons")){
+    mountPage(renderModelsListingPage(),{solidHeader:true}); return;
+  }
+  if ((m = hash.match(/^#\/agence\/([\w-]+)/))){
+    const g = D.agencies.find(x=>x.id===m[1]);
+    if (g){ mountPage(renderAgencyPage(g)); bindForm(byId("agencyForm"), "agence", "lead_agency_request", { adContent:`Contact agence — ${g.name}` }); /* GTM: agency_view */ return; }
+  }
+  if (hash.startsWith("#/agences")){
+    mountPage(renderAgenciesPage(),{solidHeader:true}); return;
+  }
+  if (hash.startsWith("#/concept")){
+    mountPage(renderConceptPage(),{solidHeader:true});
+    byId("conceptPhilo").innerHTML = renderPhilosophy(D.philosophy);
+    byId("conceptSteps").innerHTML = renderSteps(D.steps);
+    observeReveals(viewPage);
+    return;
+  }
+  if (hash.startsWith("#/contact")){
+    mountPage(renderContactPage(),{solidHeader:true});
+    bindForm(byId("contactForm"), "contact", "lead_contact_request");
+    return;
+  }
+  if ((m = hash.match(/^#\/lp\/([\w-]+)/))){
+    const lp = D.landings[m[1]];
+    if (lp){
+      mountPage(renderLandingPage(lp),{lpMode:true});
+      byId("lpTrust").innerHTML = renderTrust(D.trust);
+      observeReveals(viewPage);
+      bindForm(byId("landingForm"), "landing", "lead_landing_request", { adContent:`Landing — ${lp.title}`, link: location.href });
+      return;
+    }
+  }
+
+  /* Home */
+  showView("home");
+  headerScroll();
+  const anchor = hash.replace("#","");
+  const target = /^[\w-]+$/.test(anchor) ? document.getElementById(anchor) : null;
+  if (target && anchor!=="styleguide"){
+    requestAnimationFrame(()=>target.scrollIntoView({behavior:reduceMotion?"auto":"smooth"}));
+  } else if (hash==="#/"){
+    window.scrollTo({top:0});
+  }
+}
+window.addEventListener("hashchange", route);
+route();
+</script>
+</body>
+</html>

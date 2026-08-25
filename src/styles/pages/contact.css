@@ -1,0 +1,10 @@
+/* ════ 10. CONTACT (.ct-) — v5 ════ */
+.ct-body{padding-bottom:var(--s-7)}
+.ct-body .container{display:grid;grid-template-columns:7fr 5fr;gap:var(--s-6);align-items:start}
+@media (max-width:900px){.ct-body .container{grid-template-columns:1fr}}
+.ct-form-card{background:var(--anthracite);color:var(--craie);border-radius:var(--radius);padding:var(--s-4)}
+.ct-form-card h2{font-size:1.3rem;margin-bottom:var(--s-3)}
+.ct-aside .c-agency-card + .c-agency-card{margin-top:var(--s-3)}
+.ct-direct{margin-top:var(--s-4);border-top:var(--line);padding-top:var(--s-3);font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre)}
+.ct-direct a{color:var(--bois)}
+

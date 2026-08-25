@@ -1,0 +1,26 @@
+# Déploiement Netlify.
+# Le runtime Next.js (@netlify/plugin-nextjs) est installé automatiquement
+# par Netlify sur les projets Next : rien à déclarer ici pour l'avoir.
+# Il route les pages SSG/ISR et l'API /api/leads vers des functions.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Les previews par branche ne doivent jamais être indexées ni pointer
+# leurs URLs canoniques vers la prod.
+[context.deploy-preview.environment]
+  NEXT_PUBLIC_SITE_URL = "$DEPLOY_PRIME_URL"
+
+[context.branch-deploy.environment]
+  NEXT_PUBLIC_SITE_URL = "$DEPLOY_PRIME_URL"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"

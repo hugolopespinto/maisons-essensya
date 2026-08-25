@@ -1,0 +1,9 @@
+/* ════ 13. STYLEGUIDE ════ */
+.styleguide{display:block;padding:var(--s-7) 0;border-top:var(--line)}
+.sg-block{margin-bottom:var(--s-6)}
+.sg-block > .c-label{display:block;margin-bottom:var(--s-3)}
+.sg-swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:var(--s-2)}
+.sg-swatch{border:var(--line);border-radius:var(--radius);overflow:hidden}
+.sg-swatch div{height:88px}
+.sg-swatch span{display:block;padding:.6rem .8rem;font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.08em}
+.sg-row{display:flex;flex-wrap:wrap;gap:var(--s-2);align-items:center}
