@@ -18,6 +18,28 @@ export interface Feature {
   d: string;
 }
 
+/** Une étape de la visite pilotée au scroll (voir VisiteMaison). */
+export interface VisiteStep {
+  /** Ancre et clé de rendu — kebab-case, unique dans le modèle. */
+  cle: string;
+  /** Libellé court du menu de pièces. */
+  nav: string;
+  titre: string;
+  texte: string;
+  /** 2 à 3 chiffres affichés sous le texte. */
+  specs: string[];
+  image: string;
+  alt: string;
+  /**
+   * Boucle vidéo optionnelle (MP4/WebM, muette, 4-8 s).
+   * Renseignée → le calque passe de <img> à <video>, rien d'autre ne bouge.
+   * `image` reste obligatoire : elle sert de poster et c'est elle que
+   * Google indexe. À héberger hors Netlify (Cloudflare Stream, Mux, Bunny) :
+   * la bande passante vidéo épuiserait le quota du plan gratuit.
+   */
+  video?: string;
+}
+
 /** Un modèle de la collection (Essen, Alba, Nova…). */
 export interface Model {
   id: string;
@@ -32,6 +54,8 @@ export interface Model {
   heroImage: string;
   alt: string;
   gallery: GalleryItem[];
+  /** Parcours de la maison, pièce par pièce. 4 à 6 étapes. */
+  visite: VisiteStep[];
   archText: string;
   archImage: string;
   /** [label, valeur] — tableau de prestations constructives. */

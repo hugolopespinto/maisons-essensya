@@ -3,10 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import AnnonceCard from "@/components/AnnonceCard";
 import Plate from "@/components/Plate";
+import VisiteMaison from "@/components/VisiteMaison";
 import { AGENCIES, MODELS, modelById } from "@/data/essensya";
 import { fmtPrice, modelUrl } from "@/lib/format";
 import { getAnnonces } from "@/lib/vitahome/annonces";
 import "@/styles/pages/modele.css";
+import "@/styles/visite.css";
 
 /* Les 3 modèles sont connus au build → pages statiques, instantanées. */
 export function generateStaticParams() {
@@ -44,7 +46,6 @@ export default async function ModelPage({
     .filter((a) => a.modelId === m.id || a.type === "terrain")
     .slice(0, 3);
   const agency = AGENCIES[0];
-  const [g1, g2, g3] = m.gallery;
 
   return (
     <main className="page">
@@ -80,32 +81,9 @@ export default async function ModelPage({
         </div>
       </section>
 
-      <section className="m-gallery">
-        <div className="container">
-          <figure className="m-gallery__main">
-            <div className="c-reveal-img">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={g1.src} alt={g1.alt} loading="lazy" />
-            </div>
-            <figcaption className="caption" data-reveal>
-              {g1.caption}
-            </figcaption>
-          </figure>
-          <div className="m-gallery__duo">
-            {[g2, g3].map((g) => (
-              <figure key={g.src}>
-                <div className="c-reveal-img">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={g.src} alt={g.alt} loading="lazy" />
-                </div>
-                <figcaption className="caption" data-reveal>
-                  {g.caption}
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Remplace l'ancienne galerie 1+2 : mêmes photos, mais on traverse
+          la maison au lieu de la survoler. Voir VisiteMaison.tsx. */}
+      <VisiteMaison model={m} />
 
       <section className="m-arch">
         <div className="container m-arch__grid">
