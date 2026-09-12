@@ -1,3 +1,4 @@
+import { resolveMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -33,7 +34,15 @@ import { AGENCIES, PLACEHOLDER } from "@/data/essensya";
    constructeur est une faute bien plus grave qu'un champ vide.
    ════════════════════════════════════════════════════════════════ */
 
-export const metadata: Metadata = {
+/* Le back-office peut surcharger le titre, la description, l'image de
+   partage, le canonical et le noindex de cette page — écran Référencement.
+   `resolveMetadata` repart TOUJOURS du défaut ci-dessous : une surcharge
+   vidée rend la valeur d'origine, elle n'efface jamais la balise. */
+export async function generateMetadata(): Promise<Metadata> {
+  return resolveMetadata("/mentions-legales", METADATA_DEFAUT);
+}
+
+const METADATA_DEFAUT: Metadata = {
   title: "Mentions légales",
   description:
     "Éditeur du site, directeur de la publication, hébergeur, assurances et garanties du constructeur, propriété intellectuelle et médiation de la consommation.",

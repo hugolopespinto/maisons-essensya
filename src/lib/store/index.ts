@@ -1,6 +1,8 @@
 import "server-only";
+import { revalidateTag, updateTag } from "next/cache";
 import type { Content, PageEditable } from "./types";
 import * as fichier from "./file";
+import { TAG_MAGASIN } from "./supabase";
 import * as supabase from "./supabase";
 
 /* ════════════════════════════════════════════════════════════════
@@ -573,10 +575,52 @@ export async function getContent(): Promise<Content> {
   return data;
 }
 
+/* ⚠ À APPELER APRÈS CHAQUE ÉCRITURE, SANS EXCEPTION.
+
+   Les lectures Supabase sont étiquetées (`TAG_MAGASIN`, voir ./supabase)
+   pour que les pages publiques restent pré-générées. Le revers : sans
+   cette invalidation, une modification enregistrée resterait invisible
+   jusqu'à une minute — et les `revalidatePath()` des écrans d'admin
+   régénéreraient les pages À PARTIR DE LA RÉPONSE HTTP PÉRIMÉE. C'est
+   exactement la panne qu'on vient de corriger ; elle ne donnait aucun
+   message d'erreur.
+
+   Elle vit ici, dans le magasin, et pas dans les vingt-sept écrans qui
+   écrivent : un écran ajouté demain en hérite sans y penser.
+
+   Le cache mémoire de ce module (`cache`) est à jour dès l'écriture, donc
+   une page régénérée dans la foulée ne repasse même pas par le réseau. */
+function invaliderDataCache(): void {
+  /* `updateTag` est fait pour ce cas exact — « lire sa propre écriture » :
+     la requête suivante ATTEND la donnée fraîche au lieu de servir du
+     périmé. C'est ce qu'il faut quand le client vient d'enregistrer et
+     rouvre sa page pour vérifier. Mais il n'existe que dans une action
+     serveur (doc : 04-functions/updateTag.md).
+
+     Hors de ce contexte — un gestionnaire de route, par exemple le
+     téléversement de médias — il lève. On y retombe alors sur
+     `revalidateTag(tag, { expire: 0 })`, la voie documentée pour une
+     expiration immédiate ailleurs que dans une action.
+
+     Dernier recours : on prévient et on continue. Le contenu est déjà
+     écrit ; on ne fait pas échouer l'enregistrement du client pour une
+     histoire de cache, et `FRAICHEUR` borne l'écart à une minute. */
+  try {
+    updateTag(TAG_MAGASIN);
+  } catch {
+    try {
+      revalidateTag(TAG_MAGASIN, { expire: 0 });
+    } catch (e) {
+      console.warn("[store] invalidation du cache impossible :", e);
+    }
+  }
+}
+
 export async function saveContent(next: Content): Promise<void> {
   const data: Content = { ...next, v: 1, majLe: new Date().toISOString() };
   await pilote.write(data);
   cache = { data, at: Date.now() };
+  invaliderDataCache();
 }
 
 /** Modifie un domaine sans toucher aux autres. */
@@ -597,6 +641,7 @@ export async function patchContent<K extends keyof Content>(
   if (pilote.patch) await pilote.patch(key, value);
   else await pilote.write(next);
   cache = { data: next, at: Date.now() };
+  invaliderDataCache();
   return next;
 }
 

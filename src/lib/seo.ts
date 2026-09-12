@@ -34,13 +34,10 @@ export interface SeoRoute {
   defaut: { title?: string; description?: string };
 }
 
-const V3 = VERSIONS.find((v) => v.slug === "3-chambres");
-const V2 = VERSIONS.find((v) => v.slug === "2-chambres");
-
-const defautVersion = (v: (typeof VERSIONS)[number] | undefined) =>
-  v
-    ? { title: `${HOUSE.name} — ${v.label}, ${fmtSurface(v.surface)}`, description: v.pour }
-    : {};
+const defautVersion = (v: (typeof VERSIONS)[number]) => ({
+  title: `${HOUSE.name} — ${v.label}, ${fmtSurface(v.surface)}`,
+  description: v.pour,
+});
 
 /** Les routes proposées à l'édition, dans l'ordre d'affichage. */
 export const SEO_ROUTES: SeoRoute[] = [
@@ -69,8 +66,24 @@ export const SEO_ROUTES: SeoRoute[] = [
       )} hors terrain. Ce qui est compris et ce qui ne l'est pas, écrit noir sur blanc.`,
     },
   },
-  { path: "/maisons/3-chambres", label: "Déclinaison 3 chambres", defaut: defautVersion(V3) },
-  { path: "/maisons/2-chambres", label: "Déclinaison 2 chambres", defaut: defautVersion(V2) },
+  /* Les deux déclinaisons sont générées à partir des données : ajouter ou
+     retirer une version met l'écran Référencement à jour tout seul. Elles
+     méritent leur propre entrée — deux pages aussi proches se cannibalisent
+     dans les résultats si elles portent le même titre, et c'est au client de
+     trancher laquelle il met en avant.
+
+     ⚠ Elles étaient AUSSI écrites en dur juste ici. `SEO_ROUTES.find()` rend
+     la première entrée trouvée : la version écrite en dur gagnait, et celle-ci
+     — avec son aide — n'était jamais lue. Deux champs de formulaire visaient
+     le même `path`. Ne jamais réintroduire d'entrée manuelle pour une route
+     qu'une boucle produit déjà. */
+  ...VERSIONS.map((v) => ({
+    path: `/maisons/${v.slug}`,
+    label: `La maison — ${v.label}`,
+    aide:
+      "Cette page et l'autre déclinaison sont très proches : donnez-leur des titres nettement différents, sinon Google choisit lui-même laquelle afficher.",
+    defaut: defautVersion(v),
+  })),
   {
     path: "/annonces",
     label: "Terrains & maisons",
@@ -123,18 +136,30 @@ export const SEO_ROUTES: SeoRoute[] = [
         "Quels cookies nous déposons, pourquoi, combien de temps, et comment modifier votre choix à tout moment.",
     },
   },
-  /* Les deux déclinaisons sont générées à partir des données : ajouter
-     ou retirer une version met l'écran Référencement à jour tout seul.
-     Elles méritent leur propre entrée — deux pages aussi proches se
-     cannibalisent dans les résultats si elles portent le même titre, et
-     c'est justement au client de trancher lequel il veut mettre en avant. */
-  ...VERSIONS.map((v) => ({
-    path: `/maisons/${v.slug}`,
-    label: `La maison — ${v.label}`,
-    aide:
-      "Cette page et l'autre déclinaison sont très proches : donnez-leur des titres nettement différents, sinon Google choisit lui-même laquelle afficher.",
-    defaut: defautVersion(v),
-  })),
+  /* Les pages légales sont indexables et figurent au sitemap : un visiteur
+     qui cherche « mentions légales maisons essensya » doit les trouver. Leur
+     TEXTE se modifie dans le code, mais leur title et leur description
+     doivent rester à portée du client — c'est là qu'apparaîtront la raison
+     sociale et le nom du garant dès qu'ils seront connus. */
+  {
+    path: "/mentions-legales",
+    label: "Mentions légales",
+    aide: "Page à faible enjeu de référencement, mais à fort enjeu de confiance : gardez un titre sobre et explicite.",
+    defaut: {
+      title: "Mentions légales",
+      description:
+        "Éditeur du site, directeur de la publication, hébergeur, assurances et garanties du constructeur, propriété intellectuelle et médiation de la consommation.",
+    },
+  },
+  {
+    path: "/confidentialite",
+    label: "Protection des données",
+    defaut: {
+      title: "Protection de vos données",
+      description:
+        "Quelles données nos formulaires recueillent, pourquoi, à qui elles sont transmises, combien de temps elles sont conservées et comment exercer vos droits.",
+    },
+  },
 ];
 
 /** "/maisons/" et "/maisons" désignent la même route. */
@@ -171,9 +196,14 @@ export async function resolveMetadata(path: string, fallback: Metadata): Promise
   try {
     const content = await getContent();
     entry = content.seo.find((e) => normalise(e.path) === cible);
-  } catch {
+  } catch (e) {
     /* Le SEO ne doit jamais faire tomber une page : en cas de souci de
-       stockage, on sert le défaut du code, qui est toujours valide. */
+       stockage, on sert le défaut du code, qui est toujours valide.
+
+       ⚠ Mais un `catch` muet transformerait une panne du magasin en
+       « le client enregistre et rien ne change », sans la moindre trace.
+       On avale l'erreur pour le visiteur, jamais pour l'exploitant. */
+    console.warn(`[seo] surcharge ignorée pour ${cible} — magasin illisible :`, e);
     return fallback;
   }
   if (!entry) return fallback;

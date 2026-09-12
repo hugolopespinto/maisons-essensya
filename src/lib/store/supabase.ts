@@ -87,6 +87,55 @@ export const isConfigured = isSupabaseConfigured;
    module, alors que le repli fichier suffit parfaitement. */
 let client: SupabaseClient | null = null;
 
+/* ⚠ CE QUI FAIT QUE LE BACK-OFFICE SERT À QUELQUE CHOSE.
+
+   Next met en cache tout `fetch` atteignable avant une API de requête
+   (doc : 01-app/02-guides/caching-without-cache-components.md, § fetchCache).
+   Nos pages publiques sont statiques : les appels REST de Supabase
+   tombaient donc dans le Data Cache, qui survit AUX BUILDS puisqu'il vit
+   dans `.next/cache` — restauré d'un déploiement à l'autre sur Netlify.
+
+   Le symptôme était muet, et c'est ce qui le rendait grave : le client
+   enregistre un titre, `revalidatePath()` régénère bien la page, mais la
+   régénération relit la réponse HTTP figée. Le back-office écrivait juste,
+   la base contenait la bonne valeur, et la page servait l'ancienne. Mesuré
+   sur un build : 25 lectures sur 28 rendaient un `seo` vide alors que la
+   base était pleine.
+
+   ⚠ NE PAS « CORRIGER » EN METTANT `cache: "no-store"`. Essayé, mesuré :
+   cela fait basculer presque toutes les pages publiques en rendu à la
+   demande (`ƒ`) — /concept, /contact, /cookies, /agences, /annonces… Le
+   site perd sa pré-génération pour réparer un cache. On étiquette plutôt
+   la requête, et l'écriture invalide l'étiquette : voir `patchContent()`
+   dans ./index.ts. Les pages restent statiques, et une modification est
+   visible immédiatement.
+
+   `FRAICHEUR` est la ceinture de sécurité, pas le mécanisme principal :
+   elle borne ce qui échapperait à l'étiquette — une ligne modifiée
+   directement depuis l'interface Supabase, ou un cache restauré d'un
+   déploiement précédent.
+
+   ⚠ SA VALEUR N'EST PAS LIBRE. Next retient la plus courte des deux
+   fraîcheurs, celle de la page et celle de ses `fetch` : à 60 s, toutes
+   les pages du site se régénéraient chaque minute au lieu de la demi-heure
+   que leur code demande (`export const revalidate = 1800`, src/app/agences).
+   Constaté dans le tableau des routes du build, colonne « Revalidate ».
+   On s'aligne donc sur cette demi-heure — le `fetch` ne doit jamais être
+   plus pressé que la page qu'il sert. */
+export const TAG_MAGASIN = "magasin-contenu";
+const FRAICHEUR = 1800;
+
+const fetchMagasin: typeof fetch = (input, init) => {
+  /* Seules les lectures sont cachées. Étiqueter un POST ou un PATCH n'a
+     pas de sens et Next refuse de les mettre en cache de toute façon. */
+  const methode = (init?.method ?? "GET").toUpperCase();
+  if (methode !== "GET") return fetch(input, { ...init, cache: "no-store" });
+  return fetch(input, {
+    ...init,
+    next: { tags: [TAG_MAGASIN], revalidate: FRAICHEUR },
+  });
+};
+
 function sb(): SupabaseClient {
   if (!isSupabaseConfigured()) {
     throw new Error(
@@ -101,6 +150,7 @@ function sb(): SupabaseClient {
       autoRefreshToken: false,
       detectSessionInUrl: false,
     },
+    global: { fetch: fetchMagasin },
   });
   return client;
 }

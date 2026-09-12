@@ -1,3 +1,4 @@
+import { resolveMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -21,7 +22,15 @@ import { AGENCIES } from "@/data/essensya";
    assumé. Chercher « À COMPLÉTER » dans le dépôt pour la liste complète.
    ════════════════════════════════════════════════════════════════ */
 
-export const metadata: Metadata = {
+/* Le back-office peut surcharger le titre, la description, l'image de
+   partage, le canonical et le noindex de cette page — écran Référencement.
+   `resolveMetadata` repart TOUJOURS du défaut ci-dessous : une surcharge
+   vidée rend la valeur d'origine, elle n'efface jamais la balise. */
+export async function generateMetadata(): Promise<Metadata> {
+  return resolveMetadata("/confidentialite", METADATA_DEFAUT);
+}
+
+const METADATA_DEFAUT: Metadata = {
   title: "Protection de vos données",
   description:
     "Quelles données nos formulaires recueillent, pourquoi, à qui elles sont transmises, combien de temps elles sont conservées et comment exercer vos droits.",
