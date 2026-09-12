@@ -7,10 +7,14 @@ import type { House, HouseVersion } from "@/types";
 import Plate from "./Plate";
 
 /* ════ HERO PILOTÉ AU SCROLL ════
-   Desktop : section de 320vh, stage sticky, la marque s'efface et le
-   discours entre par paliers.
-   Mobile / reduced-motion : pas de pinning (conflit barre d'adresse) —
-   parallaxe douce en rAF, ou image figée.
+   Stage sticky, la marque s'efface et le discours entre par paliers.
+   320 svh de course sur desktop, 240 sur mobile : quatre paliers au
+   pouce ne se traversent pas comme quatre paliers à la molette.
+
+   MOBILE COMPRIS. Il en était exclu par crainte de la barre d'adresse
+   iOS, mais la scène est en `svh` — le conflit n'existe pas. L'en
+   priver revenait à lui cacher le seul endroit où le PRIX apparaît.
+   Seul `prefers-reduced-motion` retombe sur l'image figée.
 
    Le scénario tient en quatre temps : la maison, LE PRIX, ce qu'il
    comprend, la visite. Le prix est en deuxième position et en très
@@ -37,7 +41,14 @@ export default function HomeHero({
   // SSR-safe : on suppose le mobile d'abord, le client corrige à l'hydratation.
   const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)", false);
   const isMobile = useMediaQuery("(max-width: 768px)", true);
-  const staticMode = reduceMotion || isMobile;
+  /* ⚠ LE MOBILE DÉROULE LE SCÉNARIO, LUI AUSSI.
+     Il en était exclu par crainte de la barre d'adresse iOS — mais la
+     scène est déjà en `100svh`, donc le problème n'existe plus. Le
+     laisser en mode statique privait le mobile du seul moment où le
+     PRIX apparaît, c'est-à-dire du geste central de la refonte, sur le
+     support qui fait la majorité du trafic.
+     Seul `prefers-reduced-motion` garde l'image figée. */
+  const staticMode = reduceMotion;
 
   useEffect(() => {
     const isStatic = staticMode;
@@ -73,7 +84,11 @@ export default function HomeHero({
     const tickFn = () => {
       ticking = false;
       const rect = wrap.getBoundingClientRect();
-      const total = wrap.offsetHeight - window.innerHeight;
+      /* Hauteur de la SCÈNE (fixe, en `svh`) et non de la fenêtre, qui
+         grandit et rétrécit avec la barre d'adresse mobile. Sans ça, la
+         progression se décale au premier mouvement de barre. */
+      const scene = wrap.querySelector<HTMLElement>(".hero-scroll__stage");
+      const total = wrap.offsetHeight - (scene?.offsetHeight ?? window.innerHeight);
       const p = Math.min(1, Math.max(0, -rect.top / total));
       img.style.transform = `scale(${(1.18 - p * 0.18).toFixed(4)})`;
 

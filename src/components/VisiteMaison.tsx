@@ -4,12 +4,15 @@ import { useMediaQuery } from "@/lib/useMediaQuery";
 import type { House } from "@/types";
 
 /* ════ VISITE PILOTÉE AU SCROLL ════
-   Desktop : piste de (N+0,4)×100vh, stage sticky, une pièce par palier.
-   Le scroll fait la transition ; il ne « joue » pas l'image.
+   Stage sticky, une pièce par palier. Le scroll fait la transition ;
+   il ne « joue » pas l'image.
 
-   Mobile / reduced-motion : pas de pinning — même raison que HomeHero,
-   la barre d'adresse iOS fait sauter un stage sticky de 100vh. Les pièces
-   s'empilent alors en cartes, chacune lisible seule.
+   MOBILE COMPRIS. Le pinning y était désactivé parce qu'un stage de
+   `100vh` saute sur iOS quand la barre d'adresse se rétracte. La scène
+   est passée en `100svh`, ce qui supprime la cause : le mobile a donc la
+   même visite que le desktop, plus le balayage au pouce et une course de
+   scroll raccourcie. Seul `prefers-reduced-motion` retombe sur les
+   pièces empilées — c'est aussi ce que voit un visiteur sans JavaScript.
 
    ⚠ SEO : composant client mais RENDU CÔTÉ SERVEUR. Chaque pièce sort en
    HTML avec son <img alt> — indexable, et présente dans Google Images.
@@ -31,7 +34,14 @@ export default function VisiteMaison({ house }: { house: House }) {
   // SSR-safe : on suppose le mobile d'abord, le client corrige à l'hydratation.
   const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)", false);
   const isMobile = useMediaQuery("(max-width: 900px)", true);
-  const pinned = !(reduceMotion || isMobile);
+  /* ⚠ LE MOBILE ÉPINGLE AUSSI, DÉSORMAIS.
+     Il en était exclu à cause d'un vrai problème : une scène `100vh`
+     saute sur iOS quand la barre d'adresse se rétracte. La scène est
+     passée en `100svh` (voir visite.css), ce qui règle la cause — il
+     n'y avait plus de raison de priver le mobile du meilleur moment du
+     site, sur un métier où il fait la majorité du trafic.
+     Seul `prefers-reduced-motion` désactive encore l'épinglage. */
+  const pinned = !reduceMotion;
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -41,6 +51,7 @@ export default function VisiteMaison({ house }: { house: House }) {
     const media = Array.from(wrap.querySelectorAll<HTMLElement>("[data-media]"));
     const slots = Array.from(wrap.querySelectorAll<HTMLElement>("[data-slot]"));
     const bar = wrap.querySelector<HTMLElement>("[data-prog]");
+    const stage = wrap.querySelector<HTMLElement>(".vm__stage");
 
     /* Le mode peut changer au redimensionnement : on rend la main au CSS
        plutôt que de laisser des styles inline du mode précédent. */
@@ -66,7 +77,12 @@ export default function VisiteMaison({ house }: { house: House }) {
 
     const frame = () => {
       ticking = false;
-      const total = wrap.offsetHeight - window.innerHeight;
+      /* Hauteur de la SCÈNE, pas de la fenêtre : la scène est en `svh`
+         (donc fixe) tandis que `window.innerHeight` grandit et rétrécit
+         avec la barre d'adresse. Mesurer la fenêtre décalerait toute la
+         progression au premier mouvement de barre sur mobile. */
+      const hauteurScene = stage?.offsetHeight ?? window.innerHeight;
+      const total = wrap.offsetHeight - hauteurScene;
       if (total <= 0) return;
       const p = clamp(-wrap.getBoundingClientRect().top / total, 0, 1);
       const f = p * (N - 1);
@@ -135,7 +151,7 @@ export default function VisiteMaison({ house }: { house: House }) {
           ?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
         return;
       }
-      const total = wrap.offsetHeight - window.innerHeight;
+      const total = wrap.offsetHeight - (wrap.querySelector<HTMLElement>(".vm__stage")?.offsetHeight ?? window.innerHeight);
       window.scrollTo({
         top: wrap.offsetTop + (k / (steps.length - 1)) * total,
         behavior: reduceMotion ? "auto" : "smooth",
@@ -146,15 +162,53 @@ export default function VisiteMaison({ house }: { house: House }) {
 
   /* La piste de scroll suit le nombre de pièces : le palier reste
      constant (~108 vh) que le parcours en compte 5 ou 6. */
+  /* ── BALAYAGE HORIZONTAL ──
+     Le scroll vertical traverse la visite ; le pouce, lui, attend de
+     pouvoir passer d'une pièce à l'autre d'un geste latéral. On ne
+     capture QUE l'horizontal : un balayage plutôt vertical doit rester
+     un scroll de page, sinon on confisque la navigation au visiteur. */
+  const toucher = useRef<{ x: number; y: number } | null>(null);
+
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    const t = e.touches[0];
+    toucher.current = { x: t.clientX, y: t.clientY };
+  }, []);
+
+  const onTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      const depart = toucher.current;
+      toucher.current = null;
+      if (!depart) return;
+
+      const t = e.changedTouches[0];
+      const dx = t.clientX - depart.x;
+      const dy = t.clientY - depart.y;
+      /* 48 px de course et une dominante horizontale nette : en dessous,
+         c'est une hésitation, pas une intention. */
+      if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+
+      const cible = dx < 0 ? active + 1 : active - 1;
+      if (cible >= 0 && cible < steps.length) goTo(cible);
+    },
+    [active, goTo, steps.length],
+  );
+
   return (
     <section
       className="vm"
       ref={wrapRef}
       data-mode={pinned ? "pinned" : "static"}
-      style={pinned ? { height: `${steps.length * 100 + 40}vh` } : undefined}
+      /* Course de scroll : plus courte sur mobile. Six pièces à 100 svh
+         chacune demanderaient six écrans de pouce pour traverser une
+         seule section — on garde le dispositif, on raccourcit le geste. */
+      style={
+        pinned
+          ? { height: `${steps.length * (isMobile ? 65 : 100) + 40}svh` }
+          : undefined
+      }
       aria-label={`Visite de la maison ${house.name}, pièce par pièce`}
     >
-      <div className="vm__stage">
+      <div className="vm__stage" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         {steps.map((s, i) => (
           <figure className="vm__room" data-room id={`visite-${s.cle}`} key={s.cle}>
             {s.video ? (
@@ -216,6 +270,12 @@ export default function VisiteMaison({ house }: { house: House }) {
             {String(active + 1).padStart(2, "0")} / {String(steps.length).padStart(2, "0")}
           </span>
         </div>
+
+        {/* Un geste qu'on ne devine pas est un geste qui n'existe pas :
+            l'indice n'apparaît qu'au toucher, une fois, puis s'efface. */}
+        <span className="vm__swipe" aria-hidden="true">
+          ← Balayer →
+        </span>
 
         <span className="vm__prog" data-prog aria-hidden="true" />
       </div>

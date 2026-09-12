@@ -1,5 +1,12 @@
 /* ════ 4. HOME ════ */
-.hero-scroll{position:relative;height:320vh;background:var(--noir)}
+/* Piste de scroll du hero. En `svh` : la hauteur ne doit pas changer
+   quand la barre d'adresse mobile se rétracte, sinon toute la
+   progression se décale en cours de route.
+   Course raccourcie sur mobile — quatre paliers à 80 svh au pouce, ce
+   n'est pas la même chose que quatre paliers à la molette. */
+.hero-scroll{position:relative;height:320svh;background:var(--noir)}
+@media (max-width:768px){.hero-scroll{height:240svh}}
+@supports not (height:100svh){.hero-scroll{height:320vh}}
 .hero-scroll__stage{position:sticky;top:0;height:100svh;overflow:hidden;display:flex;align-items:flex-end;color:var(--craie)}
 .hero-scroll__bg{position:absolute;inset:0}
 .hero-scroll__bg img{width:100%;height:100%;object-fit:cover;transform:scale(1.18);will-change:transform}

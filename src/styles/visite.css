@@ -20,9 +20,20 @@
 .vm__stage {
   position: sticky;
   top: 0;
-  height: 100vh;
+  /* ⚠ `svh` et NON `vh` : c'est ce qui rend l'épinglage utilisable sur
+     mobile. `100vh` vaut la hauteur barre d'adresse RÉTRACTÉE ; tant
+     qu'elle est déployée, la scène dépasse l'écran et saute à chaque
+     scroll. `svh` prend la plus petite hauteur possible, donc stable
+     quoi que fasse le navigateur. C'est cette seule ligne qui empêchait
+     la visite d'exister sur mobile. */
+  height: 100svh;
   overflow: hidden;
   background: var(--noir);
+}
+/* Repli pour les navigateurs sans `svh` — ils gardent l'ancien comportement
+   plutôt que de ne rien avoir. */
+@supports not (height: 100svh) {
+  .vm__stage { height: 100vh; }
 }
 
 .vm__room {
@@ -226,4 +237,105 @@
 
 @media (max-width: 900px) {
   .vm[data-mode="static"] .vm__room { aspect-ratio: 3 / 4; }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   MOBILE — la visite y existe enfin
+
+   Elle était purement et simplement désactivée sous 900 px : pile
+   d'images, barre de navigation masquée, compteur masqué. Sur un métier
+   où le mobile fait la majorité du trafic, le meilleur moment du site
+   était réservé au desktop.
+
+   Trois adaptations, et le reste est commun :
+     · la navigation passe EN BAS, dans la zone du pouce ;
+     · elle défile horizontalement avec accrochage, parce que six pièces
+       ne tiennent pas sur 360 px ;
+     · les cibles montent à 44 px, le minimum tactile.
+   ════════════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .vm[data-mode="pinned"] .vm__bar {
+    top: auto;
+    bottom: 0;
+    flex-wrap: wrap;
+    gap: var(--s-1);
+    padding: 2.5rem var(--gutter) calc(var(--s-2) + env(safe-area-inset-bottom));
+    /* Dégradé inversé : il vient du bas puisque la barre y est. */
+    background: linear-gradient(
+      0deg,
+      rgb(19 18 16 / calc(0.78 * var(--vm-veil))) 0%,
+      rgb(19 18 16 / calc(0.3 * var(--vm-veil))) 60%,
+      rgb(19 18 16 / 0) 100%
+    );
+  }
+
+  /* Le nom de la maison et le compteur encadrent la navigation. */
+  .vm[data-mode="pinned"] .vm__brand { order: 1; font-size: 0.66rem }
+  .vm[data-mode="pinned"] .vm__count { order: 2 }
+  .vm[data-mode="pinned"] .vm__nav {
+    order: 3;
+    width: 100%;
+    margin-top: var(--s-1);
+    overflow-x: auto;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+    /* La marge négative + le padding rendent le défilement bord à bord
+       sans coller les boutons au bord de l'écran. */
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    gap: var(--s-1);
+  }
+  .vm[data-mode="pinned"] .vm__nav::-webkit-scrollbar { display: none }
+  .vm[data-mode="pinned"] .vm__nav button {
+    scroll-snap-align: center;
+    flex: none;
+    /* 44 px : le minimum tactile. En dessous, on vise à côté. */
+    min-height: 44px;
+    padding-inline: 0.9rem;
+  }
+
+  /* Le texte de la pièce remonte au-dessus de la barre. */
+  .vm[data-mode="pinned"] .vm__slot {
+    bottom: 7.5rem;
+    max-width: none;
+    right: var(--gutter);
+  }
+
+  /* La barre de progression passe en haut : en bas elle serait cachée
+     par la navigation. */
+  .vm[data-mode="pinned"] .vm__prog { top: 0; bottom: auto }
+}
+
+/* Indice de balayage, montré une seule fois à l'arrivée sur la visite.
+   Un geste qu'on ne devine pas est un geste qui n'existe pas. */
+.vm__swipe {
+  position: absolute;
+  left: 50%;
+  bottom: 11rem;
+  z-index: 6;
+  transform: translateX(-50%);
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  background: rgb(19 18 16 / 0.6);
+  backdrop-filter: blur(6px);
+  color: var(--craie);
+  font-family: var(--f-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  animation: vmSwipe 3.4s var(--ease) 1.2s both;
+  pointer-events: none;
+}
+@media (max-width: 900px) and (pointer: coarse) {
+  .vm[data-mode="pinned"] .vm__swipe { display: inline-flex }
+}
+@keyframes vmSwipe {
+  0%, 100% { opacity: 0; transform: translateX(-50%) translateY(6px) }
+  12%, 72% { opacity: 1; transform: translateX(-50%) translateY(0) }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vm__swipe { animation: none; opacity: 1 }
 }
