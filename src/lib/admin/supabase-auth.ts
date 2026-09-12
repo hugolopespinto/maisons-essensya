@@ -35,8 +35,10 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
    ════════════════════════════════════════════════════════════════ */
 
 /* Pas de barre finale : la bibliothèque concatène derrière. */
-const BASE = (process.env.SUPABASE_URL ?? "").replace(/\/+$/, "");
-const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
+/* Lus à la requête : voir le commentaire de auth.ts — une constante de
+   module fige la valeur dans les artefacts de build. */
+const base = (): string => (process.env.SUPABASE_URL ?? "").replace(/\/+$/, "");
+const serviceKey = (): string => process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
 
 /* ════ POURQUOI LA CLÉ ANONYME EST EXIGÉE, ET PLUS SEULEMENT SOUHAITÉE ════
    L'appel de connexion doit porter une clé `apikey`. La version
@@ -51,7 +53,8 @@ const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
    moitié faite : elle ne bloque pas la connexion, elle change de mode.
    Le tableau de bord affiche l'avertissement correspondant — voir
    `cleAnonManquante()`. */
-const ANON_KEY =
+/* Lue à la requête, comme les autres : voir le commentaire de auth.ts. */
+const anonKey = (): string =>
   process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
 /** `editeur` : contenu, blog, SEO, annonces. `admin` : + tracking. */
@@ -64,7 +67,7 @@ export type Administrateur = {
   role: RoleAdmin;
 };
 
-const urlValide = (): boolean => /^https?:\/\//.test(BASE);
+const urlValide = (): boolean => /^https?:\/\//.test(base());
 
 /**
  * Supabase pilote l'authentification dès que l'URL, la clé de service ET
@@ -73,7 +76,7 @@ const urlValide = (): boolean => /^https?:\/\//.test(BASE);
  * partagé que refuser toute connexion au premier déploiement incomplet.
  */
 export const isSupabaseConfigured = (): boolean =>
-  urlValide() && SERVICE_KEY.length > 0 && ANON_KEY.length > 0;
+  urlValide() && serviceKey().length > 0 && anonKey().length > 0;
 
 /**
  * Cas à signaler au client : la base est là, les comptes nommés non — il
@@ -81,7 +84,7 @@ export const isSupabaseConfigured = (): boolean =>
  * passe partagé passerait inaperçue, et c'est une perte de traçabilité.
  */
 export const cleAnonManquante = (): boolean =>
-  urlValide() && SERVICE_KEY.length > 0 && ANON_KEY.length === 0;
+  urlValide() && serviceKey().length > 0 && anonKey().length === 0;
 
 /* Une connexion ne doit pas pouvoir suspendre une requête : sans borne,
    un Supabase injoignable transforme l'écran de login en page qui tourne
@@ -128,7 +131,7 @@ const OPTIONS = {
 let service: SupabaseClient | null = null;
 
 function clientService(): SupabaseClient {
-  service ??= createClient(BASE, SERVICE_KEY, OPTIONS);
+  service ??= createClient(base(), serviceKey(), OPTIONS);
   return service;
 }
 
@@ -140,7 +143,7 @@ function clientService(): SupabaseClient {
  * Sur un serveur qui traite plusieurs requêtes, c'est exactement le genre
  * d'état qu'on ne veut pas voir traverser deux utilisateurs.
  */
-const clientAnonyme = (): SupabaseClient => createClient(BASE, ANON_KEY, OPTIONS);
+const clientAnonyme = (): SupabaseClient => createClient(base(), anonKey(), OPTIONS);
 
 /** Forme de la ligne lue dans `admins` (snake_case côté SQL). */
 type LigneAdmin = { user_id: string; email: string; role: string | null };

@@ -54,8 +54,10 @@ import type {
 
 /* Pas de barre finale : on concatène des chemins absolus derrière, et
    `//rest/v1` n'est pas la même route que `/rest/v1`. */
-const SB_URL = (process.env.SUPABASE_URL ?? "").trim().replace(/\/+$/, "");
-const SB_KEY = (process.env.SUPABASE_SERVICE_ROLE_KEY ?? "").trim();
+/* Lus à la requête : une constante de module fige la valeur dans les
+   artefacts de build — un déploiement a déjà échoué pour cela. */
+const sbUrl = (): string => (process.env.SUPABASE_URL ?? "").trim().replace(/\/+$/, "");
+const sbKey = (): string => (process.env.SUPABASE_SERVICE_ROLE_KEY ?? "").trim();
 
 /** Nom affiché dans le back-office. */
 export const nom = "supabase" as const;
@@ -74,7 +76,7 @@ export const nom = "supabase" as const;
  * le repli fichier + mot de passe partagé est cohérent, lui.
  */
 export function isSupabaseConfigured(): boolean {
-  return /^https?:\/\/.+/.test(SB_URL) && SB_KEY.length > 0;
+  return /^https?:\/\/.+/.test(sbUrl()) && sbKey().length > 0;
 }
 
 /** Ancien nom, conservé pour ne casser aucun appelant. */
@@ -91,7 +93,7 @@ function sb(): SupabaseClient {
       "Supabase n'est pas configuré (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY).",
     );
   }
-  client ??= createClient(SB_URL, SB_KEY, {
+  client ??= createClient(sbUrl(), sbKey(), {
     /* Pas de session à persister ni de jeton à rafraîchir : on est côté
        serveur, avec une clé de service et aucun utilisateur connecté. */
     auth: {

@@ -7,7 +7,14 @@ import { VERSIONS } from "@/data/essensya";
 
 export const VITAHOME = {
   base: process.env.VITAHOME_BASE ?? "https://pro.vitahome.fr/api",
-  token: process.env.VITAHOME_TOKEN ?? "",
+  /* ⚠ ACCESSEUR, PAS UNE VALEUR. Une propriété évaluée à la construction
+     de l'objet est figée à la COMPILATION : le token finirait dans les
+     artefacts de build. Le scanner de secrets de Netlify a déjà fait
+     échouer un déploiement pour ce motif sur une autre variable.
+     Les appels `VITAHOME.token` ne changent pas d'écriture. */
+  get token(): string {
+    return process.env.VITAHOME_TOKEN ?? "";
+  },
   entityId: Number(process.env.VITAHOME_ENTITY_ID ?? 11), // 11 = MAISONS DEMO
   feeds: { terrain: "pack-26", tm: "pack-1860", maison: "pack-3402" },
   prospectEndpoint: "/ajout-contact.json",

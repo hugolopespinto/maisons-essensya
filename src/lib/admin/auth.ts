@@ -37,15 +37,22 @@ const COOKIE = "essensya_admin";
 /** 8 h : une journée de travail, pas plus. */
 const MAX_AGE = 60 * 60 * 8;
 
-const PASSWORD = process.env.ADMIN_PASSWORD ?? "";
+/* ⚠ LUS À LA REQUÊTE, JAMAIS AU NIVEAU MODULE.
+   Une constante de module est évaluée à la COMPILATION : sa valeur finit
+   figée dans les artefacts de build, et le scanner de secrets de Netlify
+   a fait échouer un déploiement pour exactement cette raison.
+   Deux bénéfices à la lecture paresseuse : plus rien à inliner, et
+   changer une variable d'environnement prend effet sans reconstruire. */
+const motDePassePartage = (): string => process.env.ADMIN_PASSWORD ?? "";
+
 /* Sans secret dédié, on dérive du mot de passe (mode partagé) ou de la
    clé de service (mode Supabase) : la session reste signée, et faire
    tourner l'un ou l'autre invalide TOUTES les sessions en cours — c'est
    le levier d'urgence à connaître pour éjecter quelqu'un immédiatement. */
-const SECRET =
+const secretSignature = (): string =>
   process.env.ADMIN_SESSION_SECRET ||
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  PASSWORD ||
+  motDePassePartage() ||
   "dev-only";
 
 export type { RoleAdmin };
@@ -70,10 +77,10 @@ export const authDriver = (): "supabase" | "mot-de-passe" =>
  * Sans rien, `/admin/login` affiche un écran de configuration.
  */
 export const isAdminEnabled = (): boolean =>
-  isSupabaseConfigured() || PASSWORD.length >= 8;
+  isSupabaseConfigured() || motDePassePartage().length >= 8;
 
 function sign(payload: string): string {
-  return createHmac("sha256", SECRET).update(payload).digest("base64url");
+  return createHmac("sha256", secretSignature()).update(payload).digest("base64url");
 }
 
 function safeEqual(a: string, b: string): boolean {
@@ -148,7 +155,7 @@ export async function createSession(
     return encoder({ exp, email: admin.email, role: admin.role });
   }
 
-  if (!isAdminEnabled() || !safeEqual(motDePasse, PASSWORD)) return null;
+  if (!isAdminEnabled() || !safeEqual(motDePasse, motDePassePartage())) return null;
   /* Un mot de passe partagé ne distingue personne : il donne tout, y
      compris les écrans sensibles. Rétrograder ce mode à `editeur`
      fermerait le tracking à une installation qui fonctionne aujourd'hui. */

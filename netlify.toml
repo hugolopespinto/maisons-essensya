@@ -10,6 +10,26 @@
 [build.environment]
   NODE_VERSION = "22"
 
+  # ════ SCANNER DE SECRETS ════
+  # Netlify refuse un déploiement s'il retrouve la valeur d'une variable
+  # secrète dans le dépôt ou la sortie de build. Bon réflexe, et il a
+  # déjà bloqué un déploiement ici.
+  #
+  # Ce qu'il trouvait : `.next/cache/turbopack/*.sst`, le cache de
+  # COMPILATION de Turbopack. Ce dossier n'est jamais servi au visiteur
+  # ni empaqueté dans les functions — Netlify le conserve seulement d'un
+  # build à l'autre pour accélérer le suivant, puis le scanne.
+  #
+  # Vérifié avant d'écrire cette ligne : la sortie réellement déployée
+  # (910 fichiers, cache exclu) ne contient AUCUN secret. On exclut donc
+  # le seul chemin concerné, et uniquement lui — surtout pas
+  # SECRETS_SCAN_ENABLED = "false", qui désarmerait le garde-fou partout.
+  #
+  # ⚠ Si ce scanner signale un jour un autre chemin, c'est un vrai
+  # problème : ne pas l'ajouter ici sans avoir vérifié que le fichier
+  # n'est pas servi.
+  SECRETS_SCAN_OMIT_PATHS = ".next/cache/**,.netlify/.next/cache/**"
+
 # ════ URL CANONIQUE ════
 # Sans NEXT_PUBLIC_SITE_URL, le layout retombe sur http://localhost:3000 :
 # tous les <link rel="canonical">, les Open Graph et le JSON-LD partent
