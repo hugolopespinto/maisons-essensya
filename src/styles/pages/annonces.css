@@ -5,6 +5,13 @@
 .l-filter label{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase;color:var(--pierre)}
 .l-filter select{font-family:var(--f-body);font-size:.92rem;padding:.6rem 2.2rem .6rem .8rem;background:transparent;border:1px solid var(--beton);border-radius:var(--radius);appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23867E70' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer}
 .l-filter select:focus{outline:none;border-color:var(--bois)}
+/* Recherche texte : la commune est la première question que se pose un
+   acheteur, et le flux couvre des centaines de communes — un menu
+   déroulant de localités n'était pas tenable. */
+.l-filter--wide{flex:1 1 240px;min-width:180px}
+.l-filter input[type="search"]{font-family:var(--f-body);font-size:.92rem;padding:.6rem .8rem;background:transparent;border:1px solid var(--beton);border-radius:var(--radius);color:inherit;width:100%;-webkit-appearance:none;appearance:none}
+.l-filter input[type="search"]::placeholder{color:var(--pierre-clair)}
+.l-filter input[type="search"]:focus{outline:none;border-color:var(--bois)}
 .l-filters__count{margin-left:auto;font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre)}
 .l-filters__reset{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.1em;text-transform:uppercase;color:var(--bois);padding:.6rem 0;border-bottom:1px solid transparent}
 .l-filters__reset:hover{border-color:var(--bois)}
@@ -50,7 +57,7 @@
 .l-map__sync input{accent-color:var(--bois)}
 .l-map__hint{margin-top:.5rem;font-family:var(--f-mono);font-size:var(--fs-label);color:var(--pierre);opacity:.7}
 @media (max-width:1000px){
-  .l-filter select{padding-top:.85rem;padding-bottom:.85rem}
+  .l-filter select,.l-filter input[type="search"]{padding-top:.85rem;padding-bottom:.85rem}
   .l-map__controls button{width:44px;height:44px}
   .l-view-toggle button{padding:.85rem 1.1rem}
   .l-body .container{grid-template-columns:1fr}

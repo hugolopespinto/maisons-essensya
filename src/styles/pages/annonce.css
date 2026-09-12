@@ -2,38 +2,96 @@
 .a-head{padding:calc(var(--header-h) + var(--s-5)) 0 var(--s-4)}
 .a-head .c-breadcrumb{color:var(--pierre);margin-bottom:var(--s-3)}
 .a-head__top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s-3);align-items:end}
+.a-head__top h1{margin-top:var(--s-2)}
 .a-head h1{font-size:clamp(1.9rem,4.5vw,3.4rem);max-width:18ch}
-.a-head__price{font-family:var(--f-mono);font-weight:500;font-size:clamp(1.6rem,3.4vw,2.4rem);line-height:1}
-.a-head__price small{display:block;font-size:var(--fs-label);letter-spacing:.16em;text-transform:uppercase;color:var(--pierre);margin-top:.5rem}
+.a-head__top .c-offer{margin-left:.5rem}
+/* Le prix passe devant le titre : c'est lui l'argument, pas le lieu.
+   Plafonné sous la valeur libre de .c-price-xl pour tenir sur une ligne
+   à côté d'un h1 de 3,4 rem. */
+.a-head__price .c-price-xl{font-size:clamp(2.2rem,6vw,4rem);text-align:right}
+/* Sans prix exploitable dans le flux, on n'écrit pas « 0 € » en 4 rem. */
+.a-head__ask{font-family:var(--f-mono);font-weight:500;font-size:clamp(1.2rem,2.4vw,1.6rem);line-height:1.1;display:block;text-align:right;color:var(--pierre)}
+.a-head__ask small{display:block;font-size:var(--fs-label);letter-spacing:.16em;text-transform:uppercase;margin-top:.5rem}
+@media (max-width:640px){.a-head__price .c-price-xl,.a-head__ask{text-align:left}}
 .a-head .c-pictos{margin-top:var(--s-4);border-top:var(--line);padding-top:var(--s-3)}
+
 .a-gallery{padding-bottom:var(--s-5)}
 .a-gallery .container{display:grid;grid-template-columns:2fr 1fr;gap:var(--s-2)}
+/* Aucune photo à côté du visuel principal : il prend toute la largeur
+   plutôt que de laisser une colonne vide. */
+.a-gallery .container.is-solo{grid-template-columns:1fr}
 .a-gallery .c-reveal-img{aspect-ratio:16/10}
 .a-gallery__side{display:grid;gap:var(--s-2)}
 .a-gallery__side .c-reveal-img{aspect-ratio:16/9.8}
 .a-gallery img{width:100%;height:100%;object-fit:cover}
 @media (max-width:900px){.a-gallery .container{grid-template-columns:1fr}.a-gallery__side{grid-template-columns:1fr 1fr}}
+
 .a-body{padding-bottom:var(--s-7)}
 .a-body .container{display:grid;grid-template-columns:7fr 5fr;gap:var(--s-6);align-items:start}
 @media (max-width:900px){.a-body .container{grid-template-columns:1fr}}
 .a-content h2{font-size:clamp(1.4rem,2.6vw,2rem);margin-bottom:var(--s-3)}
 .a-content > p{color:var(--pierre);max-width:38em}
-.a-model{margin-top:var(--s-5);border:var(--line);border-radius:var(--radius);overflow:hidden;display:grid;grid-template-columns:5fr 7fr}
-.a-model__media{aspect-ratio:4/3;overflow:hidden}
-.a-model__media img{width:100%;height:100%;object-fit:cover;transition:transform 1s var(--ease)}
-.a-model:hover .a-model__media img{transform:scale(1.04)}
-.a-model__body{padding:var(--s-3);display:flex;flex-direction:column;justify-content:center;gap:var(--s-2)}
-.a-model__name{font-family:var(--f-display);font-variation-settings:"wdth" 122;font-weight:700;text-transform:uppercase;font-size:1.5rem}
-.a-model__meta{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.08em;color:var(--pierre)}
-@media (max-width:640px){.a-model{grid-template-columns:1fr}}
-.a-land{margin-top:var(--s-5);border-top:var(--line)}
-.a-land li{display:flex;justify-content:space-between;padding:var(--s-2) 0;border-bottom:var(--line);font-family:var(--f-mono);font-size:var(--fs-small)}
-.a-land li span:first-child{color:var(--pierre);text-transform:uppercase;font-size:var(--fs-label);letter-spacing:.14em;flex:none;padding-right:1rem}
-.a-land li span:last-child{text-align:right}
+/* Intertitre de section dans la colonne de contenu. */
+.a-sub{font-size:1.05rem;letter-spacing:.02em;margin:var(--s-5) 0 var(--s-2)}
+.a-note{margin:var(--s-3) 0 var(--s-2);font-size:var(--fs-small)}
+
+/* ════ LA MAISON SUR CE TERRAIN ════
+   Le plan du RDC fourni par le flux vaut mieux qu'une photo de façade
+   qui n'est pas celle de la parcelle. */
+.a-house{margin-top:var(--s-5);border:var(--line);border-radius:var(--radius);overflow:hidden;display:grid;grid-template-columns:5fr 7fr}
+.a-house--noplan{grid-template-columns:1fr}
+.a-house__media{aspect-ratio:4/3;overflow:hidden;background:var(--blanc)}
+/* Un plan se lit entier : `contain`, jamais `cover`. */
+.a-house__media img{width:100%;height:100%;object-fit:contain;transition:transform 1s var(--ease)}
+.a-house:hover .a-house__media img{transform:scale(1.03)}
+.a-house__body{padding:var(--s-3);display:flex;flex-direction:column;justify-content:center;gap:var(--s-2)}
+.a-house__name{font-family:var(--f-display);font-variation-settings:"wdth" 122;font-weight:700;text-transform:uppercase;font-size:1.5rem}
+.a-house__meta{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.08em;color:var(--pierre)}
+.a-house__text{font-size:var(--fs-small);color:var(--pierre);max-width:42em}
+@media (max-width:640px){.a-house{grid-template-columns:1fr}}
+
+/* Terrain seul : pas de plan à montrer, juste la maison qui va dessus. */
+.a-next{margin-top:var(--s-5);border-top:var(--line);padding-top:var(--s-3);display:flex;flex-direction:column;gap:var(--s-2);align-items:flex-start}
+
+/* Mentions légales de l'annonce : obligatoires, donc présentes ; discrètes,
+   donc en pied de colonne. */
+.a-mention{margin-top:var(--s-5);padding-top:var(--s-3);border-top:var(--line);font-family:var(--f-mono);font-size:var(--fs-label);line-height:1.7;color:var(--pierre);max-width:60em}
+
+/* ════ CARTE FORMULAIRE (partagée avec la page agence) ════ */
 .a-aside{position:sticky;top:calc(var(--header-h) + var(--s-3))}
 .a-aside__card{background:var(--anthracite);color:var(--craie);border-radius:var(--radius);padding:var(--s-4)}
 .a-aside__card h3{font-size:1.15rem;margin-bottom:.4rem}
 .a-aside__card > p{font-size:var(--fs-small);color:var(--sable);opacity:.75;margin-bottom:var(--s-3)}
 .a-aside__ref{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase;color:var(--bois);display:block;margin-bottom:var(--s-2)}
 .a-aside__agency{margin-top:var(--s-3);padding-top:var(--s-3);border-top:1px solid rgba(243,241,236,.16);font-family:var(--f-mono);font-size:var(--fs-small);color:var(--sable);opacity:.8}
+.a-aside__agency a{border-bottom:1px solid rgba(243,241,236,.35)}
+.a-aside__agency a:hover{border-color:var(--craie)}
 
+/* ════ RAPPEL MOBILE (.a-cta) ════
+   Sous 900 px l'aside tombait en fin de page : le prix et le formulaire
+   sortaient du champ de vision pendant toute la lecture. Barre fixe
+   (prix + bouton) qui rejoue le MÊME LeadForm dans un tiroir.
+   Distinct de .c-sticky-cta, qui est masqué sur cette page. */
+.a-cta{display:none}
+@media (max-width:900px){
+  /* Le tiroir rejoue le formulaire de l'aside : le laisser aussi en pied
+     de page afficherait deux fois la même chose. */
+  .a-body .a-aside{display:none}
+  .a-body{padding-bottom:calc(var(--s-6) + 72px)}
+  .a-cta{display:block}
+  .a-cta__bar{position:fixed;left:0;right:0;bottom:0;z-index:150;display:flex;align-items:center;gap:var(--s-2);padding:.7rem var(--gutter) calc(.7rem + env(safe-area-inset-bottom));background:rgba(33,32,28,.97);backdrop-filter:blur(10px);color:var(--craie)}
+  .a-cta__price{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+  .a-cta__price small{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase;color:var(--sable);opacity:.7}
+  .a-cta__price strong{font-family:var(--f-mono);font-weight:500;font-size:1.05rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .a-cta__bar .c-btn{margin-left:auto;flex:none}
+  .a-cta__drawer{position:fixed;inset:0;z-index:160;display:flex;align-items:flex-end}
+  .a-cta__scrim{position:absolute;inset:0;width:100%;height:100%;background:rgba(19,18,16,.55)}
+  .a-cta__panel{position:relative;z-index:1;width:100%;max-height:92svh;overflow:auto;overscroll-behavior:contain;background:var(--anthracite);border-radius:var(--radius) var(--radius) 0 0;padding-bottom:env(safe-area-inset-bottom);animation:a-cta-up var(--dur-fast) var(--ease)}
+  .a-cta__panel .a-aside__card{border-radius:0}
+  .a-cta__close{position:sticky;top:0;z-index:1;margin-left:auto;display:block;width:max-content;padding:.9rem var(--s-3);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.16em;text-transform:uppercase;color:var(--sable);background:var(--anthracite)}
+}
+@keyframes a-cta-up{from{transform:translateY(12%);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  .a-cta__panel{animation:none}
+  .a-house__media img{transition:none}
+}

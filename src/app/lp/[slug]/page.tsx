@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import BodyClass from "@/components/BodyClass";
 import LeadForm, { ContactFields } from "@/components/LeadForm";
+import { MarkedList } from "@/components/SpecList";
 import { Icon } from "@/components/icons";
-import { ESSENSYA_DATA } from "@/data/essensya";
+import { ESSENSYA_DATA, HOUSE } from "@/data/essensya";
 import { fmtPrice, landingUrl } from "@/lib/format";
 import "@/styles/pages/landing.css";
 
@@ -31,6 +32,11 @@ export async function generateMetadata({
   };
 }
 
+/* Le consentement RGPD n'est plus posé page par page : il vit dans
+   <LeadForm>, qui le rend sur les huit formulaires du site. Une landing
+   d'acquisition est justement le genre de page qu'on duplique vite — la
+   case ne doit pas dépendre de la vigilance de celui qui duplique. */
+
 export default async function LandingPage({
   params,
 }: {
@@ -48,13 +54,13 @@ export default async function LandingPage({
       <section className="lp-hero">
         <div className="lp-hero__bg">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={lp.image} alt={lp.title} />
+          <img src={lp.image} alt={HOUSE.alt} />
         </div>
         <div className="container">
           <div>
-            <span className="c-label" style={{ color: "var(--bois)" }}>
-              Offre limitée
-            </span>
+            {/* Le seul aplat bois du site : il signale une offre datée,
+                pas une urgence fabriquée. */}
+            <span className="c-offer">Prix de lancement</span>
             <h1 style={{ marginTop: "var(--s-2)" }}>{lp.title}</h1>
             <p className="lp-hero__sub">{lp.subtitle}</p>
             <div className="lp-hero__price">
@@ -84,7 +90,40 @@ export default async function LandingPage({
         </div>
       </section>
 
+      {/* Un prix de lancement n'est crédible que si ses exclusions sont
+          affichées aussi grand que ses inclusions. */}
       <section className="lp-strip">
+        <div className="container">
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))",
+              gap: "var(--s-5)",
+            }}
+          >
+            <div data-reveal>
+              <span
+                className="c-label c-label--accent"
+                style={{ display: "block", marginBottom: "var(--s-2)" }}
+              >
+                Compris dans le prix
+              </span>
+              <MarkedList items={HOUSE.included} variant="in" />
+            </div>
+            <div data-reveal>
+              <span
+                className="c-label c-label--accent"
+                style={{ display: "block", marginBottom: "var(--s-2)" }}
+              >
+                Non compris
+              </span>
+              <MarkedList items={HOUSE.excluded} variant="out" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="lp-strip" style={{ background: "var(--craie)" }}>
         <div className="container">
           <div className="s-trust__grid">
             {ESSENSYA_DATA.trust.map((t) => (

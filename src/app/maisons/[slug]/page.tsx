@@ -1,73 +1,112 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import AnnonceCard from "@/components/AnnonceCard";
+import LeadForm, { ContactFields } from "@/components/LeadForm";
 import Plate from "@/components/Plate";
-import VisiteMaison from "@/components/VisiteMaison";
-import { AGENCIES, MODELS, modelById } from "@/data/essensya";
-import { fmtPrice, modelUrl } from "@/lib/format";
+import SpecList, { MarkedList } from "@/components/SpecList";
+import { HOUSE, VERSIONS, otherVersion, versionBySlug } from "@/data/essensya";
+import { fmtPrice, fmtSurface, versionUrl } from "@/lib/format";
 import { getAnnonces } from "@/lib/vitahome/annonces";
+import type { Annonce, HouseVersion } from "@/types";
 import "@/styles/pages/modele.css";
-import "@/styles/visite.css";
 
-/* Les 3 modèles sont connus au build → pages statiques, instantanées. */
+/* Deux pages seulement, connues au build : 3 chambres et 2 chambres. */
 export function generateStaticParams() {
-  return MODELS.map((m) => ({ slug: m.id }));
+  return VERSIONS.map((v) => ({ slug: v.slug }));
 }
 
+/* ⚠ Fiche volontairement courte et strictement factuelle : la visite,
+   l'argumentaire, l'architecture et le comparatif restent sur /maisons et
+   ne sont pas recopiés ici. Si, après validation du contenu par le client,
+   la page reste aussi mince, il faudra sans doute la passer en `robots:
+   noindex` avec un canonical vers /maisons — arbitrage éditorial à prendre
+   avec le client, pas une décision technique à poser ici. */
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const m = modelById(slug);
-  if (!m) return {};
+  const v = versionBySlug(slug);
+  if (!v) return {};
   return {
-    title: `${m.name} — ${m.surface} m², ${m.bedrooms} chambres`,
-    description: m.tagline,
-    alternates: { canonical: modelUrl(m) },
-    openGraph: { title: `${m.name} — Maisons Essensya`, images: [m.heroImage] },
+    title: `${HOUSE.name} — ${v.label}, ${fmtSurface(v.surface)}`,
+    description: v.pour,
+    alternates: { canonical: versionUrl(v) },
+    openGraph: {
+      title: `${HOUSE.name} — ${v.label} · Maisons Essensya`,
+      images: [v.image],
+    },
   };
 }
 
-export default async function ModelPage({
+/** L'écart chiffré avec l'autre déclinaison : la seule chose qui les sépare. */
+function ecartRows(v: HouseVersion, other: HouseVersion | null): [string, ReactNode][] {
+  const rows: [string, ReactNode][] = [
+    ["Surface", fmtSurface(v.surface)],
+    ["Chambres", String(v.bedrooms)],
+    ["Pièces", String(v.rooms)],
+    ["Garage", fmtSurface(v.garageArea)],
+  ];
+  if (other) {
+    const ds = v.surface - other.surface;
+    const db = v.bedrooms - other.bedrooms;
+    rows.push([
+      `Écart / ${other.label}`,
+      `${ds >= 0 ? "+" : "−"}${fmtSurface(Math.abs(ds))} · ${db >= 0 ? "+" : "−"}${Math.abs(db)} chambre`,
+    ]);
+  }
+  return rows;
+}
+
+export default async function VersionPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const m = modelById(slug);
-  if (!m) notFound();
+  const v = versionBySlug(slug);
+  if (!v) notFound();
 
-  const next = MODELS[(MODELS.indexOf(m) + 1) % MODELS.length];
+  const other = otherVersion(v.slug);
+
+  /* Les annonces qui portent cette déclinaison d'abord ; on complète avec
+     des terrains seuls, qui acceptent indifféremment l'une ou l'autre. */
   const annonces = await getAnnonces();
-  const opps = annonces
-    .filter((a) => a.modelId === m.id || a.type === "terrain")
-    .slice(0, 3);
-  const agency = AGENCIES[0];
+  const compatibles = annonces.filter((a) => a.versionSlug === v.slug);
+  const vus = new Set(compatibles.map((a) => a.id));
+  const opps: Annonce[] = [
+    ...compatibles,
+    ...annonces.filter((a) => a.type === "terrain" && !vus.has(a.id)),
+  ].slice(0, 3);
+  const aDesTerrainsSeuls = opps.some((a) => a.type === "terrain");
 
   return (
     <main className="page">
       <section className="m-hero">
         <div className="m-hero__bg">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={m.heroImage} alt={m.alt} />
+          <img src={v.image} alt={v.alt} />
         </div>
         <div className="container">
           <nav className="c-breadcrumb" aria-label="Fil d'ariane">
             <Link href="/">Accueil</Link>
             <span className="sep">/</span>
-            <Link href="/maisons">Maisons</Link>
+            <Link href="/maisons">La maison</Link>
             <span className="sep">/</span>
-            <span>{m.name}</span>
+            <span>{v.label}</span>
           </nav>
           <span className="c-label" style={{ color: "var(--sable)" }}>
-            Modèle {m.index}
+            Déclinaison
           </span>
-          <h1>{m.name}</h1>
+          <h1>
+            {HOUSE.name} — {v.label}
+          </h1>
+          {/* Le prix est dans la plaque : il se lit sans scroller. */}
           <div className="c-plate">
-            <Plate model={m} withName={false} />
+            <Plate version={v} withName={false} withGarage />
           </div>
         </div>
       </section>
@@ -75,42 +114,30 @@ export default async function ModelPage({
       <section className="m-quote">
         <div className="container">
           <span className="c-label c-label--accent" data-reveal>
-            La philosophie du modèle
+            Pour qui
           </span>
-          <p data-reveal>{m.philosophy}</p>
-        </div>
-      </section>
+          <p data-reveal>{v.pour}</p>
 
-      {/* Remplace l'ancienne galerie 1+2 : mêmes photos, mais on traverse
-          la maison au lieu de la survoler. Voir VisiteMaison.tsx. */}
-      <VisiteMaison model={m} />
-
-      <section className="m-arch">
-        <div className="container m-arch__grid">
-          <div className="c-reveal-img">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={m.archImage}
-              alt={`Détail architectural du modèle ${m.name}`}
-              loading="lazy"
-            />
-          </div>
-          <div>
-            <span className="c-label" data-reveal>
-              Architecture
-            </span>
-            <h2 data-reveal style={{ marginTop: "var(--s-2)" }}>
-              Un volume précis
-            </h2>
-            <p data-reveal>{m.archText}</p>
-            <ul className="m-arch__materials" data-reveal>
-              {m.materials.map(([k, v]) => (
-                <li key={k}>
-                  <span>{k}</span>
-                  <span>{v}</span>
-                </li>
-              ))}
-            </ul>
+          {/* L'information la plus utile de la page : ce qui change, et
+              surtout ce qui ne change pas. Grille 7/5 déjà au design system. */}
+          <div className="m-plan__grid" style={{ marginTop: "var(--s-6)" }}>
+            <div>
+              <span className="c-label" data-reveal>
+                La différence
+              </span>
+              <p className="u-measure" data-reveal style={{ marginTop: "var(--s-2)" }}>
+                {v.difference}
+              </p>
+              <p className="u-measure u-muted" data-reveal>
+                Le séjour traversant, la cuisine aménagée, la terrasse couverte,
+                les matériaux et les garanties sont les mêmes dans les deux
+                déclinaisons. Le nombre de chambres est le seul arbitrage
+                qu&apos;on vous demande.
+              </p>
+            </div>
+            <div data-reveal>
+              <SpecList rows={ecartRows(v, other)} />
+            </div>
           </div>
         </div>
       </section>
@@ -119,47 +146,27 @@ export default async function ModelPage({
         <div className="container">
           <div className="c-section-head" data-reveal>
             <span className="c-label c-label--accent">Le plan</span>
-            <h2>{m.surface} m² qui travaillent</h2>
+            <h2>Le détail des surfaces</h2>
           </div>
           <div className="m-plan__grid">
             <div className="c-reveal-img">
+              {/* Un plan se lit en entier : `contain`, jamais `cover`. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={m.planImage}
-                alt={`Plan architectural du modèle ${m.name}`}
+                src={v.planImage}
+                alt={`Plan du rez-de-chaussée — ${HOUSE.name} en ${v.label}, ${fmtSurface(v.surface)}`}
                 loading="lazy"
+                style={{ objectFit: "contain", background: "var(--craie)" }}
               />
             </div>
-            <ul className="m-plan__rooms" data-reveal>
-              {m.rooms.map(([k, v]) => (
-                <li key={k}>
-                  <span>{k}</span>
-                  <span>{v}</span>
-                </li>
-              ))}
-            </ul>
+            <div data-reveal>
+              <SpecList rows={v.rooms_detail} />
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="m-features">
-        <div className="container">
-          <div className="c-section-head" data-reveal>
-            <span className="c-label c-label--accent">Caractéristiques</span>
-            <h2>Ce qui fait {m.name}</h2>
-          </div>
-          <div className="m-features__grid">
-            {m.features.map((x) => (
-              <div className="m-features__item" data-reveal key={x.t}>
-                <b>{x.t}</b>
-                {x.d}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="m-price">
+      <section className="m-price" id="prix">
         <div className="container m-price__grid">
           <div>
             <span className="c-label c-label--accent" data-reveal>
@@ -170,13 +177,14 @@ export default async function ModelPage({
               <br />
               un prix tenu
             </h2>
-            <div className="m-price__amount" data-reveal>
-              {fmtPrice(m.priceFrom)}
-              <small>Maison seule, hors terrain — à partir de</small>
+            <div className="c-price-xl" data-reveal style={{ marginTop: "var(--s-4)" }}>
+              <span className="from">À partir de</span>
+              {fmtPrice(v.priceFrom)}
+              <small>Maison seule, hors terrain</small>
             </div>
             <p className="m-price__note" data-reveal>
-              Prix indicatif selon terrain et département. Chiffrage précis et définitif
-              dès le premier rendez-vous.
+              Prix indicatif selon le terrain et le département. Chiffrage précis
+              dès le premier rendez-vous, puis figé par le contrat CCMI.
             </p>
           </div>
           <div>
@@ -185,15 +193,44 @@ export default async function ModelPage({
               data-reveal
               style={{ display: "block", marginBottom: "var(--s-2)" }}
             >
-              Inclus dans le prix
+              Compris dans le prix
             </span>
-            <ul className="m-price__included">
-              {m.included.map((i) => (
-                <li data-reveal key={i}>
-                  {i}
-                </li>
-              ))}
-            </ul>
+            <div data-reveal>
+              <MarkedList items={HOUSE.included} variant="in" />
+            </div>
+            {/* Le pendant obligatoire de la liste précédente : taire les
+                exclusions détruit la crédibilité d'un prix bas. */}
+            <span
+              className="c-label"
+              data-reveal
+              style={{
+                display: "block",
+                marginTop: "var(--s-4)",
+                marginBottom: "var(--s-2)",
+              }}
+            >
+              Non compris
+            </span>
+            <div data-reveal>
+              <MarkedList items={HOUSE.excluded} variant="out" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="m-features" style={{ paddingTop: "var(--s-7)" }}>
+        <div className="container">
+          <div className="c-section-head" data-reveal>
+            <span className="c-label c-label--accent">Les prestations</span>
+            <h2>Identiques aux deux déclinaisons</h2>
+          </div>
+          <p className="u-measure u-muted" data-reveal>
+            Elles sont attachées à la maison, pas au plan : choisir 2 ou 3
+            chambres ne change ni les matériaux, ni les équipements, ni les
+            garanties.
+          </p>
+          <div data-reveal style={{ marginTop: "var(--s-4)", maxWidth: "46em" }}>
+            <SpecList rows={HOUSE.materials} />
           </div>
         </div>
       </section>
@@ -201,42 +238,90 @@ export default async function ModelPage({
       <section className="m-opps">
         <div className="container">
           <div className="c-section-head" data-reveal>
-            <span className="c-label c-label--accent">Construire {m.name}</span>
-            <h2>Opportunités compatibles</h2>
+            <span className="c-label c-label--accent">Où la construire</span>
+            <h2>Terrains compatibles</h2>
           </div>
-          <div className="m-opps__grid">
-            {opps.map((a) => (
-              <AnnonceCard annonce={a} key={a.id} />
-            ))}
-          </div>
-          <div className="m-agency" data-reveal>
-            <div>
-              <span className="c-label c-label--accent">Votre agence</span>
-              <div className="m-agency__name">{agency.name}</div>
-              <div className="m-agency__meta">
-                {agency.address} · {agency.phone}
+          {opps.length > 0 ? (
+            <>
+              <div className="m-opps__grid">
+                {opps.map((a) => (
+                  <AnnonceCard annonce={a} key={a.id} />
+                ))}
               </div>
-            </div>
-            <Link href="/contact" className="c-btn c-btn--solid">
-              Parler de mon projet <span className="arrow">→</span>
+              {aDesTerrainsSeuls && (
+                <p className="m-price__note" data-reveal>
+                  Les terrains seuls accueillent indifféremment la {v.label} ou la{" "}
+                  {other?.label ?? "seconde déclinaison"} : l&apos;emprise au sol
+                  est la même à quelques mètres près.
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="u-measure u-muted" data-reveal>
+              Aucun terrain n&apos;est disponible en ligne pour le moment. Nos
+              agences en repèrent chaque semaine, souvent avant leur mise sur le
+              marché.
+            </p>
+          )}
+          <div data-reveal style={{ marginTop: "var(--s-4)" }}>
+            <Link href="/annonces" className="c-link">
+              Voir tous les terrains →
             </Link>
           </div>
         </div>
       </section>
 
-      <section className="m-next">
-        <div className="container">
-          <Link href={modelUrl(next)}>
-            <span>
-              <span className="m-next__label">Modèle suivant — {next.index}</span>
-              <div className="m-next__name">{next.name}</div>
+      <section className="s-cta">
+        <div className="container s-cta__grid">
+          <div>
+            <span className="c-label" data-reveal>
+              Votre projet
             </span>
-            <span className="m-next__name" aria-hidden="true">
-              →
-            </span>
-          </Link>
+            <h2 data-reveal>Recevoir le plan {v.label}</h2>
+            <p data-reveal>
+              Le plan coté, le détail des surfaces, ce qui est compris et ce qui
+              ne l&apos;est pas, et les terrains compatibles de votre secteur.
+              Réponse sous 48 h.
+            </p>
+          </div>
+          <div data-reveal>
+            {/* `originKey` pilote l'ORIGIN-ID Vitahome : c'est une clé de flux,
+                pas un mot de la page — le site ne parle jamais de « modèle ». */}
+            <LeadForm
+              originKey="model"
+              gtmEvent="lead_model_request"
+              dark
+              submitLabel="Recevoir le plan"
+              successMessage={`Merci — une agence Essensya vous envoie le plan ${v.label} sous 48 h.`}
+              ctx={{
+                adContent: `${HOUSE.name} — déclinaison ${v.label} — ${fmtSurface(
+                  v.surface,
+                )}, ${v.bedrooms} chambres — à partir de ${fmtPrice(v.priceFrom)}`,
+              }}
+            >
+              <ContactFields prefix="mv" />
+            </LeadForm>
+          </div>
         </div>
       </section>
+
+      {other && (
+        <section className="m-next">
+          <div className="container">
+            <Link href={versionUrl(other)}>
+              <span>
+                <span className="m-next__label">
+                  L&apos;autre déclinaison — {fmtSurface(other.surface)}
+                </span>
+                <div className="m-next__name">{other.label}</div>
+              </span>
+              <span className="m-next__name" aria-hidden="true">
+                →
+              </span>
+            </Link>
+          </div>
+        </section>
+      )}
     </main>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "@/lib/useMediaQuery";
-import type { Model } from "@/types";
+import type { House } from "@/types";
 
 /* ════ VISITE PILOTÉE AU SCROLL ════
    Desktop : piste de (N+0,4)×100vh, stage sticky, une pièce par palier.
@@ -23,8 +23,8 @@ const smoothstep = (a: number, b: number, x: number) => {
   return t * t * (3 - 2 * t);
 };
 
-export default function VisiteMaison({ model }: { model: Model }) {
-  const steps = model.visite;
+export default function VisiteMaison({ house }: { house: House }) {
+  const steps = house.visite;
   const wrapRef = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
 
@@ -78,10 +78,15 @@ export default function VisiteMaison({ model }: { model: Model }) {
         el.style.opacity = vis.toFixed(3);
       });
 
+      /* Le calque se rapproche et descend pendant toute sa traversée : c'est
+         ce mouvement continu qui fait lire la séquence comme un plan filmé
+         plutôt que comme un diaporama. Amplitude volontairement large — la
+         pièce reste à l'écran sur un palier entier, un mouvement discret ne
+         se verrait pas. */
       media.forEach((el, k) => {
         const local = clamp(f - k + 0.5, 0, 1.5) / 1.5;
-        el.style.transform = `scale(${(1.03 + local * 0.11).toFixed(4)}) translate3d(0,${(
-          (local - 0.5) * 3.2
+        el.style.transform = `scale(${(1.02 + local * 0.17).toFixed(4)}) translate3d(0,${(
+          (local - 0.5) * 5.5
         ).toFixed(2)}%,0)`;
       });
 
@@ -139,13 +144,15 @@ export default function VisiteMaison({ model }: { model: Model }) {
     [pinned, reduceMotion, steps],
   );
 
+  /* La piste de scroll suit le nombre de pièces : le palier reste
+     constant (~108 vh) que le parcours en compte 5 ou 6. */
   return (
     <section
       className="vm"
       ref={wrapRef}
       data-mode={pinned ? "pinned" : "static"}
       style={pinned ? { height: `${steps.length * 100 + 40}vh` } : undefined}
-      aria-label={`Visite du modèle ${model.name}, pièce par pièce`}
+      aria-label={`Visite de la maison ${house.name}, pièce par pièce`}
     >
       <div className="vm__stage">
         {steps.map((s, i) => (
@@ -190,7 +197,7 @@ export default function VisiteMaison({ model }: { model: Model }) {
 
         <div className="vm__bar">
           <span className="vm__brand">
-            Visite — <b>{model.name}</b>
+            Visite — <b>{house.name}</b>
           </span>
           <nav className="vm__nav" aria-label="Pièces de la maison">
             {steps.map((s, k) => (

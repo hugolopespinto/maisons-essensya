@@ -3,7 +3,6 @@ import L from "leaflet";
 import "leaflet.markercluster";
 import { useCallback, useEffect, useRef } from "react";
 import { annonceTitle, fmtPrice } from "@/lib/format";
-import { modelById } from "@/data/essensya";
 import type { Annonce } from "@/types";
 import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
@@ -177,8 +176,16 @@ export default function AnnoncesMap({
     cluster.clearLayers();
     markersRef.current.clear();
 
-    const markers = annonces.map((a) => {
-      const label = annonceTitle(a, a.modelId ? modelById(a.modelId)?.name : null);
+    /* Le flux peut livrer une annonce sans coordonnées : un marqueur à
+       [0,0] la placerait dans le golfe de Guinée. On l'écarte de la carte,
+       elle reste dans la liste de résultats. */
+    const markers = annonces
+      .filter(
+        (a): a is Annonce & { lat: number; lng: number } =>
+          typeof a.lat === "number" && typeof a.lng === "number",
+      )
+      .map((a) => {
+      const label = annonceTitle(a);
       const marker = L.marker([a.lat, a.lng], {
         icon: L.divIcon({
           html: `<span>${a.type === "terrain" ? "T" : "M"}</span>`,

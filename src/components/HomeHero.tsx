@@ -2,18 +2,33 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "@/lib/useMediaQuery";
-import { fmtPrice, modelUrl } from "@/lib/format";
-import type { Model } from "@/types";
+import { fmtPrice, fmtSurface, houseUrl } from "@/lib/format";
+import type { House, HouseVersion } from "@/types";
 import Plate from "./Plate";
 
 /* ════ HERO PILOTÉ AU SCROLL ════
-   Desktop : section de 320vh, stage sticky, la marque s'efface et les
-   specs du modèle entrent par paliers.
+   Desktop : section de 320vh, stage sticky, la marque s'efface et le
+   discours entre par paliers.
    Mobile / reduced-motion : pas de pinning (conflit barre d'adresse) —
-   parallaxe douce en rAF, ou image figée.                            */
-const THRESHOLDS = [0.45, 0.55, 0.63, 0.71, 0.8];
+   parallaxe douce en rAF, ou image figée.
 
-export default function HomeHero({ model }: { model: Model }) {
+   Le scénario tient en quatre temps : la maison, LE PRIX, ce qu'il
+   comprend, la visite. Le prix est en deuxième position et en très
+   grand — c'est l'argument n°1, il ne peut pas arriver au milieu d'une
+   énumération de caractéristiques.                                    */
+const THRESHOLDS = [0.45, 0.56, 0.68, 0.8];
+
+/* Les prestations qui rendent le prix crédible. Quatre, pas dix : au-delà
+   on ne les lit plus, et une liste exhaustive vit sur la fiche maison. */
+const PREUVES = ["Cuisine aménagée", "Pompe à chaleur", "Garage intégré", "Garanties CCMI"];
+
+export default function HomeHero({
+  house,
+  version,
+}: {
+  house: House;
+  version: HouseVersion;
+}) {
   const wrapRef = useRef<HTMLElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const brandRef = useRef<HTMLDivElement>(null);
@@ -94,17 +109,12 @@ export default function HomeHero({ model }: { model: Model }) {
       <section
         ref={wrapRef}
         className={`hero-scroll${staticMode ? " is-static" : ""}`}
-        aria-label="Découverte du modèle du moment"
+        aria-label={`La maison ${house.name}`}
       >
         <div className="hero-scroll__stage">
           <div className="hero-scroll__bg">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              ref={imgRef}
-              src={model.heroImage}
-              alt="Maison contemporaine Essensya au crépuscule"
-              fetchPriority="high"
-            />
+            <img ref={imgRef} src={house.heroImage} alt={house.alt} fetchPriority="high" />
           </div>
 
           <div className="container hero-brand" ref={brandRef}>
@@ -117,29 +127,29 @@ export default function HomeHero({ model }: { model: Model }) {
             <div className="container">
               <div className={`hero-model__item${on(0)}`}>
                 <span className="c-label" style={{ color: "var(--sable)" }}>
-                  Le modèle du moment
+                  La maison {house.name}
                 </span>
                 <div className="hero-model__name">
-                  {model.name} — {model.index}
+                  {fmtSurface(version.surface)} de plain-pied
                 </div>
               </div>
               <div className="hero-model__specs">
-                <div className={`hero-model__spec hero-model__item${on(1)}`}>
-                  <b>{model.surface} m²</b>
-                  <span>Surface</span>
+                {/* Le prix occupe toute la largeur et écrase le reste :
+                    c'est lui qu'on doit retenir de ce hero. */}
+                <div
+                  className={`hero-model__spec hero-model__spec--xl hero-model__item${on(1)}`}
+                >
+                  <b>{fmtPrice(version.priceFrom)}</b>
+                  <span>À partir de — maison seule, hors terrain</span>
                 </div>
                 <div className={`hero-model__spec hero-model__item${on(2)}`}>
-                  <b>{model.bedrooms}</b>
-                  <span>Chambres</span>
-                </div>
-                <div className={`hero-model__spec hero-model__item${on(3)}`}>
-                  <b>{fmtPrice(model.priceFrom)}</b>
-                  <span>À partir de</span>
+                  <b>Tout compris</b>
+                  <span>{PREUVES.join(" · ")}</span>
                 </div>
               </div>
-              <div className={`hero-model__item${on(4)}`}>
-                <Link href={modelUrl(model)} className="c-btn c-btn--light">
-                  Découvrir ce modèle <span className="arrow">→</span>
+              <div className={`hero-model__item${on(3)}`}>
+                <Link href={houseUrl()} className="c-btn c-btn--light">
+                  Visiter la maison <span className="arrow">→</span>
                 </Link>
               </div>
             </div>
@@ -147,10 +157,12 @@ export default function HomeHero({ model }: { model: Model }) {
         </div>
       </section>
 
+      {/* En mode statique, le hero animé ne raconte rien : la plaque prend
+          le relais pour que le prix reste visible dès le premier écran. */}
       <div className="hero-static-plate">
         <div className="container">
           <div className="c-plate" data-reveal>
-            <Plate model={model} />
+            <Plate version={version} />
           </div>
         </div>
       </div>

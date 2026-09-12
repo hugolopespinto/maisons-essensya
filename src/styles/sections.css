@@ -118,3 +118,75 @@
 .s-cta h2{max-width:14ch;margin-top:var(--s-2)}
 .s-cta p{margin-top:var(--s-3);max-width:30em;color:var(--sable);opacity:.8}
 
+
+/* ════════════════════════════════════════════════════════════════
+   MONO-PRODUIT — blocs ajoutés pour la maison unique
+   Aucun ne réinvente la grammaire : ils réemploient les gestes
+   existants (grille 5fr/7fr, filets 1px, chiffre géant en contour,
+   mono en capitales) sur un autre axe de répétition.
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Les arguments : même gabarit que l'ex-collection, mais on déroule
+      les arguments de LA maison au lieu de lister des produits. ── */
+.s-args{padding:var(--s-7) 0}
+.s-args__list{display:flex;flex-direction:column;gap:var(--s-7)}
+/* Le chiffre géant en contour survit : il ne numérote plus un catalogue,
+   il martèle une donnée produit (93 m², 0 option, 1 prix). */
+.c-model-row__num--data{letter-spacing:-.03em}
+
+/* ── Les deux déclinaisons, côte à côte et comparables ──
+      Jamais deux produits : deux plans de la même maison. */
+.s-versions{padding:var(--s-7) 0;background:var(--sable)}
+.s-versions__grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-4)}
+.c-version{display:flex;flex-direction:column;background:var(--craie);border:var(--line);border-radius:var(--radius);overflow:hidden;transition:border-color var(--dur-fast) var(--ease)}
+.c-version:hover{border-color:var(--anthracite)}
+.c-version__media{position:relative;aspect-ratio:16/10;overflow:hidden;background:var(--sable)}
+.c-version__media img{width:100%;height:100%;object-fit:cover;transition:transform 1s var(--ease)}
+.c-version:hover .c-version__media img{transform:scale(1.04)}
+.c-version__chiffre{position:absolute;right:var(--s-2);bottom:-.28em;z-index:2;font-family:var(--f-display);font-variation-settings:"wdth" 125;font-weight:800;line-height:1;font-size:clamp(4.5rem,10vw,7rem);color:transparent;-webkit-text-stroke:1.5px var(--craie);pointer-events:none}
+.c-version__body{padding:var(--s-3);display:flex;flex-direction:column;gap:var(--s-2);flex:1}
+.c-version__name{font-family:var(--f-display);font-variation-settings:"wdth" 122;font-weight:700;text-transform:uppercase;font-size:clamp(1.4rem,2.4vw,1.9rem);line-height:1.05}
+.c-version__pour{color:var(--pierre);font-size:var(--fs-small);max-width:34ch}
+.c-version .c-specs{margin-top:auto}
+.c-version__price{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s-2);border-top:var(--line);padding-top:var(--s-2);font-family:var(--f-mono)}
+.c-version__price b{font-weight:500;font-size:1.35rem;font-variant-numeric:tabular-nums}
+.c-version__price span{font-size:var(--fs-label);text-transform:uppercase;letter-spacing:.14em;color:var(--pierre)}
+.c-version__foot{padding:0 var(--s-3) var(--s-3)}
+@media (max-width:900px){.s-versions__grid{grid-template-columns:1fr}}
+
+/* ── Comparatif de prix ── */
+.s-compare{padding:var(--s-7) 0}
+.s-compare__intro{color:var(--pierre);max-width:46ch;margin-top:var(--s-2)}
+.s-compare .c-compare__wrap{margin-top:var(--s-5)}
+
+/* ── Le prix, en très grand, dans le hero piloté au scroll ──
+      Il devient le plus gros chiffre de la page : c'est le geste qui fait
+      basculer la DA du « premium » vers « accessible et transparent ». */
+.hero-model__spec--xl b{font-size:clamp(2.4rem,6.5vw,4.6rem);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.hero-model__spec--xl{flex:1 0 100%}
+
+/* ── Carte annonce compacte (remplace .c-opp) ──
+      Un seul composant annonce, deux densités. Règle aussi le cas des
+      annonces sans photo, qui sont la majorité du flux réel. */
+.c-annonce--compact{display:flex;flex-direction:column;gap:var(--s-2);padding:var(--s-3);background:var(--craie)}
+.c-annonce--compact .c-annonce__body{padding:0}
+.c-annonce--compact .c-annonce__media{aspect-ratio:16/7}
+
+/* ── Bandeau de réassurance chiffré ── */
+.s-proof{background:var(--anthracite);color:var(--craie);padding:var(--s-6) 0}
+.s-proof__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s-4);border-top:1px solid rgba(243,241,236,.16);padding-top:var(--s-4)}
+.s-proof__item b{display:block;font-family:var(--f-mono);font-weight:500;font-size:clamp(1.8rem,4vw,2.8rem);line-height:1;font-variant-numeric:tabular-nums}
+.s-proof__item span{display:block;margin-top:.6rem;font-family:var(--f-mono);font-size:var(--fs-label);text-transform:uppercase;letter-spacing:.16em;color:var(--sable);opacity:.7}
+@media (max-width:900px){.s-proof__grid{grid-template-columns:1fr 1fr;gap:var(--s-3)}}
+
+/* ── Recherche géographique en home ──
+      En mono-produit, la question n'est plus « quelle maison »
+      mais « où, et combien ». Elle passe donc en position 2. */
+.s-search{background:var(--anthracite);color:var(--craie);padding:var(--s-5) 0}
+.s-search__form{display:flex;flex-wrap:wrap;gap:var(--s-2);align-items:flex-end;margin-top:var(--s-3)}
+.s-search .c-field{flex:1 1 180px;min-width:0}
+.s-search .c-field label{color:var(--sable);opacity:.7}
+.s-search .c-field input,.s-search .c-field select{border-color:rgba(243,241,236,.3);color:var(--craie)}
+.s-search .c-field option{color:var(--anthracite)}
+.s-search .c-btn{flex:0 0 auto}
+@media (max-width:640px){.s-search .c-btn{width:100%;justify-content:center}}

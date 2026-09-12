@@ -1,7 +1,20 @@
 /* ════ 1. TOKENS ════ */
 :root{
-  --craie:#F3F1EC; --sable:#E8E3D9; --beton:#CFC9BD; --pierre:#867E70;
+  --craie:#F3F1EC; --sable:#E8E3D9; --beton:#CFC9BD; --pierre:#6E675B;
   --anthracite:#21201C; --noir:#131210; --bois:#9A6B3C; --blanc:#FFFFFF;
+  /* --pierre était #867E70, soit 3,54:1 sur craie — sous le seuil RGAA de
+     4,5:1 alors qu'il sert de couleur de texte courant. Assombri à 4,95:1.
+     L'ancienne valeur reste disponible pour les usages NON textuels
+     (filets, pictos décoratifs) où le contraste ne s'applique pas. */
+  --pierre-clair:#867E70;
+  /* Gris intermédiaire : l'écart béton→pierre était trop grand pour des
+     lignes de tableau, qui se voyaient plus que leur contenu. */
+  --beton-2:#B9B2A4;
+  /* Le bois porte déjà 5 rôles : il ne peut plus signaler une offre. */
+  --bois-clair:#F0E4D6; --bois-fonce:#7C5530;
+  /* Inclus / exclu : deux gris sémantiques, pas deux couleurs vives —
+     la palette est minérale, un vert et un rouge la trahiraient. */
+  --inclus:#4A6B4F; --exclu:#8A7F72;
   --f-display:var(--font-archivo),sans-serif; --f-body:var(--font-instrument),sans-serif; --f-mono:var(--font-plex-mono),monospace;
   --fs-hero:clamp(2.6rem,8vw,6.8rem); --fs-h2:clamp(2rem,4.6vw,3.6rem); --fs-h3:clamp(1.4rem,2.6vw,2rem);
   --fs-body:clamp(1rem,1.15vw,1.125rem); --fs-small:.875rem; --fs-label:.72rem;
@@ -98,7 +111,10 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
 .c-field label{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.16em;text-transform:uppercase;color:var(--pierre)}
 .c-field input,.c-field select,.c-field textarea{font-family:var(--f-body);font-size:1rem;padding:.95rem 1rem;background:transparent;border:1px solid var(--beton);border-radius:var(--radius);color:inherit;transition:border-color var(--dur-fast);appearance:none;-webkit-appearance:none;resize:vertical}
 .c-field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23867E70' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center}
-.c-field input:focus,.c-field select:focus,.c-field textarea:focus{outline:none;border-color:var(--bois)}
+/* Le focus ne doit JAMAIS être supprimé : changer la bordure ne suffit pas
+   pour une navigation au clavier (RGAA 10.7). On garde le liseré. */
+.c-field input:focus-visible,.c-field select:focus-visible,.c-field textarea:focus-visible{outline:2px solid var(--bois);outline-offset:2px;border-color:var(--bois)}
+.c-field input:focus,.c-field select:focus,.c-field textarea:focus{border-color:var(--bois)}
 .c-form--dark .c-field input,.c-form--dark .c-field select,.c-form--dark .c-field textarea{border-color:rgba(243,241,236,.3);color:var(--craie)}
 .c-form--dark .c-field input:focus,.c-form--dark .c-field select:focus,.c-form--dark .c-field textarea:focus{border-color:var(--bois)}
 .c-form--dark .c-field label{color:var(--sable);opacity:.7}
@@ -124,6 +140,70 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
   .c-reveal-img img{transform:none;transition:none}
   .c-sticky-cta{transition:none}
 }
+
+/* ════ 3bis. COMPOSANTS MONO-PRODUIT ════
+   Ajoutés pour le site à maison unique. Aucun ne change la grammaire :
+   filets 1px, chiffres en mono, capitales espacées — la DA fait déjà ça,
+   elle le faisait juste moins souvent que les grandes images.          */
+
+/* Tous les prix s'alignent verticalement : indispensable dès qu'on compare. */
+.c-plate__spec strong,.c-annonce__price strong,.m-price__amount,.c-compare td,.c-sub__dim{font-variant-numeric:tabular-nums}
+
+/* ── Liste clé/valeur — LE motif signature, jusqu'ici dupliqué 5 fois ── */
+.c-specs{border-top:var(--line)}
+.c-specs li{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s-3);padding:var(--s-2) 0;border-bottom:var(--line);font-family:var(--f-mono);font-size:var(--fs-small)}
+.c-specs li > span:first-child{color:var(--pierre);text-transform:uppercase;font-size:var(--fs-label);letter-spacing:.14em;flex:none}
+.c-specs li > span:last-child{text-align:right}
+.c-specs--dark{border-color:rgba(243,241,236,.16)}
+.c-specs--dark li{border-color:rgba(243,241,236,.16)}
+.c-specs--dark li > span:first-child{color:var(--sable);opacity:.6}
+/* Variante à puce : « compris » / « non compris » */
+.c-specs--marked li{display:flex;gap:.8rem;align-items:baseline;justify-content:flex-start;font-family:var(--f-body);font-size:var(--fs-small)}
+.c-specs--marked li::before{font-family:var(--f-mono);flex:none;line-height:1.4}
+.c-specs--in li::before{content:"—";color:var(--inclus)}
+.c-specs--out li::before{content:"×";color:var(--exclu)}
+.c-specs--out li{color:var(--pierre)}
+
+/* ── Comparatif de prix : l'argument central, rendu vérifiable ── */
+.c-compare__wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.c-compare{width:100%;min-width:520px;border-collapse:collapse;text-align:left}
+.c-compare th,.c-compare td{padding:var(--s-2) var(--s-3);border-bottom:1px solid var(--beton-2);vertical-align:baseline}
+.c-compare thead th{font-family:var(--f-mono);font-size:var(--fs-label);font-weight:500;text-transform:uppercase;letter-spacing:.16em;color:var(--pierre);border-bottom:1px solid var(--anthracite);white-space:nowrap}
+.c-compare tbody th{font-weight:400;font-size:var(--fs-small);color:var(--anthracite)}
+.c-compare td{font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre)}
+/* La colonne Essensya se distingue par un fond, pas par une couleur criarde. */
+.c-compare .is-us{background:var(--sable);color:var(--anthracite)}
+.c-compare thead .is-us{color:var(--anthracite);font-weight:500}
+.c-compare tr:last-child td,.c-compare tr:last-child th{border-bottom:none}
+.c-compare .is-gain{color:var(--bois-fonce)}
+.c-compare__note{margin-top:var(--s-3);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.05em;color:var(--pierre);max-width:60ch}
+@media (max-width:560px){.c-compare th,.c-compare td{padding:var(--s-2) var(--s-2)}}
+
+/* ── Substitut graphique (annonce sans photo) ──
+   Cas nominal : 90 terrains sur 100 n'ont aucun média. */
+.c-sub{display:block;width:100%;height:100%}
+.c-sub__cote line{stroke:var(--pierre-clair);stroke-width:.75}
+.c-sub text{font-family:var(--f-mono);fill:var(--pierre)}
+.c-sub__dim{font-size:9px;letter-spacing:.04em}
+.c-sub__surface{font-size:12px;font-weight:500;fill:var(--anthracite);letter-spacing:.02em}
+.c-sub__label{font-size:7.5px;text-transform:uppercase;letter-spacing:.18em;fill:var(--bois)}
+.c-sub__inner{font-size:9px;fill:var(--craie);letter-spacing:.02em}
+.c-sub__nord path{fill:var(--pierre-clair)}
+.c-sub__nord text{font-size:7px;letter-spacing:.1em;fill:var(--pierre-clair)}
+
+/* ── Bandeau d'offre : le seul endroit où le bois devient un aplat ── */
+.c-offer{display:inline-flex;align-items:center;gap:.6rem;background:var(--bois-clair);color:var(--bois-fonce);font-family:var(--f-mono);font-size:var(--fs-label);text-transform:uppercase;letter-spacing:.14em;padding:.5rem .9rem;border-radius:var(--radius)}
+
+/* ── Prix héroïque : le chiffre devient l'élément le plus grand de la page ──
+   La DA plafonnait le prix à 3,6rem quand un h1 monte à 6,8rem : on vendait
+   l'architecture avant le prix, sur un produit dont le prix EST l'argument. */
+.c-price-xl{font-family:var(--f-mono);font-weight:500;font-variant-numeric:tabular-nums;font-size:clamp(3rem,8vw,6rem);line-height:.95;letter-spacing:-.02em;display:block}
+.c-price-xl small{display:block;font-size:var(--fs-label);letter-spacing:.18em;text-transform:uppercase;color:var(--pierre);margin-top:var(--s-2);font-weight:400}
+.c-price-xl .from{display:block;font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.18em;text-transform:uppercase;color:var(--pierre);margin-bottom:.6rem}
+
+/* Lien d'évitement — obligatoire RGAA, absent jusqu'ici. */
+.skip-link{position:absolute;left:-9999px;z-index:200;padding:.9rem 1.4rem;background:var(--anthracite);color:var(--craie);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.16em;text-transform:uppercase}
+.skip-link:focus{left:var(--gutter);top:.5rem}
 
 /* ════ HEADER ════ */
 .site-header{position:fixed;inset:0 0 auto 0;z-index:100;height:var(--header-h);display:flex;align-items:center;transition:background var(--dur-fast) var(--ease),border-color var(--dur-fast) var(--ease),color var(--dur-fast) var(--ease);color:var(--craie);border-bottom:1px solid transparent}
@@ -161,3 +241,6 @@ body.lp-mode .header-cta{display:inline-flex}
 .footer-legal nav{display:flex;gap:var(--s-3);flex-wrap:wrap}
 @media (max-width:900px){.footer-grid{grid-template-columns:1fr 1fr}.footer-brand{grid-column:1/-1}}
 
+
+/* Masqué visuellement, lu par les lecteurs d écran. */
+.u-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}

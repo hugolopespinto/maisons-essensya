@@ -1,106 +1,212 @@
 import Link from "next/link";
+import AnnonceCard from "@/components/AnnonceCard";
+import ArgumentRow from "@/components/ArgumentRow";
+import Compare from "@/components/Compare";
 import HomeHero from "@/components/HomeHero";
 import LeadForm from "@/components/LeadForm";
-import ModelRow from "@/components/ModelRow";
-import Plate from "@/components/Plate";
+import { AnnonceMedia } from "@/components/Substitut";
+import VersionCard from "@/components/VersionCard";
 import { Icon } from "@/components/icons";
-import { ESSENSYA_DATA, modelById } from "@/data/essensya";
 import {
-  annonceSpecs,
+  DEFAULT_VERSION,
+  ESSENSYA_DATA,
+  HOUSE,
+  PLACEHOLDER,
+  PRICE_FROM,
+  VERSIONS,
+} from "@/data/essensya";
+import {
   annonceTitle,
   annonceUrl,
-  dept,
   fmtPrice,
-  modelUrl,
+  fmtSurface,
 } from "@/lib/format";
-import { getAnnonces } from "@/lib/vitahome/annonces";
+import { getContent } from "@/lib/store";
+import type { PageEditable } from "@/lib/store/types";
+import { getAnnonces, getSpotlight } from "@/lib/vitahome/annonces";
 
 const D = ESSENSYA_DATA;
 const delay = (s: string) => ({ "--reveal-delay": s }) as React.CSSProperties;
 
+/**
+ * Lecteur des blocs saisis dans « Pages → Accueil ».
+ *
+ * Le texte du back-office se substitue à celui du gabarit UNIQUEMENT
+ * s'il est renseigné : effacer un champ doit rendre au site sa phrase
+ * d'origine — souvent celle qui affiche un prix calculé, à jour — et
+ * jamais laisser un trou à l'écran.
+ */
+function lecteurBlocs(pages: PageEditable[], clePage: string) {
+  const blocs = pages.find((p) => p.cle === clePage)?.blocs ?? [];
+  return (cle: string, defaut: string) =>
+    blocs.find((b) => b.cle === cle)?.valeur.trim() || defaut;
+}
+
+/* Les titres en deux temps sont saisis avec un vrai retour à la ligne :
+   `pre-line` le rend à l'écran au lieu d'afficher le caractère brut. */
+const PRE_LINE = { whiteSpace: "pre-line" } as const;
+
 export default async function HomePage() {
-  const annonces = await getAnnonces();
-  const heroModel = modelById(D.hero.refId) ?? D.models[0];
-  const featuredModel = modelById(D.featured.refId);
+  const [content, annonces, spotlight] = await Promise.all([
+    getContent(),
+    getAnnonces(),
+    getSpotlight(),
+  ]);
+  const t = lecteurBlocs(content.pages, "accueil");
+
+  /* L'opportunité du moment est déjà en vedette : la redonner dans la
+     liste des récentes ferait doublon à deux écrans d'intervalle. */
+  const recentes = annonces.filter((a) => a.id !== spotlight?.id).slice(0, 3);
 
   return (
     <main className="page">
-      <HomeHero model={heroModel} />
+      <HomeHero house={HOUSE} version={DEFAULT_VERSION} />
+
+      {/* ── Recherche géographique ──
+          En mono-produit la question n'est plus « quelle maison » mais
+          « où, et combien ». Un GET vers /annonces : pas de JS, indexable,
+          et l'URL produite est partageable. */}
+      <section className="s-search" id="recherche" aria-labelledby="recherche-t">
+        <div className="container">
+          <span className="c-label" style={{ color: "var(--sable)" }}>
+            {t("recherche.surtitre", "Où construire")}
+          </span>
+          <h2 id="recherche-t">
+            {t("recherche.titre", "Trouvez le terrain, la maison est déjà dessinée.")}
+          </h2>
+          <form className="s-search__form" action="/annonces" method="get">
+            <div className="c-field">
+              <label htmlFor="s-q">Ville ou code postal</label>
+              <input
+                type="search"
+                id="s-q"
+                name="q"
+                placeholder="La Rochelle, 17000, Thouars…"
+                autoComplete="postal-code"
+              />
+            </div>
+            <div className="c-field">
+              <label htmlFor="s-type">Ce que je cherche</label>
+              <select id="s-type" name="type" defaultValue="">
+                <option value="">Terrain ou terrain + maison</option>
+                <option value="terrain-maison">Terrain + maison</option>
+                <option value="terrain">Terrain seul</option>
+              </select>
+            </div>
+            <div className="c-field">
+              <label htmlFor="s-max">Budget maximum (€)</label>
+              <input
+                type="number"
+                id="s-max"
+                name="max"
+                inputMode="numeric"
+                min={PRICE_FROM}
+                step={5000}
+                placeholder={String(PLACEHOLDER.priceFromTotal)}
+              />
+            </div>
+            <button type="submit" className="c-btn c-btn--light">
+              Voir les terrains <span className="arrow">→</span>
+            </button>
+          </form>
+        </div>
+      </section>
 
       <section className="s-idea" id="idee">
         <div className="container grid">
           <div data-reveal>
-            <span className="c-label c-label--accent">L&apos;idée</span>
+            <span className="c-label c-label--accent">{t("idee.surtitre", "L'idée")}</span>
+            {/* Le prix est le premier argument du site : il est affiché avec
+                ce qu'il ne comprend pas, sinon il n'est pas crédible. */}
+            <p className="c-price-xl" style={{ marginTop: "var(--s-4)" }}>
+              <span className="from">La maison, à partir de</span>
+              {fmtPrice(PRICE_FROM)}
+              <small>
+                Maison seule, hors terrain — terrain compris, comptez{" "}
+                {fmtPrice(PLACEHOLDER.priceFromTotal)} selon le secteur
+              </small>
+            </p>
           </div>
           <div>
-            <p className="big" data-reveal>
-              Construire mieux en choisissant l&apos;essentiel. Des modèles peu
-              nombreux, pensés dans le détail, optimisés jusqu&apos;au dernier mètre
-              carré — pour un prix maîtrisé, sans compromis sur la qualité.
+            <p className="big" data-reveal style={PRE_LINE}>
+              {t(
+                "idee.phrase",
+                "Nous n'avons pas fait une maison moins chère en enlevant des choses. Nous en avons fait une seule, et nous l'avons dessinée jusqu'au bout.",
+              )}
             </p>
-            <p className="u-muted u-measure" style={{ marginTop: "var(--s-3)" }} data-reveal>
-              Chez Essensya, chaque maison est un produit conçu, pas une addition
-              d&apos;options. Moins de choix inutiles, plus d&apos;intelligence dans
-              chaque choix.
+            {/* L'accroche de la maison reste en tête : le bloc éditable ne
+                couvre que la suite du paragraphe, comme l'annonce son aide. */}
+            <p
+              className="u-muted u-measure"
+              style={{ ...PRE_LINE, marginTop: "var(--s-3)" }}
+              data-reveal
+            >
+              {HOUSE.tagline}{" "}
+              {t(
+                "idee.texte",
+                "Une conception amortie sur toutes les maisons plutôt que refacturée à chaque client, zéro option à arbitrer, et un prix annoncé avant le premier rendez-vous.",
+              )}
             </p>
           </div>
         </div>
       </section>
 
-      <section className="s-product">
+      {/* ── Les arguments ──
+          Ce bloc déroulait les trois modèles du catalogue. Il déroule
+          désormais les trois raisons de n'en faire qu'un. */}
+      <section className="s-args" id="arguments">
         <div className="container">
-          <figure className="s-product__main">
-            <div className="c-reveal-img">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1920&auto=format&fit=crop"
-                alt="Séjour lumineux du modèle Essen"
-                loading="lazy"
-              />
-            </div>
-            <figcaption className="c-plate" data-reveal>
-              <Plate model={D.models[0]} />
-            </figcaption>
-          </figure>
-
-          <div className="s-product__duo">
-            <figure>
-              <div className="c-reveal-img">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?q=80&w=1200&auto=format&fit=crop"
-                  alt="Détail de façade"
-                  loading="lazy"
-                />
-              </div>
-              <figcaption className="caption" data-reveal>
-                Détail — enduit minéral, menuiserie aluminium
-              </figcaption>
-            </figure>
-            <figure>
-              <div className="c-reveal-img">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1400&auto=format&fit=crop"
-                  alt="Volume de vie ouvert"
-                  loading="lazy"
-                />
-              </div>
-              <figcaption className="caption" data-reveal>
-                Volume de vie — cuisine ouverte, 5,40 m de baie
-              </figcaption>
-            </figure>
+          <div className="c-section-head" data-reveal>
+            <span className="c-label c-label--accent">
+              {t("arguments.surtitre", "Le parti-pris")}
+            </span>
+            <h2 style={PRE_LINE}>{t("arguments.titre", "Une maison.\nTrois raisons.")}</h2>
           </div>
+          <div className="s-args__list">
+            {D.arguments.map((a) => (
+              <ArgumentRow item={a} key={a.cle} />
+            ))}
+          </div>
+        </div>
+      </section>
 
-          <div className="s-product__text">
-            <h3 data-reveal>Chaque mètre carré a une raison d&apos;être</h3>
-            <p data-reveal>
-              Un modèle Essensya n&apos;est pas un plan générique : c&apos;est une
-              conception aboutie, où chaque volume, chaque ouverture et chaque matériau
-              a été arbitré pour maximiser la qualité de vie au juste prix. Ce que nous
-              ne dépensons pas en options superflues, nous l&apos;investissons là où ça
-              compte.
+      {/* ── Le comparatif ──
+          Le bloc central du site : il justifie le prix bas sans laisser
+          croire que la maison est moins bien construite. */}
+      <section className="s-compare" id="comparatif">
+        <div className="container">
+          <div className="c-section-head" data-reveal>
+            <span className="c-label c-label--accent">
+              {t("comparatif.surtitre", "Le prix")}
+            </span>
+            <h2>{D.compare.title}</h2>
+            <p className="s-compare__intro">{D.compare.intro}</p>
+          </div>
+          <Compare data={D.compare} />
+        </div>
+      </section>
+
+      <section className="s-versions" id="declinaisons">
+        <div className="container">
+          <div className="c-section-head" data-reveal>
+            <span className="c-label c-label--accent">
+              {t("declinaisons.surtitre", "Les déclinaisons")}
+            </span>
+            <h2 style={PRE_LINE}>{t("declinaisons.titre", "Une maison.\nDeux plans.")}</h2>
+            <p
+              className="u-muted u-measure"
+              style={{ ...PRE_LINE, marginTop: "var(--s-2)" }}
+            >
+              {t(
+                "declinaisons.texte",
+                "Seul le nombre de chambres change. Le séjour traversant, la cuisine aménagée, la terrasse couverte, le garage, les prestations et les garanties sont strictement identiques d'une déclinaison à l'autre — comme le prix au mètre carré.",
+              )}
             </p>
+          </div>
+          <div className="s-versions__grid">
+            {VERSIONS.map((v) => (
+              <VersionCard version={v} key={v.slug} />
+            ))}
           </div>
         </div>
       </section>
@@ -108,12 +214,8 @@ export default async function HomePage() {
       <section className="s-philo">
         <div className="container">
           <div className="c-section-head" data-reveal>
-            <span className="c-label">Pourquoi le catalogue</span>
-            <h2>
-              Moins de choix.
-              <br />
-              Mieux choisis.
-            </h2>
+            <span className="c-label">{t("methode.surtitre", "Notre méthode")}</span>
+            <h2 style={PRE_LINE}>{t("methode.titre", "Moins de choix.\nMieux choisis.")}</h2>
           </div>
           <div className="s-philo__grid">
             {D.philosophy.map((i) => (
@@ -127,55 +229,68 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="s-collection" id="collection">
-        <div className="container">
-          <div className="c-section-head" data-reveal>
-            <span className="c-label c-label--accent">La collection</span>
-            <h2>
-              Trois maisons.
-              <br />
-              Zéro superflu.
+      {/* ── L'opportunité du moment ──
+          Plus un second produit à mettre en avant : une annonce réelle,
+          terrain + maison, avec son prix total. Sans annonce éligible,
+          la section disparaît plutôt que d'afficher une promesse vide. */}
+      {spotlight && (
+        <section className="s-featured" id="opportunite">
+          <div className="s-featured__media">
+            <AnnonceMedia annonce={spotlight} />
+          </div>
+          <div className="container">
+            <span className="c-label" style={{ color: "var(--sable)" }} data-reveal>
+              {t("opportunite.surtitre", "L'opportunité du moment")}
+            </span>
+            <h2 data-reveal style={delay(".1s")}>
+              {annonceTitle(spotlight)}
             </h2>
+            <div className="c-plate" data-reveal style={delay(".2s")}>
+              {fmtSurface(spotlight.landSurface) && (
+                <span className="c-plate__spec">
+                  Terrain <strong>{fmtSurface(spotlight.landSurface)}</strong>
+                </span>
+              )}
+              {fmtSurface(spotlight.houseSurface) && (
+                <span className="c-plate__spec">
+                  Maison <strong>{fmtSurface(spotlight.houseSurface)}</strong>
+                </span>
+              )}
+              <span className="c-plate__spec">
+                Prix total <strong>{fmtPrice(spotlight.price)}</strong>
+              </span>
+            </div>
+            <div data-reveal style={delay(".3s")}>
+              <Link href={annonceUrl(spotlight)} className="c-btn c-btn--light">
+                Voir cette opportunité <span className="arrow">→</span>
+              </Link>
+            </div>
+            {/* La mention de l'annonce engage le constructeur : elle suit
+                le prix partout où il est affiché. */}
+            {spotlight.mention && (
+              <p
+                className="u-measure"
+                style={{
+                  marginTop: "var(--s-4)",
+                  color: "var(--sable)",
+                  opacity: 0.7,
+                  fontSize: "var(--fs-small)",
+                }}
+              >
+                {spotlight.mention}
+              </p>
+            )}
           </div>
-          <div className="s-collection__list">
-            {D.models.map((m) => (
-              <ModelRow model={m} key={m.id} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="s-featured" id="featured">
-        <div className="s-featured__media">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={D.featured.image} alt={D.featured.alt} loading="lazy" />
-        </div>
-        <div className="container">
-          <span className="c-label" style={{ color: "var(--sable)" }} data-reveal>
-            En ce moment
-          </span>
-          <h2 data-reveal style={delay(".1s")}>
-            {D.featured.title}
-          </h2>
-          <div className="c-plate" data-reveal style={delay(".2s")}>
-            {featuredModel && <Plate model={featuredModel} withName={false} />}
-          </div>
-          <div data-reveal style={delay(".3s")}>
-            <Link
-              href={featuredModel ? modelUrl(featuredModel) : "/maisons"}
-              className="c-btn c-btn--light"
-            >
-              {D.featured.ctaLabel} <span className="arrow">→</span>
-            </Link>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="s-steps">
         <div className="container">
           <div className="c-section-head" data-reveal>
-            <span className="c-label c-label--accent">Comment ça marche</span>
-            <h2>Du modèle au projet</h2>
+            <span className="c-label c-label--accent">
+              {t("etapes.surtitre", "Comment ça marche")}
+            </span>
+            <h2>{t("etapes.titre", "Quatre étapes, pas quarante")}</h2>
           </div>
           <div className="s-steps__list">
             {D.steps.map((i) => (
@@ -192,31 +307,31 @@ export default async function HomePage() {
       <section className="s-opps" id="opportunites">
         <div className="container">
           <div className="c-section-head" data-reveal>
-            <span className="c-label c-label--accent">Terrains &amp; opportunités</span>
-            <h2>Rendre votre maison concrète</h2>
-            <p className="u-muted u-measure" style={{ marginTop: "var(--s-2)" }}>
-              Nos agences sélectionnent des terrains compatibles avec chaque modèle.
-              Choisissez la maison, nous trouvons le lieu.
+            <span className="c-label c-label--accent">
+              {t("terrains.surtitre", "Terrains & opportunités")}
+            </span>
+            <h2>{t("terrains.titre", "Rendre la maison concrète")}</h2>
+            {/* Le repli contient une espace insécable (U+00A0) devant les
+                deux-points, exactement comme le gabarit aujourd'hui :
+                invisible ici, elle évite un deux-points en début de ligne. */}
+            <p
+              className="u-muted u-measure"
+              style={{ ...PRE_LINE, marginTop: "var(--s-2)" }}
+            >
+              {t(
+                "terrains.texte",
+                "Nos agences repèrent les parcelles compatibles avec la maison, souvent avant leur mise sur le marché. La maison est décidée : il ne reste qu'à choisir où la poser.",
+              )}
             </p>
           </div>
           <div className="s-opps__grid">
-            {annonces.slice(0, 3).map((a) => (
-              <Link className="c-opp" href={annonceUrl(a)} data-reveal key={a.id}>
-                <span className="c-opp__loc">
-                  {a.city} ({dept(a)})
-                </span>
-                <span className="c-opp__title">
-                  {annonceTitle(a, a.modelId ? modelById(a.modelId)?.name : null)}
-                </span>
-                <span className="c-opp__meta">
-                  {annonceSpecs(a)} · à partir de {fmtPrice(a.price)}
-                </span>
-              </Link>
+            {recentes.map((a) => (
+              <AnnonceCard annonce={a} key={a.id} />
             ))}
           </div>
           <div className="s-opps__foot" data-reveal>
             <Link href="/annonces" className="c-link">
-              Voir toutes les opportunités →
+              Voir tous les terrains disponibles →
             </Link>
           </div>
         </div>
@@ -225,8 +340,10 @@ export default async function HomePage() {
       <section className="s-trust" id="agences">
         <div className="container">
           <div className="c-section-head" data-reveal>
-            <span className="c-label c-label--accent">Nos engagements</span>
-            <h2>Construire en confiance</h2>
+            <span className="c-label c-label--accent">
+              {t("engagements.surtitre", "Nos engagements")}
+            </span>
+            <h2>{t("engagements.titre", "Construire en confiance")}</h2>
           </div>
           <div className="s-trust__grid">
             {D.trust.map((t) => (
@@ -244,14 +361,18 @@ export default async function HomePage() {
         <div className="container s-cta__grid">
           <div>
             <span className="c-label" style={{ color: "var(--bois)" }} data-reveal>
-              Votre projet
+              {t("cta.surtitre", "Votre projet")}
             </span>
-            <h2 data-reveal style={delay(".1s")}>
-              Et si votre maison était déjà dessinée&nbsp;?
+            {/* Ici encore, les espaces insécables (U+00A0) des replis sont
+                celles du gabarit d'origine : devant « ? », et entre 48 et h. */}
+            <h2 data-reveal style={{ ...PRE_LINE, ...delay(".1s") }}>
+              {t("cta.titre", "Et si votre maison était déjà dessinée ?")}
             </h2>
-            <p data-reveal style={delay(".2s")}>
-              Parlez-nous de votre projet. Une agence Essensya vous rappelle sous
-              48&nbsp;h, sans engagement.
+            <p data-reveal style={{ ...PRE_LINE, ...delay(".2s") }}>
+              {t(
+                "cta.texte",
+                "Parlez-nous de votre projet. Une agence Essensya vous rappelle sous 48 h, sans engagement.",
+              )}
             </p>
           </div>
           <div data-reveal style={delay(".25s")}>

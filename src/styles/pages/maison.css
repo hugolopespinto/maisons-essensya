@@ -1,0 +1,56 @@
+/* ════ 5 bis. PAGE PRODUIT /maisons (.mp-) ════
+   Complément à modele.css, pas un remplacement : la page réutilise ses
+   blocs .m-hero / .m-quote / .m-arch / .m-plan / .m-features / .m-price.
+   On n'ajoute ici que ce que le mono-produit impose et que le design
+   system ne couvrait pas — un prix plus gros que le titre, et deux plans
+   affichés côte à côte au lieu d'un seul. */
+
+/* Les ancres #plan et #prix sont des destinations réelles (home, arguments,
+   CTA du hero) : sans marge, le header collant recouvre le titre visé. */
+.mp-anchor { scroll-margin-top: calc(var(--header-h) + var(--s-3)); }
+
+/* ── Hero ──
+   Le h1 descend sous sa taille .m-hero et le prix monte au-dessus :
+   sur cette page, le plus gros chiffre doit être le prix, pas le nom du
+   produit. C'est tout le positionnement, tenu typographiquement. */
+/* `.mp-hero.m-hero` et non `.mp-hero` seul : les deux feuilles sont chargées
+   sur cette page, il faut gagner la spécificité sans dépendre de leur ordre. */
+.mp-hero.m-hero h1 { font-size: clamp(2rem, 4.4vw, 3.4rem); margin-top: var(--s-2); }
+.mp-hero .c-label { display: block; }
+.mp-hero__tagline { margin-top: var(--s-3); max-width: 34em; color: var(--sable); opacity: .85; }
+.mp-hero .c-price-xl { margin-top: var(--s-4); font-size: clamp(3.2rem, 11vw, 8rem); color: var(--craie); }
+/* --pierre est calibré pour le fond craie : illisible sur le noir du hero. */
+.mp-hero .c-price-xl .from,
+.mp-hero .c-price-xl small { color: var(--sable); opacity: .8; }
+.mp-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); margin-top: var(--s-4); }
+
+/* ── Architecture ── */
+.mp-arch__specs { margin-top: var(--s-4); }
+
+/* ── Les deux plans, côte à côte ──
+   Afficher un seul plan obligerait à choisir une déclinaison par défaut,
+   donc à faire croire qu'il y a deux produits. */
+.mp-plans { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-5); }
+.mp-plan { display: flex; flex-direction: column; gap: var(--s-3); }
+.mp-plan__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--s-2); padding-bottom: var(--s-2); border-bottom: var(--line); }
+.mp-plan__head h3 { font-size: clamp(1.2rem, 2.2vw, 1.6rem); }
+.mp-plan__head span { font-family: var(--f-mono); font-size: var(--fs-small); font-variant-numeric: tabular-nums; color: var(--pierre); }
+/* Un plan se lit en entier : jamais de recadrage, jamais de zoom. */
+.mp-plan__fig { aspect-ratio: 4 / 3; max-width: 100%; background: var(--craie); border: var(--line); border-radius: var(--radius); }
+.mp-plan__fig img { width: 100%; height: 100%; object-fit: contain; padding: var(--s-2); }
+.mp-plan__diff { font-size: var(--fs-small); }
+/* Le lien retombe en bas de colonne pour que les deux fiches s'alignent. */
+.mp-plan .c-link { margin-top: auto; align-self: flex-start; }
+@media (max-width: 900px) { .mp-plans { grid-template-columns: 1fr; gap: var(--s-6); } }
+
+/* ── Le bloc prix ──
+   Les deux montants d'abord, les deux listes ensuite : on annonce le prix
+   avant de dire ce qu'il couvre, jamais l'inverse. */
+.mp-prices { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-4); padding-bottom: var(--s-4); margin-bottom: var(--s-5); border-bottom: 1px solid var(--beton); }
+.mp-prices .c-price-xl { margin-top: var(--s-2); font-size: clamp(2.1rem, 5.4vw, 3.6rem); }
+.mp-price__col h3 { font-size: 1.05rem; margin-bottom: var(--s-3); }
+.mp-price__col--out h3 { color: var(--pierre); }
+@media (max-width: 640px) { .mp-prices { grid-template-columns: 1fr; } }
+
+/* ── Le formulaire (ORIGIN-ID 52) ── */
+.mp-form__specs { margin-top: var(--s-4); }
