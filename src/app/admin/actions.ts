@@ -1,21 +1,14 @@
 "use server";
 
-import {
-  DELAI_ECHEC_MS,
-  attendre,
-  ipClient,
-  noterEchec,
-  reinitialiserEchecs,
-  tropDeTentatives,
-} from "@/lib/admin/tentatives";
+/* Le compteur de tentatives et l'ouverture de session ne sont plus
+   importés ici : la connexion a quitté ce fichier pour
+   src/app/api/admin/login/route.ts (POST classique en 303, seul motif
+   que les gestionnaires de mots de passe reconnaissent). */
 import { redirect } from "next/navigation";
 import {
   clearSessionCookie,
-  createSession,
   currentAdmin,
-  isAdminEnabled,
   isAuthenticated,
-  setSessionCookie,
   type RoleAdmin,
 } from "@/lib/admin/auth";
 

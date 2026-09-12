@@ -40,6 +40,14 @@ const TYPES = ["terrain", "terrain-maison"];
    filtraient donc jamais rien. */
 const BUDGETS = ["120000", "150000", "180000", "220000"];
 
+/* ── ACCROCHES DE LA FEUILLE DE RÉSULTATS (mobile, en vue carte) ──
+   Trois positions plutôt qu'un glissé libre : on se cale toujours sur
+   une hauteur lisible, et le pouce n'a pas à viser. Pourcentages de la
+   hauteur de la feuille, appliqués en `translateY` — 0 = plein écran,
+   78 = simple aperçu. Hors du composant : une constante recréée à
+   chaque rendu fausse les dépendances des hooks. */
+const ACCROCHES = [0, 45, 78] as const;
+
 /** Comparaison insensible aux accents et à la casse : « la rochelle » = « La Rochelle ». */
 const norm = (s: string) =>
   s
@@ -99,6 +107,63 @@ export default function AnnoncesBrowser({
   const [fitToken, setFitToken] = useState(0);
   const [syncMap, setSyncMap] = useState(true);
   const [mapMode, setMapMode] = useState(false);
+
+  const [accroche, setAccroche] = useState(2);
+  const feuilleRef = useRef<HTMLDivElement>(null);
+  const glisse = useRef<{ y0: number; depart: number } | null>(null);
+
+  /** Applique une position, en pixels, sans repasser par React. */
+  const poser = useCallback((px: number, anime: boolean) => {
+    const el = feuilleRef.current;
+    if (!el) return;
+    el.dataset.glisse = anime ? "0" : "1";
+    el.style.setProperty("--feuille", `${px}px`);
+  }, []);
+
+  const hauteurFeuille = () => feuilleRef.current?.offsetHeight ?? 0;
+
+  const caler = useCallback(
+    (i: number) => {
+      const idx = Math.max(0, Math.min(ACCROCHES.length - 1, i));
+      setAccroche(idx);
+      poser((hauteurFeuille() * ACCROCHES[idx]) / 100, true);
+    },
+    [poser],
+  );
+
+  /* `setPointerCapture` : le doigt peut sortir de la poignée sans que le
+     glissé s'interrompe — sinon il se coupe dès qu'on va vite. */
+  const onPointerDown = (e: React.PointerEvent) => {
+    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    glisse.current = {
+      y0: e.clientY,
+      depart: (hauteurFeuille() * ACCROCHES[accroche]) / 100,
+    };
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    const g = glisse.current;
+    if (!g) return;
+    const h = hauteurFeuille();
+    /* Bornes larges : on peut dépasser un peu, jamais sortir de l'écran. */
+    const y = Math.max(0, Math.min(h * 0.9, g.depart + (e.clientY - g.y0)));
+    poser(y, false);
+  };
+
+  const onPointerUp = (e: React.PointerEvent) => {
+    const g = glisse.current;
+    glisse.current = null;
+    if (!g) return;
+    const h = hauteurFeuille();
+    const y = Math.max(0, Math.min(h * 0.9, g.depart + (e.clientY - g.y0)));
+    /* On rejoint l'accroche la plus proche en pourcentage parcouru. */
+    const pct = (y / h) * 100;
+    let proche = 0;
+    ACCROCHES.forEach((a, i) => {
+      if (Math.abs(a - pct) < Math.abs(ACCROCHES[proche] - pct)) proche = i;
+    });
+    caler(proche);
+  };
   const [highlight, setHighlight] = useState<string | null>(null);
 
   /* Une recherche doit se partager : les filtres se reflètent dans l'URL.
@@ -237,10 +302,10 @@ export default function AnnoncesBrowser({
             Réinitialiser
           </button>
           <div className="l-view-toggle" role="group" aria-label="Affichage">
-            <button className={mapMode ? "" : "is-on"} onClick={() => setMapMode(false)}>
+            <button className={mapMode ? "" : "is-on"} onClick={() => { setMapMode(false); caler(0); }}>
               Liste
             </button>
-            <button className={mapMode ? "is-on" : ""} onClick={() => setMapMode(true)}>
+            <button className={mapMode ? "is-on" : ""} onClick={() => { setMapMode(true); caler(2); }}>
               Carte
             </button>
           </div>
@@ -252,7 +317,34 @@ export default function AnnoncesBrowser({
 
       <div className={`l-body${mapMode ? " is-map-mode" : ""}`}>
         <div className="container">
-          <div className="l-results">
+          <div className="l-results" ref={feuilleRef}>
+            {/* Poignée : visible seulement en vue carte sur mobile. Un
+                appui simple bascule entre aperçu et plein écran — tout le
+                monde ne glisse pas. */}
+            <div
+              className="l-sheet-handle"
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerUp}
+              onPointerCancel={onPointerUp}
+              onClick={() => caler(accroche === 0 ? 2 : 0)}
+              role="button"
+              tabIndex={0}
+              aria-label={
+                accroche === 0 ? "Réduire la liste des résultats" : "Agrandir la liste des résultats"
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  caler(accroche === 0 ? 2 : 0);
+                } else if (e.key === "ArrowUp") caler(accroche - 1);
+                else if (e.key === "ArrowDown") caler(accroche + 1);
+              }}
+            >
+              <span>
+                {visible.length} opportunité{visible.length > 1 ? "s" : ""}
+              </span>
+            </div>
             {visible.length ? (
               visible.map((a) => (
                 <AnnonceCard

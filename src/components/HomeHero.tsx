@@ -40,7 +40,6 @@ export default function HomeHero({
 
   // SSR-safe : on suppose le mobile d'abord, le client corrige à l'hydratation.
   const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)", false);
-  const isMobile = useMediaQuery("(max-width: 768px)", true);
   /* ⚠ LE MOBILE DÉROULE LE SCÉNARIO, LUI AUSSI.
      Il en était exclu par crainte de la barre d'adresse iOS — mais la
      scène est déjà en `100svh`, donc le problème n'existe plus. Le
