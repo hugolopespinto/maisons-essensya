@@ -12,8 +12,18 @@ import { fmtPrice } from "@/lib/format";
 import { getContent } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
 import "@/styles/pages/concept.css";
+import { resolveMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+/* Le back-office peut surcharger le titre, la description, l'image de
+   partage, le canonical et le noindex de cette page — écran
+   Référencement. `resolveMetadata` repart TOUJOURS du défaut ci-dessous :
+   une surcharge vidée rend la valeur d'origine, elle n'efface jamais
+   la balise. */
+export async function generateMetadata(): Promise<Metadata> {
+  return resolveMetadata("/concept", METADATA_DEFAUT);
+}
+
+const METADATA_DEFAUT: Metadata = {
   title: "Notre concept — une maison, deux déclinaisons",
   description:
     "Pourquoi nous ne construisons qu'une maison, pourquoi elle coûte moins cher, et ce que le prix comprend exactement. Questions fréquentes comprises.",

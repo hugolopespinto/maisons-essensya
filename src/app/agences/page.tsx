@@ -5,6 +5,7 @@ import { AGENCIES, PRICE_FROM } from "@/data/essensya";
 import { fmtPrice } from "@/lib/format";
 import { resoudreMedia } from "@/lib/medias";
 import { resolveMetadata } from "@/lib/seo";
+import { filAriane, jsonLd, listeSchema } from "@/lib/schema";
 import { getContent } from "@/lib/store";
 import type { Agence, PageEditable } from "@/lib/store/types";
 import type { Agency } from "@/types";
@@ -117,6 +118,27 @@ export default async function AgencesPage() {
 
   return (
     <main className="page">
+      {/* Chaque agence a déjà son `HomeAndConstructionBusiness` sur sa
+          fiche. Ici, l'ItemList dit seulement que cette page les indexe —
+          c'est ce qui permet à Google de remonter la bonne agence plutôt
+          que cette liste sur une requête locale. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd(
+            listeSchema(
+              titre,
+              agences.map((g) => ({ nom: g.name, path: `/agences/${g.id}` })),
+            ),
+          ),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd(filAriane([{ nom: "Accueil", path: "/" }, { nom: titre }])),
+        }}
+      />
       <section className="p-head">
         <div className="container">
           <nav className="c-breadcrumb" aria-label="Fil d'ariane">

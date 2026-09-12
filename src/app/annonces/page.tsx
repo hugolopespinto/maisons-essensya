@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AnnoncesBrowser from "@/components/AnnoncesBrowser";
+import { annonceTitle } from "@/lib/format";
+import { filAriane, jsonLd, listeSchema } from "@/lib/schema";
+import { resolveMetadata } from "@/lib/seo";
 import { getContent } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
 import { getAnnonces } from "@/lib/vitahome/annonces";
@@ -29,11 +32,11 @@ function lecteurBlocs(pages: PageEditable[], clePage: string) {
 export async function generateMetadata(): Promise<Metadata> {
   const { pages } = await getContent();
   const t = lecteurBlocs(pages, "annonces");
-  return {
+  return resolveMetadata("/annonces", {
     title: "Terrains & maisons disponibles",
     description: t("hero.chapo", CHAPO),
     alternates: { canonical: "/annonces" },
-  };
+  });
 }
 
 /** Un seul endroit lit l'URL, et c'est le serveur. */
@@ -53,6 +56,34 @@ export default async function AnnoncesPage({
 
   return (
     <main className="page">
+      {/* ItemList : dit à Google que la page est un index et dans quel
+          ordre. On ne balise que les 20 premières — ce qui est réellement
+          rendu au chargement, pas le catalogue entier. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd(
+            listeSchema(
+              "Terrains et maisons disponibles",
+              annonces.slice(0, 20).map((a) => ({
+                nom: annonceTitle(a),
+                path: `/annonces/${a.id.toLowerCase()}`,
+              })),
+            ),
+          ),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd(
+            filAriane([
+              { nom: "Accueil", path: "/" },
+              { nom: "Terrains & opportunités" },
+            ]),
+          ),
+        }}
+      />
       <section className="p-head">
         <div className="container">
           <nav className="c-breadcrumb" aria-label="Fil d'ariane">

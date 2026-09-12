@@ -5,6 +5,7 @@ import type { Article } from "@/lib/store/types";
 import { markdownToText } from "@/lib/markdown";
 import { SITE_URL } from "@/lib/site-url";
 import "@/styles/pages/blog.css";
+import { resolveMetadata } from "@/lib/seo";
 
 /* ════════════════════════════════════════════════════════════════
    LE BLOG — POURQUOI IL A SA PLACE ICI
@@ -37,7 +38,16 @@ import "@/styles/pages/blog.css";
    peut faire vivre seul entre deux interventions. D'où le back-office.
    ════════════════════════════════════════════════════════════════ */
 
-export const metadata: Metadata = {
+/* Le back-office peut surcharger le titre, la description, l'image de
+   partage, le canonical et le noindex de cette page — écran
+   Référencement. `resolveMetadata` repart TOUJOURS du défaut ci-dessous :
+   une surcharge vidée rend la valeur d'origine, elle n'efface jamais
+   la balise. */
+export async function generateMetadata(): Promise<Metadata> {
+  return resolveMetadata("/blog", METADATA_DEFAUT);
+}
+
+const METADATA_DEFAUT: Metadata = {
   title: "Le journal — faire construire, sans mauvaise surprise",
   description:
     "Prix, contrat CCMI, terrain, financement : ce qu'il faut savoir avant de " +

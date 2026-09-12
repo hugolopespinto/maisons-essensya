@@ -6,6 +6,8 @@ import VersionCard from "@/components/VersionCard";
 import VisiteMaison from "@/components/VisiteMaison";
 import { HOUSE, PRICE_FROM, VERSIONS } from "@/data/essensya";
 import { fmtPrice, fmtSurface, versionUrl } from "@/lib/format";
+import { filAriane, jsonLd, produitMaison } from "@/lib/schema";
+import { resolveMetadata } from "@/lib/seo";
 import { getContent } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
 import "@/styles/pages/modele.css";
@@ -18,7 +20,15 @@ import "@/styles/visite.css";
    visite, construction, plans, prestations, prix détaillé, déclinaisons,
    formulaire. Le prix ouvre ET referme la démonstration.                */
 
-export const metadata: Metadata = {
+/* Le back-office peut surcharger le titre, la description, l'image de
+   partage, le canonical et le noindex de cette page — écran Référencement.
+   `resolveMetadata` repart TOUJOURS du défaut ci-dessous : une surcharge
+   vidée ne peut pas effacer la balise, elle rend la valeur d'origine. */
+export async function generateMetadata(): Promise<Metadata> {
+  return resolveMetadata("/maisons", METADATA_DEFAUT);
+}
+
+const METADATA_DEFAUT: Metadata = {
   title: `La maison ${HOUSE.name} — à partir de ${fmtPrice(PRICE_FROM)}`,
   description:
     `Une seule maison, deux déclinaisons : 2 ou 3 chambres. Plain-pied de ${fmtSurface(
@@ -55,6 +65,29 @@ export default async function MaisonPage() {
 
   return (
     <main className="page">
+      {/* Product + Offer : c'est ce balisage qui fait apparaître LE PRIX
+          dans les résultats de recherche. Sur un site dont le prix est
+          l'argument, son absence était le manque le plus coûteux.
+          Il ne déclare que ce qui est affiché plus bas — annoncer à
+          Google un prix absent de l'écran est sanctionné, pas récompensé. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLd(produitMaison()) }}
+      />
+      {/* Le fil d'ariane remplace l'URL par un chemin lisible dans les
+          résultats — gain de clic net, surtout sur mobile où l'URL est
+          tronquée. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd(
+            filAriane([
+              { nom: "Accueil", path: "/" },
+              { nom: `La maison ${HOUSE.name}` },
+            ]),
+          ),
+        }}
+      />
       {/* ── 1. Le prix, avant tout le reste ── */}
       <section className="m-hero mp-hero">
         <div className="m-hero__bg">

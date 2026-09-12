@@ -7,9 +7,19 @@ import { fmtPrice } from "@/lib/format";
 import { getContent } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
 import "@/styles/pages/contact.css";
+import { resolveMetadata } from "@/lib/seo";
 import "@/styles/pages/agences.css"; // .c-agency-card en colonne latérale
 
-export const metadata: Metadata = {
+/* Le back-office peut surcharger le titre, la description, l'image de
+   partage, le canonical et le noindex de cette page — écran
+   Référencement. `resolveMetadata` repart TOUJOURS du défaut ci-dessous :
+   une surcharge vidée rend la valeur d'origine, elle n'efface jamais
+   la balise. */
+export async function generateMetadata(): Promise<Metadata> {
+  return resolveMetadata("/contact", METADATA_DEFAUT);
+}
+
+const METADATA_DEFAUT: Metadata = {
   title: "Contact — parler de votre projet",
   description:
     "Un formulaire, pas un parcours du combattant. Une agence vous répond sous 48 h, sans engagement et sans démarchage.",

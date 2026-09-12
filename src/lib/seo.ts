@@ -123,6 +123,18 @@ export const SEO_ROUTES: SeoRoute[] = [
         "Quels cookies nous déposons, pourquoi, combien de temps, et comment modifier votre choix à tout moment.",
     },
   },
+  /* Les deux déclinaisons sont générées à partir des données : ajouter
+     ou retirer une version met l'écran Référencement à jour tout seul.
+     Elles méritent leur propre entrée — deux pages aussi proches se
+     cannibalisent dans les résultats si elles portent le même titre, et
+     c'est justement au client de trancher lequel il veut mettre en avant. */
+  ...VERSIONS.map((v) => ({
+    path: `/maisons/${v.slug}`,
+    label: `La maison — ${v.label}`,
+    aide:
+      "Cette page et l'autre déclinaison sont très proches : donnez-leur des titres nettement différents, sinon Google choisit lui-même laquelle afficher.",
+    defaut: defautVersion(v),
+  })),
 ];
 
 /** "/maisons/" et "/maisons" désignent la même route. */

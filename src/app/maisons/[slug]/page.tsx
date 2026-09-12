@@ -7,7 +7,9 @@ import LeadForm, { ContactFields } from "@/components/LeadForm";
 import Plate from "@/components/Plate";
 import SpecList, { MarkedList } from "@/components/SpecList";
 import { HOUSE, VERSIONS, otherVersion, versionBySlug } from "@/data/essensya";
-import { fmtPrice, fmtSurface, versionUrl } from "@/lib/format";
+import { fmtPrice, fmtSurface, versionUrl, houseUrl } from "@/lib/format";
+import { filAriane, jsonLd, produitMaison } from "@/lib/schema";
+import { resolveMetadata } from "@/lib/seo";
 import { getAnnonces } from "@/lib/vitahome/annonces";
 import type { Annonce, HouseVersion } from "@/types";
 import "@/styles/pages/modele.css";
@@ -31,7 +33,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const v = versionBySlug(slug);
   if (!v) return {};
-  return {
+  /* Chaque déclinaison a sa propre entrée dans l'écran Référencement :
+     le client peut donc écrire un titre différent pour la 2 et la
+     3 chambres, ce qui est exactement le cas où deux pages proches
+     risquent sinon de se cannibaliser dans les résultats. */
+  return resolveMetadata(versionUrl(v), {
     title: `${HOUSE.name} — ${v.label}, ${fmtSurface(v.surface)}`,
     description: v.pour,
     alternates: { canonical: versionUrl(v) },
@@ -39,7 +45,7 @@ export async function generateMetadata({
       title: `${HOUSE.name} — ${v.label} · Maisons Essensya`,
       images: [v.image],
     },
-  };
+  });
 }
 
 /** L'écart chiffré avec l'autre déclinaison : la seule chose qui les sépare. */
@@ -85,6 +91,25 @@ export default async function VersionPage({
 
   return (
     <main className="page">
+      {/* Product de CETTE déclinaison : un seul prix, celui affiché plus
+          bas. Sur la page /maisons, c'est au contraire une offre groupée
+          sur les deux — la granularité suit ce que la page montre. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLd(produitMaison(v)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd(
+            filAriane([
+              { nom: "Accueil", path: "/" },
+              { nom: `La maison ${HOUSE.name}`, path: houseUrl() },
+              { nom: v.label },
+            ]),
+          ),
+        }}
+      />
       <section className="m-hero">
         <div className="m-hero__bg">
           {/* eslint-disable-next-line @next/next/no-img-element */}

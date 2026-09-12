@@ -3,8 +3,18 @@ import Link from "next/link";
 import CookiePrefsLink from "@/components/CookiePrefsLink";
 import { SpecList } from "@/components/SpecList";
 import { CONSENT_COOKIE, FINALITES } from "@/lib/consent";
+import { resolveMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+/* Le back-office peut surcharger le titre, la description, l'image de
+   partage, le canonical et le noindex de cette page — écran
+   Référencement. `resolveMetadata` repart TOUJOURS du défaut ci-dessous :
+   une surcharge vidée rend la valeur d'origine, elle n'efface jamais
+   la balise. */
+export async function generateMetadata(): Promise<Metadata> {
+  return resolveMetadata("/cookies", METADATA_DEFAUT);
+}
+
+const METADATA_DEFAUT: Metadata = {
   title: "Gestion des cookies",
   description:
     "Quels cookies nous déposons, pourquoi, combien de temps, et comment modifier votre choix à tout moment.",

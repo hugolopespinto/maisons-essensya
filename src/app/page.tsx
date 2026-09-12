@@ -21,6 +21,7 @@ import {
   fmtPrice,
   fmtSurface,
 } from "@/lib/format";
+import { jsonLd, siteSchema } from "@/lib/schema";
 import { getContent } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
 import { getAnnonces, getSpotlight } from "@/lib/vitahome/annonces";
@@ -53,6 +54,10 @@ export default async function HomePage() {
     getSpotlight(),
   ]);
   const t = lecteurBlocs(content.pages, "accueil");
+  /* Même source que le layout : le nom saisi en Réglages, sinon celui
+     du code. Un JSON-LD qui annoncerait un autre nom que la balise title
+     serait une incohérence de plus pour Google à arbitrer. */
+  const nomSite = content.reglages.nomSite?.trim() || "Maisons Essensya";
 
   /* L'opportunité du moment est déjà en vedette : la redonner dans la
      liste des récentes ferait doublon à deux écrans d'intervalle. */
@@ -60,6 +65,14 @@ export default async function HomePage() {
 
   return (
     <main className="page">
+      {/* `WebSite` porte le nom du site dans les résultats. Le `Product`,
+          lui, reste sur /maisons : le déclarer ici aussi mettrait deux
+          pages en concurrence sur la même fiche produit, et Google
+          choisirait — souvent mal. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLd(siteSchema(nomSite)) }}
+      />
       <HomeHero house={HOUSE} version={DEFAULT_VERSION} />
 
       {/* ── Recherche géographique ──

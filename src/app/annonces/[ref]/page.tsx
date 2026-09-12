@@ -17,6 +17,7 @@ import {
   housePart,
   versionUrl,
 } from "@/lib/format";
+import { annonceSchema, filAriane, jsonLd } from "@/lib/schema";
 import { getAnnonceByRef, getAnnonceOverride, getAnnonces } from "@/lib/vitahome/annonces";
 import "@/styles/pages/annonce.css";
 
@@ -112,6 +113,26 @@ export default async function AnnoncePage({
 
   return (
     <main className="page">
+      {/* Le prix, les surfaces et la commune, dans la langue de Google.
+          L'offre n'est émise que si le prix existe vraiment : le flux en
+          livre à `null`, et annoncer une offre sans montant vaut un
+          avertissement en Search Console. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLd(annonceSchema(a, title)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd(
+            filAriane([
+              { nom: "Accueil", path: "/" },
+              { nom: "Terrains & opportunités", path: "/annonces" },
+              { nom: a.city },
+            ]),
+          ),
+        }}
+      />
       <section className="a-head">
         <div className="container">
           <nav className="c-breadcrumb" aria-label="Fil d'ariane">
