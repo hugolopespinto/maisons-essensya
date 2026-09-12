@@ -1,0 +1,504 @@
+/* ════════════════════════════════════════════════════════════════
+   BACK-OFFICE — FEUILLE DE STYLE UNIQUE
+
+   Même grammaire que le site public, en plus dense : fond craie, filets
+   1px, libellés en mono capitales espacées, titres en display, accent
+   bois, rayon 2px, aucune ombre. Un back-office qui ressemble au site
+   qu'il pilote rassure davantage qu'un thème d'administration générique.
+
+   ⚠ CONTRAT PARTAGÉ. Les quatre lots du back-office consomment les
+   classes ci-dessous. Elles ne se renomment pas : une classe retirée ici
+   casse un écran écrit ailleurs.
+     .adm · .adm__nav · .adm__main · .adm-head · .adm-card · .adm-grid ·
+     .adm-table · .adm-field · .adm-row · .adm-actions · .adm-stat ·
+     .adm-badge (+ --on, --off) · .adm-empty · .adm-note · .adm-toolbar
+   Les composants publics .c-btn, .c-btn--solid, .c-field, .c-label,
+   .u-muted et .u-sr-only restent disponibles : rien n'est redéfini ici.
+
+   Ce fichier n'est importé que par src/app/admin/layout.tsx : il ne pèse
+   sur aucune page publique.
+   ════════════════════════════════════════════════════════════════ */
+
+/* ════ 1. NEUTRALISATION DU CHÂSSIS PUBLIC ════
+   Le layout racine pose l'en-tête, le pied de page, le CTA collant et le
+   bandeau cookies sur TOUTES les routes — /admin compris. On ne peut pas
+   les retirer d'ici (fichiers d'un autre chantier), on les masque donc
+   depuis la seule feuille chargée par le back-office. `:has()` évite une
+   classe posée en JavaScript, donc évite le clignotement à l'hydratation.
+
+   Le bandeau cookies est masqué parce que /admin est une zone privée et
+   non indexée, qui n'a rien à mesurer : le choix de consentement reste
+   offert sur tout le site public. À la mise en production, exclure aussi
+   /admin/* du déclencheur GTM — le conteneur, lui, est posé par le
+   layout racine, hors périmètre de ce lot. */
+body:has(.adm) .site-header,
+body:has(.adm) .mobile-nav,
+body:has(.adm) .site-footer,
+body:has(.adm) .c-sticky-cta,
+body:has(.adm) .c-cookies { display: none !important; }
+
+/* ════ 2. GRILLE GÉNÉRALE ════ */
+.adm {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  align-items: start;
+  min-height: 100vh;
+  background: var(--craie);
+}
+
+/* Variante « nue » : écran de connexion et messages de configuration,
+   servis sans navigation puisqu'il n'y a encore rien à naviguer. */
+.adm--nu {
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  padding: var(--s-4) var(--gutter);
+}
+.adm--nu > * { width: 100%; max-width: 30rem; }
+
+/* ════ 3. NAVIGATION LATÉRALE ════ */
+.adm__nav {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-2);
+  border-right: var(--line);
+  background: var(--sable);
+  overflow-y: auto;
+}
+.adm__brand { padding: .35rem .6rem var(--s-2); border-bottom: var(--line); }
+.adm__brand-name {
+  display: block;
+  font-family: var(--f-display);
+  font-variation-settings: "wdth" 125;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  font-size: 1.05rem;
+  line-height: 1.1;
+}
+.adm__brand-sub {
+  display: block;
+  margin-top: .3rem;
+  font-family: var(--f-mono);
+  font-size: var(--fs-label);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--pierre);
+}
+.adm__links { display: flex; flex-direction: column; gap: 1px; }
+.adm__foot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding-top: var(--s-2);
+  border-top: var(--line);
+}
+.adm__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  width: 100%;
+  text-align: left;
+  padding: .65rem .6rem;
+  border-radius: var(--radius);
+  border-left: 2px solid transparent;
+  font-family: var(--f-mono);
+  font-size: var(--fs-label);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--anthracite);
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+.adm__link:hover { background: var(--craie); border-left-color: var(--bois); }
+/* L'état actif exigerait `usePathname`, donc un composant client : hors
+   périmètre de ce lot, qui ne livre que des composants serveur. Le jour
+   où le back-office en gagne un, la règle est déjà écrite. */
+.adm__link[aria-current="page"] {
+  background: var(--craie);
+  border-left-color: var(--bois);
+  color: var(--bois-fonce);
+}
+.adm__link--out { color: var(--pierre); }
+.adm__link--out:hover { color: var(--anthracite); }
+
+/* ════ 4. ZONE DE CONTENU ════ */
+.adm__main {
+  min-width: 0; /* sans quoi un tableau large élargit la colonne de grille */
+  width: 100%;
+  max-width: 74rem;
+  padding: var(--s-4) var(--gutter) var(--s-5);
+}
+
+/* ════ 5. TÊTE D'ÉCRAN ════ */
+.adm-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s-2) var(--s-3);
+  padding-bottom: var(--s-2);
+  margin-bottom: var(--s-3);
+  border-bottom: var(--line);
+}
+.adm-head h1 {
+  font-size: clamp(1.6rem, 3.4vw, 2.4rem);
+  margin-top: .35rem;
+}
+.adm-head p {
+  flex-basis: 100%;
+  max-width: 46em;
+  margin-top: .2rem;
+  font-size: var(--fs-small);
+  color: var(--pierre);
+}
+
+/* ════ 6. CARTE ════
+   Le conteneur par défaut de tout bloc d'écran. `overflow-x:auto` est
+   porté ici : c'est ce qui garantit qu'un .adm-table long défile DANS la
+   carte au lieu d'élargir la page entière. */
+.adm-card {
+  min-width: 0;
+  overflow-x: auto;
+  padding: var(--s-3);
+  border: var(--line);
+  border-radius: var(--radius);
+  background: var(--blanc);
+}
+.adm-card + .adm-card { margin-top: var(--s-3); }
+.adm-card > h2,
+.adm-card > h3 {
+  font-size: 1rem;
+  letter-spacing: .01em;
+  margin-bottom: var(--s-2);
+}
+.adm-card p { font-size: var(--fs-small); }
+.adm-card > * + p { margin-top: var(--s-2); }
+
+/* ════ 7. GRILLE DE BLOCS ════ */
+.adm-grid {
+  display: grid;
+  gap: var(--s-2);
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+}
+.adm-grid + .adm-grid,
+.adm-grid + .adm-card,
+.adm-card + .adm-grid { margin-top: var(--s-3); }
+
+/* ════ 8. CHIFFRE ════
+   Tolère deux écritures : <strong>/<small>, ou les classes explicites. */
+.adm-stat {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  padding: var(--s-3);
+  border: var(--line);
+  border-radius: var(--radius);
+  background: var(--blanc);
+}
+.adm-stat strong,
+.adm-stat__n {
+  font-family: var(--f-display);
+  font-variation-settings: "wdth" 118;
+  font-weight: 700;
+  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+  line-height: 1;
+  letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums;
+}
+.adm-stat small,
+.adm-stat__l {
+  font-family: var(--f-mono);
+  font-size: var(--fs-label);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--pierre);
+}
+
+/* ════ 9. LIGNE CLÉ / VALEUR ════ */
+.adm-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .5rem var(--s-2);
+  padding: .7rem 0;
+  border-bottom: var(--line);
+  font-family: var(--f-mono);
+  font-size: var(--fs-small);
+}
+.adm-row:last-child { border-bottom: none; padding-bottom: 0; }
+.adm-row > :first-child {
+  font-size: var(--fs-label);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--pierre);
+}
+.adm-row > :last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.adm-row > :only-child { text-align: left; }
+
+/* ════ 10. TABLEAU ════
+   S'applique au <table>. `min-width` force le défilement horizontal du
+   conteneur (.adm-card, ou .adm-table-wrap pour un tableau hors carte)
+   plutôt qu'un écrasement illisible des colonnes sur mobile. */
+.adm-table-wrap { overflow-x: auto; }
+.adm-table {
+  width: 100%;
+  min-width: 34rem;
+  border-collapse: collapse;
+  font-size: var(--fs-small);
+  text-align: left;
+}
+.adm-table th {
+  font-family: var(--f-mono);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--pierre);
+  white-space: nowrap;
+}
+.adm-table th,
+.adm-table td {
+  padding: .65rem .8rem;
+  border-bottom: 1px solid var(--beton-2);
+  vertical-align: top;
+}
+.adm-table th:first-child,
+.adm-table td:first-child { padding-left: 0; }
+.adm-table th:last-child,
+.adm-table td:last-child { padding-right: 0; }
+.adm-table thead th { border-bottom-color: var(--anthracite); }
+.adm-table tbody tr:last-child td { border-bottom: none; }
+.adm-table tbody tr:hover { background: var(--craie); }
+.adm-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ════ 11. CHAMP DE FORMULAIRE ════
+   Variante dense de .c-field — même anatomie, mêmes états de focus. */
+.adm-field { display: flex; flex-direction: column; gap: .4rem; }
+.adm-field > label,
+.adm-field__label {
+  font-family: var(--f-mono);
+  font-size: var(--fs-label);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--pierre);
+}
+.adm-field input,
+.adm-field select,
+.adm-field textarea {
+  font-family: var(--f-body);
+  font-size: 1rem;
+  width: 100%;
+  padding: .65rem .8rem;
+  color: inherit;
+  background: var(--blanc);
+  border: 1px solid var(--beton);
+  border-radius: var(--radius);
+  transition: border-color var(--dur-fast);
+  appearance: none;
+  -webkit-appearance: none;
+  resize: vertical;
+}
+.adm-field textarea {
+  font-family: var(--f-mono);
+  font-size: var(--fs-small);
+  line-height: 1.65;
+  min-height: 9rem;
+}
+.adm-field input:focus,
+.adm-field select:focus,
+.adm-field textarea:focus { border-color: var(--bois); }
+.adm-field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23867E70' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .8rem center;
+}
+.adm-field__aide { font-size: var(--fs-label); color: var(--pierre); line-height: 1.5; }
+/* Cases à cocher : la disposition verticale ne leur convient pas. */
+.adm-field--case { flex-direction: row; align-items: center; gap: .6rem; }
+.adm-field--case input { width: auto; accent-color: var(--bois); }
+.adm-field--case > label {
+  font-family: var(--f-body);
+  text-transform: none;
+  letter-spacing: .02em;
+  color: var(--anthracite);
+}
+
+/* ════ 12. BARRE D'OUTILS ════ */
+.adm-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  padding-bottom: var(--s-2);
+  margin-bottom: var(--s-2);
+  border-bottom: var(--line);
+}
+.adm-toolbar > * { min-width: 0; }
+
+/* ════ 13. ACTIONS ════ */
+.adm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+  padding-top: var(--s-3);
+  border-top: var(--line);
+}
+.adm-actions--serre { margin-top: var(--s-2); padding-top: 0; border-top: none; }
+/* Boutons du back-office : même dessin que le site, plus compacts. */
+.adm .c-btn { padding: .7rem 1.15rem; }
+.adm .c-btn--danger { border-color: var(--bois-fonce); color: var(--bois-fonce); }
+.adm .c-btn--danger:hover { background: var(--bois-fonce); color: var(--craie); }
+
+/* ════ 14. BADGE D'ÉTAT ════
+   Deux états sémantiques, pas deux couleurs vives : la palette est
+   minérale, un rouge saturé la trahirait. Le vert d'inclusion et le bois
+   foncé sont déjà dans les tokens et passent tous deux 4,5:1 sur craie —
+   un badge d'alerte illisible ne sert personne. */
+.adm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .3rem .6rem;
+  border: 1px solid var(--beton);
+  border-radius: var(--radius);
+  background: var(--craie);
+  font-family: var(--f-mono);
+  font-size: var(--fs-label);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--pierre);
+  white-space: nowrap;
+}
+.adm-badge::before {
+  content: "";
+  flex: none;
+  width: .45rem;
+  height: .45rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+.adm-badge--on { color: var(--inclus); border-color: var(--inclus); }
+.adm-badge--off { color: var(--bois-fonce); border-color: var(--bois-fonce); }
+
+/* ════ 15. ÉTAT VIDE ════ */
+.adm-empty {
+  padding: var(--s-4) var(--s-3);
+  border: 1px dashed var(--beton-2);
+  border-radius: var(--radius);
+  text-align: center;
+  font-family: var(--f-mono);
+  font-size: var(--fs-small);
+  color: var(--pierre);
+}
+.adm-empty strong {
+  display: block;
+  margin-bottom: .5rem;
+  font-family: var(--f-display);
+  font-variation-settings: "wdth" 118;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 1rem;
+  color: var(--anthracite);
+}
+
+/* ════ 16. NOTE ════ */
+.adm-note {
+  padding: .75rem var(--s-2);
+  border-left: 2px solid var(--bois);
+  background: var(--bois-clair);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: var(--fs-small);
+  line-height: 1.55;
+}
+.adm-note--alerte { border-left-color: var(--bois-fonce); }
+.adm-note strong { font-weight: 600; }
+.adm-note + .adm-note { margin-top: var(--s-2); }
+.adm-note a { text-decoration: underline; text-underline-offset: .2em; }
+
+/* ════ 17. FOCUS ════
+   Le site public a laissé passer des cibles au focus invisible. Ici la
+   règle est posée d'emblée sur tout ce qui est atteignable au clavier,
+   avec un décalage suffisant pour rester lisible sur fond blanc comme
+   sur fond sable. (RGAA 10.7) */
+.adm a:focus-visible,
+.adm button:focus-visible,
+.adm input:focus-visible,
+.adm select:focus-visible,
+.adm textarea:focus-visible,
+.adm summary:focus-visible,
+.adm [tabindex]:focus-visible {
+  outline: 2px solid var(--bois);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+/* ════ 18. MOBILE ════
+   Sous 900 px la navigation passe en barre horizontale défilante, collée
+   en haut. Elle garde ses libellés : une rangée d'icônes muettes dans un
+   outil qu'on ouvre trois fois par mois ne s'apprend jamais. */
+@media (max-width: 900px) {
+  .adm { grid-template-columns: minmax(0, 1fr); }
+  .adm__nav {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--s-2);
+    padding: .5rem var(--gutter);
+    border-right: none;
+    border-bottom: var(--line);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+  }
+  .adm__brand {
+    flex: none;
+    padding: 0 var(--s-2) 0 0;
+    border-bottom: none;
+    border-right: var(--line);
+  }
+  .adm__brand-sub { display: none; }
+  .adm__links,
+  .adm__foot {
+    flex: none;
+    flex-direction: row;
+    gap: .25rem;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+  .adm__foot { margin-left: auto; padding-left: var(--s-2); border-left: var(--line); }
+  .adm__link {
+    width: auto;
+    white-space: nowrap;
+    border-left: none;
+    border-bottom: 2px solid transparent;
+    padding: .5rem .6rem;
+  }
+  .adm__link:hover,
+  .adm__link[aria-current="page"] {
+    border-left-color: transparent;
+    border-bottom-color: var(--bois);
+  }
+  .adm__main { padding: var(--s-3) var(--gutter) var(--s-5); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adm__link,
+  .adm-field input,
+  .adm-field select,
+  .adm-field textarea { transition: none; }
+}
