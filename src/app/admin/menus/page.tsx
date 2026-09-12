@@ -598,12 +598,16 @@ export default async function MenusPage({
         </p>
       ) : null}
 
-      <p className="adm-note adm-note--alerte">
-        ⚠ <strong>Ces menus ne pilotent pas encore le site public.</strong>{" "}
-        L&apos;en-tête et le pied de page affichent toujours les liens inscrits dans le
-        code (<code>src/components/Header.tsx</code> et <code>Footer.tsx</code>) : leur
-        branchement sur cet écran reste à faire. Ce que vous enregistrez ici est bien
-        conservé, et sera repris tel quel le jour du branchement.
+      {/* L'avertissement « ces menus ne pilotent pas encore le site » a été
+          retiré : ils le pilotent depuis le recâblage. Il reste une chose
+          que le client doit savoir, et qui n'est pas évidente — un menu
+          saisi REMPLACE la navigation d'origine, il ne s'y ajoute pas. */}
+      <p className="adm-note">
+        <strong>Un menu enregistré remplace entièrement celui d&apos;origine.</strong>{" "}
+        Si vous n&apos;ajoutez qu&apos;une seule entrée à l&apos;en-tête, elle sera la
+        seule affichée — pensez à reprendre les liens que vous voulez garder.
+        À l&apos;inverse, un menu <strong>entièrement vide</strong> rend au site sa
+        navigation d&apos;origine : c&apos;est la façon de revenir en arrière.
       </p>
 
       {alertes > 0 ? (
