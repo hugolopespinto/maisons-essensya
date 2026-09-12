@@ -17,21 +17,17 @@
 # d'origine de /api/leads perd un de ses deux repères.
 # $URL est fourni par Netlify : c'est l'URL primaire du site, donc le
 # domaine définitif du client dès qu'il est rattaché en domaine primaire.
+# ⚠ NE PAS remettre NEXT_PUBLIC_SITE_URL = "$URL" ici : Netlify ne
+# développe PAS les variables dans netlify.toml, la chaîne arrive
+# littéralement et `new URL("$URL")` a déjà fait tomber un build entier
+# au prérendu. L adresse est résolue dans src/lib/site-url.ts, qui lit
+# directement les variables URL et DEPLOY_PRIME_URL injectées par Netlify.
+#
 # TODO conformité / SEO — [[À COMPLÉTER : domaine définitif du site]] :
-# au passage en production, vérifier que le domaine du client est bien le
-# domaine PRIMAIRE dans Netlify (et non un alias), sinon remplacer $URL
-# par l'URL en dur. Ce domaine est aussi celui qui doit figurer dans les
-# mentions légales et la politique de confidentialité.
-[context.production.environment]
-  NEXT_PUBLIC_SITE_URL = "$URL"
-
-# Les previews par branche ne doivent jamais être indexées ni pointer
-# leurs URLs canoniques vers la prod.
-[context.deploy-preview.environment]
-  NEXT_PUBLIC_SITE_URL = "$DEPLOY_PRIME_URL"
-
-[context.branch-deploy.environment]
-  NEXT_PUBLIC_SITE_URL = "$DEPLOY_PRIME_URL"
+# au passage en production, définir NEXT_PUBLIC_SITE_URL dans l interface
+# Netlify avec l adresse https définitive, et vérifier que le domaine du
+# client est bien le domaine PRIMAIRE (et non un alias). Ce domaine est
+# aussi celui qui doit figurer dans les mentions légales.
 
 # ════════════════════════════════════════════════════════════════
 # EN-TÊTES DE SÉCURITÉ

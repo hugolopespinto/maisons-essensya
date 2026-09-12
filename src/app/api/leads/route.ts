@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { VITAHOME } from "@/lib/vitahome/config";
 import { buildPayload, sendProspect } from "@/lib/vitahome/prospects";
 import type { OriginKey } from "@/lib/vitahome/types";
+import { SITE_URL } from "@/lib/site-url";
 
 /* ════ PROXY PROSPECTS ════
    Le navigateur POSTe ici ; c'est ce handler — et lui seul — qui connaît
@@ -88,7 +89,7 @@ function isSameSite(req: Request) {
      Netlify et le localhost de développement sans les énumérer. */
   const self = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
   if (self) allowed.add(self);
-  const site = hostOf(process.env.NEXT_PUBLIC_SITE_URL);
+  const site = hostOf(SITE_URL);
   if (site) allowed.add(site);
   return allowed.has(origin);
 }

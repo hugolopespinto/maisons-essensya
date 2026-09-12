@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { markdownToHtml, markdownToText } from "@/lib/markdown";
 import { getContent } from "@/lib/store";
 import type { Article } from "@/lib/store/types";
+import { SITE_URL } from "@/lib/site-url";
 import "@/styles/pages/blog.css";
 
 /* ════════════════════════════════════════════════════════════════
@@ -31,7 +32,7 @@ import "@/styles/pages/blog.css";
       `revalidatePath` sur /blog et sur l'article modifié.
    ════════════════════════════════════════════════════════════════ */
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const BASE = SITE_URL;
 
 /** Voir la note sur la page liste : ce filtre est dupliqué à dessein. */
 const publies = (articles: Article[]): Article[] =>

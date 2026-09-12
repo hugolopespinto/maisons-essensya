@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL, estProduction } from "@/lib/site-url";
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const BASE = SITE_URL;
 
 /* Une preview indexée, c'est le site en double dans l'index : Google
    choisit lui-même la version canonique et il choisit souvent mal.
@@ -9,22 +10,9 @@ const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
    localhost, IP, HTTP en clair, et les domaines de preview des hébergeurs.
    Par défaut on suppose une preview — se tromper dans ce sens coûte un
    robots.txt trop strict, l'inverse coûte un duplicate de tout le site. */
-const isProduction = (url: string): boolean => {
-  try {
-    const { protocol, hostname } = new URL(url);
-    if (protocol !== "https:") return false;
-    if (/^(localhost$|127\.|0\.0\.0\.0$|\[|\d+\.\d+\.\d+\.\d+$)/.test(hostname)) return false;
-    // Sous-domaines techniques des plateformes de déploiement.
-    if (/\.(netlify|vercel|pages\.dev|onrender|fly)\.(app|dev|com)$/.test(hostname)) return false;
-    if (/^(deploy-preview|preview|staging|recette|dev|test)[.-]/.test(hostname)) return false;
-    return true;
-  } catch {
-    return false;
-  }
-};
 
 export default function robots(): MetadataRoute.Robots {
-  if (!isProduction(BASE)) {
+  if (!estProduction(BASE)) {
     return { rules: { userAgent: "*", disallow: "/" } };
   }
 

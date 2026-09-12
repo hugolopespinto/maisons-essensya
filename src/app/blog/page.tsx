@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getContent } from "@/lib/store";
 import type { Article } from "@/lib/store/types";
 import { markdownToText } from "@/lib/markdown";
+import { SITE_URL } from "@/lib/site-url";
 import "@/styles/pages/blog.css";
 
 /* ════════════════════════════════════════════════════════════════
@@ -44,7 +45,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/blog" },
 };
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const BASE = SITE_URL;
 
 /** Date lisible, ou rien — un article mal daté ne doit pas afficher « Invalid Date ». */
 const fmtDate = (iso?: string): string => {

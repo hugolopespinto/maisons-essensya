@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
 import { AGENCIES, VERSIONS } from "@/data/essensya";
 import { getAnnonces } from "@/lib/vitahome/annonces";
+import { SITE_URL } from "@/lib/site-url";
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const BASE = SITE_URL;
 
 /* Priorités : /maisons vaut l'accueil. C'est la page qui porte le prix,
    et sur un mono-produit c'est elle que les requêtes de marque doivent

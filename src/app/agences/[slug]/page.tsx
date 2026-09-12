@@ -12,12 +12,13 @@ import { getContent } from "@/lib/store";
 import type { Agence } from "@/lib/store/types";
 import { getAnnonces } from "@/lib/vitahome/annonces";
 import type { Agency } from "@/types";
+import { SITE_URL } from "@/lib/site-url";
 import "@/styles/pages/agences.css";
 import "@/styles/pages/annonce.css"; // .a-aside — carte formulaire partagée
 
 /* Même repli que le metadataBase du layout : canonical et JSON-LD
    doivent désigner la même origine. */
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const SITE = SITE_URL;
 
 /* ════════════════════════════════════════════════════════════════
    FICHE D'AGENCE

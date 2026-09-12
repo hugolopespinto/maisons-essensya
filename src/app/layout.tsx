@@ -12,6 +12,7 @@ import { resoudreMedia } from "@/lib/medias";
 import { resolveMetadata } from "@/lib/seo";
 import { getContent } from "@/lib/store";
 import type { ColonneFooter, LienMenu } from "@/lib/store/types";
+import { SITE_URL } from "@/lib/site-url";
 import "@/styles/base.css";
 import "@/styles/sections.css";
 import "@/styles/cookies.css";
@@ -34,7 +35,7 @@ const plexMono = IBM_Plex_Mono({
   variable: "--font-plex-mono",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 
 /* ════════════════════════════════════════════════════════════════
    SUBSTITUTION — la règle unique du recâblage
