@@ -10,6 +10,21 @@
 [build.environment]
   NODE_VERSION = "22"
 
+# ════ URL CANONIQUE ════
+# Sans NEXT_PUBLIC_SITE_URL, le layout retombe sur http://localhost:3000 :
+# tous les <link rel="canonical">, les Open Graph et le JSON-LD partent
+# alors sur une URL locale — invisible pour Google, et le contrôle
+# d'origine de /api/leads perd un de ses deux repères.
+# $URL est fourni par Netlify : c'est l'URL primaire du site, donc le
+# domaine définitif du client dès qu'il est rattaché en domaine primaire.
+# TODO conformité / SEO — [[À COMPLÉTER : domaine définitif du site]] :
+# au passage en production, vérifier que le domaine du client est bien le
+# domaine PRIMAIRE dans Netlify (et non un alias), sinon remplacer $URL
+# par l'URL en dur. Ce domaine est aussi celui qui doit figurer dans les
+# mentions légales et la politique de confidentialité.
+[context.production.environment]
+  NEXT_PUBLIC_SITE_URL = "$URL"
+
 # Les previews par branche ne doivent jamais être indexées ni pointer
 # leurs URLs canoniques vers la prod.
 [context.deploy-preview.environment]
@@ -18,9 +33,118 @@
 [context.branch-deploy.environment]
   NEXT_PUBLIC_SITE_URL = "$DEPLOY_PRIME_URL"
 
+# ════════════════════════════════════════════════════════════════
+# EN-TÊTES DE SÉCURITÉ
+#
+# La CSP ci-dessous est calquée sur ce que le site charge RÉELLEMENT,
+# vérifié source par source — une CSP recopiée d'un modèle casse soit le
+# site, soit rien du tout. Détail, directive par directive :
+#
+#   default-src 'self'
+#       Socle : tout ce qui n'est pas listé plus bas est refusé hors
+#       du domaine. Les directives suivantes ouvrent le strict nécessaire.
+#
+#   base-uri 'self' · object-src 'none' · form-action 'self'
+#       Trois verrous sans contrepartie : pas de <base> injecté qui
+#       détournerait les liens relatifs, pas de plugin Flash/Java, et
+#       surtout aucun formulaire ne peut POSTer ailleurs que sur le site
+#       — ce qui compte quand les formulaires portent des coordonnées.
+#
+#   frame-ancestors 'self'
+#       Anti-clickjacking, version moderne de X-Frame-Options (conservé
+#       juste en dessous pour les navigateurs anciens).
+#
+#   script-src 'self' 'unsafe-inline' + googletagmanager / tagmanager /
+#   google-analytics
+#       GTM charge gtm.js depuis www.googletagmanager.com, GA4 charge
+#       son collecteur depuis google-analytics.com, et le mode aperçu de
+#       GTM passe par tagmanager.google.com.
+#       ⚠ 'unsafe-inline' est ici un compromis assumé, pas un oubli :
+#       Next injecte ses propres scripts inline (bootstrap, flight data)
+#       et le défaut Consent Mode v2 est un <script> brut dans le <head>
+#       — c'est précisément ce qui garantit qu'il s'exécute avant GTM.
+#       S'en passer demande une CSP à nonce, donc un middleware qui rend
+#       chaque page dynamique : à arbitrer si le client le demande.
+#       TODO sécurité : migrer vers une CSP à nonce si le site passe un
+#       audit exigeant. Aucun 'unsafe-eval' en revanche : rien n'en a
+#       besoin, et c'est celui qui compte vraiment.
+#
+#   style-src 'self' 'unsafe-inline'
+#       Les feuilles du site sont servies par Next depuis le domaine.
+#       'unsafe-inline' couvre les nombreux style={{…}} de React, qui
+#       deviennent des attributs style — un risque très inférieur à
+#       celui des scripts. Pas de fonts.googleapis.com : next/font
+#       télécharge les polices Google au build et les sert en /_next/
+#       (vérifié dans src/app/layout.tsx : Archivo, Instrument Sans,
+#       IBM Plex Mono via next/font/google — aucun appel au runtime).
+#
+#   font-src 'self' data:
+#       Conséquence du point précédent : les .woff2 viennent du domaine.
+#
+#   img-src
+#       'self' data: blob: pour les images du site, les SVG en data-URI
+#       (la flèche des <select> en est un) et les aperçus next/image ;
+#       images.unsplash.com pour les visuels de maquette ;
+#       pro.vitahome.fr et annonces.vitahome.fr pour les photos du flux
+#       d'annonces ; *.basemaps.cartocdn.com pour les tuiles de la carte
+#       Leaflet ; googletagmanager / google-analytics pour les pixels.
+#
+#   connect-src
+#       Les appels XHR/fetch : le site lui-même (/api/leads), et la
+#       télémétrie GA4, qui a plusieurs points de collecte régionaux
+#       (*.analytics.google.com) selon le pays du visiteur.
+#
+#   frame-src https://www.googletagmanager.com
+#       L'unique <iframe> du site est le <noscript> de GTM.
+#
+#   media-src 'self' data: blob:
+#       La visite pièce par pièce lit des <video>. Les sources sont
+#       aujourd'hui vides ou locales.
+#       TODO conformité — [[À COMPLÉTER : domaine d'hébergement des
+#       vidéos de visite]] : quand le client fournira ses vidéos, ajouter
+#       ici le domaine de son CDN, sinon elles seront bloquées. Un CDN
+#       vidéo est un destinataire de plus (adresses IP des visiteurs) :
+#       il devra aussi apparaître dans la politique de confidentialité.
+#
+#   worker-src 'self' blob:
+#       Next peut instancier des workers depuis un blob.
+#
+#   upgrade-insecure-requests
+#       Filet : une ressource http:// oubliée est chargée en https.
+#
+# Volontairement PAS de report-uri / report-to : il faudrait un
+# collecteur, donc un tiers de plus dans le registre des traitements.
+# ════════════════════════════════════════════════════════════════
+
 [[headers]]
   for = "/*"
   [headers.values]
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     X-Frame-Options = "SAMEORIGIN"
+
+    # HSTS : un an, sous-domaines compris. Volontairement SANS `preload` —
+    # l'inscription à la liste préchargée des navigateurs est quasi
+    # irréversible et engage tous les sous-domaines du client, y compris
+    # ceux qu'on ne connaît pas. À décider avec lui, pas à sa place.
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+    # Aucune de ces API n'est utilisée par le site (vérifié : ni
+    # navigator.geolocation, ni getUserMedia). On les ferme donc pour
+    # tout le monde, y compris pour un script tiers qui serait injecté.
+    Permissions-Policy = "accelerometer=(), autoplay=(self), camera=(), display-capture=(), encrypted-media=(), fullscreen=(self), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=(), interest-cohort=()"
+
+    # ⚠ Sur une seule ligne à dessein : Netlify joint les valeurs d'en-tête
+    # écrites en chaîne multi-ligne avec des virgules, et une virgule dans
+    # une CSP sépare DEUX politiques — le navigateur appliquerait alors
+    # l'intersection des deux et casserait la page. L'ordre des directives
+    # suit celui du commentaire ci-dessus.
+    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://tagmanager.google.com https://www.google-analytics.com https://ssl.google-analytics.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https://images.unsplash.com https://pro.vitahome.fr https://annonces.vitahome.fr https://*.basemaps.cartocdn.com https://www.googletagmanager.com https://tagmanager.google.com https://www.google-analytics.com https://*.google-analytics.com; connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://stats.g.doubleclick.net; frame-src https://www.googletagmanager.com; media-src 'self' data: blob:; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
+
+# L'endpoint de collecte ne doit jamais être mis en cache, ni par le CDN
+# ni par un intermédiaire : une réponse de formulaire est personnelle.
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-store"
+    X-Robots-Tag = "noindex"

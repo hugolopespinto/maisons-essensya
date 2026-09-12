@@ -1,0 +1,105 @@
+/* ════ BANDEAU & PRÉFÉRENCES COOKIES ════
+   À la DA, pas au thème d'un widget tiers : c'est le premier écran que
+   voit 100 % des visiteurs. Mêmes filets 1px, même mono en capitales,
+   même anthracite que le reste du site.                               */
+
+.c-cookies{
+  position:fixed;left:0;right:0;bottom:0;z-index:120;
+  background:var(--noir);color:var(--craie);
+  border-top:1px solid rgba(243,241,236,.18);
+  padding:var(--s-3) 0;
+  padding-bottom:calc(var(--s-3) + env(safe-area-inset-bottom));
+  animation:ckUp .45s var(--ease) both;
+}
+@keyframes ckUp{from{transform:translateY(100%)}to{transform:none}}
+.c-cookies__inner{
+  width:100%;max-width:var(--container);margin-inline:auto;padding-inline:var(--gutter);
+  display:flex;align-items:center;gap:var(--s-4);flex-wrap:wrap;
+}
+.c-cookies__text{flex:1 1 380px;min-width:0}
+.c-cookies__titre{
+  font-family:var(--f-mono);font-size:var(--fs-label);font-weight:500;
+  text-transform:uppercase;letter-spacing:.18em;color:var(--bois);
+  margin-bottom:.5rem;
+}
+.c-cookies__text p{font-size:var(--fs-small);color:var(--sable);max-width:64ch;line-height:1.55}
+.c-cookies__text a{border-bottom:1px solid var(--pierre-clair);transition:border-color var(--dur-fast)}
+.c-cookies__text a:hover{border-color:var(--bois)}
+.c-cookies__actions{display:flex;align-items:center;gap:var(--s-2);flex-wrap:wrap}
+/* ⚠ « Tout refuser » et « Tout accepter » partagent .c-btn--light :
+   même taille, même contraste, même niveau. Ne pas hiérarchiser l'un
+   au détriment de l'autre — c'est le point n°1 des contrôles CNIL. */
+.c-cookies__perso{
+  font-family:var(--f-mono);font-size:var(--fs-label);text-transform:uppercase;
+  letter-spacing:.16em;color:var(--sable);border-bottom:1px solid var(--pierre-clair);
+  padding:.3rem 0;transition:color var(--dur-fast),border-color var(--dur-fast);
+}
+.c-cookies__perso:hover{color:var(--bois);border-color:var(--bois)}
+@media (max-width:760px){
+  .c-cookies__inner{flex-direction:column;align-items:stretch;gap:var(--s-3)}
+  .c-cookies__actions{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-2)}
+  .c-cookies__actions .c-btn{justify-content:center}
+  .c-cookies__perso{grid-column:1/-1;text-align:center;justify-self:center}
+}
+
+/* ── Panneau de préférences ── */
+.c-cookies__overlay{
+  position:fixed;inset:0;z-index:130;display:flex;align-items:center;justify-content:center;
+  background:rgba(19,18,16,.72);backdrop-filter:blur(6px);padding:var(--gutter);
+  animation:ckFade .3s var(--ease) both;
+}
+@keyframes ckFade{from{opacity:0}to{opacity:1}}
+.c-cookies__panel{
+  background:var(--craie);color:var(--anthracite);border-radius:var(--radius);
+  width:min(680px,100%);max-height:min(86vh,780px);overflow-y:auto;
+  padding:var(--s-4);
+  animation:ckIn .4s var(--ease) both;
+}
+@keyframes ckIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.c-cookies__head{margin-bottom:var(--s-4)}
+.c-cookies__head .c-label{display:block;margin-bottom:var(--s-2)}
+.c-cookies__head h2{font-size:clamp(1.5rem,3.4vw,2.2rem)}
+.c-cookies__head p{margin-top:var(--s-2);font-size:var(--fs-small);max-width:52ch}
+
+.c-cookies__list{border-top:var(--line)}
+.c-cookies__list li{padding:var(--s-3) 0;border-bottom:var(--line)}
+.c-cookies__row{display:flex;align-items:center;justify-content:space-between;gap:var(--s-3)}
+.c-cookies__row h3{font-size:1rem}
+.c-cookies__list p{margin-top:.6rem;font-size:var(--fs-small);color:var(--pierre);max-width:58ch}
+.c-cookies__lock{
+  display:inline-block;margin-top:.6rem;font-family:var(--f-mono);font-size:var(--fs-label);
+  text-transform:uppercase;letter-spacing:.14em;color:var(--pierre);
+}
+
+/* Interrupteur — dessiné dans la grammaire : filet 1px, pas de couleur vive. */
+.c-switch{position:relative;flex:none;display:inline-flex;align-items:center;cursor:pointer}
+.c-switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+.c-switch__track{
+  width:46px;height:26px;border:1px solid var(--pierre);border-radius:13px;
+  background:transparent;position:relative;transition:background var(--dur-fast) var(--ease),border-color var(--dur-fast) var(--ease);
+}
+.c-switch__track::after{
+  content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;
+  background:var(--pierre);transition:transform var(--dur-fast) var(--ease),background var(--dur-fast) var(--ease);
+}
+.c-switch input:checked + .c-switch__track{background:var(--anthracite);border-color:var(--anthracite)}
+.c-switch input:checked + .c-switch__track::after{transform:translateX(20px);background:var(--craie)}
+.c-switch input:disabled + .c-switch__track{opacity:.5;cursor:not-allowed}
+.c-switch input:focus-visible + .c-switch__track{outline:2px solid var(--bois);outline-offset:3px}
+
+.c-cookies__foot{display:flex;flex-wrap:wrap;gap:var(--s-2);margin-top:var(--s-4);justify-content:flex-end}
+@media (max-width:560px){
+  .c-cookies__panel{padding:var(--s-3)}
+  .c-cookies__foot{flex-direction:column-reverse}
+  .c-cookies__foot .c-btn{width:100%;justify-content:center}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .c-cookies,.c-cookies__overlay,.c-cookies__panel{animation:none}
+  .c-switch__track,.c-switch__track::after{transition:none}
+}
+
+/* Le bouton de preferences vit dans la meme nav que les liens legaux :
+   il doit avoir exactement leur apparence, pas celle d un bouton. */
+.footer-legal nav button{font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;opacity:.8;transition:opacity var(--dur-fast),color var(--dur-fast);padding:0}
+.footer-legal nav button:hover{opacity:1;color:var(--bois)}
