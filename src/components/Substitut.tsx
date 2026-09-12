@@ -101,10 +101,22 @@ export default function Substitut({ annonce: a, className = "" }: Props) {
       </defs>
 
       <rect width={W} height={H} fill="var(--craie)" />
-      <rect width={W} height={H} fill={`url(#${gridId})`} />
+      <rect className="c-sub__grille" width={W} height={H} fill={`url(#${gridId})`} />
 
-      {/* La parcelle */}
-      <polygon points={poly} fill="var(--sable)" stroke="var(--pierre)" strokeWidth="1.25" />
+      {/* La parcelle, en DEUX éléments : le remplissage apparaît, le
+          contour se DESSINE. `pathLength="1"` normalise la longueur du
+          tracé à 1, ce qui permet d'animer `stroke-dashoffset` de 1 à 0
+          sans avoir à calculer le périmètre réel du quadrilatère — qui
+          change à chaque annonce. */}
+      <polygon className="c-sub__fill" points={poly} fill="var(--sable)" />
+      <polygon
+        className="c-sub__trace"
+        points={poly}
+        fill="none"
+        stroke="var(--pierre)"
+        strokeWidth="1.25"
+        pathLength="1"
+      />
 
       {/* L'emprise bâtie */}
       {isTM && hs > 0 && (
@@ -117,6 +129,7 @@ export default function Substitut({ annonce: a, className = "" }: Props) {
             fill="var(--anthracite)"
             stroke="var(--anthracite)"
             strokeWidth="1"
+            className="c-sub__bati"
           />
           <text
             x={hx + hw / 2}
@@ -130,7 +143,7 @@ export default function Substitut({ annonce: a, className = "" }: Props) {
       )}
 
       {/* Cote de façade (verticale, à gauche) */}
-      <g className="c-sub__cote">
+      <g className="c-sub__cote c-sub__cote--v">
         <line x1={x - 14} y1={y} x2={x - 14} y2={y + ph} />
         <line x1={x - 18} y1={y} x2={x - 10} y2={y} />
         <line x1={x - 18} y1={y + ph} x2={x - 10} y2={y + ph} />
@@ -140,7 +153,7 @@ export default function Substitut({ annonce: a, className = "" }: Props) {
       </g>
 
       {/* Cote de profondeur (horizontale, en bas) */}
-      <g className="c-sub__cote">
+      <g className="c-sub__cote c-sub__cote--h">
         <line x1={x} y1={y + ph + 14} x2={x + pw} y2={y + ph + 14} />
         <line x1={x} y1={y + ph + 10} x2={x} y2={y + ph + 18} />
         <line x1={x + pw} y1={y + ph + 10} x2={x + pw} y2={y + ph + 18} />
@@ -150,15 +163,15 @@ export default function Substitut({ annonce: a, className = "" }: Props) {
       </g>
 
       {/* Surface de parcelle, en haut à droite */}
-      <text x={W - 14} y={22} textAnchor="end" className="c-sub__surface">
+      <text x={W - 14} y={22} textAnchor="end" className="c-sub__surface c-sub__tard">
         {Math.round(surface)} m²
       </text>
-      <text x={14} y={22} className="c-sub__label">
+      <text x={14} y={22} className="c-sub__label c-sub__tard">
         {label}
       </text>
 
       {/* Nord — un repère de plan, pas une décoration */}
-      <g className="c-sub__nord" transform={`translate(${W - 22} ${H - 18})`}>
+      <g className="c-sub__nord c-sub__tard" transform={`translate(${W - 22} ${H - 18})`}>
         <path d="M0 -9 L3.4 4 L0 1.4 L-3.4 4 Z" />
         <text y="-13" textAnchor="middle">N</text>
       </g>

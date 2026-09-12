@@ -129,8 +129,23 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
 .c-sticky-cta .c-btn{width:100%;justify-content:center}
 @media (max-width:768px){.c-sticky-cta{display:block}}
 /* Reveal */
-[data-reveal]{opacity:0;transform:translateY(28px);transition:opacity var(--dur) var(--ease),transform var(--dur) var(--ease);transition-delay:var(--reveal-delay,0s)}
+/* 800 ms et 28 px de course : c'était trop long et trop ample. Sur mobile,
+   un élément qui met près d'une seconde à se poser donne l'impression que
+   la page rame — alors qu'elle attend. On resserre, et on réduit encore
+   la course au doigt : un petit écran amplifie le déplacement perçu. */
+[data-reveal]{opacity:0;transform:translateY(18px);transition:opacity .55s var(--ease),transform .55s var(--ease);transition-delay:var(--reveal-delay,0s)}
 [data-reveal].is-visible{opacity:1;transform:none}
+@media (max-width:768px){
+  [data-reveal]{transform:translateY(12px);transition-duration:.45s}
+}
+/* Cascade dans les grilles : chaque carte entre légèrement après la
+   précédente. 60 ms, pas plus — au-delà on attend la dernière. */
+.s-opps__grid > *,.m-opps__grid > *,.g-grid > *,.l-results > *,.s-versions__grid > *{
+  --reveal-delay:calc(var(--i,0) * 60ms)
+}
+.s-opps__grid > :nth-child(2),.m-opps__grid > :nth-child(2),.g-grid > :nth-child(2),.s-versions__grid > :nth-child(2){--i:1}
+.s-opps__grid > :nth-child(3),.m-opps__grid > :nth-child(3),.g-grid > :nth-child(3){--i:2}
+.g-grid > :nth-child(4){--i:3}
 .c-reveal-img{overflow:hidden;border-radius:var(--radius)}
 .c-reveal-img img{transform:scale(1.08);transition:transform 1.4s var(--ease)}
 .c-reveal-img.is-visible img{transform:scale(1)}
@@ -244,3 +259,76 @@ body.lp-mode .header-cta{display:inline-flex}
 
 /* Masqué visuellement, lu par les lecteurs d écran. */
 .u-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ════════════════════════════════════════════════════════════════
+   LE SUBSTITUT SE DESSINE
+
+   Le tracé de parcelle s'anime à l'entrée dans le champ, dans l'ordre
+   où un dessinateur le ferait : la trame, le contour qui se trace, le
+   remplissage, les cotes, le bâti, puis les libellés.
+
+   ⚠ TOUT EST PILOTÉ AU SCROLL (`animation-timeline: view()`), pas par
+   un minuteur ni un IntersectionObserver. Trois raisons, et la
+   troisième est la vraie :
+     · ça s'exécute sur le compositeur, donc aucune saccade au scroll
+       mobile — là où un rAF sur 90 cartes ramerait ;
+     · zéro JavaScript, donc rien à hydrater ni à nettoyer ;
+     · l'animation SUIT le doigt. On ne subit pas une durée : on avance,
+       le dessin avance ; on revient, il se défait.
+
+   ÉTAT DE BASE = ÉTAT FINAL. Les keyframes ne font qu'ajouter l'entrée.
+   Un navigateur sans `view()` affiche donc le schéma terminé, jamais un
+   cadre vide — c'est ce que garantit le `@supports`.
+   ════════════════════════════════════════════════════════════════ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .c-sub__grille,
+    .c-sub__fill,
+    .c-sub__cote,
+    .c-sub__bati,
+    .c-sub__tard,
+    .c-sub__inner {
+      animation-timeline: view();
+      animation-fill-mode: both;
+      animation-timing-function: var(--ease);
+    }
+
+    /* Le contour se trace le premier : c'est lui qui « dessine ». */
+    .c-sub__trace {
+      animation: subTrace linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 34%;
+    }
+    .c-sub__grille { animation-name: subFade; animation-range: entry 5% entry 95% }
+    .c-sub__fill   { animation-name: subFade; animation-range: entry 22% cover 38% }
+    /* Les cotes arrivent par leur côté : la verticale depuis la gauche,
+       l'horizontale depuis le bas. Le sens porte l'information. */
+    .c-sub__cote--v { animation-name: subCoteV; animation-range: cover 30% cover 48% }
+    .c-sub__cote--h { animation-name: subCoteH; animation-range: cover 34% cover 52% }
+    .c-sub__bati   { animation-name: subBati; animation-range: cover 40% cover 58% }
+    .c-sub__inner  { animation-name: subFade; animation-range: cover 50% cover 62% }
+    .c-sub__tard   { animation-name: subFade; animation-range: cover 46% cover 64% }
+  }
+}
+
+@keyframes subTrace {
+  from { stroke-dasharray: 1; stroke-dashoffset: 1 }
+  to   { stroke-dasharray: 1; stroke-dashoffset: 0 }
+}
+@keyframes subFade { from { opacity: 0 } to { opacity: 1 } }
+@keyframes subCoteV {
+  from { opacity: 0; transform: translateX(-6px) }
+  to   { opacity: 1; transform: none }
+}
+@keyframes subCoteH {
+  from { opacity: 0; transform: translateY(6px) }
+  to   { opacity: 1; transform: none }
+}
+@keyframes subBati {
+  /* `fill-box` : sans lui, l'origine serait le coin du SVG entier et le
+     bâti arriverait en diagonale depuis l'extérieur du cadre. */
+  from { opacity: 0; transform: scale(.86) }
+  to   { opacity: 1; transform: none }
+}
+.c-sub__bati { transform-box: fill-box; transform-origin: center }
+.c-sub__cote { transform-box: view-box }
