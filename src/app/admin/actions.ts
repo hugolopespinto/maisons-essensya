@@ -1,6 +1,13 @@
 "use server";
 
-import { headers } from "next/headers";
+import {
+  DELAI_ECHEC_MS,
+  attendre,
+  ipClient,
+  noterEchec,
+  reinitialiserEchecs,
+  tropDeTentatives,
+} from "@/lib/admin/tentatives";
 import { redirect } from "next/navigation";
 import {
   clearSessionCookie,
@@ -134,120 +141,20 @@ export async function requireRole(role: RoleAdmin): Promise<void> {
   if (role === "admin" && admin.role !== "admin") redirect("/admin");
 }
 
-/* ════════ LIMITATION DES TENTATIVES DE CONNEXION ════════
-
-   Deux freins qui se complètent :
-     1. un DÉLAI de ~400 ms après chaque échec — il ramène le débit à
-        2,5 essais par seconde et par connexion, sans jamais gêner
-        quelqu'un qui se trompe une fois ;
-     2. un COMPTEUR par IP — au-delà de 8 échecs en 10 minutes, plus
-        aucune tentative n'est évaluée, même juste. C'est ce qui manquait :
-        un délai ne compte rien, donc n'arrête rien sur la durée.
-
-   ⚠ MÉMOIRE DE PROCESSUS, exactement comme le quota de
-   `src/app/api/leads/route.ts` : sur Netlify ou Vercel, chaque instance
-   de function a la sienne et une instance froide repart de zéro. Ce
-   compteur freine un script naïf, il n'arrête pas une attaque
-   distribuée. C'est un garde-fou, pas une protection. Une vraie limite
-   suppose un magasin partagé — Upstash Redis, Netlify Blobs, ou le
-   rate-limiting du WAF devant le site.
-
-   Seuls les ÉCHECS sont comptés, et une connexion réussie remet le
-   compteur de l'IP à zéro : un bureau entier derrière une même IP
-   publique ne doit pas se verrouiller parce que deux personnes ont mal
-   tapé leur mot de passe. */
-const FENETRE_MS = 10 * 60 * 1000; // 10 minutes
-const MAX_ECHECS = 8; // échecs tolérés par fenêtre et par IP
-const MAX_CLES = 2_000; // plafond mémoire, purge au-delà
-
-const echecs = new Map<string, number[]>();
-
-/** IP du client, telle que la voit l'hébergeur. Mêmes en-têtes que l'API
- *  prospects — Netlify pose `x-nf-client-connection-ip`, les autres
- *  proxys `x-forwarded-for` (premier élément : le client d'origine). */
-async function ipClient(): Promise<string> {
-  const h = await headers();
-  const transmise = h.get("x-forwarded-for")?.split(",")[0]?.trim();
-  return transmise || h.get("x-nf-client-connection-ip") || "inconnue";
-}
-
-/** Vrai si cette IP a épuisé son quota d'échecs sur la fenêtre courante. */
-function tropDeTentatives(ip: string): boolean {
-  const maintenant = Date.now();
-  const recents = (echecs.get(ip) ?? []).filter((t) => maintenant - t < FENETRE_MS);
-  if (recents.length === 0) {
-    echecs.delete(ip);
-    return false;
-  }
-  echecs.set(ip, recents);
-  return recents.length >= MAX_ECHECS;
-}
-
-function noterEchec(ip: string): void {
-  const maintenant = Date.now();
-  const recents = (echecs.get(ip) ?? []).filter((t) => maintenant - t < FENETRE_MS);
-  recents.push(maintenant);
-  echecs.set(ip, recents);
-
-  /* Purge opportuniste : la Map ne doit pas grossir indéfiniment sur une
-     instance longue durée. On ne garde que les IP encore dans la fenêtre. */
-  if (echecs.size > MAX_CLES) {
-    for (const [cle, dates] of echecs) {
-      if (!dates.some((t) => maintenant - t < FENETRE_MS)) echecs.delete(cle);
-    }
-  }
-}
-
-const DELAI_ECHEC_MS = 400;
-const attendre = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /**
- * Connexion. Revient TOUJOURS par une redirection, jamais par une valeur :
- * l'écran de login reste ainsi un composant serveur, et le formulaire
- * fonctionne même sans JavaScript.
+/* La connexion NE PASSE PLUS par une Server Action : elle vit dans
+   src/app/api/admin/login/route.ts, en POST classique répondant 303.
+   Motif — les gestionnaires de mots de passe ne proposent d'enregistrer
+   qu'après une navigation de DOCUMENT, qu'une Server Action ne produit
+   pas. Le compteur de tentatives, lui, est partagé par les deux chemins
+   via @/lib/admin/tentatives. */
+
+/** Déconnexion. Efface le cookie de session et renvoie à l'écran de login.
  *
- * Le champ `email` n'est présent que si Supabase pilote
- * l'authentification ; en mode mot de passe partagé il est absent, et
- * `createSession()` l'ignore.
- */
-export async function login(formData: FormData): Promise<void> {
-  const motDePasse = String(formData.get("motdepasse") ?? "");
-  const email = String(formData.get("email") ?? "");
-  const ip = await ipClient();
-
-  /* Quota épuisé : on ne vérifie même pas les identifiants. Un mot de
-     passe juste envoyé pendant le blocage ne sert donc à rien — c'est le
-     point du compteur. Même réponse que pour un mot de passe faux :
-     annoncer le blocage renseignerait un attaquant sur l'efficacité de sa
-     campagne, et sur l'existence du compte visé. */
-  if (tropDeTentatives(ip)) {
-    await attendre(DELAI_ECHEC_MS);
-    redirect("/admin/login?e=1");
-  }
-
-  const token = isAdminEnabled()
-    ? await createSession(motDePasse, email)
-    : null;
-
-  if (!token) {
-    noterEchec(ip);
-    await attendre(DELAI_ECHEC_MS);
-    /* Un seul code d'erreur, jamais de détail : ne dire ni « mot de passe
-       incorrect », ni « compte inconnu », ni « back-office non
-       configuré », ni « trop de tentatives ». Toute distinction
-       renseigne l'attaquant — sur l'état du serveur, et surtout sur
-       l'existence d'un compte. */
-    redirect("/admin/login?e=1");
-  }
-
-  /* Connexion réussie : l'IP repart d'une ardoise vierge. */
-  echecs.delete(ip);
-
-  await setSessionCookie(token);
-  redirect("/admin");
-}
-
-/** Déconnexion. Efface le cookie de session et renvoie à l'écran de login. */
+ *  Reste une Server Action, contrairement à la connexion : aucun
+ *  gestionnaire de mots de passe n'a besoin d'observer une déconnexion,
+ *  et le bouton vit dans la navigation de toutes les pages d'admin. */
 export async function logout(): Promise<void> {
   await clearSessionCookie();
   redirect("/admin/login");

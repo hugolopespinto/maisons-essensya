@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { authDriver, isAdminEnabled, isAuthenticated } from "@/lib/admin/auth";
-import { login } from "../actions";
 
 /* ════════════════════════════════════════════════════════════════
    ÉCRAN DE CONNEXION
@@ -102,7 +101,12 @@ export default async function LoginPage({
         Administration
       </h1>
 
-      <form action={login}>
+      {/* POST classique vers un point d'entrée HTTP, et non une Server
+          Action : les gestionnaires de mots de passe ne proposent
+          d'enregistrer qu'après une navigation de DOCUMENT, ce qu'une
+          Server Action ne produit pas (elle redirige côté client). Voir
+          src/app/api/admin/login/route.ts. */}
+      <form action="/api/admin/login" method="post">
         {comptesNommes ? (
           <div className="adm-field">
             <label htmlFor="email">Adresse e-mail</label>
