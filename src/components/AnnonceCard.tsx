@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { ViewTransition, useEffect, useRef, useState } from "react";
 import LeadForm, { ContactFields } from "@/components/LeadForm";
 import { AnnonceMedia } from "@/components/Substitut";
 import {
@@ -47,14 +47,26 @@ export default function AnnonceCard({
       onMouseLeave={onMouseLeave}
       {...(reveal ? { "data-reveal": "" } : {})}
     >
-      <div className="c-annonce__media">
-        <span className={`c-tag${isTerrain ? " c-tag--terrain" : ""}`}>
-          {isTerrain ? "Terrain" : "Terrain + maison"}
-        </span>
-        {/* 9 annonces sur 10 n'ont aucune photo : c'est le tracé coté qui
-            s'affiche, et c'est le cas nominal, pas un pis-aller. */}
-        <AnnonceMedia annonce={a} />
-      </div>
+      {/* ── OBJET PARTAGÉ AVEC LA FICHE ──
+          Même `name` des deux côtés : le navigateur reconnaît le même
+          objet et l'anime de la vignette vers le visuel de la fiche. On
+          ne voit plus deux pages se remplacer, mais une chose grandir.
+
+          `default="none"` est indispensable : sans lui, CHAQUE média
+          nommé rejouerait un fondu à la moindre transition de la page —
+          soit des dizaines d'animations parasites sur le listing. Et
+          avec `default="none"`, il faut garder `share` explicite, sinon
+          la paire cesse silencieusement de se morpher. */}
+      <ViewTransition name={`annonce-${a.id}`} share="morph" default="none">
+        <div className="c-annonce__media">
+          <span className={`c-tag${isTerrain ? " c-tag--terrain" : ""}`}>
+            {isTerrain ? "Terrain" : "Terrain + maison"}
+          </span>
+          {/* 9 annonces sur 10 n'ont aucune photo : c'est le tracé coté qui
+              s'affiche, et c'est le cas nominal, pas un pis-aller. */}
+          <AnnonceMedia annonce={a} />
+        </div>
+      </ViewTransition>
       <div className="c-annonce__body">
         {a.highlighted && (
           <div className="c-annonce__offer">

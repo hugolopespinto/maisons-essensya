@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ViewTransition } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AnnonceAside, AnnonceStickyForm } from "@/components/AnnonceCard";
@@ -175,9 +176,12 @@ export default async function AnnoncePage({
 
       <section className="a-gallery">
         <div className={`container${side.length ? "" : " is-solo"}`}>
-          <div className="c-reveal-img">
-            <AnnonceMedia annonce={a} eager />
-          </div>
+          {/* Même `name` que la vignette du listing — voir AnnonceCard. */}
+          <ViewTransition name={`annonce-${a.id}`} share="morph" default="none">
+            <div className="c-reveal-img">
+              <AnnonceMedia annonce={a} eager />
+            </div>
+          </ViewTransition>
           {side.length > 0 && (
             <div className="a-gallery__side">
               {side.map((src) => (

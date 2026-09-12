@@ -332,3 +332,30 @@ body.lp-mode .header-cta{display:inline-flex}
 }
 .c-sub__bati { transform-box: fill-box; transform-origin: center }
 .c-sub__cote { transform-box: view-box }
+
+/* ════════════════════════════════════════════════════════════════
+   TRANSITION D'UNE ANNONCE VERS SA FICHE
+
+   Le visuel de la carte et celui de la fiche portent le même `name`
+   (voir AnnonceCard et annonces/[ref]). Le navigateur les reconnaît
+   comme un seul objet et l'anime d'une position à l'autre : on ne voit
+   plus deux pages se remplacer, mais une chose grandir. C'est ce qui
+   dit au visiteur « c'est bien celle que tu as touchée » — utile
+   partout, décisif au pouce, où la cible est petite et le doute réel.
+
+   400 ms : assez lent pour être lu, assez direct pour ne pas retarder.
+   Le flou de mi-parcours masque l'interpolation pixel à pixel, surtout
+   visible quand on passe d'une vignette 16/10 à un grand format.
+   ════════════════════════════════════════════════════════════════ */
+::view-transition-group(.morph){animation-duration:400ms}
+::view-transition-image-pair(.morph){animation-name:vt-flou}
+@keyframes vt-flou{30%{filter:blur(3px)}}
+
+/* Le mouvement d'un objet d'un bout à l'autre de l'écran est exactement
+   ce que `reduced-motion` demande d'éviter. On coupe l'animation ; la
+   navigation, elle, fonctionne toujours. */
+@media (prefers-reduced-motion:reduce){
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*){animation:none!important}
+}
