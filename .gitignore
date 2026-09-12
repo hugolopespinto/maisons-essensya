@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Contenu saisi dans le back-office (pilote fichier, dev uniquement).
+# En production c'est Supabase qui persiste : ce fichier ne doit pas
+# suivre le dépôt, sinon chaque enregistrement de recette pollue les diffs.
+content/
