@@ -285,7 +285,7 @@ export default async function EditionArticlePage({
             type="text"
             required
             defaultValue={article.titre}
-            placeholder="Combien coûte un terrain viabilisé en Charente-Maritime ?"
+            placeholder="Combien coûte un terrain viabilisé dans les Landes ?"
           />
           <span className="adm-field__aide">
             C&apos;est le h1 de la page et le titre affiché dans Google. Une vraie

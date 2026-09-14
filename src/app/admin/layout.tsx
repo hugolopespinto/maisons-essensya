@@ -90,6 +90,7 @@ const FAMILLES: Famille[] = [
       { href: "/admin/blog", label: "Blog" },
       { href: "/admin/annonces", label: "Annonces" },
       { href: "/admin/agences", label: "Agences" },
+      { href: "/admin/realisations", label: "Réalisations" },
       { href: "/admin/medias", label: "Médiathèque" },
     ],
   },

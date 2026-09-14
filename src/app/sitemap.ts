@@ -19,6 +19,7 @@ const STATICS: [string, number][] = [
   ["/maisons", 1],
   ["/annonces", 0.8],
   ["/terrains", 0.8],
+  ["/realisations", 0.8],
   ["/agences", 0.8],
   ["/concept", 0.7],
   ["/contact", 0.7],

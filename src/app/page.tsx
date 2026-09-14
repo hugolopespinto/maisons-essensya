@@ -6,7 +6,7 @@ import LeadForm from "@/components/LeadForm";
 import { AnnonceMedia } from "@/components/Substitut";
 import { Icon } from "@/components/icons";
 import { ESSENSYA_DATA, PLACEHOLDER, PRICE_FROM, REEL } from "@/data/essensya";
-import { vue } from "@/data/visuels";
+import { srcSet, vue } from "@/data/visuels";
 import "@/styles/accueil.css";
 import {
   annonceTitle,
@@ -107,7 +107,7 @@ export default async function HomePage() {
                 type="search"
                 id="s-q"
                 name="q"
-                placeholder="La Rochelle, 17000, Thouars…"
+                placeholder="Mont-de-Marsan, 40000, Dax…"
                 autoComplete="postal-code"
               />
             </div>
@@ -182,16 +182,25 @@ export default async function HomePage() {
                 style={{ backgroundImage: `url(${ph.visuel.empreinte})` }}
                 data-reveal
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={ph.visuel.srcPetit}
-                  srcSet={`${ph.visuel.srcPetit} 720w, ${ph.visuel.src} ${ph.visuel.largeur}w`}
-                  sizes="(max-width:900px) 100vw, 33vw"
-                  width={ph.visuel.largeur}
-                  height={ph.visuel.hauteur}
-                  alt={ph.alt}
-                  loading="lazy"
-                />
+                <picture>
+                  <source
+                    type="image/avif"
+                    srcSet={srcSet(ph.visuel, "avif")}
+                    sizes="(max-width:900px) 100vw, 33vw"
+                  />
+                  <source
+                    type="image/webp"
+                    srcSet={srcSet(ph.visuel, "webp")}
+                    sizes="(max-width:900px) 100vw, 33vw"
+                  />
+                  <img
+                    src={ph.visuel.src}
+                    width={ph.visuel.largeur}
+                    height={ph.visuel.hauteur}
+                    alt={ph.alt}
+                    loading="lazy"
+                  />
+                </picture>
               </div>
             ))}
           </div>

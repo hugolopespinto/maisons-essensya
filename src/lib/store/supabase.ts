@@ -9,6 +9,7 @@ import type {
   Media,
   Menus,
   PageEditable,
+  Realisation,
   Reglages,
   SeoEntry,
   Textes,
@@ -633,6 +634,7 @@ export async function read(): Promise<Partial<Content>> {
 
     const data: Partial<Content> = {
       seo: (parCle.get("seo") as SeoEntry[] | undefined) ?? [],
+      realisations: (parCle.get("realisations") as Realisation[] | undefined) ?? [],
       /* Domaine absent = domaine jamais enregistré : on laisse le
          sélecteur poser les valeurs par défaut, comme pour le fichier. */
       tracking: parCle.get("tracking") as TrackingConfig | undefined,
@@ -682,10 +684,18 @@ function derniereMaj(dates: (string | null | undefined)[]): string | undefined {
    ────────────────────────────────────────────────────────────────── */
 
 /** Les domaines rangés en JSONB dans la table `content`. */
-type DomaineJson = "seo" | "tracking" | "textes" | "menus" | "reglages" | "pages";
+type DomaineJson =
+  | "seo"
+  | "realisations"
+  | "tracking"
+  | "textes"
+  | "menus"
+  | "reglages"
+  | "pages";
 
 const DOMAINES_JSON: DomaineJson[] = [
   "seo",
+  "realisations",
   "tracking",
   "textes",
   "menus",

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import CookiePrefsLink from "@/components/CookiePrefsLink";
-import { PRICE_FROM, VERSIONS } from "@/data/essensya";
+import { REEL, VERSIONS } from "@/data/essensya";
 import { fmtPrice, houseUrl, versionUrl } from "@/lib/format";
 
 /* ⚠ CETTE LISTE ÉTAIT ÉCRITE EN DUR, et elle était déjà fausse : elle
@@ -58,6 +58,7 @@ const colonnesDefaut = (zones: LienZone[]): ColonneChrome[] => [
     liens: [
       { href: "/concept", label: "Notre concept" },
       { href: "/concept#engagements", label: "Nos engagements" },
+      { href: "/realisations", label: "Nos réalisations" },
       { href: "/agences", label: "Nos agences" },
       { href: "/contact", label: "Contact" },
     ],
@@ -132,11 +133,17 @@ export default function Footer({
                 </>
               )}
             </Link>
+            {/* ⚠ Ce paragraphe disait « une maison de plain-pied, deux
+                déclinaisons — 2 ou 3 chambres », et le prix qui allait
+                avec. Le client construit une GAMME : la phrase était
+                fausse sur toutes les pages du site à la fois, pied de
+                page oblige. Réécrite sans inventer de caractéristiques,
+                puisque nous n'avons pas encore celles des modèles. */}
             <p>
-              Une maison de plain-pied, deux déclinaisons — 2 ou 3 chambres.
-              Conçue une seule fois et construite à l&apos;identique : c&apos;est
-              exactement ce qui permet de l&apos;annoncer à partir de{" "}
-              {fmtPrice(PRICE_FROM)}, hors terrain.
+              Des modèles de maisons optimisés jusqu&apos;au dernier mètre
+              carré, conçus par notre bureau d&apos;études : c&apos;est ce qui
+              permet de les annoncer à partir de {fmtPrice(REEL.prixEntree)},
+              hors terrain.
             </p>
             <p style={STYLE_CONTACT}>
               <a href={telHref}>{telephone}</a>

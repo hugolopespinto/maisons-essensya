@@ -20,7 +20,7 @@ import { assertAdmin, requireAdmin } from "../actions";
    `Agence.id` alimente `agencyUrl()` : c'est littéralement l'adresse
    publique `/agences/<id>`. On le dérive donc du nom, comme un slug
    d'article, plutôt que de tirer un uuid. Deux conséquences voulues :
-     · l'adresse reste lisible — « constructeur maison La Rochelle » se
+     · l'adresse reste lisible — « constructeur maison Mont-de-Marsan » se
        joue aussi là ;
      · les deux fiches déjà en ligne (`agence-demo-1`, `agence-thouars`)
        peuvent être reprises TELLES QUELLES par le bouton de reprise,
@@ -377,7 +377,7 @@ export default async function AdminAgencesPage({
               type="text"
               required
               defaultValue={agence.nom}
-              placeholder="Agence de La Rochelle"
+              placeholder="Agence de Mont-de-Marsan"
             />
             <span className="adm-field__aide">
               Le titre de la fiche, et le nom affiché sur la carte de la liste.
@@ -391,7 +391,7 @@ export default async function AdminAgencesPage({
               name="zone"
               type="text"
               defaultValue={agence.zone}
-              placeholder="Charente-Maritime &amp; Aunis"
+              placeholder="Landes &amp; Chalosse"
             />
             <span className="adm-field__aide">
               En clair, tel qu&apos;on le dirait au téléphone. Affiché au-dessus du
@@ -447,7 +447,7 @@ export default async function AdminAgencesPage({
               name="adresse"
               type="text"
               defaultValue={agence.adresse}
-              placeholder="12 avenue du Général de Gaulle, 17000 La Rochelle"
+              placeholder="12 avenue du Général de Gaulle, 40000 Mont-de-Marsan"
             />
             <span className="adm-field__aide">
               Une virgule entre la rue et la ligne « code postal + ville » : c&apos;est
@@ -571,7 +571,7 @@ export default async function AdminAgencesPage({
               name="villes"
               rows={8}
               defaultValue={agence.villes.join("\n")}
-              placeholder={"La Rochelle\nAigrefeuille-d'Aunis\nSalles-sur-Mer"}
+              placeholder={"Mont-de-Marsan\nDax\nSaint-Paul-lès-Dax"}
             />
             <span className="adm-field__aide">
               Affichées sur la fiche, et déclarées à Google comme zone desservie.

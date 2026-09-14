@@ -244,10 +244,45 @@ export interface PageEditable {
 }
 
 /* ════ L'ENSEMBLE ════ */
+/* ════════════════════════════════════════════════════════════════
+   UNE RÉALISATION — une maison réellement construite et livrée
+
+   ⚠ CE N'EST PAS UN RENDU 3D, et la distinction n'est pas cosmétique.
+   Les visuels dont dispose le site aujourd'hui sont des images de
+   synthèse. Les présenter comme des réalisations serait une pratique
+   commerciale trompeuse (art. L.121-2 du Code de la consommation) : un
+   acquéreur choisit un constructeur sur ce qu'il croit être des
+   chantiers terminés. Cette page attend donc de vraies photographies,
+   et elle affiche un état vide honnête tant qu'elle n'en a pas.
+
+   Rangé dans le JSONB `content` plutôt que dans une table dédiée : le
+   client n'a aucune migration SQL à lancer pour commencer à publier. Si
+   le volume grandit — plusieurs dizaines de chantiers, avec tri et
+   filtres — ce sera le moment de lui donner sa table, comme `articles`.
+   ════════════════════════════════════════════════════════════════ */
+export interface Realisation {
+  id: string;
+  /** Commune du chantier : c'est le mot-clé local qui fait remonter la page. */
+  commune: string;
+  /** Modèle construit, tel que le client le nomme (« Lisbonne »). */
+  modele?: string;
+  /** Année de livraison. Chaîne, pas nombre : « 2025 », « en cours ». */
+  annee?: string;
+  /** Référence de média, ou URL. Résolue par `resoudreMedia()`. */
+  image?: string;
+  imageAlt?: string;
+  texte?: string;
+  /** Masquée du site sans être supprimée — même logique que les agences. */
+  actif: boolean;
+  ordre: number;
+}
+
 export interface Content {
   /** Version du schéma — permet une migration propre plus tard. */
   v: number;
   seo: SeoEntry[];
+  /** Chantiers livrés, affichés sur /realisations. */
+  realisations: Realisation[];
   tracking: TrackingConfig;
   articles: Article[];
   annonces: AnnonceOverride[];

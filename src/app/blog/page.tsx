@@ -18,7 +18,7 @@ import { resolveMetadata } from "@/lib/seo";
 
    Quand quelqu'un fait construire, il cherche pendant des mois avant de
    contacter un constructeur, et il cherche autre chose qu'un catalogue :
-     · « prix construction maison Charente-Maritime »
+     · « prix construction maison Landes »
      · « CCMI : ce qui est couvert »
      · « combien coûte un terrain viabilisé »
      · « faut-il un apport pour faire construire »

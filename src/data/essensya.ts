@@ -416,36 +416,39 @@ export const ESSENSYA_DATA: EssensyaData = {
   /* ⚠ Agences provisoires, calées sur la zone réelle du flux Vitahome
      (Charente-Maritime, Deux-Sèvres). Le flux ne contient qu'une agence
      de démonstration : la liste réelle est à obtenir du client. */
+  /* ⚠ UNE SEULE AGENCE, ET AUCUNE ADRESSE POSTALE. C'est délibéré.
+
+     Il y en avait deux, à La Rochelle et à Thouars, avec numéros de rue,
+     coordonnées GPS et descriptions rédigées. Le secteur réel est les
+     Landes : tout cela était faux, et pas d'un peu — le site affichait
+     une entreprise implantée à 250 km de là, avec des communes
+     d'intervention inventées.
+
+     Les relocaliser à Mont-de-Marsan reviendrait à remplacer une fiction
+     par une autre, plus crédible donc plus dangereuse : un visiteur
+     pourrait se déplacer à une adresse qui n'existe pas. On garde donc
+     UNE entrée, sans rue et sans point sur la carte, le temps que le
+     client transmette ses vraies implantations.
+
+     `lat`/`lng` restent indéfinis : le JSON-LD omet alors le bloc `geo`
+     plutôt que de planter un repère au hasard (voir src/lib/agences.ts).
+     `cities` reste vide : la liste sert au rattachement des pages de
+     zone, et rattacher à l'aveugle serait pire que ne rien rattacher. */
   agencies: [
     {
-      id: "agence-demo-1",
-      name: "Agence de La Rochelle",
-      zone: "Charente-Maritime & Aunis",
-      address: "12 avenue du Général de Gaulle, 17000 La Rochelle",
+      id: "agence-landes",
+      name: "Maisons Essensya — Landes",
+      zone: "Landes (40)",
+      address: "",
       phone: P.phone,
-      email: "larochelle@essensya.fr",
+      email: "contact@essensya.fr",
       hours: "Lun – Sam · 9h–12h / 14h–18h30",
-      lat: 46.1667,
-      lng: -1.15,
+      lat: 0,
+      lng: 0,
       image: IMG.agenceLr,
-      cities: ["La Rochelle", "Aigrefeuille-d'Aunis", "Salles-sur-Mer", "Chaillevette", "Andilly", "Saint-Césaire"],
+      cities: [],
       description:
-        "L'agence de La Rochelle couvre l'Aunis et la côte. Son équipe connaît les PLU et les lotissements du secteur — c'est elle qui repère les parcelles compatibles avec la maison Essensya, souvent avant leur mise sur le marché.",
-    },
-    {
-      id: "agence-thouars",
-      name: "Agence de Thouars",
-      zone: "Deux-Sèvres & Nord-Vienne",
-      address: "6 rue des Lotissements, 79100 Thouars",
-      phone: "05 49 00 00 00",
-      email: "thouars@essensya.fr",
-      hours: "Lun – Sam · 9h–12h / 14h–18h30",
-      lat: 46.9667,
-      lng: -0.216667,
-      image: IMG.agenceTh,
-      cities: ["Thouars", "Niort", "Bressuire", "Parthenay", "Airvault", "Saint-Varent"],
-      description:
-        "En Deux-Sèvres, le foncier reste accessible et les parcelles sont plus grandes. L'agence de Thouars y accompagne surtout des premiers achats, pour qui le prix annoncé d'avance change tout.",
+        "Nous construisons dans les Landes. Dites-nous où se situe votre projet : nous vous indiquons les terrains compatibles de votre secteur et le prix de votre maison avant le premier rendez-vous.",
     },
   ],
 

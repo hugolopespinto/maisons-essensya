@@ -183,7 +183,12 @@ export function annonceSchema(a: Annonce, titre: string): Noeud {
    balise que ce qui est réellement rendu — pas le catalogue entier. */
 export function listeSchema(
   nom: string,
-  liens: { nom: string; path: string }[],
+  /* `path` est FACULTATIF : toutes les listes ne mènent pas ailleurs.
+     Les réalisations, par exemple, sont des fiches sans page propre.
+     Leur inventer une URL — ou émettre `url: undefined` — annoncerait à
+     Google des pages qui n'existent pas, et c'est lui qui viendrait les
+     chercher. On omet la clé, ce qu'un ItemList accepte parfaitement. */
+  liens: { nom: string; path?: string }[],
 ): Noeud {
   return {
     "@context": "https://schema.org",
@@ -194,7 +199,7 @@ export function listeSchema(
       "@type": "ListItem",
       position: i + 1,
       name: l.nom,
-      url: abs(l.path),
+      ...(l.path ? { url: abs(l.path) } : {}),
     })),
   };
 }

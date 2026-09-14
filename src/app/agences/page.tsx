@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AgencyCard from "@/components/AgencyCard";
-import { PRICE_FROM } from "@/data/essensya";
+import { REEL } from "@/data/essensya";
 import { agencesPubliees } from "@/lib/agences";
 import { fmtPrice } from "@/lib/format";
 import { resolveMetadata } from "@/lib/seo";
@@ -40,9 +40,9 @@ export const revalidate = 1800;
    chose. Voir la note de fin de src/lib/seo.ts. */
 export async function generateMetadata(): Promise<Metadata> {
   return resolveMetadata("/agences", {
-    title: "Nos agences — La Rochelle et Thouars",
+    title: "Nos agences dans les Landes",
     description:
-      "Deux agences, une maison. Chaque équipe connaît le terrain de son secteur — au sens propre — et suit votre projet jusqu'à la remise des clés.",
+      "Nous construisons dans les Landes. Notre équipe connaît le terrain de son secteur — au sens propre — et suit votre projet jusqu'à la remise des clés.",
     alternates: { canonical: "/agences" },
   });
 }
@@ -101,10 +101,10 @@ export default async function AgencesPage() {
             <p>{chapo}</p>
           ) : (
             <p>
-              Deux agences, une maison, le même prix partout : à partir de{" "}
-              {fmtPrice(PRICE_FROM)} hors terrain. Chaque équipe connaît le terrain
-              de son secteur — au sens propre : les PLU, les lotissements et les
-              parcelles compatibles avec une maison de plain-pied.
+              Nous construisons dans les Landes, au même prix partout : à partir
+              de {fmtPrice(REEL.prixEntree)} hors terrain. Notre équipe connaît le
+              terrain de son secteur — au sens propre : les PLU, les lotissements
+              et les parcelles compatibles avec nos modèles.
             </p>
           )}
           <p style={{ marginTop: "var(--s-3)" }}>

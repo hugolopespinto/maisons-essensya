@@ -323,7 +323,7 @@ export default async function MaisonPage() {
               <ContactFields prefix="mf" />
               <div className="c-field">
                 <label htmlFor="mf-zone">Commune ou code postal du projet</label>
-                <input type="text" id="mf-zone" name="zone" placeholder="Ex. 17000" />
+                <input type="text" id="mf-zone" name="zone" placeholder="Ex. 40000" />
               </div>
               <div className="c-field">
                 <label htmlFor="mf-version">Déclinaison qui vous intéresse</label>

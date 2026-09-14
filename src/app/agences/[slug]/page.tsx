@@ -68,7 +68,7 @@ export async function generateMetadata({
 }
 
 /* ════ SEO LOCAL ════
-   « constructeur maison La Rochelle » est la première requête du métier :
+   « constructeur maison Mont-de-Marsan » est la première requête du métier :
    la fiche agence doit être lisible par un moteur comme un établissement,
    adresse, téléphone et horaires compris. */
 
@@ -100,7 +100,7 @@ function openingHours(hours: string) {
   }));
 }
 
-/** « 12 avenue …, 17000 La Rochelle » → adresse postale structurée. */
+/** « 12 avenue …, 40000 Mont-de-Marsan » → adresse postale structurée. */
 function postalAddress(address: string) {
   const [street = address, cityLine = ""] = address.split(/,\s*/);
   return {

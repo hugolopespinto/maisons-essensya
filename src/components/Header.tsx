@@ -52,6 +52,7 @@ export function CoquillePublique({ children }: { children: React.ReactNode }) {
 const LINKS: LienChrome[] = [
   { href: "/maisons", label: "La maison" },
   { href: "/annonces", label: "Terrains & opportunités" },
+  { href: "/realisations", label: "Réalisations" },
   { href: "/concept", label: "Notre concept" },
   { href: "/agences", label: "Nos agences" },
 ];
@@ -80,6 +81,8 @@ export interface HeaderProps {
   /** URL déjà résolue par `resoudreMedia()`, ou `null` : sans logo
    *  téléversé, le site continue d'écrire le nom en lettres. */
   logo: string | null;
+  /** Version claire du logo, pour l'en-tête transparent. Voir plus bas. */
+  logoClair?: string | null;
   /** Numéro affiché, déjà arbitré entre Réglages, Contenu et le code. */
   telephone: string;
   /** Le `tel:` correspondant — calculé une fois dans le layout racine. */
@@ -97,6 +100,7 @@ export default function Header({
   marque,
   baseline,
   logo,
+  logoClair,
   telephone,
   telHref,
   liens,
@@ -164,10 +168,21 @@ export default function Header({
   /* Le bloc-marque : l'image si le client en a téléversé une, sinon le
      lettrage d'origine. `alt` vide côté image — le lien porte déjà son
      `aria-label`, répéter le nom le ferait annoncer deux fois. */
-  const marqueVisuelle = logo ? (
+  /* ⚠ DEUX LOGOS, PARCE QU'IL Y A DEUX FONDS.
+     L'en-tête est TRANSPARENT au-dessus du visuel d'accueil — texte
+     clair sur photo — puis bascule en crème dès qu'on défile. Un seul
+     logo ne peut pas tenir les deux : la version sombre disparaît sur
+     la photo, la version blanche disparaît sur le crème. On les rend
+     donc toutes les deux et on les permute au même moment que le fond,
+     par la même condition. Le client qui téléverse SON logo n'en
+     fournit qu'un : il s'applique alors aux deux états, faute de mieux. */
+  const solide = alwaysSolid || scrolled || open;
+  const logoAffiche = (solide ? logo : (logoClair ?? logo)) ?? null;
+
+  const marqueVisuelle = logoAffiche ? (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={logo}
+      src={logoAffiche}
       alt=""
       style={{ display: "block", height: "2.1rem", width: "auto" }}
     />
@@ -181,7 +196,7 @@ export default function Header({
   return (
     <>
       <header
-        className={`site-header${alwaysSolid || scrolled || open ? " is-solid" : ""}`}
+        className={`site-header${solide ? " is-solid" : ""}`}
         id="siteHeader"
       >
         <div className="container">

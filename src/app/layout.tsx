@@ -308,6 +308,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             marque={marque}
             baseline={baseline}
             logo={logo}
+            logoClair={logoPied}
             telephone={telephone}
             telHref={telHref(telephone)}
             liens={liensMenu(menus.header)}

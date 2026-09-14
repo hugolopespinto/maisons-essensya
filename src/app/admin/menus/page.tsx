@@ -76,6 +76,7 @@ const PAGES_FIXES: Suggestion[] = [
   { href: "/concept", label: "Notre concept" },
   { href: "/annonces", label: "Terrains & opportunités" },
   { href: "/terrains", label: "Où nous construisons" },
+  { href: "/realisations", label: "Réalisations" },
   { href: "/agences", label: "Nos agences" },
   { href: "/blog", label: "Blog" },
   { href: "/contact", label: "Contact" },
@@ -188,6 +189,7 @@ const FOOTER_ACTUEL: ColonneFooter[] = [
     [
       ["Notre concept", "/concept"],
       ["Nos engagements", "/concept#engagements"],
+      ["Nos réalisations", "/realisations"],
       ["Nos agences", "/agences"],
       ["Contact", "/contact"],
     ],

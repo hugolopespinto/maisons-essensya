@@ -453,6 +453,7 @@ export const PAGES_DEFAUT: PageEditable[] = [
 export const EMPTY: Content = {
   v: 1,
   seo: [],
+  realisations: [],
   tracking: { conversions: [] },
   articles: [],
   annonces: [],
@@ -555,6 +556,9 @@ function normaliser(partiel: Partial<Content>): Content {
     textes: { ...EMPTY.textes, ...(partiel.textes ?? {}) },
     medias: partiel.medias ?? EMPTY.medias,
     agences: partiel.agences ?? EMPTY.agences,
+    /* Une liste remplace, elle ne fusionne pas : une liste vide est une
+       intention — « je n'ai plus de réalisation à montrer ». */
+    realisations: partiel.realisations ?? EMPTY.realisations,
     menus: {
       header: partiel.menus?.header ?? [],
       footer: partiel.menus?.footer ?? [],

@@ -272,7 +272,7 @@ export default async function AdminAnnoncesPage({
             name="q"
             type="search"
             defaultValue={q}
-            placeholder="La Rochelle, 17000, 68040…"
+            placeholder="Mont-de-Marsan, 40000, 68040…"
             maxLength={60}
           />
         </div>

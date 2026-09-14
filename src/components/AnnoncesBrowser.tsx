@@ -248,7 +248,7 @@ export default function AnnoncesBrowser({
               type="search"
               value={filters.q}
               onChange={set("q")}
-              placeholder="La Rochelle, 17000…"
+              placeholder="Mont-de-Marsan, 40000…"
               autoComplete="off"
             />
           </div>

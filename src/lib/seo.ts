@@ -110,12 +110,22 @@ export const SEO_ROUTES: SeoRoute[] = [
     },
   },
   {
+    path: "/realisations",
+    label: "Réalisations",
+    aide: "Le contenu vient de l'écran Réalisations : on ne règle ici que le titre et la description dans Google.",
+    defaut: {
+      title: "Nos réalisations dans les Landes",
+      description:
+        "Les maisons que nous avons construites et livrées, commune par commune. Des chantiers terminés, pas des images de synthèse.",
+    },
+  },
+  {
     path: "/agences",
     label: "Nos agences",
     defaut: {
-      title: "Nos agences — La Rochelle et Thouars",
+      title: "Nos agences dans les Landes",
       description:
-        "Deux agences, une maison. Chaque équipe connaît le terrain de son secteur — au sens propre — et suit votre projet jusqu'à la remise des clés.",
+        "Nous construisons dans les Landes. Notre équipe connaît le terrain de son secteur — au sens propre — et suit votre projet jusqu'à la remise des clés.",
     },
   },
   {

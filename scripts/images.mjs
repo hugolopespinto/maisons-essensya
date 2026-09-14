@@ -5,35 +5,45 @@ import sharp from "sharp";
 /* ════════════════════════════════════════════════════════════════
    LES VISUELS DES MODÈLES — du rendu 3D au fichier servi
 
-   Le client livre des PNG de 1,5 à 3 Mo, en 1376 × 768. Servis tels
-   quels, la page d'accueil pèserait une dizaine de mégaoctets : c'est
-   trois secondes de LCP sur un mobile en 4G, et le référencement que
-   nous venons de construire s'effondre avec.
-
-   Ce script est la conversion, et il est versionné pour être rejouable :
-   de nouveaux modèles arriveront, et la règle ne doit pas être à
-   réinventer à chaque livraison.
+   Le client livre des PNG de 1,5 à 3 Mo. Servis tels quels, la page
+   d'accueil pèserait une dizaine de mégaoctets : trois secondes de LCP
+   sur un mobile en 4G, et le référencement s'effondre avec.
 
      node scripts/images.mjs <dossier des visuels>
 
-   ⚠ LA SOURCE FAIT 1376 px DE LARGE. C'est peu pour une image pleine
-   largeur : sur un écran 2560 px elle sera étirée et molle. On ne
-   fabrique donc PAS de variante plus grande — agrandir n'ajoute aucun
-   détail, seulement des octets. La vraie réponse est une livraison en
-   2560 px, à demander au client. En attendant, 1376 est le plafond
-   honnête.
+   ── CE QUE LE NAVIGATEUR TÉLÉCHARGE RÉELLEMENT ──
+   Un seul fichier par image, celui qui correspond à son écran. C'est le
+   rôle de `srcset` et de `sizes`. D'où la règle qui répond à la question
+   « des sources plus grandes vont-elles ralentir le site ? » : NON, tant
+   qu'on produit les paliers. Une source plus grande n'ajoute qu'un
+   palier de plus, réservé aux écrans qui en profitent.
+
+   ── LES PALIERS SUIVENT LA SOURCE ──
+   On ne fabrique QUE les largeurs réellement disponibles. Un palier
+   1920 tiré d'une source de 1376 produirait un fichier de 1376 px
+   étiqueté 1920 : le navigateur le choisirait pour rien, et l'image
+   serait molle. `withoutEnlargement` empêche l'agrandissement, mais pas
+   le mensonge du nom — d'où le filtrage explicite ci-dessous.
+
+   ── DEUX FORMATS ──
+   AVIF puis WebP. Mesuré sur le hero du site : 85 Ko en AVIF contre
+   163 Ko en WebP à 1376 px, soit près de la moitié. AVIF est reconnu
+   par tous les navigateurs courants depuis 2024 ; WebP reste le filet
+   de sécurité, et `<picture>` laisse le navigateur trancher.
+
+   ⚠ LE FICHIER LE PLUS LARGE N'A PAS DE SUFFIXE. C'est lui que
+   désignent les chemins écrits à la main (`src/data/essensya.ts`).
+   Changer cette convention casserait ces chemins en silence.
    ════════════════════════════════════════════════════════════════ */
 
 const SOURCE = process.argv[2];
 const SORTIE = "public/maisons";
 
-/* Deux largeurs : celle des grandes images (pleine largeur, hero et
-   bandeaux) et celle des vignettes de grille. `sharp` n'agrandit jamais
-   au-delà de la source grâce à `withoutEnlargement`. */
-const TAILLES = [
-  { suffixe: "", largeur: 1376, qualite: 78 },
-  { suffixe: "-sm", largeur: 720, qualite: 74 },
-];
+/* Paliers candidats. Ceux qui dépassent la source sont écartés, et la
+   largeur de la source est toujours produite : c'est le palier haut. */
+const PALIERS = [480, 720, 1024, 1440, 1920, 2560];
+
+const QUALITE = { webp: 78, avif: 50 };
 
 /** « Vue 2 extérieur.png » → « vue-2-exterieur ». */
 const slug = (s) =>
@@ -46,13 +56,18 @@ const slug = (s) =>
     .replace(/^-+|-+$/g, "");
 
 /* Une miniature de 20 px encodée en base64, posée en fond pendant le
-   chargement : sans elle, chaque image laisse un rectangle vide le
-   temps du réseau — l'effet « site cassé » que le client nous a
-   justement signalé sur l'accueil. */
+   chargement : sans elle, chaque image laisse un rectangle vide le temps
+   du réseau — l'effet « site cassé » que le client nous a signalé. */
 async function empreinte(fichier) {
   const buf = await sharp(fichier).resize(20).webp({ quality: 40 }).toBuffer();
   return `data:image/webp;base64,${buf.toString("base64")}`;
 }
+
+/** Les largeurs à produire pour une source donnée, de la plus petite à la source. */
+const largeursPour = (largeurSource) => [
+  ...PALIERS.filter((w) => w < largeurSource),
+  largeurSource,
+];
 
 async function main() {
   if (!SOURCE) {
@@ -66,6 +81,7 @@ async function main() {
     .sort();
 
   const catalogue = {};
+  let octets = 0;
 
   for (const modele of modeles) {
     const cle = slug(modele);
@@ -82,38 +98,53 @@ async function main() {
       const src = path.join(SOURCE, modele, vue);
       const base = slug(vue);
       const meta = await sharp(src).metadata();
+      const largeurSource = meta.width ?? 1376;
+      const ratio = (meta.height ?? 768) / largeurSource;
 
-      for (const t of TAILLES) {
-        await sharp(src)
-          .resize({ width: t.largeur, withoutEnlargement: true })
-          .webp({ quality: t.qualite })
-          .toFile(path.join(dossier, `${base}${t.suffixe}.webp`));
+      const largeurs = largeursPour(largeurSource);
+      const variantes = [];
+
+      for (const w of largeurs) {
+        /* Le plus large ne porte pas de suffixe : c'est l'adresse
+           stable, celle qu'on peut écrire à la main. */
+        const suffixe = w === largeurSource ? "" : `-${w}`;
+        const redim = sharp(src).resize({ width: w, withoutEnlargement: true });
+
+        for (const format of ["avif", "webp"]) {
+          const sortie = path.join(dossier, `${base}${suffixe}.${format}`);
+          const info = await redim
+            .clone()
+            [format]({ quality: QUALITE[format] })
+            .toFile(sortie);
+          octets += info.size;
+        }
+
+        variantes.push({
+          largeur: w,
+          avif: `/maisons/${cle}/${base}${suffixe}.avif`,
+          webp: `/maisons/${cle}/${base}${suffixe}.webp`,
+        });
       }
 
       catalogue[cle].vues.push({
         cle: base,
+        /* Compatibilité : `src` reste le WebP le plus large. */
         src: `/maisons/${cle}/${base}.webp`,
-        srcPetit: `/maisons/${cle}/${base}-sm.webp`,
-        largeur: Math.min(meta.width ?? 1376, 1376),
-        hauteur: Math.round(
-          ((meta.height ?? 768) * Math.min(meta.width ?? 1376, 1376)) / (meta.width ?? 1376),
-        ),
+        largeur: largeurSource,
+        hauteur: Math.round(largeurSource * ratio),
         empreinte: await empreinte(src),
-        /* « vue-2-exterieur » → « extérieur ». Le libellé sert à composer
-           un texte alternatif lisible, pas à trier. */
+        variantes,
         type: /interieur/.test(base) ? "interieur" : "exterieur",
       });
     }
     console.log(`  ${modele.padEnd(12)} ${vues.length} vues`);
   }
 
-  await writeFile(
-    "src/data/visuels.json",
-    `${JSON.stringify(catalogue, null, 2)}\n`,
-    "utf8",
-  );
+  await writeFile("src/data/visuels.json", `${JSON.stringify(catalogue, null, 2)}\n`, "utf8");
   const total = Object.values(catalogue).reduce((n, m) => n + m.vues.length, 0);
-  console.log(`\n${total} visuels · catalogue écrit dans src/data/visuels.json`);
+  console.log(
+    `\n${total} visuels · ${(octets / 1048576).toFixed(1)} Mo produits · catalogue dans src/data/visuels.json`,
+  );
 }
 
 main();
