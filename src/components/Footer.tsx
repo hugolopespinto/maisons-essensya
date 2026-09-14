@@ -3,16 +3,21 @@ import CookiePrefsLink from "@/components/CookiePrefsLink";
 import { PRICE_FROM, VERSIONS } from "@/data/essensya";
 import { fmtPrice, houseUrl, versionUrl } from "@/lib/format";
 
-/* Départements réellement couverts par le flux Vitahome. Ce bloc n'est pas
-   décoratif : « maison + terrain <département> » est la requête qui convertit
-   sur ce métier, et le site n'avait aucun lien interne vers ces pages. */
-const DEPTS: [string, string][] = [
-  ["17", "Charente-Maritime"],
-  ["79", "Deux-Sèvres"],
-  ["85", "Vendée"],
-  ["28", "Eure-et-Loir"],
-  ["49", "Maine-et-Loire"],
-];
+/* ⚠ CETTE LISTE ÉTAIT ÉCRITE EN DUR, et elle était déjà fausse : elle
+   annonçait les Deux-Sèvres et le Maine-et-Loire, absents du flux, et
+   pointait vers /annonces?dept=NN — une seule et même URL pour tout le
+   stock, donc aucune page à référencer. « maison + terrain <département> »
+   est pourtant la requête qui convertit sur ce métier.
+
+   Les zones viennent maintenant du stock réel (`departementsPubliables()`),
+   calculées par le layout et passées en `zones`. Un département qui se
+   vide disparaît du pied de page au lieu d'y laisser un lien mort. */
+
+/** Un lien de zone : libellé prêt à afficher, chemin déjà calculé. */
+export interface LienZone {
+  href: string;
+  label: string;
+}
 
 /** Une colonne du pied de page, déjà nettoyée par le layout racine. */
 export interface ColonneChrome {
@@ -23,7 +28,7 @@ export interface ColonneChrome {
 /* Colonnes d'origine. Comme pour l'en-tête, elles restent le REPLI des
    colonnes éditables : rien de saisi dans /admin/menus, ou tout effacé,
    et le pied de page garde exactement ces quatre colonnes. */
-const COLS: ColonneChrome[] = [
+const colonnesDefaut = (zones: LienZone[]): ColonneChrome[] => [
   {
     titre: "La maison",
     liens: [
@@ -44,10 +49,9 @@ const COLS: ColonneChrome[] = [
   },
   {
     titre: "Où nous construisons",
-    liens: DEPTS.map(([code, nom]) => ({
-      href: `/annonces?dept=${code}`,
-      label: `${nom} (${code})`,
-    })),
+    /* Vide quand le flux ne rend aucun département au-dessus du seuil :
+       on garde alors l'entrée vers l'index, qui, lui, sait le dire. */
+    liens: zones.length ? zones : [{ href: "/terrains", label: "Toutes nos zones" }],
   },
   {
     titre: "Essensya",
@@ -86,8 +90,10 @@ export interface FooterProps {
   horaires?: string;
   /** Les seuls réseaux renseignés, dans l'ordre de l'écran Réglages. */
   reseaux: { label: string; href: string }[];
-  /** Colonnes saisies en back-office. Absent = on garde `COLS`. */
+  /** Colonnes saisies en back-office. Absent = on garde les colonnes par défaut. */
   colonnes?: ColonneChrome[];
+  /** Les départements réellement publiables, calculés par le layout. */
+  zones?: LienZone[];
 }
 
 export default function Footer({
@@ -102,8 +108,9 @@ export default function Footer({
   horaires,
   reseaux,
   colonnes,
+  zones = [],
 }: FooterProps) {
-  const cols = colonnes ?? COLS;
+  const cols = colonnes ?? colonnesDefaut(zones);
 
   return (
     <footer className="site-footer" id="siteFooter">

@@ -4,7 +4,9 @@ import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AGENCIES, ESSENSYA_DATA, VERSIONS } from "@/data/essensya";
-import { agencyUrl, houseUrl, landingUrl, versionUrl } from "@/lib/format";
+import { articlesPublies } from "@/lib/blog";
+import { agencyUrl, deptUrl, houseUrl, landingUrl, versionUrl } from "@/lib/format";
+import { departementsPubliables } from "@/lib/geo";
 import { getContent, isWritable, patchContent } from "@/lib/store";
 import type { ColonneFooter, LienMenu, Menus } from "@/lib/store/types";
 import { assertAdmin, requireAdmin } from "../actions";
@@ -73,6 +75,7 @@ const PAGES_FIXES: Suggestion[] = [
   { href: "/maisons", label: "La maison" },
   { href: "/concept", label: "Notre concept" },
   { href: "/annonces", label: "Terrains & opportunités" },
+  { href: "/terrains", label: "Où nous construisons" },
   { href: "/agences", label: "Nos agences" },
   { href: "/blog", label: "Blog" },
   { href: "/contact", label: "Contact" },
@@ -118,16 +121,6 @@ const HEADER_ACTUEL: LienMenu[] = [
   lien("h-agences", "Nos agences", "/agences", 3),
 ];
 
-/* Départements du pied de page — repris tels quels de Footer.tsx, où ils
-   correspondent aux départements réellement couverts par le flux. */
-const DEPTS: [string, string][] = [
-  ["17", "Charente-Maritime"],
-  ["79", "Deux-Sèvres"],
-  ["85", "Vendée"],
-  ["28", "Eure-et-Loir"],
-  ["49", "Maine-et-Loire"],
-];
-
 const colonne = (
   id: string,
   titre: string,
@@ -139,6 +132,29 @@ const colonne = (
   liens: liens.map(([label, href], i) => lien(`${id}-${i}`, label, href, i)),
   ordre,
 });
+
+/**
+ * Les vraies zones, posées dans la colonne « Où nous construisons » du
+ * pied de page par défaut. Elle est livrée VIDE dans `FOOTER_ACTUEL` :
+ * son contenu dépend du stock, et le back-office doit montrer au client
+ * ce que le site affiche réellement, pas une liste figée qui l'a déjà
+ * trahi une fois.
+ */
+function avecZones(
+  colonnes: ColonneFooter[],
+  zones: { nom: string; code: string; slug: string }[],
+): ColonneFooter[] {
+  return colonnes.map((c) =>
+    c.id === "f-depts"
+      ? {
+          ...c,
+          liens: zones.map((z, i) =>
+            lien(`f-depts-${i}`, `${z.nom} (${z.code})`, deptUrl(z.slug), i),
+          ),
+        }
+      : c,
+  );
+}
 
 const FOOTER_ACTUEL: ColonneFooter[] = [
   colonne(
@@ -162,15 +178,10 @@ const FOOTER_ACTUEL: ColonneFooter[] = [
     ],
     1,
   ),
-  colonne(
-    "f-depts",
-    "Où nous construisons",
-    DEPTS.map(([code, nom]): [string, string] => [
-      `${nom} (${code})`,
-      `/annonces?dept=${code}`,
-    ]),
-    2,
-  ),
+  /* Les zones réelles sont injectées à l'affichage : voir `avecZones()`.
+     Écrites en dur ici, elles annonçaient deux départements absents du
+     flux et pointaient vers /annonces?dept=NN, qui est /annonces. */
+  colonne("f-depts", "Où nous construisons", [], 2),
   colonne(
     "f-essensya",
     "Essensya",
@@ -303,10 +314,13 @@ export default async function MenusPage({
   const heriteEntete = content.menus.header.length === 0;
   const heritePied = content.menus.footer.length === 0;
   const header = heriteEntete ? HEADER_ACTUEL : content.menus.header;
-  const footer = heritePied ? FOOTER_ACTUEL : content.menus.footer;
+  const zones = await departementsPubliables();
+  const footer = heritePied ? avecZones(FOOTER_ACTUEL, zones) : content.menus.footer;
 
   /* ════ Routes connues et suggestions ════ */
-  const articlesPublies = content.articles.filter((a) => !a.brouillon && a.publieLe);
+  /* Le filtre partagé, pas une quatrième copie approximative : celle-ci
+     oubliait le slug, donc proposait un lien « /blog/ » sans article. */
+  const enLigne = articlesPublies(content.articles);
   const brouillons = new Set(
     content.articles.filter((a) => a.brouillon || !a.publieLe).map((a) => `/blog/${a.slug}`),
   );
@@ -324,7 +338,10 @@ export default async function MenusPage({
     ...PAGES_FIXES,
     ...VERSIONS.map((v) => ({ href: versionUrl(v), label: `La maison — ${v.label}` })),
     ...agences.map((a) => ({ href: agencyUrl(a), label: `Agence ${a.nom}` })),
-    ...articlesPublies.map((a) => ({ href: `/blog/${a.slug}`, label: `Article — ${a.titre}` })),
+    ...enLigne.map((a) => ({ href: `/blog/${a.slug}`, label: `Article — ${a.titre}` })),
+    /* Sans elles, le vérificateur signalerait comme lien mort une page de
+       zone parfaitement valide — et le client corrigerait un lien juste. */
+    ...zones.map((z) => ({ href: deptUrl(z.slug), label: `Terrains — ${z.nom}` })),
     ...Object.keys(ESSENSYA_DATA.landings).map((slug) => ({
       href: landingUrl(slug),
       label: `Page de campagne — ${slug}`,

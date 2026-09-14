@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AgencyCard from "@/components/AgencyCard";
-import { AGENCIES, PRICE_FROM } from "@/data/essensya";
+import { PRICE_FROM } from "@/data/essensya";
+import { agencesPubliees } from "@/lib/agences";
 import { fmtPrice } from "@/lib/format";
-import { resoudreMedia } from "@/lib/medias";
 import { resolveMetadata } from "@/lib/seo";
 import { filAriane, jsonLd, listeSchema } from "@/lib/schema";
 import { getContent } from "@/lib/store";
-import type { Agence, PageEditable } from "@/lib/store/types";
-import type { Agency } from "@/types";
+import type { PageEditable } from "@/lib/store/types";
 import "@/styles/pages/agences.css";
 
 /* ════════════════════════════════════════════════════════════════
@@ -19,13 +18,10 @@ import "@/styles/pages/agences.css";
    saisi, pour que le site livré continue de tourner tel quel avant la
    première connexion du client au back-office.
 
-   ⚠ REPLI SUR LA CONSTANTE : UNIQUEMENT SI LA LISTE EST VIDE.
-   Pas « si aucune agence n'est visible ». La nuance est le cœur du
-   contrat : fermer toutes ses agences est une décision, et le site doit
-   l'appliquer. Réafficher les agences du code à ce moment-là remettrait
-   en ligne des adresses et des numéros que le client vient de retirer —
-   c'est-à-dire exactement ce qu'il a demandé de ne plus publier. Le
-   back-office le lui dit, plutôt que de le contredire en silence.
+   La lecture, le tri et le repli vivent dans `src/lib/agences.ts` —
+   partagés avec la fiche d'agence et les pages de zone. La règle qui
+   compte y est écrite : le repli sur la constante ne joue QUE si la
+   liste est vide, jamais si toutes les agences ont été masquées.
 
    ⚠ `revalidate` PLUTÔT QUE `force-static`. Les photos d'agence peuvent
    venir de la médiathèque, dont le bucket est privé : `resoudreMedia()`
@@ -49,56 +45,6 @@ export async function generateMetadata(): Promise<Metadata> {
       "Deux agences, une maison. Chaque équipe connaît le terrain de son secteur — au sens propre — et suit votre projet jusqu'à la remise des clés.",
     alternates: { canonical: "/agences" },
   });
-}
-
-/* Une carte sans photo doit rester une carte, pas une icône d'image
-   cassée. `src=""` ne serait pas neutre non plus : le navigateur le
-   résout en rechargeant la page courante. D'où cet aplat de 130 octets,
-   à la couleur « sable » de la palette. */
-const SANS_PHOTO =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Crect width='16' height='10' fill='%23E8E3D9'/%3E%3C/svg%3E";
-
-/**
- * Une `Agence` éditable → l'`Agency` qu'attendent les gabarits.
- *
- * ⚠ Cette fonction existe À L'IDENTIQUE dans `./[slug]/page.tsx`. Ce
- * n'est pas un oubli : les deux seuls consommateurs sont ces deux
- * routes, et un module partagé dans `src/lib` serait un fichier de plus
- * pour quinze lignes sans logique métier. Si un troisième appelant
- * apparaît, c'est le moment de l'extraire — pas avant.
- *
- * `lat` / `lng` retombent sur 0 parce que le type public les exige :
- * les gabarits qui s'en servent vraiment (le JSON-LD de la fiche) lisent
- * l'`Agence` d'origine et omettent le bloc quand elles manquent, plutôt
- * que d'annoncer une agence au large du golfe de Guinée.
- */
-async function versAgency(a: Agence): Promise<Agency> {
-  return {
-    id: a.id,
-    name: a.nom,
-    zone: a.zone,
-    address: a.adresse,
-    phone: a.telephone,
-    email: a.email,
-    hours: a.horaires,
-    lat: a.lat ?? 0,
-    lng: a.lng ?? 0,
-    image: (await resoudreMedia(a.image)) ?? SANS_PHOTO,
-    cities: a.villes,
-    description: a.description,
-  };
-}
-
-/** Les agences réellement publiées, dans l'ordre voulu par le client. */
-async function agencesPubliees(): Promise<Agency[]> {
-  const { agences } = await getContent();
-  if (agences.length === 0) return AGENCIES;
-  return Promise.all(
-    agences
-      .filter((a) => a.actif)
-      .sort((a, b) => a.ordre - b.ordre || a.nom.localeCompare(b.nom, "fr"))
-      .map(versAgency),
-  );
 }
 
 /** La valeur saisie dans « Pages → Nos agences », ou rien. */

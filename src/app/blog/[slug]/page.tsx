@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { markdownToHtml, markdownToText } from "@/lib/markdown";
+import { articlesPublies } from "@/lib/blog";
 import { getContent } from "@/lib/store";
 import type { Article } from "@/lib/store/types";
 import { SITE_URL } from "@/lib/site-url";
@@ -34,15 +35,9 @@ import "@/styles/pages/blog.css";
 
 const BASE = SITE_URL;
 
-/** Voir la note sur la page liste : ce filtre est dupliqué à dessein. */
-const publies = (articles: Article[]): Article[] =>
-  articles
-    .filter((a) => !a.brouillon && !!a.publieLe && !!a.slug)
-    .sort((a, b) => (b.publieLe ?? "").localeCompare(a.publieLe ?? ""));
-
 async function getArticle(slug: string): Promise<Article | null> {
   const { articles } = await getContent();
-  return publies(articles).find((a) => a.slug === slug) ?? null;
+  return articlesPublies(articles).find((a) => a.slug === slug) ?? null;
 }
 
 const fmtDate = (iso?: string): string => {
@@ -59,7 +54,7 @@ const lecture = (corps: string): number =>
 
 export async function generateStaticParams() {
   const { articles } = await getContent();
-  return publies(articles).map((a) => ({ slug: a.slug }));
+  return articlesPublies(articles).map((a) => ({ slug: a.slug }));
 }
 
 export async function generateMetadata({
@@ -103,7 +98,7 @@ export default async function ArticlePage({
   if (!a) notFound();
 
   const { articles } = await getContent();
-  const autres = publies(articles)
+  const autres = articlesPublies(articles)
     .filter((x) => x.slug !== a.slug)
     .slice(0, 3);
 

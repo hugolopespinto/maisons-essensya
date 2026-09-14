@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { articlesPublies } from "@/lib/blog";
 import { getContent } from "@/lib/store";
-import type { Article } from "@/lib/store/types";
 import { markdownToText } from "@/lib/markdown";
 import { SITE_URL } from "@/lib/site-url";
 import "@/styles/pages/blog.css";
@@ -66,22 +66,9 @@ const fmtDate = (iso?: string): string => {
     : d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 };
 
-/**
- * Les articles réellement publics : ni brouillon, ni non daté.
- *
- * ⚠ C'est le filtre de sécurité éditoriale du blog, et il est volontairement
- * dupliqué à l'identique sur la page article. Un brouillon servi, même une
- * seule fois, est indexé — et un article retiré de l'index prend des
- * semaines à disparaître. On préfère répéter quatre lignes.
- */
-const publies = (articles: Article[]): Article[] =>
-  articles
-    .filter((a) => !a.brouillon && !!a.publieLe && !!a.slug)
-    .sort((a, b) => (b.publieLe ?? "").localeCompare(a.publieLe ?? ""));
-
 export default async function BlogPage() {
   const { articles } = await getContent();
-  const liste = publies(articles);
+  const liste = articlesPublies(articles);
 
   const jsonLd = {
     "@context": "https://schema.org",

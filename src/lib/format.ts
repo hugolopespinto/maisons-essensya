@@ -21,6 +21,14 @@ export const annonceUrl = (a: Pick<Annonce, "id">) => `/annonces/${a.id.toLowerC
 export const agencyUrl = (g: { id: string }) => `/agences/${g.id}`;
 export const landingUrl = (slug: string) => `/lp/${slug}`;
 
+/* Pages de zone. Le slug est calculé par `slug()` dans src/lib/geo.ts,
+   qui est `server-only` — ces deux fonctions ne prennent donc que des
+   chaînes déjà calculées, pour rester utilisables depuis un composant
+   client comme le pied de page. */
+export const deptUrl = (slugDept: string) => `/terrains/${slugDept}`;
+export const communeUrl = (slugDept: string, slugCommune: string) =>
+  `/terrains/${slugDept}/${slugCommune}`;
+
 /* ════ LIBELLÉS ANNONCE ════ */
 export const annonceTitle = (a: Annonce) => {
   const s = fmtSurface(a.landSurface);

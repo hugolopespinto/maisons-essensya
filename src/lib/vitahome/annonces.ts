@@ -44,11 +44,28 @@ const price = (v: unknown): number | null => {
   return n !== null && n >= SANITY.minPrice && n <= SANITY.maxPrice ? n : null;
 };
 
-/** « LA ROCHELLE » → « La Rochelle ». Respecte les traits d'union et les élisions. */
-const titleCase = (s: string) =>
-  s
-    .toLocaleLowerCase("fr-FR")
-    .replace(/(^|[\s'’-])([a-zà-ÿ])/g, (_, sep, c) => sep + c.toLocaleUpperCase("fr-FR"));
+/* Les particules qui restent en minuscules dans un toponyme français,
+   sauf en tête de nom. Sans elles, la mise en capitales après chaque
+   trait d'union donnait « Eure-Et-Loir » et « Saint-Benoist-Sur-Mer » —
+   invisible tant que ces noms ne servaient que d'étiquette, voyant dès
+   qu'ils sont devenus des H1 et des titres de résultats de recherche.
+
+   « La Rochelle » et « Les Sables-d'Olonne » gardent leur majuscule :
+   la règle ne s'applique qu'à partir du deuxième mot. */
+const PARTICULES = new Set([
+  "et", "sur", "sous", "le", "la", "les", "de", "des", "du", "d", "l", "en",
+  "au", "aux", "lès", "lez", "devant",
+]);
+
+/** « LA ROCHELLE » → « La Rochelle », « EURE-ET-LOIR » → « Eure-et-Loir ». */
+const titleCase = (s: string) => {
+  let premier = true;
+  return s.toLocaleLowerCase("fr-FR").replace(/[a-zà-ÿ]+/g, (mot) => {
+    const minuscule = !premier && PARTICULES.has(mot);
+    premier = false;
+    return minuscule ? mot : mot.charAt(0).toLocaleUpperCase("fr-FR") + mot.slice(1);
+  });
+};
 
 const cityName = (raw: { cityName?: string; city?: string }): string => {
   const v = nz(raw.cityName) ?? nz(raw.city) ?? "";

@@ -7,7 +7,8 @@ import Header, { CoquillePublique, type LienChrome } from "@/components/Header";
 import Reveal from "@/components/Reveal";
 import StickyCta from "@/components/StickyCta";
 import { AGENCIES, HOUSE, PLACEHOLDER, PRICE_FROM } from "@/data/essensya";
-import { fmtPrice } from "@/lib/format";
+import { deptUrl, fmtPrice } from "@/lib/format";
+import { departementsPubliables } from "@/lib/geo";
 import { resoudreMedia } from "@/lib/medias";
 import { resolveMetadata } from "@/lib/seo";
 import { getContent } from "@/lib/store";
@@ -183,6 +184,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
      pas lire le contenu lui-même — d'où le passage par une prop. */
   const { tracking, reglages, textes, menus } = await getContent();
 
+  /* Les zones du pied de page suivent le stock. Elles vivaient écrites en
+     dur dans Footer.tsx, et la liste était déjà fausse : deux
+     départements annoncés n'existent pas dans le flux. Calculées ici, la
+     colonne ne peut plus promettre une page qui rend 404. */
+  const zones = (await departementsPubliables()).map((d) => ({
+    href: deptUrl(d.slug),
+    label: `${d.nom} (${d.code})`,
+  }));
+
   /* Identité et coordonnées résolues UNE fois, puis passées à l'en-tête
      et au pied de page. Header est un composant client : il ne peut pas
      lire le contenu ni signer une URL de média, d'où les props. Les
@@ -308,6 +318,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             horaires={horaires}
             reseaux={reseaux}
             colonnes={colonnesFooter(menus.footer)}
+            zones={zones}
           />
           {/* Placé dans la coquille publique : un bandeau de consentement
               monté sur un écran d'administration n'a aucun sens, et il se

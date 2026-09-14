@@ -1,0 +1,35 @@
+/* ════ 11. PAGES DE ZONE (.tz-) ════
+   Terrains par département et par commune. Volontairement sobre : ces
+   pages existent pour une requête précise (« terrain à bâtir la
+   rochelle »), le visiteur doit trouver le chiffre et la liste sans
+   traverser une mise en scène. L'effet, il l'a déjà eu sur l'accueil. */
+
+/* Les chiffres de la zone. C'est le bloc qui rend la page NON dupliquée :
+   même gabarit, valeurs différentes d'une zone à l'autre. */
+.tz-chiffres{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s-4);border-top:var(--line);border-bottom:var(--line);padding:var(--s-4) 0;margin-top:var(--s-4)}
+.tz-chiffre b{font-family:var(--f-mono);font-weight:500;font-size:clamp(1.4rem,3vw,2.2rem);display:block;line-height:1.1}
+.tz-chiffre span{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase;color:var(--pierre);display:block;margin-top:.4rem}
+@media (max-width:820px){.tz-chiffres{grid-template-columns:1fr 1fr;gap:var(--s-3)}}
+
+/* La grille d'annonces. Deux colonnes, une sur mobile — même respiration
+   que /agences, sans la carte de /annonces qui n'a rien à faire ici. */
+.tz-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-4)}
+@media (max-width:820px){.tz-grid{grid-template-columns:1fr}}
+
+/* Le maillage : communes depuis un département, départements depuis
+   l'index. Des pastilles, pas une liste à puces — on veut que l'œil
+   balaye vingt communes sans scroller trois écrans. */
+.tz-maillage{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:var(--s-3)}
+.tz-lien{display:inline-flex;align-items:baseline;gap:.5rem;border:var(--line);border-radius:var(--radius);padding:.5rem .9rem;font-size:var(--fs-small);transition:border-color var(--dur-fast),background var(--dur-fast)}
+.tz-lien:hover{border-color:var(--anthracite);background:var(--sable)}
+.tz-lien em{font-style:normal;font-family:var(--f-mono);font-size:var(--fs-label);color:var(--pierre)}
+
+/* Encart agence : le seul contenu réellement local de la page, et le
+   seul qui justifie qu'un visiteur de Saintes ne lise pas la page de
+   La Rochelle. Il disparaît si aucune agence ne couvre la zone. */
+.tz-agence{border:var(--line);border-radius:var(--radius);padding:var(--s-4);margin-top:var(--s-5);display:grid;grid-template-columns:1fr auto;gap:var(--s-4);align-items:center}
+.tz-agence p{color:var(--pierre);font-size:var(--fs-small);max-width:46em;margin-top:.5rem}
+@media (max-width:700px){.tz-agence{grid-template-columns:1fr}}
+
+.tz-section{padding-top:var(--s-5)}
+.tz-section h2{font-size:var(--fs-h3)}

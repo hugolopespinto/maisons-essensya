@@ -95,6 +95,21 @@ export const SEO_ROUTES: SeoRoute[] = [
     },
   },
   {
+    path: "/terrains",
+    label: "Où nous construisons",
+    /* ⚠ L'écran ne propose QUE cette racine. Les pages de département et
+       de commune appellent bien `resolveMetadata`, mais elles varient
+       avec le stock : les lister ici reviendrait à afficher au client des
+       champs pour des pages qui peuvent disparaître d'un jour à l'autre.
+       Mieux vaut ne rien promettre que promettre l'instable. */
+    aide: "Cette page présente les départements couverts. Chaque département et chaque commune a sa propre page, générée automatiquement à partir des terrains disponibles.",
+    defaut: {
+      title: "Terrains à bâtir : tous nos départements",
+      description:
+        "Nos terrains à bâtir, département par département. La maison est la même partout, et son prix aussi.",
+    },
+  },
+  {
     path: "/agences",
     label: "Nos agences",
     defaut: {

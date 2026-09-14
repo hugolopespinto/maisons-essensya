@@ -5,13 +5,14 @@ import AgencyCard, { telHref } from "@/components/AgencyCard";
 import AnnonceCard from "@/components/AnnonceCard";
 import LeadForm, { ContactFields } from "@/components/LeadForm";
 import SpecList from "@/components/SpecList";
-import { AGENCIES, HOUSE, PRICE_FROM } from "@/data/essensya";
+import { HOUSE, PRICE_FROM } from "@/data/essensya";
+import {
+  agencesPubliees,
+  SANS_PHOTO,
+  type AgenceAffichee,
+} from "@/lib/agences";
 import { agencyUrl, dept, fmtPrice } from "@/lib/format";
-import { resoudreMedia } from "@/lib/medias";
-import { getContent } from "@/lib/store";
-import type { Agence } from "@/lib/store/types";
 import { getAnnonces } from "@/lib/vitahome/annonces";
-import type { Agency } from "@/types";
 import { SITE_URL } from "@/lib/site-url";
 import "@/styles/pages/agences.css";
 import "@/styles/pages/annonce.css"; // .a-aside — carte formulaire partagée
@@ -36,68 +37,6 @@ const SITE = SITE_URL;
    ════════════════════════════════════════════════════════════════ */
 
 export const revalidate = 1800;
-
-/* Une carte sans photo doit rester une carte, pas une icône d'image
-   cassée. `src=""` ne serait pas neutre non plus : le navigateur le
-   résout en rechargeant la page courante. D'où cet aplat de 130 octets,
-   à la couleur « sable » de la palette. */
-const SANS_PHOTO =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Crect width='16' height='10' fill='%23E8E3D9'/%3E%3C/svg%3E";
-
-/**
- * L'`Agency` des gabarits, plus les coordonnées quand elles existent.
- *
- * `Agency.lat` / `.lng` sont des nombres obligatoires — un héritage de
- * l'époque où les deux agences étaient écrites à la main. Le client, lui,
- * peut enregistrer une agence sans coordonnées, et le back-office le
- * prévient. Retomber sur `0` remplirait le JSON-LD d'un point au large
- * du golfe de Guinée : `geo` reste donc à part, et n'est publié que s'il
- * est vrai.
- */
-type AgenceAffichee = Agency & { geo?: { lat: number; lng: number } };
-
-/**
- * Une `Agence` éditable → l'`Agency` qu'attendent les gabarits.
- *
- * ⚠ Ce bloc existe à l'identique dans `../page.tsx`. Ce n'est pas un
- * oubli : les deux seuls consommateurs sont ces deux routes, et un
- * module partagé dans `src/lib` serait un fichier de plus pour quinze
- * lignes sans logique métier. Si un troisième appelant apparaît, c'est
- * le moment de l'extraire — pas avant.
- */
-async function versAgency(a: Agence): Promise<AgenceAffichee> {
-  return {
-    id: a.id,
-    name: a.nom,
-    zone: a.zone,
-    address: a.adresse,
-    phone: a.telephone,
-    email: a.email,
-    hours: a.horaires,
-    lat: a.lat ?? 0,
-    lng: a.lng ?? 0,
-    ...(a.lat !== undefined && a.lng !== undefined
-      ? { geo: { lat: a.lat, lng: a.lng } }
-      : {}),
-    image: (await resoudreMedia(a.image)) ?? SANS_PHOTO,
-    cities: a.villes,
-    description: a.description,
-  };
-}
-
-/** Les agences réellement publiées, dans l'ordre voulu par le client. */
-async function agencesPubliees(): Promise<AgenceAffichee[]> {
-  const { agences } = await getContent();
-  if (agences.length === 0) {
-    return AGENCIES.map((g) => ({ ...g, geo: { lat: g.lat, lng: g.lng } }));
-  }
-  return Promise.all(
-    agences
-      .filter((a) => a.actif)
-      .sort((a, b) => a.ordre - b.ordre || a.nom.localeCompare(b.nom, "fr"))
-      .map(versAgency),
-  );
-}
 
 /* Les agences réelles au moment du build. Une agence ouverte plus tard
    n'y est pas : `dynamicParams` (actif par défaut) la rend à la
