@@ -5,9 +5,35 @@ import type { EssensyaData } from "@/types";
    Destiné à migrer vers un CMS sans toucher aux composants :
    le contrat de types (src/types) reste identique.
 
-   ⚠ MONO-PRODUIT : une seule maison, deux déclinaisons qui ne
-   changent que le nombre de chambres. Jamais deux produits.
+   ⚠⚠ LA PRÉMISSE DE CE FICHIER EST PÉRIMÉE, ET IL FAUT LE SAVOIR
+   AVANT D'Y TOUCHER.
+
+   Tout ce qui suit a été écrit pour un MONO-PRODUIT : une maison, deux
+   déclinaisons qui ne changent que le nombre de chambres. C'était la
+   consigne, et elle structure encore /maisons, ses deux pages de
+   déclinaison, le comparatif et les données structurées.
+
+   La livraison du client dit autre chose : DIX modèles avec leurs
+   rendus (Ankara, Athènes, Berlin, Dakar, Dublin, Hanoi, Jakarta, Lima,
+   Lisbonne, Londres), plus un onzième — Pékin — qui porte le prix
+   d'appel de 78 000 € sans avoir de visuel. Les textes fournis parlent
+   de « gamme », de « modèles », de « chaque plan de chaque modèle ».
+
+   La page d'accueil a été refaite sur cette réalité. Le reste du site
+   ne l'est pas encore : /maisons parle toujours d'une maison unique.
+   C'est une incohérence CONNUE, pas un oubli, et elle se lève en
+   arbitrant une question : la gamme remplace-t-elle le mono-produit,
+   ou Pékin est-il l'entrée de gamme d'un discours qui reste centré sur
+   une maison ? Tant que la réponse n'est pas là, on n'invente pas de
+   surfaces ni de prix pour dix modèles.
    ════════════════════════════════════════════════════════════════ */
+
+/* L'aplat neutre des visuels manquants : 130 octets, couleur « sable ».
+   Défini ici plutôt que dans `src/lib/agences.ts` parce que les données
+   s'en servent aussi, et qu'un module `server-only` ne peut pas être
+   importé par un composant client. */
+export const SANS_PHOTO =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Crect width='16' height='10' fill='%23E8E3D9'/%3E%3C/svg%3E";
 
 /* ────────────────────────────────────────────────────────────────
    ⚠⚠ VALEURS PROVISOIRES — EN ATTENTE DU CLIENT ⚠⚠
@@ -38,23 +64,69 @@ export const PLACEHOLDER = {
   phone: "05 46 00 00 00",
 } as const;
 
-/* Visuels de calage. À purger avant mise en ligne : ces photos montrent
-   des maisons d'architecte sans rapport avec le produit réel. Voir le
-   système de substituts graphiques (src/components/Substitut.tsx) qui,
-   lui, est la vraie réponse aux 90 % d'annonces sans photo. */
+/* ════ LES PREMIÈRES DONNÉES RÉELLES ════
+   Tout le bloc ci-dessus est provisoire. Celui-ci ne l'est pas : il
+   vient du client, et il prime partout où les deux se contredisent.
+
+   ⚠ 78 000 € N'EST PAS 94 900 €. Le prix d'appel du site vient de
+   changer de près de 17 000 €, et il ne porte plus sur la même chose :
+   c'est le modèle Pékin, maison seule, hors terrain ET hors adaptation.
+   « Hors adaptation » est nouveau et compte — c'est le poste qui
+   surprend un acquéreur en fin de parcours. La mention se déplace donc
+   avec le prix, partout.
+
+   ⚠ Pékin n'a AUCUN visuel dans la livraison : le modèle qui porte le
+   prix d'appel est le seul qu'on ne puisse pas montrer. À réclamer.
+
+   ⚠ « dans les Landes » vient de la consigne de titre. Le flux Vitahome
+   branché aujourd'hui sert la Charente-Maritime, la Vendée et
+   l'Eure-et-Loir — pas les Landes. Les deux ne peuvent pas être vrais
+   en même temps : voir la note remontée au client. */
+export const REEL = {
+  /** Modèle d'entrée de gamme — celui qui porte le prix d'appel. */
+  modeleEntree: "Pékin",
+  /** Maison seule, hors terrain, hors adaptation. */
+  prixEntree: 78_000,
+  mentionPrix: "Maison seule, modèle Pékin, hors terrain, hors adaptation, la maison uniquement.",
+  departement: "les Landes",
+} as const;
+
+/* ════ LES VISUELS ════
+   Les douze photos Unsplash ont disparu. C'étaient des maisons
+   d'architecte — toiture monopente, menuiseries aluminium, volumes
+   sombres — et le produit réel est à l'opposé : plain-pied, enduit
+   clair, tuile canal, une écriture du Sud-Ouest. Elles ne calaient pas
+   une mise en page, elles racontaient un autre constructeur.
+
+   Ce sont maintenant les rendus livrés par le client, convertis par
+   `scripts/images.mjs` (voir src/data/visuels.ts).
+
+   ⚠ DEUX TROUS ASSUMÉS, et il vaut mieux les voir écrits ici que les
+   découvrir en recette :
+     · `plan` — la livraison ne contient AUCUN plan de maison, alors que
+       la section « Le plan » en demande un. On montre un intérieur, qui
+       parle de volumes à défaut de les coter. À réclamer.
+     · `agence` — aucune photo d'agence non plus. On ne met pas un rendu
+       de maison à la place : une vignette d'agence qui montre une
+       maison ment sur ce qu'elle désigne. L'aplat neutre s'applique.  */
+const V = (modele: string, vue: string) => `/maisons/${modele}/${vue}.webp`;
+
 const IMG = {
-  facade: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1920&auto=format&fit=crop",
-  facadeLg: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1920&auto=format&fit=crop",
-  sejour: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1920&auto=format&fit=crop",
-  cuisine: "https://images.unsplash.com/photo-1600566752355-35792bedcfea?q=80&w=1400&auto=format&fit=crop",
-  chambre: "https://images.unsplash.com/photo-1600607687644-c7171b42498f?q=80&w=1200&auto=format&fit=crop",
-  terrasse: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=1200&auto=format&fit=crop",
-  matiere: "https://images.unsplash.com/photo-1600121848594-d8644e57abab?q=80&w=1200&auto=format&fit=crop",
-  volume: "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?q=80&w=1200&auto=format&fit=crop",
-  plan: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1400&auto=format&fit=crop",
-  chantier: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?q=80&w=1400&auto=format&fit=crop",
-  agenceLr: "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1200&auto=format&fit=crop",
-  agenceTh: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop",
+  facade: V("lisbonne", "vue-1-exterieur"),
+  facadeLg: V("lisbonne", "vue-2-exterieur"),
+  sejour: V("lisbonne", "vue-3-interieur"),
+  cuisine: V("athenes", "vue-3-interieur"),
+  chambre: V("ankara", "vue-4-chambre-1"),
+  terrasse: V("hanoi", "vue-2-exterieur"),
+  matiere: V("berlin", "vue-3-interieur"),
+  volume: V("dublin", "vue-1-exterieur"),
+  /* ⚠ Ce n'est pas un plan : la livraison n'en contient pas. */
+  plan: V("jakarta", "vue-3-interieur"),
+  chantier: V("londres", "vue-1-exterieur"),
+  /* Aplat « sable » de 130 octets. Le navigateur résout `src=""` en
+     rechargeant la page courante : le vide doit être explicite. */
+  agenceLr: SANS_PHOTO,
+  agenceTh: SANS_PHOTO,
 } as const;
 
 const P = PLACEHOLDER;
@@ -255,42 +327,50 @@ export const ESSENSYA_DATA: EssensyaData = {
      Remplace la boucle sur la collection en home. Même gabarit
      (.c-model-row, alternance gauche/droite), autre axe de répétition :
      une rangée par argument de LA maison, pas une rangée par produit. */
+  /* ⚠ TEXTES FOURNIS PAR LE CLIENT, REPRIS MOT POUR MOT. Ils ne sont ni
+     réécrits ni « améliorés » : c'est sa parole commerciale, et les
+     reformuler à sa place l'obligerait à relire un texte qu'il croit
+     validé. Les remarques de fond lui sont remontées à part.
+
+     Les chiffres redeviennent 01/02/03 : « 93 » et « 0 » désignaient la
+     surface et le nombre d'options du produit unique, deux données qui
+     n'ont plus de sens sur une gamme. */
   arguments: [
     {
       cle: "plan",
-      chiffre: "93",
+      chiffre: "01",
       label: "Le plan",
       title: "Zéro mètre carré perdu",
       text:
-        "Pas de couloir, pas de dégagement inutile, pas de recoin qui ne sert à rien. 93 m² où chaque surface est habitée plutôt que traversée — c'est pour ça qu'elle paraît plus grande qu'elle n'est.",
-      image: IMG.sejour,
-      alt: "Séjour traversant sans couloir",
-      href: "/maisons#plan",
-      linkLabel: "Voir le plan",
+        "Une gamme de maisons individuelles optimisées pour les budgets serrés. Pas de dégagement inutile, pas de recoin qui ne sert à rien, une surface habitable où chaque mètre carré est habité. Des plans pensés et conçus pour optimiser chaque espace.",
+      image: IMG.plan,
+      alt: "Intérieur d'une maison Essensya — volumes optimisés",
+      href: "/maisons",
+      linkLabel: "Voir les plans de maisons",
     },
     {
       cle: "prestations",
-      chiffre: "0",
+      chiffre: "02",
       label: "Les prestations",
-      title: "Zéro option à arbitrer",
+      title: "L'essentiel pour votre maison",
       text:
-        "Cuisine aménagée, salle de bain équipée, pompe à chaleur, volets motorisés, terrasse couverte, garage. Tout est dedans. Vous ne découvrirez pas en cours de route qu'il manque l'essentiel.",
-      image: IMG.cuisine,
-      alt: "Cuisine aménagée comprise dans le prix",
-      href: "/maisons#prix",
-      linkLabel: "Ce qui est compris",
+        "Règlementation RE 2020, salle de bain équipée, système de chauffage performant, personnalisation possible. Tout est dedans. L'essentiel des prestations d'une construction de maison pour votre plus grand confort.",
+      image: IMG.sejour,
+      alt: "Séjour et cuisine aménagée d'une maison Essensya",
+      href: "/#points-forts",
+      linkLabel: "Nos points forts",
     },
     {
       cle: "prix",
-      chiffre: "1",
+      chiffre: "03",
       label: "Le prix",
-      title: "Un seul prix, annoncé d'avance",
+      title: "Un prix maîtrisé ; la qualité conservée",
       text:
-        "Une maison construite à l'identique se chiffre au centime près avant même le premier rendez-vous. Le contrat CCMI fige ensuite le prix et les délais. Il n'y a pas d'avenant surprise parce qu'il n'y a rien à improviser.",
+        "Chaque espace et chaque matériau est optimisé pour garantir un prix maîtrisé sans compromis sur la qualité. Le tout encadré par le CCMI et ses garanties, avec l'accompagnement Maisons Essensya à chaque étape de la construction.",
       image: IMG.chantier,
-      alt: "Chantier d'une maison Essensya",
-      href: "/concept",
-      linkLabel: "Notre méthode",
+      alt: "Maison Essensya achevée",
+      href: "/annonces",
+      linkLabel: "Nos projets de construction",
     },
   ],
 
@@ -314,13 +394,16 @@ export const ESSENSYA_DATA: EssensyaData = {
       "Comparatif établi sur la base des pratiques courantes du secteur de la maison individuelle. Les postes « classique » sont indicatifs et ne visent aucun constructeur en particulier.",
   },
 
+  /* « Nos points forts » — textes du client, mot pour mot. L'intitulé
+     n°01 « Une maison, pas une gamme » a disparu de lui-même : il
+     affirmait exactement le contraire de ce que le client vend. */
   philosophy: [
-    { num: "01", title: "Une maison, pas une gamme", text: "Un seul plan, optimisé jusqu'au dernier mètre carré. Ce qu'on ne dépense pas en variantes, on le rend sur le prix." },
-    { num: "02", title: "Les bons choix, déjà faits", text: "Matériaux, volumes, équipements : nous avons arbitré pour vous. Il ne reste plus qu'à choisir le nombre de chambres." },
-    { num: "03", title: "Prix annoncé, prix tenu", text: "Une maison maîtrisée se chiffre d'avance. Le CCMI fige le prix et les délais, du premier rendez-vous à la remise des clés." },
-    { num: "04", title: "Un processus court", text: "Moins d'étapes, moins d'allers-retours, moins de rendez-vous. Votre projet avance vite parce qu'il n'y a rien à réinventer." },
-    { num: "05", title: "La qualité ne bouge pas", text: "Brique rectifiée, RE2020, pompe à chaleur, dommages-ouvrage. Construire en série, c'est répéter ce qui marche." },
-    { num: "06", title: "Toutes les garanties", text: "CCMI, décennale, biennale, parfait achèvement, livraison à prix et délais convenus." },
+    { num: "01", title: "Conception maîtrisée", text: "Chaque plan de chaque modèle a été optimisé poste par poste, matériau par matériau. Rien n'est laissé au hasard." },
+    { num: "02", title: "Les bons choix déjà faits", text: "Nous avons déjà sélectionné les meilleurs choix pour vous : volumes, équipements. Il ne vous reste plus qu'à personnaliser." },
+    { num: "03", title: "Processus simplifié", text: "Moins d'étapes, moins d'aller-retour, votre projet avance vite et bien en toute transparence." },
+    { num: "04", title: "Qualité", text: "Une RE 2020 respectée, des équipements sélectionnés, des exigences élevées : nous reproduisons ce qui fonctionne." },
+    { num: "05", title: "Garanties constructeur et CCMI", text: "CCMI, garanties décennales, assurance dommages-ouvrage, vous bénéficiez du cadre juridique le plus protecteur pour les futurs propriétaires." },
+    { num: "06", title: "Une équipe à vos côtés", text: "Un interlocuteur unique à chaque étape, c'est un accompagnement d'expert pour gagner du temps et de la tranquillité." },
   ],
 
   steps: [

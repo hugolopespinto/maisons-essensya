@@ -1,20 +1,13 @@
 import Link from "next/link";
 import AnnonceCard from "@/components/AnnonceCard";
 import ArgumentRow from "@/components/ArgumentRow";
-import Compare from "@/components/Compare";
-import HomeHero from "@/components/HomeHero";
+import HeroAccueil from "@/components/HeroAccueil";
 import LeadForm from "@/components/LeadForm";
 import { AnnonceMedia } from "@/components/Substitut";
-import VersionCard from "@/components/VersionCard";
 import { Icon } from "@/components/icons";
-import {
-  DEFAULT_VERSION,
-  ESSENSYA_DATA,
-  HOUSE,
-  PLACEHOLDER,
-  PRICE_FROM,
-  VERSIONS,
-} from "@/data/essensya";
+import { ESSENSYA_DATA, PLACEHOLDER, PRICE_FROM, REEL } from "@/data/essensya";
+import { vue } from "@/data/visuels";
+import "@/styles/accueil.css";
 import {
   annonceTitle,
   annonceUrl,
@@ -47,6 +40,18 @@ function lecteurBlocs(pages: PageEditable[], clePage: string) {
    `pre-line` le rend à l'écran au lieu d'afficher le caractère brut. */
 const PRE_LINE = { whiteSpace: "pre-line" } as const;
 
+/* Les trois photos sous le bloc « La maison juste, le prix juste ».
+   Trois MODÈLES différents, pas trois vues du même : la section parle
+   d'une gamme, les images doivent en montrer une. Extérieur, intérieur,
+   extérieur — pour que la rangée respire au lieu d'aligner trois
+   façades. `vue()` lève si une clé n'existe pas : une image manquante
+   casse le build plutôt que la page. */
+const PHOTOS_JUSTE = [
+  { visuel: vue("athenes", "vue-1-avant"), alt: "Maison Essensya modèle Athènes, façade" },
+  { visuel: vue("berlin", "vue-3-interieur"), alt: "Séjour d'une maison Essensya modèle Berlin" },
+  { visuel: vue("dublin", "vue-2-exterieur"), alt: "Maison Essensya modèle Dublin, côté jardin" },
+];
+
 export default async function HomePage() {
   const [content, annonces, spotlight] = await Promise.all([
     getContent(),
@@ -73,7 +78,15 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd(siteSchema(nomSite)) }}
       />
-      <HomeHero house={HOUSE} version={DEFAULT_VERSION} />
+      <HeroAccueil
+        visuel={vue("lisbonne", "vue-2-exterieur")}
+        baseline={t("hero.baseline", "Votre maison au prix juste")}
+        titre={t(
+          "hero.titre",
+          "Maisons Essensya, constructeur de maisons au prix juste dans les Landes",
+        )}
+        alt="Maison Essensya modèle Lisbonne, vue de la terrasse"
+      />
 
       {/* ── Recherche géographique ──
           En mono-produit la question n'est plus « quelle maison » mais
@@ -125,41 +138,62 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="s-idea" id="idee">
-        <div className="container grid">
-          <div data-reveal>
-            <span className="c-label c-label--accent">{t("idee.surtitre", "L'idée")}</span>
-            {/* Le prix est le premier argument du site : il est affiché avec
-                ce qu'il ne comprend pas, sinon il n'est pas crédible. */}
-            <p className="c-price-xl" style={{ marginTop: "var(--s-4)" }}>
-              <span className="from">La maison, à partir de</span>
-              {fmtPrice(PRICE_FROM)}
-              <small>
-                Maison seule, hors terrain — terrain compris, comptez{" "}
-                {fmtPrice(PLACEHOLDER.priceFromTotal)} selon le secteur
-              </small>
-            </p>
+      <section className="s-juste" id="prix-juste">
+        <div className="container">
+          <div className="s-juste__grid">
+            <div data-reveal>
+              <span className="c-label c-label--accent">
+                {t("juste.surtitre", "La maison juste, le prix juste")}
+              </span>
+              {/* Le prix est le premier argument du site : il est affiché
+                  avec ce qu'il ne comprend PAS, sinon il n'est pas
+                  crédible — et « hors adaptation » est justement le poste
+                  qui surprend en fin de parcours. */}
+              <p className="c-price-xl" style={{ marginTop: "var(--s-4)" }}>
+                <span className="from">La maison, à partir de</span>
+                {fmtPrice(REEL.prixEntree)}
+                <small>{t("juste.mention", REEL.mentionPrix)}</small>
+              </p>
+            </div>
+            <div>
+              <p className="big" data-reveal style={PRE_LINE}>
+                {t(
+                  "juste.phrase",
+                  "Construire mieux en choisissant l'essentiel. Des modèles de maisons pensés dans les moindres détails, optimisés à l'essentiel jusqu'au dernier mètre carré, pour obtenir un prix maîtrisé sans compromis sur la qualité.",
+                )}
+              </p>
+              <p className="s-juste__note" data-reveal>
+                {t(
+                  "juste.texte",
+                  "Avec Maisons ESSENSYA, chaque plan est conçu par notre bureau d'études avec un mot d'ordre : uniquement l'essentiel pour maximiser le prix.",
+                )}
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="big" data-reveal style={PRE_LINE}>
-              {t(
-                "idee.phrase",
-                "Nous n'avons pas fait une maison moins chère en enlevant des choses. Nous en avons fait une seule, et nous l'avons dessinée jusqu'au bout.",
-              )}
-            </p>
-            {/* L'accroche de la maison reste en tête : le bloc éditable ne
-                couvre que la suite du paragraphe, comme l'annonce son aide. */}
-            <p
-              className="u-muted u-measure"
-              style={{ ...PRE_LINE, marginTop: "var(--s-3)" }}
-              data-reveal
-            >
-              {HOUSE.tagline}{" "}
-              {t(
-                "idee.texte",
-                "Une conception amortie sur toutes les maisons plutôt que refacturée à chaque client, zéro option à arbitrer, et un prix annoncé avant le premier rendez-vous.",
-              )}
-            </p>
+
+          {/* La rangée de photos demandée sous le bloc. Trois modèles
+              différents plutôt que trois vues du même : c'est une gamme
+              qu'on montre, pas un produit. */}
+          <div className="s-juste__photos">
+            {PHOTOS_JUSTE.map((ph) => (
+              <div
+                className="s-juste__photo"
+                key={ph.visuel.src}
+                style={{ backgroundImage: `url(${ph.visuel.empreinte})` }}
+                data-reveal
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={ph.visuel.srcPetit}
+                  srcSet={`${ph.visuel.srcPetit} 720w, ${ph.visuel.src} ${ph.visuel.largeur}w`}
+                  sizes="(max-width:900px) 100vw, 33vw"
+                  width={ph.visuel.largeur}
+                  height={ph.visuel.hauteur}
+                  alt={ph.alt}
+                  loading="lazy"
+                />
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -167,13 +201,15 @@ export default async function HomePage() {
       {/* ── Les arguments ──
           Ce bloc déroulait les trois modèles du catalogue. Il déroule
           désormais les trois raisons de n'en faire qu'un. */}
-      <section className="s-args" id="arguments">
+      <section className="s-args s-raison" id="raison">
         <div className="container">
           <div className="c-section-head" data-reveal>
             <span className="c-label c-label--accent">
-              {t("arguments.surtitre", "Le parti-pris")}
+              {t("raison.surtitre", "Notre raison d'être")}
             </span>
-            <h2 style={PRE_LINE}>{t("arguments.titre", "Une maison.\nTrois raisons.")}</h2>
+            <h2 style={PRE_LINE}>
+              {t("raison.titre", "Votre construction de maison en 3 points")}
+            </h2>
           </div>
           <div className="s-args__list">
             {D.arguments.map((a) => (
@@ -183,57 +219,33 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Le comparatif ──
-          Le bloc central du site : il justifie le prix bas sans laisser
-          croire que la maison est moins bien construite. */}
-      <section className="s-compare" id="comparatif">
-        <div className="container">
-          <div className="c-section-head" data-reveal>
-            <span className="c-label c-label--accent">
-              {t("comparatif.surtitre", "Le prix")}
-            </span>
-            <h2>{D.compare.title}</h2>
-            <p className="s-compare__intro">{D.compare.intro}</p>
-          </div>
-          <Compare data={D.compare} />
-        </div>
-      </section>
+      {/* ⚠ DEUX SECTIONS ONT ÉTÉ RETIRÉES ICI, SUR DEMANDE DU CLIENT.
 
-      <section className="s-versions" id="declinaisons">
-        <div className="container">
-          <div className="c-section-head" data-reveal>
-            <span className="c-label c-label--accent">
-              {t("declinaisons.surtitre", "Les déclinaisons")}
-            </span>
-            <h2 style={PRE_LINE}>{t("declinaisons.titre", "Une maison.\nDeux plans.")}</h2>
-            <p
-              className="u-muted u-measure"
-              style={{ ...PRE_LINE, marginTop: "var(--s-2)" }}
-            >
-              {t(
-                "declinaisons.texte",
-                "Seul le nombre de chambres change. Le séjour traversant, la cuisine aménagée, la terrasse couverte, le garage, les prestations et les garanties sont strictement identiques d'une déclinaison à l'autre — comme le prix au mètre carré.",
-              )}
-            </p>
-          </div>
-          <div className="s-versions__grid">
-            {VERSIONS.map((v) => (
-              <VersionCard version={v} key={v.slug} />
-            ))}
-          </div>
-        </div>
-      </section>
+          · le comparatif « Pourquoi c'est moins cher » ;
+          · le sélecteur de déclinaisons.
 
-      <section className="s-philo">
+          Le motif est le même pour les deux : « la home est trop longue,
+          trop fournie et peu lisible ». Le comparatif reste vivant sur
+          /maisons, où il a sa place — le visiteur y est déjà convaincu
+          qu'il veut comprendre. Le sélecteur, lui, n'a plus d'objet sur
+          l'accueil d'une gamme de dix modèles : c'est le rôle de
+          /maisons.
+
+          Les composants `Compare` et `VersionCard` ne sont pas
+          supprimés : /maisons les utilise toujours. */}
+
+      <section className="s-philo s-forts" id="points-forts">
         <div className="container">
           <div className="c-section-head" data-reveal>
-            <span className="c-label">{t("methode.surtitre", "Notre méthode")}</span>
-            <h2 style={PRE_LINE}>{t("methode.titre", "Moins de choix.\nMieux choisis.")}</h2>
+            <span className="c-label">{t("forts.surtitre", "Nos points forts")}</span>
+            <h2 style={PRE_LINE}>
+              {t("forts.titre", "Six raisons de construire avec nous")}
+            </h2>
           </div>
-          <div className="s-philo__grid">
+          <div className="s-forts__grid">
             {D.philosophy.map((i) => (
-              <div className="s-philo__item" data-reveal key={i.num}>
-                <span className="s-philo__num">{i.num}</span>
+              <div className="s-forts__item" data-reveal key={i.num}>
+                <span className="s-forts__num">{i.num}</span>
                 <h3>{i.title}</h3>
                 <p>{i.text}</p>
               </div>

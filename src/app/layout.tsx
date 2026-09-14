@@ -207,7 +207,23 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const email = ou(reglages.email, AGENCIES[0].email);
   const adresse = saisi(reglages.adresse);
   const horaires = saisi(reglages.horaires);
-  const logo = await resoudreMedia(reglages.logo);
+  /* ⚠ LE LOGO OFFICIEL EST EMBARQUÉ, pas seulement téléversable.
+     Il vit dans `public/marque/`, converti depuis les fichiers de la
+     charte. Le laisser au seul bon vouloir des Réglages livrerait un
+     site sans logo tant que personne ne se connecte au back-office —
+     et c'est précisément l'état dans lequel il était.
+
+     Deux fichiers, parce qu'il y a deux fonds : l'en-tête est clair, le
+     pied de page est noir. Un logo noir sur fond noir est un logo
+     absent. Les Réglages, eux, restent prioritaires : un client qui
+     téléverse son logo le voit aux deux endroits.
+
+     La variante 1 en en-tête (maison + ESSENSYA) plutôt que le logo
+     complet : la barre fait 76 px, et le logo complet y réduirait
+     « Constructeur de maisons » à une ligne illisible. */
+  const logoTeleverse = await resoudreMedia(reglages.logo);
+  const logo = logoTeleverse ?? "/marque/logo.webp";
+  const logoPied = logoTeleverse ?? "/marque/logo-blanc.webp";
 
   const reseaux = RESEAUX.map(([cle, label]) => ({
     label,
@@ -310,7 +326,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             marque={marque}
             nomSite={nomSite}
             baseline={baseline}
-            logo={logo}
+            logo={logoPied}
             telephone={telephone}
             telHref={telHref(telephone)}
             email={email}

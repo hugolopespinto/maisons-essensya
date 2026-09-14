@@ -269,10 +269,15 @@ export default function MentionsLegalesPage() {
             réellement livrées avant la mise en ligne.
           </P>
           <p style={{ marginTop: "var(--s-2)" }}>
-            {/* TODO conformité — les visuels de démonstration (Unsplash) sont
-                listés dans src/data/essensya.ts et doivent être purgés :
-                montrer des maisons d'architecte sans rapport avec le produit
-                relève de la pratique commerciale trompeuse. */}
+            {/* Les visuels de démonstration Unsplash ont été purgés : le
+                site montre désormais les rendus du constructeur. Le risque
+                visé ici — présenter des maisons d'architecte sans rapport
+                avec le produit — est levé.
+
+                ⚠ Reste à trancher la nature de ces images : ce sont des
+                RENDUS 3D, pas des photographies de maisons livrées. Le texte
+                ci-dessus le dit déjà ; il faudra le maintenir tant que le
+                constructeur n'aura pas fourni de vraies prises de vue. */}
             <ACompleter texte="[[À COMPLÉTER : crédits photographiques définitifs (auteur, licence) et crédits de conception / réalisation du site]]" />
           </p>
 

@@ -296,10 +296,19 @@ export default function ConfidentialitePage() {
                 "CARTO et OpenStreetMap",
                 "Le fond de la carte des terrains. Les tuiles — les carrés d'image qui composent la carte — sont servies par CARTO (basemaps.cartocdn.com) à partir des données cartographiques d'OpenStreetMap. CARTO reçoit votre adresse IP ainsi que la zone et le niveau de zoom que vous regardez, donc le secteur géographique qui vous intéresse. Cela ne concerne que la page des annonces, et seulement lorsque la carte s'affiche.",
               ],
-              [
-                "Unsplash",
-                "La banque d'images qui fournit aujourd'hui les photos d'illustration du site (façades, intérieurs, agences). Elles sont chargées depuis images.unsplash.com, qui reçoit votre adresse IP et l'adresse de la page où l'image apparaît. Ces visuels sont provisoires : ils seront remplacés par les photographies du constructeur, ce qui fera disparaître cet appel.",
-              ],
+              /* ⚠ LA LIGNE « Unsplash » A ÉTÉ RETIRÉE, ET C'EST UNE
+                 OBLIGATION, PAS UN NETTOYAGE.
+
+                 Elle annonçait un transfert de données vers
+                 images.unsplash.com « dès l'ouverture de la page ». Ce
+                 transfert n'a plus lieu : les visuels du constructeur
+                 sont désormais servis par le site lui-même. Déclarer un
+                 destinataire qui ne reçoit rien décrédibilise le reste
+                 de la page — et c'est le reste qui protège.
+
+                 La règle que pose l'en-tête de ce fichier vaut dans les
+                 deux sens : cette page décrit le traitement RÉEL, elle
+                 se modifie en même temps que le code, jamais après. */
               [
                 "Vitahome",
                 "Les photos et les plans des terrains et des maisons proviennent de l'outil de gestion commerciale du constructeur et sont servis par ses serveurs (pro.vitahome.fr et annonces.vitahome.fr). Vitahome reçoit donc votre adresse IP et l'annonce que vous consultez, indépendamment de tout formulaire.",
@@ -331,12 +340,16 @@ export default function ConfidentialitePage() {
             de notre site n&apos;y suffirait.
           </P>
           <p style={{ marginTop: "var(--s-2)" }}>
-            {/* TODO conformité — art. 13.1.f : CARTO et Unsplash sont des
-                sociétés américaines. Il faut vérifier depuis quels pays ces
-                ressources sont réellement servies avant d'affirmer, ou de
-                nier, l'existence d'un transfert. Ne rien écrire tant que ce
-                n'est pas vérifié. */}
-            <ACompleter texte="[[À COMPLÉTER : pays depuis lesquels CARTO, Unsplash et Vitahome servent ces ressources, et garantie applicable en cas de transfert hors UE]]" />
+            {/* TODO conformité — art. 13.1.f : CARTO est une société
+                américaine. Il faut vérifier depuis quels pays ces ressources
+                sont réellement servies avant d'affirmer, ou de nier,
+                l'existence d'un transfert. Ne rien écrire tant que ce n'est
+                pas vérifié.
+
+                Unsplash a quitté cette liste avec les photos qu'il servait :
+                les visuels viennent maintenant du constructeur et sont servis
+                par le site. Un destinataire de moins à documenter. */}
+            <ACompleter texte="[[À COMPLÉTER : pays depuis lesquels CARTO et Vitahome servent ces ressources, et garantie applicable en cas de transfert hors UE]]" />
           </p>
 
           <H2 id="duree">6. Combien de temps nous les gardons</H2>

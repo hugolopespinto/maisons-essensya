@@ -38,10 +38,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-/* Le h1 de l'accueil est écrit en dur dans src/components/HomeHero.tsx.
-   On le recopie ici UNIQUEMENT comme placeholder : c'est la valeur que le
-   client voit sur son site aujourd'hui, et il doit la reconnaître. */
-const HERO_ACTUEL = "La maison juste. Le prix juste.";
+/* Le h1 de l'accueil ne vit plus ici : voir le commentaire dans le
+   formulaire, plus bas. Il s'édite dans Pages → Accueil. */
 
 const NF = new Intl.NumberFormat("fr-FR");
 
@@ -139,7 +137,6 @@ export default async function ContenuPage({
     const textes: Textes = {
       houseName: txt(formData.get("houseName")),
       tagline: txt(formData.get("tagline")),
-      heroTitre: txt(formData.get("heroTitre")),
       telephone: txt(formData.get("telephone")),
       /* Aucun prix saisi : on ne pose pas d'objet vide, pour que le site
          puisse retomber franchement sur les valeurs du code. */
@@ -248,20 +245,15 @@ export default async function ContenuPage({
         </div>
 
         <div className="adm-grid">
-          <div className="adm-field">
-            <label htmlFor="heroTitre">Titre de la page d&apos;accueil</label>
-            <input
-              id="heroTitre"
-              name="heroTitre"
-              type="text"
-              defaultValue={t.heroTitre ?? ""}
-              placeholder={HERO_ACTUEL}
-            />
-            <span className="adm-field__aide">
-              Le grand titre du haut de l&apos;accueil, et le seul h1 de la page.
-              Court : il est composé en très grand.
-            </span>
-          </div>
+          {/* ⚠ LE CHAMP « Titre de la page d'accueil » A ÉTÉ RETIRÉ D'ICI.
+              Il écrivait `textes.heroTitre` dans le contenu, et AUCUNE page
+              ne lisait cette valeur : le h1 de l'accueil était écrit en dur
+              dans le composant du hero. Le client pouvait enregistrer un
+              titre, rouvrir son site, et ne rien voir changer.
+
+              Le titre est désormais réellement éditable, mais ailleurs :
+              Pages → Accueil → « Titre de la page d'accueil ». Un seul
+              champ, au seul endroit qui agit. */}
           <div className="adm-field">
             <label htmlFor="tagline">Accroche</label>
             <textarea

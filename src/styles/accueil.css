@@ -1,0 +1,85 @@
+/* ════ 12. ACCUEIL — refonte visuels client (.hero-fixe, .s-juste, .s-raison) ════
+
+   La consigne est double et elle se tient : garder ce qui marche — les
+   grandes images, les blocs à fond contrasté, les petits titres en
+   capitales, l'air entre les éléments — et raccourcir. Ces règles ne
+   réinventent donc rien : elles reprennent les tokens et les gestes
+   existants sur des sections moins nombreuses. */
+
+/* ──────────────────────────────────────────────────────────────────
+   HERO FIXE
+
+   Plus de `position:sticky`, plus de 320 svh de course. Une hauteur,
+   une image, le texte dessus. `svh` et non `vh` : sur iOS, `vh` compte
+   la barre d'adresse comme si elle n'existait pas, et le bas du bloc
+   passe sous le pouce.
+   ────────────────────────────────────────────────────────────────── */
+.hero-fixe{position:relative;min-height:min(86svh,780px);display:flex;align-items:flex-end;overflow:hidden;background:var(--anthracite)}
+.hero-fixe__media{position:absolute;inset:0;background-size:cover;background-position:center}
+.hero-fixe__media img{width:100%;height:100%;object-fit:cover}
+
+/* Le voile n'est pas décoratif : sans lui, un titre clair posé sur un
+   ciel clair tombe sous 2:1. Il est plus dense en bas, là où le texte
+   se trouve, et presque nul en haut pour ne pas ternir la maison. */
+.hero-fixe__voile{position:absolute;inset:0;background:linear-gradient(to top,rgba(19,18,16,.82) 0%,rgba(19,18,16,.55) 34%,rgba(19,18,16,.12) 68%,rgba(19,18,16,0) 100%)}
+
+.hero-fixe__texte{position:relative;padding-block:var(--s-5) var(--s-6);color:var(--craie)}
+.hero-fixe__texte .c-label{color:var(--sable)}
+/* Le titre est une phrase, pas un slogan de trois mots : il lui faut
+   une échelle plus basse que `--fs-hero`, sinon il occupe l'écran
+   entier sur mobile et ne se lit plus. */
+.hero-fixe h1{font-size:clamp(1.85rem,4.6vw,3.9rem);line-height:1.04;max-width:20ch;margin-top:var(--s-2)}
+.hero-fixe__actions{display:flex;flex-wrap:wrap;gap:var(--s-2);margin-top:var(--s-4)}
+@media (max-width:560px){
+  .hero-fixe{min-height:min(78svh,640px)}
+  .hero-fixe__actions{gap:.75rem}
+  .hero-fixe__actions .c-btn{flex:1 1 100%;justify-content:center}
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   LA MAISON JUSTE, LE PRIX JUSTE
+
+   Structure conservée de l'ancien bloc « L'idée » : le prix d'un côté,
+   le texte de l'autre. Ce qui s'ajoute, c'est la rangée de photos
+   dessous — demandée, et utile : elle montre le produit là où le bloc
+   ne faisait que l'affirmer.
+   ────────────────────────────────────────────────────────────────── */
+.s-juste{padding:var(--s-7) 0;background:var(--vert-clair)}
+.s-juste__grid{display:grid;grid-template-columns:5fr 7fr;gap:var(--s-5)}
+.s-juste__note{margin-top:var(--s-3);color:var(--pierre);font-size:var(--fs-small);max-width:52ch}
+.s-juste__photos{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-3);margin-top:var(--s-5)}
+.s-juste__photo{aspect-ratio:4/3;overflow:hidden;border-radius:var(--radius);background-size:cover;background-position:center}
+.s-juste__photo img{width:100%;height:100%;object-fit:cover}
+@media (max-width:900px){
+  .s-juste__grid{grid-template-columns:1fr;gap:var(--s-4)}
+  .s-juste__photos{grid-template-columns:1fr 1fr}
+  /* Trois photos sur deux colonnes laisseraient un trou : la troisième
+     prend toute la largeur plutôt que la moitié. */
+  .s-juste__photo:last-child{grid-column:1/-1;aspect-ratio:16/9}
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   NOTRE RAISON D'ÊTRE — trois points
+
+   Reprend `.c-model-row` (composant ArgumentRow), qui alterne déjà
+   image et texte. Seul le fond change, pour que la section se détache
+   de celle qui la précède — c'est le « bloc dont la couleur change »
+   que le client demande de conserver.
+   ────────────────────────────────────────────────────────────────── */
+.s-raison{padding:var(--s-7) 0;background:var(--craie)}
+
+/* ──────────────────────────────────────────────────────────────────
+   NOS POINTS FORTS
+   Même présentation que l'ancienne section « méthode » : six entrées
+   numérotées, sans image. On ne fait que changer le fond pour garder
+   l'alternance.
+   ────────────────────────────────────────────────────────────────── */
+.s-forts{padding:var(--s-7) 0;background:var(--anthracite);color:var(--craie)}
+.s-forts .c-label{color:var(--sable)}
+.s-forts__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-5) var(--s-4)}
+.s-forts__item{border-top:1px solid rgba(243,241,236,.22);padding-top:var(--s-3)}
+.s-forts__num{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.2em;color:var(--vert)}
+.s-forts__item h3{font-size:1.15rem;margin:.6rem 0 .5rem}
+.s-forts__item p{color:var(--sable);opacity:.82;font-size:var(--fs-small);max-width:40ch}
+@media (max-width:900px){.s-forts__grid{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.s-forts__grid{grid-template-columns:1fr;gap:var(--s-4)}}
