@@ -98,7 +98,7 @@ export default async function HomePage() {
             {t("recherche.surtitre", "Où construire")}
           </span>
           <h2 id="recherche-t">
-            {t("recherche.titre", "Trouvez le terrain, la maison est déjà dessinée.")}
+            {t("recherche.titre", "Trouvez le terrain, les maisons sont déjà dessinées.")}
           </h2>
           <form className="s-search__form" action="/annonces" method="get">
             <div className="c-field">
@@ -150,7 +150,7 @@ export default async function HomePage() {
                   crédible — et « hors adaptation » est justement le poste
                   qui surprend en fin de parcours. */}
               <p className="c-price-xl" style={{ marginTop: "var(--s-4)" }}>
-                <span className="from">La maison, à partir de</span>
+                <span className="from">Nos maisons, à partir de</span>
                 {fmtPrice(REEL.prixEntree)}
                 <small>{t("juste.mention", REEL.mentionPrix)}</small>
               </p>

@@ -1,6 +1,6 @@
-import { HOUSE, PRICE_FROM, VERSIONS } from "@/data/essensya";
+import { PRICE_FROM } from "@/data/essensya";
 import { SITE_URL } from "@/lib/site-url";
-import type { Annonce, HouseVersion } from "@/types";
+import type { Annonce } from "@/types";
 
 /* Les agences existent en deux formes — celle du contenu éditorial
    (`Agency`) et celle éditable en back-office (`Agence`). Le balisage
@@ -73,54 +73,56 @@ export function filAriane(items: { nom: string; path?: string }[]): Noeud {
   };
 }
 
-/* ════ LA MAISON ════
-   Un `Product` unique avec ses deux déclinaisons en offres. Le prix
-   affiché est bien celui de la page — « à partir de », maison seule. */
-export function produitMaison(version?: HouseVersion): Noeud {
-  const offres = (version ? [version] : VERSIONS).map((v) => ({
-    "@type": "Offer",
-    name: `${HOUSE.name} — ${v.label}`,
-    price: v.priceFrom,
-    priceCurrency: "EUR",
-    availability: "https://schema.org/InStock",
-    url: abs(version ? `/maisons/${v.slug}` : "/maisons"),
-    /* `priceValidUntil` est exigé par Google pour une offre. Sans date
-       réelle du client, on ne l'invente pas : mieux vaut un avertissement
-       dans la Search Console qu'une échéance fausse. */
-    priceSpecification: {
-      "@type": "UnitPriceSpecification",
-      price: v.priceFrom,
-      priceCurrency: "EUR",
-      valueAddedTaxIncluded: true,
-    },
-  }));
+/* ════ LA GAMME ════
 
+   ⚠ CE QUE CETTE FONCTION PUBLIAIT, ET QU'ELLE NE PUBLIE PLUS.
+
+   Elle émettait un `Product` nommé « Essen » — une maison INVENTÉE pour
+   la maquette — avec, en `additionalProperty`, sa surface habitable, son
+   nombre de chambres et la surface de son garage. Puis un
+   `AggregateOffer` sur les prix de deux déclinaisons tout aussi
+   fictives.
+
+   Une balise de prix ou de caractéristique n'est pas un ornement : c'est
+   ce que Google affiche dans ses résultats et ce sur quoi il engage sa
+   confiance. Déclarer « 93 m², 3 chambres, 94 900 € » pour un produit
+   qui n'existe pas relève de la donnée structurée trompeuse, que Google
+   sanctionne par une action manuelle — et, côté client, d'un engagement
+   commercial sur un bien inexistant.
+
+   LA RÈGLE DU FICHIER S'APPLIQUE D'ELLE-MÊME : on ne balise que ce qui
+   est visible ET vrai. Aujourd'hui, du produit, nous savons deux choses
+   seulement — que c'est une gamme de maisons individuelles, et qu'elle
+   commence à 78 000 € hors terrain (modèle Pékin). C'est donc
+   exactement ce qui est publié : pas de surface, pas de chambres, pas de
+   prix par modèle, aucun nom de produit fictif.
+
+   Le jour où le client transmettra ses caractéristiques, elles
+   reviendront ici — et pas avant. `estPubliable()` dans
+   src/data/gamme.ts tient la même frontière côté pages.
+
+   Le paramètre `version` a disparu avec les déclinaisons : les deux
+   appelants passaient soit rien, soit une déclinaison inventée. */
+export function produitGamme(): Noeud {
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: version ? `${HOUSE.name} — ${version.label}` : HOUSE.name,
-    description: version ? version.pour : HOUSE.tagline,
+    name: "Maisons Essensya",
+    description:
+      "Une gamme de maisons individuelles optimisées, conçues par notre bureau d'études pour un prix maîtrisé.",
     category: "Maison individuelle",
     brand: { "@type": "Brand", name: "Maisons Essensya" },
-    ...(HOUSE.image ? { image: [HOUSE.image] } : {}),
-    /* Les caractéristiques que le visiteur lit sur la page, et rien de
-       plus : surface, chambres, garage. */
-    additionalProperty: (version ? [version] : VERSIONS).flatMap((v) => [
-      { "@type": "PropertyValue", name: "Surface habitable", value: `${v.surface} m²`, unitCode: "MTK" },
-      { "@type": "PropertyValue", name: "Chambres", value: v.bedrooms },
-      { "@type": "PropertyValue", name: "Garage", value: `${v.garageArea} m²`, unitCode: "MTK" },
-    ]),
-    offers:
-      offres.length === 1
-        ? offres[0]
-        : {
-            "@type": "AggregateOffer",
-            lowPrice: PRICE_FROM,
-            highPrice: Math.max(...VERSIONS.map((v) => v.priceFrom)),
-            priceCurrency: "EUR",
-            offerCount: offres.length,
-            offers: offres,
-          },
+    offers: {
+      "@type": "AggregateOffer",
+      /* Le seul prix réel dont nous disposions. Pas de `highPrice` : nous
+         ignorons le haut de gamme, et un intervalle inventé serait plus
+         trompeur qu'un intervalle ouvert. Pas d'`offerCount` non plus —
+         il annoncerait des offres individuelles qui n'existent pas. */
+      lowPrice: PRICE_FROM,
+      priceCurrency: "EUR",
+      availability: "https://schema.org/InStock",
+      url: abs("/maisons"),
+    },
   };
 }
 

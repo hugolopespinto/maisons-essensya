@@ -1,5 +1,4 @@
 import "server-only";
-import { VERSIONS } from "@/data/essensya";
 
 /* ⚠ Ce module est `server-only` : il ne peut PAS être importé par un
    composant client. C'est la garantie structurelle que le token
@@ -46,7 +45,16 @@ export const FEED_REVALIDATE = Number(process.env.VITAHOME_REVALIDATE ?? 3600);
      modele-b    →   1 annonce   (88,34 m², 3 ch)
      modeles-de-bruno-lefort-1 → 2 annonces de TEST, à rejeter          */
 export const VERSION_SLUG_MAP: Record<string, string> = Object.fromEntries(
-  VERSIONS.flatMap((v) => v.vitahomeSlugs.map((s) => [s, v.slug])),
+  /* ⚠ VIDE, ET C'EST VOULU. Cette table faisait retomber les modèles du
+     flux Vitahome sur « 2-chambres » ou « 3-chambres », deux déclinaisons
+     inventées : une annonce du client se voyait donc attribuer un produit
+     qui n'existe pas, jusque dans le formulaire envoyé à son CRM.
+
+     Elle se remplira quand nous saurons quel modèle du flux correspond à
+     quel modèle de la gamme — information que seul le client détient.
+     D'ici là, une annonce n'est rattachée à aucun modèle, ce que les
+     gabarits savent gérer. */
+  [],
 );
 
 /**

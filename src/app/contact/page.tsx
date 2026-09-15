@@ -64,7 +64,7 @@ export default async function ContactPage() {
             <p style={{ whiteSpace: "pre-line" }}>{chapo}</p>
           ) : (
             <p>
-              Une maison, deux déclinaisons, à partir de {fmtPrice(PRICE_FROM)} hors
+              Une gamme de modèles optimisés, à partir de {fmtPrice(PRICE_FROM)} hors
               terrain. Dites-nous où vous en êtes : une agence vous répond sous 48 h,
               sans engagement et sans démarchage.
             </p>

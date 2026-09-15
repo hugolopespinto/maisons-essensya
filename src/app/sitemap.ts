@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
-import { AGENCIES, VERSIONS } from "@/data/essensya";
+import { AGENCIES } from "@/data/essensya";
+import { modelesPubliables } from "@/data/gamme";
 import { articlesPublies } from "@/lib/blog";
 import { communeUrl, deptUrl } from "@/lib/format";
 import { communesPubliables, departementsPubliables } from "@/lib/geo";
@@ -9,11 +10,11 @@ import { SITE_URL } from "@/lib/site-url";
 
 const BASE = SITE_URL;
 
-/* Priorités : /maisons vaut l'accueil. C'est la page qui porte le prix,
-   et sur un mono-produit c'est elle que les requêtes de marque doivent
+/* Priorités : /maisons vaut l'accueil. C'est la page qui porte le prix
+   et la gamme entière, et c'est elle que les requêtes de marque doivent
    atteindre — pas une page d'accueil de marque.
-   Les deux déclinaisons restent en 0.6 : ce ne sont pas deux produits,
-   les remonter cannibaliserait /maisons avec du contenu quasi identique. */
+   Les fiches de modèle restent en 0.6 : onze pages bâties sur le même
+   gabarit cannibaliseraient /maisons si on les remontait. */
 const STATICS: [string, number][] = [
   ["", 1],
   ["/maisons", 1],
@@ -64,8 +65,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly" as const,
       priority,
     })),
-    ...VERSIONS.map((v) => ({
-      url: `${BASE}/maisons/${v.slug}`,
+    /* ⚠ `modelesPubliables()`, PAS tous les modèles. Le sitemap est une
+       promesse : une fiche sans surface ni prix n'est qu'une galerie, et
+       en annoncer dix d'un coup fait exactement ce que Google sanctionne.
+       Elles portent d'ailleurs `noindex` — les lister ici serait se
+       contredire. La liste est vide aujourd'hui, et se remplira toute
+       seule quand le client livrera ses caractéristiques. */
+    ...modelesPubliables().map((m) => ({
+      url: `${BASE}/maisons/${m.slug}`,
       changeFrequency: "monthly" as const,
       priority: 0.6,
     })),

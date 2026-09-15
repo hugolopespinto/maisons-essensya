@@ -34,8 +34,8 @@ export async function generateMetadata(): Promise<Metadata> {
        ce qui la rend vraie au fil du stock, et utile dans les résultats.
        Si le flux se vide, la phrase tient encore. */
     description: noms
-      ? `Nos terrains à bâtir, département par département : ${noms}. La maison est la même partout, et son prix aussi — à partir de ${fmtPrice(PRICE_FROM)} hors terrain.`
-      : `Nos terrains à bâtir, département par département. La maison est la même partout, et son prix aussi — à partir de ${fmtPrice(PRICE_FROM)} hors terrain.`,
+      ? `Nos terrains à bâtir, département par département : ${noms}. Nos modèles sont les mêmes partout, et leur prix aussi — à partir de ${fmtPrice(PRICE_FROM)} hors terrain.`
+      : `Nos terrains à bâtir, département par département. Nos modèles sont les mêmes partout, et leur prix aussi — à partir de ${fmtPrice(PRICE_FROM)} hors terrain.`,
     alternates: { canonical: "/terrains" },
   });
 }
@@ -73,8 +73,8 @@ export default async function TerrainsPage() {
           </nav>
           <h1>{TITRE}</h1>
           <p>
-            Nos agences repèrent les parcelles compatibles avec la maison, souvent
-            avant leur mise sur le marché. Le lieu change ; la maison, et son prix,
+            Nos agences repèrent les parcelles compatibles avec nos modèles, souvent
+            avant leur mise sur le marché. Le lieu change ; les maisons, et leur prix,
             ne changent pas.
           </p>
         </div>

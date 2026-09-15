@@ -45,7 +45,7 @@ const EVENEMENTS: { event: string; label: string; ou: string }[] = [
   {
     event: "lead_model_request",
     label: "Demande sur la maison",
-    ou: "La maison et ses déclinaisons",
+    ou: "La page des modèles et les fiches de modèle",
   },
   {
     event: "lead_annonce_request",

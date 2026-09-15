@@ -5,7 +5,7 @@ import AgencyCard, { telHref } from "@/components/AgencyCard";
 import AnnonceCard from "@/components/AnnonceCard";
 import LeadForm, { ContactFields } from "@/components/LeadForm";
 import SpecList from "@/components/SpecList";
-import { HOUSE, PRICE_FROM } from "@/data/essensya";
+import { PRICE_FROM, REEL } from "@/data/essensya";
 import {
   agencesPubliees,
   SANS_PHOTO,
@@ -142,7 +142,7 @@ function businessJsonLd(g: AgenceAffichee) {
       "@type": "Offer",
       priceCurrency: "EUR",
       price: PRICE_FROM,
-      itemOffered: { "@type": "Product", name: `Maison ${HOUSE.name}` },
+      itemOffered: { "@type": "Product", name: "Maisons Essensya" },
     },
   };
 }
@@ -242,10 +242,10 @@ export default async function AgencyPage({
               style={{ fontSize: "clamp(2.2rem,5.5vw,3.4rem)", marginTop: "var(--s-4)" }}
               data-reveal
             >
-              <span className="from">La maison, à partir de</span>
+              <span className="from">Nos maisons, à partir de</span>
               {fmtPrice(PRICE_FROM)}
               <small>
-                Maison seule, hors terrain · 2 ou 3 chambres ·{" "}
+                {REEL.mentionPrix}{" "}
                 <Link href="/maisons" style={{ color: "var(--bois)" }}>
                   voir ce qui est compris
                 </Link>

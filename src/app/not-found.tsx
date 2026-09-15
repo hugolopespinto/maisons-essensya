@@ -11,12 +11,12 @@ export default function NotFound() {
           <h1>Cette page n&apos;existe pas</h1>
           <p>
             Le lien est peut-être obsolète, ou le terrain que vous cherchez
-            n&apos;est plus disponible. La maison, elle, n&apos;a pas bougé :
-            elle est toujours à partir de {fmtPrice(PRICE_FROM)}, hors terrain.
+            n&apos;est plus disponible. Nos maisons, elles, n&apos;ont pas bougé :
+            toujours à partir de {fmtPrice(PRICE_FROM)}, hors terrain.
           </p>
           <div style={{ marginTop: "var(--s-4)", display: "flex", gap: "var(--s-2)", flexWrap: "wrap" }}>
             <Link href="/maisons" className="c-btn c-btn--solid">
-              Voir la maison <span className="arrow">→</span>
+              Voir nos modèles <span className="arrow">→</span>
             </Link>
             <Link href="/annonces" className="c-btn">
               Terrains &amp; opportunités

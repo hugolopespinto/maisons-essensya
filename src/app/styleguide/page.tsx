@@ -2,12 +2,10 @@ import type { Metadata } from "next";
 import AgencyCard from "@/components/AgencyCard";
 import AnnonceCard from "@/components/AnnonceCard";
 import Compare from "@/components/Compare";
-import Plate from "@/components/Plate";
 import { MarkedList, SpecList } from "@/components/SpecList";
 import Substitut from "@/components/Substitut";
-import VersionCard from "@/components/VersionCard";
 import { Picto } from "@/components/icons";
-import { AGENCIES, ESSENSYA_DATA, HOUSE, PRICE_FROM, VERSIONS } from "@/data/essensya";
+import { AGENCIES, ESSENSYA_DATA, HOUSE, PRICE_FROM, REEL } from "@/data/essensya";
 import { fmtPrice, fmtSurface } from "@/lib/format";
 import { getAnnonces } from "@/lib/vitahome/annonces";
 import type { Annonce } from "@/types";
@@ -61,8 +59,6 @@ export default async function StyleguidePage() {
   ].filter((a): a is Annonce => Boolean(a));
   const substituts = (echantillon.length ? echantillon : annonces).slice(0, 3);
 
-  const v = VERSIONS[0];
-
   return (
     <main className="page">
       <section className="styleguide">
@@ -72,8 +68,8 @@ export default async function StyleguidePage() {
             <h2>Design system</h2>
             <p className="u-muted" style={{ marginTop: "var(--s-2)" }}>
               Documentation des tokens et composants — non destinée à la production.
-              Le site vend une maison et deux déclinaisons : aucun composant ne
-              doit supposer un catalogue.
+              Le site vend une GAMME de modèles : un composant qui suppose un
+              produit unique est un composant à corriger.
             </p>
           </div>
 
@@ -126,7 +122,7 @@ export default async function StyleguidePage() {
             <span className="c-price-xl">
               <span className="from">À partir de</span>
               {fmtPrice(PRICE_FROM)}
-              <small>Maison seule, hors terrain — déclinaison {VERSIONS[1].label}</small>
+              <small>{REEL.mentionPrix}</small>
             </span>
           </div>
 
@@ -158,12 +154,17 @@ export default async function StyleguidePage() {
                 gap: "var(--s-4)",
               }}
             >
+              {/* ⚠ Valeurs de DÉMONSTRATION, écrites ici et nulle part
+                  ailleurs. Elles venaient d une déclinaison inventée ; les
+                  brancher sur un vrai modèle ferait afficher des
+                  caractéristiques que nous n avons pas. Cette page est une
+                  documentation de composants, pas une fiche produit. */}
               <SpecList
                 rows={[
-                  ["Surface", fmtSurface(v.surface)],
-                  ["Chambres", String(v.bedrooms)],
-                  ["Garage", fmtSurface(v.garageArea)],
-                  ["Prix", fmtPrice(v.priceFrom)],
+                  ["Surface", "000 m²"],
+                  ["Chambres", "0"],
+                  ["Garage", "00 m²"],
+                  ["Prix", fmtPrice(PRICE_FROM)],
                   ["Terrain", fmtSurface(null)],
                 ]}
               />
@@ -238,32 +239,17 @@ export default async function StyleguidePage() {
           </div>
 
           {/* ════ PRODUIT ════ */}
-          <div className="sg-block">
-            <span className="c-label">Plaque de specs (signature)</span>
-            <div className="c-plate">
-              <Plate version={v} withGarage />
-            </div>
-          </div>
-
-          <div className="sg-block">
-            <span className="c-label">Déclinaison — &lt;VersionCard&gt;</span>
-            <p className="u-muted u-measure" style={{ marginBottom: "var(--s-3)" }}>
-              Deux plans, pas deux produits : la carte dit toujours ce qui ne
-              change pas d&apos;une déclinaison à l&apos;autre.
-            </p>
-            <div style={{ maxWidth: 380 }}>
-              <VersionCard version={v} />
-            </div>
-          </div>
-
+          {/* ⚠ Le bloc « Déclinaison — <VersionCard> » a été retiré avec le
+              composant lui-même : il documentait une carte de déclinaison
+              inventée. Son remplaçant, <ModeleCard>, vit sur /maisons. */}
           <div className="sg-block">
             <span className="c-label">Pictos annonce</span>
             <div className="c-pictos">
-              <Picto icon="surface" value={fmtSurface(v.surface)} label="Maison" />
-              <Picto icon="bed" value={v.bedrooms} label="Chambres" />
+              <Picto icon="surface" value="000 m²" label="Maison" />
+              <Picto icon="bed" value={0} label="Chambres" />
               <Picto icon="land" value="420 m²" label="Terrain" />
               <Picto icon="loc" value={AGENCIES[0].name} label="Agence" />
-              <Picto icon="price" value={fmtPrice(v.priceFrom)} label="À partir de" />
+              <Picto icon="price" value={fmtPrice(PRICE_FROM)} label="À partir de" />
             </div>
           </div>
 

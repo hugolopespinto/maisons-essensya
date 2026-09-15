@@ -78,7 +78,7 @@ export async function generateMetadata({
     description:
       `${c.total} terrain${c.total > 1 ? "s" : ""} disponible${c.total > 1 ? "s" : ""}` +
       ` dans le département ${d.nom} (${d.code})${prix}. Seuls ou livrés avec la maison Essensya, ` +
-      `à partir de ${fmtPrice(PRICE_FROM)} hors terrain — même prix partout.`,
+      `à partir de ${fmtPrice(PRICE_FROM)} hors terrain — mêmes prix partout.`,
     alternates: { canonical: deptUrl(d.slug) },
   });
 }
@@ -143,8 +143,9 @@ export default async function DepartementPage({
           <h1>{titre}</h1>
           <p>
             Des parcelles repérées par nos agences dans le département {d.nom},
-            seules ou livrées avec la maison. Elle est la même ici qu&apos;ailleurs,
-            et son prix aussi : à partir de {fmtPrice(PRICE_FROM)} hors terrain.
+            seules ou livrées avec la maison de votre choix. Nos modèles sont les
+            mêmes ici qu&apos;ailleurs, et leur prix aussi : à partir de{" "}
+            {fmtPrice(PRICE_FROM)} hors terrain.
           </p>
           <ZoneChiffres c={c} />
         </div>

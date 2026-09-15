@@ -1,7 +1,8 @@
 import "server-only";
 import type { Metadata } from "next";
-import { HOUSE, PRICE_FROM, VERSIONS } from "@/data/essensya";
-import { fmtPrice, fmtSurface } from "@/lib/format";
+import { PRICE_FROM, REEL } from "@/data/essensya";
+import { modelesAvecVisuels, MODELES } from "@/data/gamme";
+import { fmtPrice } from "@/lib/format";
 import { getContent } from "@/lib/store";
 import type { SeoEntry } from "@/lib/store/types";
 
@@ -34,9 +35,13 @@ export interface SeoRoute {
   defaut: { title?: string; description?: string };
 }
 
-const defautVersion = (v: (typeof VERSIONS)[number]) => ({
-  title: `${HOUSE.name} — ${v.label}, ${fmtSurface(v.surface)}`,
-  description: v.pour,
+/* ⚠ Le défaut d'une fiche de modèle ne peut PAS citer de surface : nous
+   n'en avons aucune. Il nomme le modèle, ce qui est vrai, et rattache la
+   page au prix d'entrée de la gamme, qui l'est aussi. Le jour où les
+   caractéristiques arriveront, c'est ici qu'elles entreront. */
+const defautModele = (m: (typeof MODELES)[number]) => ({
+  title: `Maison ${m.nom} — Maisons Essensya`,
+  description: `La maison ${m.nom}, en images : un plan optimisé jusqu'au dernier mètre carré. Gamme à partir de ${fmtPrice(PRICE_FROM)} hors terrain.`,
 });
 
 /** Les routes proposées à l'édition, dans l'ordre d'affichage. */
@@ -46,43 +51,42 @@ export const SEO_ROUTES: SeoRoute[] = [
     label: "Accueil",
     aide: "La page la plus visitée. Son title sert aussi de titre de repli aux pages qui n'en définissent pas.",
     defaut: {
-      title: `Maisons Essensya — une maison, à partir de ${fmtPrice(PRICE_FROM)}`,
+      title: `Maisons Essensya — constructeur au prix juste dans les Landes`,
       description:
-        `Une seule maison de plain-pied, deux déclinaisons : 2 ou 3 chambres. ` +
-        `À partir de ${fmtPrice(PRICE_FROM)} hors terrain, cuisine aménagée, ` +
-        `terrasse couverte et garage compris. Prix annoncé au premier rendez-vous, ` +
-        `figé au contrat CCMI.`,
+        `Une gamme de ${MODELES.length} modèles de maisons individuelles, optimisés jusqu'au ` +
+        `dernier mètre carré. À partir de ${fmtPrice(PRICE_FROM)} — ${REEL.mentionPrix.toLowerCase()} ` +
+        `Prix annoncé avant le premier rendez-vous, figé au contrat CCMI.`,
     },
   },
   {
     path: "/maisons",
-    label: "La maison",
+    label: "Nos modèles",
     defaut: {
-      title: `La maison ${HOUSE.name} — à partir de ${fmtPrice(PRICE_FROM)}`,
-      description: `Une seule maison, deux déclinaisons : 2 ou 3 chambres. Plain-pied de ${fmtSurface(
-        VERSIONS[0].surface,
-      )}, cuisine, terrasse couverte et garage compris, à partir de ${fmtPrice(
-        PRICE_FROM,
-      )} hors terrain. Ce qui est compris et ce qui ne l'est pas, écrit noir sur blanc.`,
+      title: `Nos modèles de maisons — à partir de ${fmtPrice(PRICE_FROM)}`,
+      description:
+        `Une gamme de ${MODELES.length} modèles de maisons individuelles, optimisés jusqu'au ` +
+        `dernier mètre carré. À partir de ${fmtPrice(PRICE_FROM)} — ${REEL.mentionPrix.toLowerCase()} ` +
+        `Ce qui est compris et ce qui ne l'est pas, écrit noir sur blanc.`,
     },
   },
-  /* Les deux déclinaisons sont générées à partir des données : ajouter ou
-     retirer une version met l'écran Référencement à jour tout seul. Elles
-     méritent leur propre entrée — deux pages aussi proches se cannibalisent
-     dans les résultats si elles portent le même titre, et c'est au client de
-     trancher laquelle il met en avant.
+  /* Une entrée par modèle, générée depuis le catalogue : un modèle
+     ajouté ou retiré met l'écran Référencement à jour tout seul.
 
-     ⚠ Elles étaient AUSSI écrites en dur juste ici. `SEO_ROUTES.find()` rend
-     la première entrée trouvée : la version écrite en dur gagnait, et celle-ci
-     — avec son aide — n'était jamais lue. Deux champs de formulaire visaient
-     le même `path`. Ne jamais réintroduire d'entrée manuelle pour une route
-     qu'une boucle produit déjà. */
-  ...VERSIONS.map((v) => ({
-    path: `/maisons/${v.slug}`,
-    label: `La maison — ${v.label}`,
+     ⚠ NE JAMAIS RÉINTRODUIRE D'ENTRÉE ÉCRITE À LA MAIN pour une route
+     qu'une boucle produit déjà. C'est arrivé avec les anciennes
+     déclinaisons : elles figuraient deux fois, et comme
+     `SEO_ROUTES.find()` rend la PREMIÈRE entrée trouvée, celle écrite en
+     dur gagnait — l'entrée générée, avec son aide, n'était jamais lue, et
+     deux champs du formulaire visaient le même chemin.
+
+     Seuls les modèles qui ont un visuel sont proposés : Pékin n'a pas de
+     page, lui offrir un champ de titre serait promettre l'inexistant. */
+  ...modelesAvecVisuels().map((m) => ({
+    path: `/maisons/${m.slug}`,
+    label: `Modèle — ${m.nom}`,
     aide:
-      "Cette page et l'autre déclinaison sont très proches : donnez-leur des titres nettement différents, sinon Google choisit lui-même laquelle afficher.",
-    defaut: defautVersion(v),
+      "Ces fiches se ressemblent beaucoup tant qu'elles n'ont pas leurs caractéristiques : donnez-leur des titres nettement différents, sinon Google choisit lui-même laquelle afficher.",
+    defaut: defautModele(m),
   })),
   {
     path: "/annonces",
@@ -91,7 +95,7 @@ export const SEO_ROUTES: SeoRoute[] = [
     defaut: {
       title: "Terrains & maisons disponibles",
       description:
-        "Des terrains repérés par nos agences, seuls ou livrés avec la maison Essensya. Le lieu change, la maison ne change pas — et son prix non plus.",
+        "Des terrains repérés par nos agences, seuls ou livrés avec une maison Essensya. Le lieu change, la méthode ne change pas — et le prix d'entrée non plus.",
     },
   },
   {
@@ -106,7 +110,7 @@ export const SEO_ROUTES: SeoRoute[] = [
     defaut: {
       title: "Terrains à bâtir : tous nos départements",
       description:
-        "Nos terrains à bâtir, département par département. La maison est la même partout, et son prix aussi.",
+        "Nos terrains à bâtir, département par département. Nos modèles sont les mêmes partout, et leur prix aussi.",
     },
   },
   {
@@ -132,9 +136,9 @@ export const SEO_ROUTES: SeoRoute[] = [
     path: "/concept",
     label: "Le concept",
     defaut: {
-      title: "Notre concept — une maison, deux déclinaisons",
+      title: "Notre concept — construire à l'essentiel",
       description:
-        "Pourquoi nous ne construisons qu'une maison, pourquoi elle coûte moins cher, et ce que le prix comprend exactement. Questions fréquentes comprises.",
+        "Pourquoi nos maisons coûtent moins cher, comment nos plans sont optimisés, et ce que le prix comprend exactement. Questions fréquentes comprises.",
     },
   },
   {

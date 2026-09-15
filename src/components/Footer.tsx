@@ -1,7 +1,8 @@
 import Link from "next/link";
 import CookiePrefsLink from "@/components/CookiePrefsLink";
-import { REEL, VERSIONS } from "@/data/essensya";
-import { fmtPrice, houseUrl, versionUrl } from "@/lib/format";
+import { REEL } from "@/data/essensya";
+import { MODELES } from "@/data/gamme";
+import { fmtPrice, houseUrl } from "@/lib/format";
 
 /* ⚠ CETTE LISTE ÉTAIT ÉCRITE EN DUR, et elle était déjà fausse : elle
    annonçait les Deux-Sèvres et le Maine-et-Loire, absents du flux, et
@@ -30,11 +31,15 @@ export interface ColonneChrome {
    et le pied de page garde exactement ces quatre colonnes. */
 const colonnesDefaut = (zones: LienZone[]): ColonneChrome[] => [
   {
-    titre: "La maison",
+    titre: "Nos maisons",
+    /* ⚠ Cette colonne listait « Version 2 chambres » et « Version
+       3 chambres » — deux déclinaisons inventées, sur toutes les pages du
+       site. Elle liste maintenant de vrais modèles. Trois seulement : une
+       colonne de pied de page qui en aligne onze ne se lit plus, et
+       « Toute la gamme » mène au reste. */
     liens: [
-      { href: houseUrl(), label: "La maison" },
-      // Les deux déclinaisons ont leur URL propre : autant la donner à lire.
-      ...VERSIONS.map((v) => ({ href: versionUrl(v), label: `Version ${v.label}` })),
+      { href: houseUrl(), label: "Toute la gamme" },
+      ...MODELES.slice(0, 3).map((m) => ({ href: `/maisons/${m.slug}`, label: m.nom })),
       { href: `${houseUrl()}#prix`, label: "Ce qui est compris" },
     ],
   },

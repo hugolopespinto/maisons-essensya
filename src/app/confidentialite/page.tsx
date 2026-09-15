@@ -130,8 +130,8 @@ export default function ConfidentialitePage() {
           <P>
             Nous ne recueillons de données que lorsque vous remplissez
             vous-même un formulaire&nbsp;: demande de rappel en page
-            d&apos;accueil, page contact, page de la maison et de ses deux
-            déclinaisons, fiche d&apos;une annonce de terrain, page
+            d&apos;accueil, page contact, page de nos modèles et fiche de
+            chaque modèle, fiche d&apos;une annonce de terrain, page
             d&apos;agence. Il n&apos;y a sur ce site ni compte, ni mot de
             passe, ni paiement en ligne.
           </P>
@@ -155,7 +155,7 @@ export default function ConfidentialitePage() {
               ],
               [
                 "Nature de la demande",
-                "Facultatif. Être rappelé, prendre rendez-vous, question sur la maison ou sur un terrain — ou la déclinaison qui vous intéresse.",
+                "Facultatif. Être rappelé, prendre rendez-vous, question sur un terrain — ou le modèle qui vous intéresse.",
               ],
               [
                 "Message libre",

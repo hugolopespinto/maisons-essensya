@@ -1,4 +1,8 @@
 import type { EssensyaData } from "@/types";
+/* Le catalogue de la gamme. Import sûr : `gamme.ts` ne dépend que de
+   `visuels.ts`, aucun cycle, et aucun composant client n'importe ce
+   fichier — le catalogue de visuels ne part donc pas dans le bundle. */
+import { MODELES } from "./gamme";
 
 /* ════════════════════════════════════════════════════════════════
    CONTENU ÉDITORIAL — MAISONS ESSENSYA
@@ -133,19 +137,35 @@ const P = PLACEHOLDER;
 
 export const ESSENSYA_DATA: EssensyaData = {
   /* ════ LA MAISON ════ */
+  /* ⚠ « ESSEN » N'EXISTE PAS. C'était le nom commercial inventé pour la
+     maquette mono-produit, et il s'affichait en titre de /maisons, dans
+     le fil d'ariane, dans les textes alternatifs, jusque dans les
+     métadonnées servies à Google. Le client vend onze modèles qui
+     portent des noms de capitales ; aucun ne s'appelle Essen.
+
+     `house` ne décrit donc plus UNE maison mais ce qui est commun à la
+     gamme. Son `name` devient le nom de la marque, seul nom vrai à
+     cet endroit — les gabarits qui écrivaient « la maison Essen »
+     disent maintenant « nos maisons ».
+
+     ⚠ Les légendes de la galerie portaient des cotes inventées
+     — « séjour 38 m² », « plan de travail 3,20 m ». Sur des rendus qui
+     ne sont pas cotés, et pour une gamme dont nous n'avons aucun plan,
+     une cote au centimètre est une affirmation gratuite. Les légendes
+     décrivent maintenant ce qu'on voit, et rien de plus. */
   house: {
-    name: P.houseName,
+    name: "Essensya",
     tagline:
-      "Une maison de plain-pied conçue une fois, dessinée à fond, et construite à l'identique. C'est ce qui tient le prix.",
+      "Des plans optimisés jusqu'au dernier mètre carré, conçus par notre bureau d'études. C'est ce qui tient le prix.",
     philosophy:
-      "Nous n'avons pas fait une maison moins chère en enlevant des choses. Nous en avons fait une seule, et nous l'avons dessinée jusqu'au bout.",
+      "Nous n'avons pas fait des maisons moins chères en enlevant des choses. Nous avons dessiné chaque plan jusqu'au bout, poste par poste, pour que rien n'y soit perdu.",
     image: IMG.facade,
     heroImage: IMG.facadeLg,
-    alt: `Maison ${P.houseName} — plain-pied contemporain`,
+    alt: "Maison Essensya — vue extérieure côté terrasse",
     gallery: [
-      { src: IMG.sejour, alt: "Séjour traversant", caption: "Séjour traversant — 38 m²" },
-      { src: IMG.cuisine, alt: "Cuisine ouverte", caption: "Cuisine ouverte — plan de travail 3,20 m" },
-      { src: IMG.matiere, alt: "Détail des matériaux", caption: "Détail — enduit minéral, menuiserie aluminium" },
+      { src: IMG.sejour, alt: "Séjour et cuisine ouverte", caption: "Séjour et cuisine ouverte" },
+      { src: IMG.cuisine, alt: "Cuisine aménagée", caption: "Cuisine aménagée" },
+      { src: IMG.matiere, alt: "Pièce de vie", caption: "Pièce de vie" },
     ],
 
     /* ════ LA VISITE ════
@@ -221,45 +241,83 @@ export const ESSENSYA_DATA: EssensyaData = {
       },
     ],
 
+    /* ⚠ CE TEXTE DÉCRIVAIT UNE AUTRE MAISON. Il annonçait « toiture
+       monopente, façade enduite, menuiseries aluminium au nu extérieur »
+       — l'écriture des photos d'architecte qui illustraient la maquette.
+       Les rendus livrés par le client montrent l'inverse : tuile canal,
+       débord de toit, une écriture du Sud-Ouest. Décrire une toiture
+       qu'on ne construit pas, à côté d'une image qui montre l'autre, est
+       le genre de détail qui fait douter de tout le reste. */
     archText:
-      "Un volume simple et précis : toiture monopente, façade enduite, menuiseries aluminium au nu extérieur. Chaque décision architecturale a été arbitrée deux fois — une fois pour la qualité de vie, une fois pour le coût. La sobriété n'est pas une économie subie, c'est la méthode.",
+      "Chaque décision est arbitrée deux fois — une fois pour la qualité de vie, une fois pour le coût. La sobriété n'est pas une économie subie, c'est la méthode : ce que nous ne dépensons pas en complexité, nous le rendons sur le prix.",
     archImage: IMG.volume,
+    /* ⚠ SIX LIGNES DE PRESTATIONS CONSTRUCTIVES ONT DISPARU — structure,
+       toiture, menuiseries, isolation, assainissement — parce qu'AUCUNE
+       n'était sourcée. Elles décrivaient la maison fictive de la
+       maquette, et une caractéristique constructive fausse sur un site
+       de constructeur n'est pas une approximation : c'est une
+       description de bien.
+
+       Ne subsistent que les postes que le client a lui-même écrits. Les
+       autres reviendront avec son tableau de caractéristiques, pas
+       avant. */
     materials: [
-      ["Structure", "Brique rectifiée R+0"],
-      ["Toiture", "Monopente bac acier isolé"],
-      ["Menuiseries", "Aluminium double vitrage"],
-      ["Chauffage", "Pompe à chaleur air/eau"],
-      ["Isolation", "RE2020 — ITI renforcée"],
-      ["Assainissement", "Raccordement tout-à-l'égout"],
+      ["Réglementation", "RE 2020"],
+      ["Chauffage", "Système de chauffage performant"],
+      ["Salle de bain", "Équipée"],
+      ["Personnalisation", "Possible"],
     ],
+    /* ⚠ « Plain-pied », « traversant », « terrain dès 350 m² » ont été
+       retirés : inventés pour la maquette, et invérifiables sur une
+       gamme de onze modèles dont nous n'avons aucun plan. Le flux
+       Vitahome contient d'ailleurs des modèles en R+1 — « plain-pied »
+       était donc faux pour une partie du catalogue.
+
+       Ce qui reste vient de la parole du client, mot pour mot ou presque. */
     features: [
-      { t: "RE2020", d: "Conception conforme à la réglementation environnementale en vigueur." },
-      { t: "Plain-pied", d: "Aucune marche, accessible dès la conception." },
-      { t: "Traversant", d: "Double orientation du séjour, lumière du matin au soir." },
-      { t: "Rangements intégrés", d: "Placards dessinés dans le plan, pas ajoutés après coup." },
-      { t: "Garage intégré", d: "Compris dans le volume principal, pas facturé en extension." },
-      { t: "Terrain dès 350 m²", d: "Une emprise compacte compatible avec les parcelles courantes." },
+      { t: "RE 2020", d: "Conception conforme à la réglementation environnementale en vigueur." },
+      { t: "Salle de bain équipée", d: "Comprise, pas facturée en supplément." },
+      { t: "Chauffage performant", d: "Système dimensionné avec le plan, pas ajouté après coup." },
+      { t: "Personnalisation possible", d: "Les grands arbitrages sont faits ; il reste à vous approprier la maison." },
+      { t: "Zéro mètre carré perdu", d: "Pas de dégagement inutile, pas de recoin qui ne sert à rien." },
+      { t: "CCMI", d: "Contrat de construction, garantie décennale, dommages-ouvrage." },
     ],
+    /* ⚠ LA CONTRADICTION LA PLUS COÛTEUSE DU FICHIER ÉTAIT ICI.
+       « Étude de sol et adaptation au terrain » figurait parmi les
+       prestations COMPRISES. Or la mention de prix transmise par le
+       client dit exactement l'inverse : « maison seule, modèle Pékin,
+       hors terrain, HORS ADAPTATION, la maison uniquement ».
+
+       L'adaptation au terrain est précisément le poste qui surprend un
+       acquéreur en fin de parcours — plusieurs milliers d'euros selon la
+       pente et la nature du sol. L'annoncer comme comprise à côté d'un
+       prix qui l'exclut, c'est la promesse dont on se souvient à la
+       signature. Elle passe donc du bon côté de la liste.
+
+       Les prestations chiffrées sans source sont parties avec le reste :
+       « terrasse couverte 12 m² », « pompe à chaleur et plancher
+       chauffant », « volets roulants motorisés », « garage intégré »,
+       « cuisine aménagée ». Aucune n'était confirmée pour un seul des
+       onze modèles. Ne restent que les postes écrits par le client et
+       ceux qu'impose le CCMI. */
     included: [
-      "Étude de sol et adaptation au terrain",
-      "Cuisine aménagée (hors électroménager)",
       "Salle de bain équipée",
-      "Pompe à chaleur et plancher chauffant",
-      "Volets roulants motorisés",
-      "Terrasse couverte 12 m²",
-      "Garage intégré",
-      "Garanties CCMI, décennale, parfait achèvement",
+      "Système de chauffage performant",
+      "Conception conforme à la RE 2020",
+      "Contrat CCMI et garantie de livraison à prix et délais convenus",
+      "Garanties décennale, biennale et de parfait achèvement",
       "Assurance dommages-ouvrage",
     ],
     /* Le pendant obligatoire de la liste précédente. Taire les exclusions
        détruit la crédibilité d'un prix bas plus vite que tout le reste.
-       Les libellés reprennent ceux du flux Vitahome (champ `mention`). */
+       Les libellés reprennent ceux du flux Vitahome (champ `mention`)
+       et la mention de prix du client. */
     excluded: [
       "Le terrain",
+      "L'adaptation au terrain et l'étude de sol",
       "Les frais de notaire",
       "Les taxes d'aménagement et de raccordement",
       "Les VRD (voirie et réseaux divers)",
-      "Le électroménager de la cuisine",
       "Les aménagements extérieurs (clôture, portail, allée)",
     ],
   },
@@ -374,21 +432,37 @@ export const ESSENSYA_DATA: EssensyaData = {
     },
   ],
 
-  /* ════ COMPARATIF ════ L'argument central, rendu vérifiable. */
+  /* ════ COMPARATIF ════
+     ⚠ CE TABLEAU SE RETOURNAIT CONTRE LE CLIENT. Il opposait
+     « 1 maison, 2 déclinaisons » à « 20 à 60 modèles » chez les
+     concurrents, et faisait du catalogue restreint l'argument. Le client
+     a désormais onze modèles : l'argument devenait une faiblesse, et le
+     visiteur qui comptait les modèles sur le site voyait la
+     contradiction avant nous.
+
+     La démonstration tient toujours, mais elle change de pivot : ce
+     n'est plus le NOMBRE de modèles qui fait le prix, c'est le fait que
+     chacun soit optimisé poste par poste et livré avec ses arbitrages
+     déjà faits. C'est exactement ce que dit la nouvelle parole du
+     client (« optimisés à l'essentiel jusqu'au dernier mètre carré »,
+     « les bons choix déjà faits »).
+
+     ⚠ « Aucune option » a disparu aussi : le client annonce maintenant
+     « personnalisation possible ». Les deux ne pouvaient pas coexister
+     sur le même site. */
   compare: {
     title: "Pourquoi c'est moins cher",
     intro:
-      "Pas parce que la maison est moins bien construite — les matériaux et les garanties sont les mêmes. Parce qu'une maison unique, construite en série, ne coûte pas la même chose à concevoir, à chiffrer et à suivre.",
+      "Pas parce que la maison est moins bien construite — les matériaux et les garanties sont les mêmes. Parce qu'un plan optimisé jusqu'au dernier mètre carré, dont les arbitrages sont déjà faits, ne coûte pas la même chose à concevoir, à chiffrer et à suivre.",
     rows: [
-      { poste: "Modèles au catalogue", essensya: "1 maison, 2 déclinaisons", classique: "20 à 60 modèles", gain: true },
-      { poste: "Étude et conception", essensya: "Faite une fois, amortie", classique: "Refaite à chaque client", gain: true },
-      { poste: "Options à arbitrer", essensya: "Aucune", classique: "150 à 400 références", gain: true },
+      { poste: "Conception des plans", essensya: "Optimisée poste par poste", classique: "Adaptée au cas par cas", gain: true },
+      { poste: "Mètres carrés perdus", essensya: "Aucun dégagement inutile", classique: "Couloirs et recoins", gain: true },
+      { poste: "Choix à arbitrer", essensya: "L'essentiel déjà sélectionné", classique: "150 à 400 références", gain: true },
+      { poste: "Personnalisation", essensya: "Possible, sur une base tenue", classique: "Illimitée, et facturée", gain: true },
       { poste: "Cuisine aménagée", essensya: "Comprise", classique: "En supplément", gain: true },
       { poste: "Terrasse couverte", essensya: "Comprise", classique: "En supplément", gain: true },
-      { poste: "Délai de chiffrage", essensya: "48 h", classique: "2 à 6 semaines", gain: true },
-      { poste: "Avenants en cours de chantier", essensya: "Rien à modifier", classique: "Fréquents", gain: true },
       { poste: "Garanties CCMI", essensya: "Toutes", classique: "Toutes" },
-      { poste: "Conformité RE2020", essensya: "Oui", classique: "Oui" },
+      { poste: "Conformité RE 2020", essensya: "Oui", classique: "Oui" },
     ],
     note:
       "Comparatif établi sur la base des pratiques courantes du secteur de la maison individuelle. Les postes « classique » sont indicatifs et ne visent aucun constructeur en particulier.",
@@ -406,10 +480,15 @@ export const ESSENSYA_DATA: EssensyaData = {
     { num: "06", title: "Une équipe à vos côtés", text: "Un interlocuteur unique à chaque étape, c'est un accompagnement d'expert pour gagner du temps et de la tranquillité." },
   ],
 
+  /* ⚠ Le parcours supposait qu'il n'y avait rien à choisir : « un seul
+     plan à comprendre », « je choisis 2 ou 3 chambres, c'est le seul
+     arbitrage ». Avec une gamme et une personnalisation possible, les
+     deux étapes étaient fausses. Elles disent maintenant ce qui se passe
+     vraiment, sans promettre de délai que personne n'a vérifié. */
   steps: [
-    { num: "01", title: "Je découvre la maison", text: "Un seul plan à comprendre, un seul prix à retenir. Trente minutes suffisent." },
+    { num: "01", title: "Je choisis mon modèle", text: "Des plans déjà optimisés, à comparer entre eux. Chacun affiche ce qu'il comprend." },
     { num: "02", title: "Je trouve mon terrain", text: "Nos agences ont déjà repéré les parcelles compatibles de votre secteur." },
-    { num: "03", title: "Je choisis 2 ou 3 chambres", text: "C'est le seul arbitrage qu'on vous demande. Le reste est déjà décidé." },
+    { num: "03", title: "Je personnalise l'essentiel", text: "Les grands arbitrages sont déjà faits. Il reste à ajuster ce qui vous ressemble." },
     { num: "04", title: "Je construis", text: "Un chantier maîtrisé, des garanties complètes, une maison livrée au prix convenu." },
   ],
 
@@ -461,12 +540,22 @@ export const ESSENSYA_DATA: EssensyaData = {
 
   concept: {
     manifesto:
-      "Le marché de la construction pousse à l'infini des options, des gammes et des suppléments — et fait payer cette complexité au client. Nous avons pris le chemin inverse : une maison, dessinée obsessionnellement, au prix annoncé dès le premier jour. Parce qu'une maison bien pensée n'a pas besoin d'être repensée par chaque client.",
+      "Le marché de la construction pousse à l'infini les options et les suppléments — et fait payer cette complexité au client. Nous avons pris le chemin inverse : des plans dessinés obsessionnellement, optimisés jusqu'au dernier mètre carré, au prix annoncé dès le premier jour. Parce qu'une maison bien pensée n'a pas besoin d'être repensée par chaque client.",
+    /* ⚠ CES CHIFFRES ÉTAIENT FAUX, ET C'EST LE PIRE ENDROIT POUR L'ÊTRE :
+       un bandeau de statistiques se lit comme une preuve. Il annonçait
+       « 1 maison, pas trente », « 2 déclinaisons », « 0 option » — trois
+       affirmations que la gamme dément — et « 48 h pour un chiffrage
+       complet », un délai inventé pour la maquette que personne n'a
+       jamais engagé.
+
+       Les quatre qui les remplacent sont sourcés : le nombre de modèles
+       vient du catalogue, le prix du client, la RE 2020 et le CCMI de sa
+       propre copie. Aucun n'est une promesse de délai. */
     figures: [
-      ["1", "maison, pas trente"],
-      ["2", "déclinaisons : 2 ou 3 chambres"],
-      ["0", "option à arbitrer"],
-      ["48 h", "pour un chiffrage complet"],
+      [String(MODELES.length), "modèles au catalogue"],
+      [`${new Intl.NumberFormat("fr-FR").format(REEL.prixEntree)} €`, "le prix d'entrée de gamme"],
+      ["RE 2020", "respectée sur chaque chantier"],
+      ["CCMI", "et toutes ses garanties"],
     ],
     commitments: [
       { t: "Le prix annoncé est le prix tenu", d: "La maison est chiffrée dans le détail avant même d'être commercialisée. Le contrat CCMI fige le prix et les délais : pas d'avenant surprise, pas de « supplément indispensable » découvert en cours de route." },
@@ -479,8 +568,8 @@ export const ESSENSYA_DATA: EssensyaData = {
 
   landings: {
     "maison-prix-lancement": {
-      title: `${P.houseName} à prix de lancement`,
-      subtitle: `Pour l'ouverture de nos agences, la maison ${P.houseName} — 93 m², 3 chambres, garage compris — est proposée à un prix de lancement sur une sélection de terrains.`,
+      title: `Nos maisons à prix de lancement`,
+      subtitle: `Pour l'ouverture de nos agences, une sélection de nos modèles est proposée à un prix de lancement sur une sélection de terrains.`,
       image: IMG.facadeLg,
       price: P.priceFrom3ch - 5_000,
       priceNote: `au lieu de ${new Intl.NumberFormat("fr-FR").format(P.priceFrom3ch)} € — maison seule, hors terrain`,
@@ -514,5 +603,23 @@ export const agencyById = (id: string) =>
 export const otherVersion = (slug: string) =>
   VERSIONS.find((v) => v.slug !== slug) ?? null;
 
-/** Prix d'appel du site : le plus bas des déclinaisons. */
-export const PRICE_FROM = Math.min(...VERSIONS.map((v) => v.priceFrom));
+/**
+ * Prix d'appel du site.
+ *
+ * ⚠ IL VENAIT DES DÉCLINAISONS FICTIVES, ET C'ÉTAIT LE DÉFAUT LE PLUS
+ * COÛTEUX DU DÉPÔT. `Math.min(...VERSIONS)` rendait 94 900 € — le prix
+ * d'une maison inventée pour la maquette — alors que la page d'accueil
+ * et la page agences annoncent le prix réel donné par le client,
+ * 78 000 €. Le site affichait donc DEUX prix d'appel différents, à un
+ * clic l'un de l'autre, sur une trentaine de pages : fiches d'agence,
+ * fiches d'annonce, /maisons, /concept, /contact, les pages de zone, la
+ * page 404, et jusque dans les métadonnées servies à Google.
+ *
+ * Sur un site de constructeur dont l'argument central EST le prix, deux
+ * prix contradictoires ne sont pas une coquille : c'est l'argument qui
+ * s'effondre, et un engagement commercial qui devient inopposable.
+ *
+ * La correction tient en une ligne parce que le défaut tenait en une
+ * ligne. Corriger les trente appels aurait garanti d'en oublier un.
+ */
+export const PRICE_FROM = REEL.prixEntree;

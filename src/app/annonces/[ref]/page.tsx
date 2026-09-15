@@ -6,7 +6,7 @@ import { AnnonceAside, AnnonceStickyForm } from "@/components/AnnonceCard";
 import { MarkedList, SpecList } from "@/components/SpecList";
 import { AnnonceMedia } from "@/components/Substitut";
 import { Picto } from "@/components/icons";
-import { AGENCIES, HOUSE, PRICE_FROM, versionBySlug } from "@/data/essensya";
+import { AGENCIES, HOUSE, PRICE_FROM, REEL, versionBySlug } from "@/data/essensya";
 import {
   agencyUrl,
   annonceTitle,
@@ -15,7 +15,6 @@ import {
   fmtSurface,
   houseUrl,
   housePart,
-  versionUrl,
 } from "@/lib/format";
 import { annonceSchema, filAriane, jsonLd } from "@/lib/schema";
 import { getAnnonceByRef, getAnnonceOverride, getAnnonces } from "@/lib/vitahome/annonces";
@@ -229,7 +228,7 @@ export default async function AnnoncePage({
             ) : null}
             <p>
               {a.description ||
-                `${title}. Votre agence vous communique le détail de la parcelle et l'étude d'implantation de la maison ${HOUSE.name}.`}
+                `${title}. Votre agence vous communique le détail de la parcelle et l'étude d'implantation de votre maison.`}
             </p>
 
             <h3 className="a-sub">Le terrain</h3>
@@ -267,32 +266,28 @@ export default async function AnnoncePage({
             {isTM ? (
               <Link
                 className={`a-house${plan ? "" : " a-house--noplan"}`}
-                href={version ? versionUrl(version) : houseUrl()}
+                href={houseUrl()}
               >
                 {plan ? (
                   <div className="a-house__media">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={plan}
-                      alt={`Plan du rez-de-chaussée de la maison ${HOUSE.name} sur ce terrain`}
+                      alt="Plan du rez-de-chaussée de la maison sur ce terrain"
                       loading="lazy"
                     />
                   </div>
                 ) : null}
                 <div className="a-house__body">
                   <span className="c-label c-label--accent">La maison sur ce terrain</span>
-                  <div className="a-house__name">
-                    {HOUSE.name} — {houseLabel}
-                  </div>
+                  <div className="a-house__name">{houseLabel}</div>
                   {houseMeta ? <div className="a-house__meta">{houseMeta}</div> : null}
                   <p className="a-house__text">
                     {version
                       ? version.difference
-                      : "Le séjour, la cuisine, les prestations et les garanties sont les mêmes dans les deux déclinaisons : seul le nombre de chambres change."}
+                      : "Votre agence vous confirme le modèle retenu sur cette parcelle et le détail de ce que le prix comprend."}
                   </p>
-                  <span className="c-link">
-                    {version ? `Voir le plan ${version.label}` : `Voir la maison ${HOUSE.name}`} →
-                  </span>
+                  <span className="c-link">Voir nos modèles →</span>
                 </div>
               </Link>
             ) : (
@@ -301,14 +296,12 @@ export default async function AnnoncePage({
                   Quelle maison sur ce terrain&nbsp;?
                 </span>
                 <p className="u-measure">
-                  La maison {HOUSE.name}, en 2 ou 3 chambres. C&apos;est la même maison
-                  dans les deux cas — même séjour, même cuisine, mêmes prestations : seul
-                  le nombre de chambres change. À partir de {fmtPrice(PRICE_FROM)}, hors
-                  terrain. Votre agence vérifie gratuitement son implantation sur cette
-                  parcelle.
+                  Nos modèles sont optimisés jusqu&apos;au dernier mètre carré, à
+                  partir de {fmtPrice(PRICE_FROM)} — {REEL.mentionPrix} Votre agence
+                  vérifie gratuitement lesquels s&apos;implantent sur cette parcelle.
                 </p>
                 <Link href={houseUrl()} className="c-link">
-                  Voir la maison {HOUSE.name} →
+                  Voir nos modèles →
                 </Link>
               </div>
             )}

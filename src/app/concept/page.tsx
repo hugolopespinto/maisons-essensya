@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MarkedList } from "@/components/SpecList";
-import {
-  DEFAULT_VERSION,
-  ESSENSYA_DATA,
-  HOUSE,
-  PRICE_FROM,
-  VERSIONS,
-} from "@/data/essensya";
+import { ESSENSYA_DATA, HOUSE, PRICE_FROM, REEL } from "@/data/essensya";
+import { MODELES } from "@/data/gamme";
 import { fmtPrice } from "@/lib/format";
 import { getContent } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
@@ -24,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const METADATA_DEFAUT: Metadata = {
-  title: "Notre concept — une maison, deux déclinaisons",
+  title: "Notre concept — construire à l'essentiel",
   description:
     "Pourquoi nous ne construisons qu'une maison, pourquoi elle coûte moins cher, et ce que le prix comprend exactement. Questions fréquentes comprises.",
   alternates: { canonical: "/concept" },
@@ -32,8 +27,6 @@ const METADATA_DEFAUT: Metadata = {
 
 const c = ESSENSYA_DATA.concept;
 
-/** La déclinaison d'entrée de gamme — celle qui porte le prix d'appel. */
-const ENTRY = VERSIONS.reduce((a, b) => (b.priceFrom < a.priceFrom ? b : a));
 
 /* ════ FAQ ════
    Page de réassurance : c'est ici qu'on répond aux objections avant
@@ -43,20 +36,20 @@ const ENTRY = VERSIONS.reduce((a, b) => (b.priceFrom < a.priceFrom ? b : a));
    ne jamais diverger de la fiche maison. */
 const FAQ: { q: string; a: string }[] = [
   {
-    q: "Pourquoi ne construisez-vous qu'une seule maison ?",
-    a: `Parce qu'une maison dessinée une fois, jusqu'au bout, revient moins cher qu'un catalogue de trente plans étudiés à moitié. L'étude est faite, chiffrée et amortie sur toutes les maisons construites : ce que nous ne dépensons pas en variantes, nous le rendons sur le prix. Il reste deux déclinaisons, ${VERSIONS.map((v) => v.label).join(" ou ")}, qui ne changent que le nombre de chambres — le séjour, la cuisine, les prestations et les garanties sont identiques.`,
+    q: "Pourquoi vos maisons coûtent-elles moins cher ?",
+    a: `Parce qu'un plan dessiné jusqu'au bout revient moins cher qu'un catalogue de trente plans étudiés à moitié. Nos ${MODELES.length} modèles sont optimisés poste par poste, matériau par matériau : pas de dégagement inutile, pas de recoin qui ne sert à rien. L'étude de chacun est faite, chiffrée et amortie sur toutes les maisons construites — ce que nous ne dépensons pas en complexité, nous le rendons sur le prix.`,
   },
   {
     q: "« Moins cher », est-ce que ça veut dire moins bien construit ?",
-    a: "Non, et c'est vérifiable poste par poste. Brique rectifiée, conformité RE2020, pompe à chaleur air/eau, menuiseries aluminium, garantie décennale et assurance dommages-ouvrage : ce sont les mêmes matériaux et les mêmes garanties que chez un constructeur bien plus cher. Ce qui baisse, c'est le coût de la complexité — l'étude refaite à chaque client, les options à arbitrer, les avenants en cours de chantier. Pas le coût du mur.",
+    a: "Non, et c'est vérifiable poste par poste. Conformité RE 2020, système de chauffage performant, salle de bain équipée, garantie décennale et assurance dommages-ouvrage : ce sont les mêmes exigences et les mêmes garanties que chez un constructeur bien plus cher. Ce qui baisse, c'est le coût de la complexité — l'étude refaite à chaque client, les options à arbitrer, les avenants en cours de chantier. Pas le coût du mur.",
   },
   {
-    q: "Puis-je modifier le plan ?",
-    a: "Non. C'est la contrepartie du prix, et nous préférons le dire avant qu'après. Chaque modification rouvre une étude, un chiffrage, un permis et une négociation avec les entreprises : c'est précisément ce qui fait grimper la facture ailleurs. Vous choisissez le nombre de chambres, l'implantation sur le terrain et les teintes. Si votre projet demande un plan sur mesure, un architecte le fera mieux que nous — et plus cher.",
+    q: "Puis-je personnaliser ma maison ?",
+    a: "Oui, sur une base tenue. Les grands arbitrages — volumes, organisation du plan, équipements — sont déjà faits : c'est ce qui permet d'annoncer le prix avant le premier rendez-vous. La personnalisation porte sur ce qui ne rouvre ni l'étude ni le permis. Un plan entièrement sur mesure relève d'un architecte, qui le fera mieux que nous — et plus cher.",
   },
   {
     q: "Que comprend exactement le prix annoncé ?",
-    a: `${fmtPrice(PRICE_FROM)} est le prix de la maison seule, hors terrain, en ${ENTRY.label} ; comptez ${fmtPrice(DEFAULT_VERSION.priceFrom)} en ${DEFAULT_VERSION.label}. Sont compris : ${HOUSE.included.join(" · ")}. Ne sont pas compris : ${HOUSE.excluded.join(" · ")}. Cette seconde liste est affichée partout où le prix l'est : un prix bas dont on tait les exclusions n'est pas un prix bas.`,
+    a: `${fmtPrice(PRICE_FROM)}, c'est le prix d'entrée de gamme : ${REEL.mentionPrix} Sont compris : ${HOUSE.included.join(" · ")}. Ne sont pas compris : ${HOUSE.excluded.join(" · ")}. Cette seconde liste est affichée partout où le prix l'est : un prix bas dont on tait les exclusions n'est pas un prix bas.`,
   },
   {
     q: "Que couvre le contrat CCMI ?",
@@ -64,7 +57,7 @@ const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Et si mon terrain est en pente ou de forme irrégulière ?",
-    a: "L'étude de sol et l'adaptation au terrain sont comprises dans le prix. Une pente marquée, un sol argileux ou un accès difficile demandent des fondations spécifiques : ce surcoût existe chez tous les constructeurs, et nous le chiffrons avant la signature, pas après. Nos agences repèrent les parcelles réellement compatibles avec une maison de plain-pied — et quand un terrain ne convient pas, nous vous le disons.",
+    a: "L'étude de sol et l'adaptation au terrain ne sont PAS comprises dans le prix affiché, et c'est écrit à côté de ce prix. Une pente marquée, un sol argileux ou un accès difficile demandent des fondations spécifiques : ce surcoût existe chez tous les constructeurs, et nous le chiffrons avant la signature, pas après. Nos agences repèrent les parcelles réellement compatibles avec nos modèles — et quand un terrain ne convient pas, nous vous le disons.",
   },
   {
     q: "Combien de temps entre le premier rendez-vous et les clés ?",
@@ -129,16 +122,13 @@ export default async function ConceptPage() {
           <p style={PRE_LINE}>
             {t(
               "hero.chapo",
-              "Une maison, deux déclinaisons, aucune option. Pourquoi nous n'en construisons qu'une — et pourquoi c'est votre budget qui y gagne.",
+              "Des plans optimisés jusqu'au dernier mètre carré, et les bons choix déjà faits. Pourquoi nos maisons coûtent moins cher — et pourquoi c'est votre budget qui y gagne.",
             )}
           </p>
           <div className="c-price-xl" style={{ marginTop: "var(--s-4)" }}>
-            <span className="from">La maison, à partir de</span>
+            <span className="from">Nos maisons, à partir de</span>
             {fmtPrice(PRICE_FROM)}
-            <small>
-              Maison seule, hors terrain · {DEFAULT_VERSION.label} à{" "}
-              {fmtPrice(DEFAULT_VERSION.priceFrom)}
-            </small>
+            <small>{REEL.mentionPrix}</small>
           </div>
         </div>
       </section>

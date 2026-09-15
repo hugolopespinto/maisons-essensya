@@ -123,10 +123,9 @@ function colonnesFooter(colonnes: ColonneFooter[]): ColonneChrome[] | undefined 
    être. Le pluriel « des maisons » a disparu — il promettait un catalogue
    que le site n'a pas. */
 const DESCRIPTION_DEFAUT =
-  `Une seule maison de plain-pied, deux déclinaisons : 2 ou 3 chambres. ` +
-  `À partir de ${fmtPrice(PRICE_FROM)} hors terrain, cuisine aménagée, ` +
-  `terrasse couverte et garage compris. Prix annoncé au premier rendez-vous, ` +
-  `figé au contrat CCMI.`;
+  `Une gamme de maisons individuelles optimisées jusqu'au dernier mètre carré. ` +
+  `À partir de ${fmtPrice(PRICE_FROM)} hors terrain, hors adaptation. ` +
+  `Prix annoncé avant le premier rendez-vous, figé au contrat CCMI.`;
 
 /* Le back-office peut surcharger le title, la description, l'image de
    partage et le canonical de la racine — sans jamais pouvoir les vider :
@@ -159,7 +158,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const defaut: Metadata = {
     metadataBase: new URL(SITE_URL),
     title: {
-      default: `${nomSite} — une maison, à partir de ${fmtPrice(PRICE_FROM)}`,
+      default: `${nomSite} — constructeur au prix juste dans les Landes`,
       template: `%s — ${nomSite}`,
     },
     description: DESCRIPTION_DEFAUT,

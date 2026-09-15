@@ -124,10 +124,9 @@ export default async function CommunePage({
           </nav>
           <h1>{titre}</h1>
           <p>
-            Nos parcelles disponibles à {c.nom}, seules ou livrées avec la maison.
-            Elle est la même partout, et son prix aussi : à partir de{" "}
-            {fmtPrice(PRICE_FROM)} hors terrain, cuisine, terrasse couverte et
-            garage compris.
+            Nos parcelles disponibles à {c.nom}, seules ou livrées avec la maison
+            de votre choix. Nos modèles sont les mêmes partout, et leur prix aussi :
+            à partir de {fmtPrice(PRICE_FROM)} hors terrain.
           </p>
           <ZoneChiffres c={n} />
         </div>

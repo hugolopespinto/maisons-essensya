@@ -64,7 +64,7 @@ export const PAGES_DEFAUT: PageEditable[] = [
       {
         cle: "recherche.titre",
         label: "Titre de la section recherche",
-        valeur: "Trouvez le terrain, la maison est déjà dessinée.",
+        valeur: "Trouvez le terrain, les maisons sont déjà dessinées.",
       },
       {
         cle: "hero.baseline",
@@ -160,7 +160,7 @@ export const PAGES_DEFAUT: PageEditable[] = [
         cle: "terrains.texte",
         label: "Paragraphe de la section terrains",
         valeur:
-          "Nos agences repèrent les parcelles compatibles avec la maison, souvent avant leur mise sur le marché. La maison est décidée : il ne reste qu'à choisir où la poser.",
+          "Nos agences repèrent les parcelles compatibles avec nos modèles, souvent avant leur mise sur le marché. La maison est choisie : il ne reste qu'à trouver où la poser.",
         multiligne: true,
       },
       {
@@ -285,7 +285,7 @@ export const PAGES_DEFAUT: PageEditable[] = [
   },
   {
     cle: "maison",
-    label: "La maison",
+    label: "Nos modèles",
     blocs: [
       {
         cle: "hero.surtitre",
@@ -309,20 +309,22 @@ export const PAGES_DEFAUT: PageEditable[] = [
         valeur: "Un volume simple, dessiné jusqu'au bout",
       },
       {
-        cle: "plan.surtitre",
-        label: "Petit titre de la section plans",
-        valeur: "Le plan",
+        cle: "gamme.surtitre",
+        label: "Petit titre de la section gamme",
+        valeur: "La gamme",
       },
       {
-        cle: "plan.titre",
-        label: "Titre de la section plans",
-        valeur: "Un plan, deux déclinaisons",
+        cle: "gamme.titre",
+        label: "Titre de la section gamme",
+        aide: "Le nombre de modèles est repris automatiquement si vous laissez ce champ vide.",
+        valeur: "",
+        multiligne: true,
       },
       {
-        cle: "plan.texte",
-        label: "Paragraphe de la section plans",
+        cle: "gamme.texte",
+        label: "Paragraphe de la section gamme",
         valeur:
-          "Le séjour traversant, la cuisine ouverte, la salle de bain, la terrasse couverte et le garage sont identiques des deux côtés. Seul le nombre de chambres change — et les mètres carrés qui vont avec.",
+          "Chaque plan a été optimisé poste par poste, matériau par matériau : pas de dégagement inutile, pas de recoin qui ne sert à rien. Le modèle change, la méthode ne change pas.",
         multiligne: true,
       },
       {
@@ -346,21 +348,10 @@ export const PAGES_DEFAUT: PageEditable[] = [
         valeur: "Ce qu'il comprend, ce qu'il ne comprend pas",
       },
       {
-        cle: "declinaisons.surtitre",
-        label: "Petit titre de la section déclinaisons",
-        valeur: "Les deux déclinaisons",
-      },
-      {
-        cle: "declinaisons.titre",
-        label: "Titre de la section déclinaisons",
-        valeur: "Le seul choix qu'on vous demande",
-      },
-      {
-        cle: "declinaisons.texte",
-        label: "Paragraphe de la section déclinaisons",
-        valeur:
-          "Même architecture, même séjour traversant, même cuisine aménagée, mêmes matériaux, mêmes garanties, et le même prix au mètre carré à quelques euros près. Vous ne choisissez que le nombre de chambres — c'est volontairement le seul arbitrage du projet.",
-        multiligne: true,
+        cle: "comparatif.surtitre",
+        label: "Petit titre du comparatif",
+        aide: "Le comparatif « Pourquoi c'est moins cher » a quitté l'accueil, jugée trop longue, pour cette page où le visiteur veut comprendre le prix.",
+        valeur: "Le prix",
       },
       {
         cle: "dossier.surtitre",

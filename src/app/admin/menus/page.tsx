@@ -3,9 +3,10 @@ import type { Metadata } from "next";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { AGENCIES, ESSENSYA_DATA, VERSIONS } from "@/data/essensya";
+import { AGENCIES, ESSENSYA_DATA } from "@/data/essensya";
+import { MODELES } from "@/data/gamme";
 import { articlesPublies } from "@/lib/blog";
-import { agencyUrl, deptUrl, houseUrl, landingUrl, versionUrl } from "@/lib/format";
+import { agencyUrl, deptUrl, houseUrl, landingUrl } from "@/lib/format";
 import { departementsPubliables } from "@/lib/geo";
 import { getContent, isWritable, patchContent } from "@/lib/store";
 import type { ColonneFooter, LienMenu, Menus } from "@/lib/store/types";
@@ -163,7 +164,7 @@ const FOOTER_ACTUEL: ColonneFooter[] = [
     "La maison",
     [
       ["La maison", houseUrl()],
-      ...VERSIONS.map((v): [string, string] => [`Version ${v.label}`, versionUrl(v)]),
+      ...MODELES.slice(0, 3).map((m): [string, string] => [m.nom, `/maisons/${m.slug}`]),
       ["Ce qui est compris", `${houseUrl()}#prix`],
     ],
     0,
@@ -338,7 +339,7 @@ export default async function MenusPage({
 
   const suggestions: Suggestion[] = [
     ...PAGES_FIXES,
-    ...VERSIONS.map((v) => ({ href: versionUrl(v), label: `La maison — ${v.label}` })),
+    ...MODELES.map((m) => ({ href: `/maisons/${m.slug}`, label: `Modèle — ${m.nom}` })),
     ...agences.map((a) => ({ href: agencyUrl(a), label: `Agence ${a.nom}` })),
     ...enLigne.map((a) => ({ href: `/blog/${a.slug}`, label: `Article — ${a.titre}` })),
     /* Sans elles, le vérificateur signalerait comme lien mort une page de

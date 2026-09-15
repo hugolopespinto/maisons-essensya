@@ -20,8 +20,19 @@
 
 /* Le voile n'est pas décoratif : sans lui, un titre clair posé sur un
    ciel clair tombe sous 2:1. Il est plus dense en bas, là où le texte
-   se trouve, et presque nul en haut pour ne pas ternir la maison. */
-.hero-fixe__voile{position:absolute;inset:0;background:linear-gradient(to top,rgba(19,18,16,.82) 0%,rgba(19,18,16,.55) 34%,rgba(19,18,16,.12) 68%,rgba(19,18,16,0) 100%)}
+   se trouve, et léger au milieu pour ne pas ternir la maison.
+
+   ⚠ IL DESCEND AUSSI DEPUIS LE HAUT, et ce n'était pas le cas.
+   L'en-tête est transparent au-dessus de ce visuel : son logo et ses
+   liens sont blancs. Mesuré sur la bande des 76 premiers pixels du
+   rendu Lisbonne — un ciel à rgb(151, 186, 222) — le blanc n'y tenait
+   que 2,03:1, sous le minimum de 3:1 exigé d'un élément graphique. Le
+   logo existait mais ne se voyait pas.
+
+   35 % au ras du bord fait remonter le blanc à 4,12:1, et le voile
+   s'efface avant le tiers de la hauteur : la toiture n'est pas
+   assombrie, seule la barre l'est. */
+.hero-fixe__voile{position:absolute;inset:0;background:linear-gradient(to top,rgba(19,18,16,.82) 0%,rgba(19,18,16,.55) 34%,rgba(19,18,16,.10) 62%,rgba(19,18,16,.10) 80%,rgba(19,18,16,.35) 100%)}
 
 .hero-fixe__texte{position:relative;padding-block:var(--s-5) var(--s-6);color:var(--craie)}
 .hero-fixe__texte .c-label{color:var(--sable)}
