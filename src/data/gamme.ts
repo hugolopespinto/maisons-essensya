@@ -20,11 +20,17 @@ import { modeles as modelesVisuels, facade, modele as modeleVisuels, type Visuel
    maison seule, hors terrain, hors adaptation (voir `REEL` dans
    ./essensya.ts).
 
-   ⚠ PÉKIN N'A AUCUN VISUEL. C'est le modèle qui porte le prix d'appel,
-   et c'est le seul qu'on ne puisse pas montrer. Il figure quand même
-   ici — le prix de la page d'accueil le nomme, il doit donc exister
-   quelque part — mais `facadeDe()` rend `null` pour lui, ce qui le
-   tient hors des grilles tant que les images ne sont pas arrivées.
+   Pékin a reçu ses visuels le 17/09 : quatre vues extérieures, dont une
+   retouchée à l'IA. Le modèle qui portait le prix d'appel sans avoir
+   une seule image entre donc dans les grilles, et `/maisons/pekin`
+   cesse de rendre 404.
+
+   ⚠ IL RESTE HORS DE L'INDEX pour autant. `estPubliable()` exige une
+   image ET un chiffre ; Pékin a les images, mais son `prixDepart` est
+   vide. Les 78 000 € vivent dans `REEL` — le discours de l'accueil —
+   pas dans la fiche du modèle. Les y recopier publierait la page :
+   c'est un arbitrage éditorial, pas un détail technique, car elle
+   n'aurait toujours ni surface, ni nombre de chambres, ni plan.
 
    ── LE SEUIL DE PUBLICATION ──
    Même discipline que les pages de zone (src/lib/geo.ts) : on ne
@@ -60,7 +66,7 @@ export interface Modele {
 }
 
 /* ════ LE CATALOGUE ════
-   Les dix modèles livrés avec leurs rendus, plus Pékin.
+   Les onze modèles livrés avec leurs rendus.
 
    L'ordre est alphabétique et volontairement neutre : nous n'avons
    aucune donnée pour décider lequel mettre en avant. Le jour où les
@@ -81,7 +87,8 @@ const CATALOGUE: Modele[] = [
   { slug: "lima", nom: "Lima" },
   { slug: "lisbonne", nom: "Lisbonne" },
   { slug: "londres", nom: "Londres" },
-  /* Pékin : le modèle du prix d'appel, sans aucun visuel livré. */
+  /* Pékin : le modèle du prix d'appel. Quatre vues extérieures, aucune
+     intérieure — le seul du catalogue dans ce cas. */
   { slug: "pekin", nom: "Pékin" },
 ];
 
@@ -94,8 +101,10 @@ export const modeleParSlug = (slug: string): Modele | null =>
 /**
  * La façade d'un modèle, ou `null` s'il n'a pas de visuel.
  *
- * `null` est une réponse valide et attendue — Pékin est dans ce cas.
- * Les appelants doivent l'écarter, pas afficher un cadre vide.
+ * `null` reste une réponse valide : les appelants doivent l'écarter,
+ * pas afficher un cadre vide. Depuis les visuels de Pékin, plus aucun
+ * modèle du catalogue n'est dans ce cas — le prochain ajouté le sera,
+ * et la garde doit rester.
  */
 export const facadeDe = (m: Modele): Visuel | null => facade(m.slug);
 

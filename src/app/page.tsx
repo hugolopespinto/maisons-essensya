@@ -44,7 +44,11 @@ const PRE_LINE = { whiteSpace: "pre-line" } as const;
    façades. `vue()` lève si une clé n'existe pas : une image manquante
    casse le build plutôt que la page. */
 const PHOTOS_JUSTE = [
-  { visuel: vue("athenes", "vue-1-avant"), alt: "Maison Essensya modèle Athènes, façade" },
+  /* Pékin EN PREMIER, et ce n'est pas un choix esthétique : le prix
+     affiché juste au-dessus annonce « modèle Pékin ». Tant qu'il n'avait
+     pas de visuel, la rangée montrait trois AUTRES modèles sous ce
+     prix — un visiteur pouvait croire que 78 000 € les concernait. */
+  { visuel: vue("pekin", "vue-1-exterieur"), alt: "Maison Essensya modèle Pékin, le modèle à 78 000 €" },
   { visuel: vue("berlin", "vue-3-interieur"), alt: "Séjour d'une maison Essensya modèle Berlin" },
   { visuel: vue("dublin", "vue-2-exterieur"), alt: "Maison Essensya modèle Dublin, côté jardin" },
 ];
@@ -144,7 +148,9 @@ export default async function HomePage() {
                   crédible — et « hors adaptation » est justement le poste
                   qui surprend en fin de parcours. */}
               <p className="c-price-xl" style={{ marginTop: "var(--s-4)" }}>
-                <span className="from">Nos maisons, à partir de</span>
+                <span className="from">
+                  {t("juste.avantPrix", "La maison, à partir de")}
+                </span>
                 {fmtPrice(REEL.prixEntree)}
                 <small>{t("juste.mention", REEL.mentionPrix)}</small>
               </p>

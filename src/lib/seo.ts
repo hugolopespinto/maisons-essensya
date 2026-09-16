@@ -79,8 +79,10 @@ export const SEO_ROUTES: SeoRoute[] = [
      dur gagnait — l'entrée générée, avec son aide, n'était jamais lue, et
      deux champs du formulaire visaient le même chemin.
 
-     Seuls les modèles qui ont un visuel sont proposés : Pékin n'a pas de
-     page, lui offrir un champ de titre serait promettre l'inexistant. */
+     Seuls les modèles qui ont un visuel sont proposés : sans façade, la
+     page rend 404, et lui offrir un champ de titre serait promettre
+     l'inexistant. La liste en compte onze depuis que Pékin a ses
+     rendus — elle suit le catalogue, personne n'a à la tenir. */
   ...modelesAvecVisuels().map((m) => ({
     path: `/maisons/${m.slug}`,
     label: `Modèle — ${m.nom}`,

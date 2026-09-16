@@ -17,8 +17,8 @@ import { fmtPrice, fmtSurface } from "@/lib/format";
    elle apparaîtra sans qu'on touche à ce fichier.
 
    La carte n'est rendue que pour un modèle qui a une façade — c'est le
-   rôle de `modelesAvecVisuels()` chez l'appelant. Pékin en est exclu
-   d'office, faute de visuel.
+   rôle de `modelesAvecVisuels()` chez l'appelant. Pékin en était exclu
+   faute de visuel ; ses rendus sont arrivés, la grille en compte onze.
    ════════════════════════════════════════════════════════════════ */
 
 export default function ModeleCard({ modele: m }: { modele: Modele }) {

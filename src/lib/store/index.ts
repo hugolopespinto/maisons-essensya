@@ -75,11 +75,23 @@ export const PAGES_DEFAUT: PageEditable[] = [
         valeur: "La maison juste, le prix juste",
       },
       {
+        cle: "juste.avantPrix",
+        label: "Ligne au-dessus du prix",
+        aide: "Le prix lui-même se met à jour tout seul : n'écrivez ici que la phrase qui le précède.",
+        valeur: "La maison, à partir de",
+      },
+      {
         cle: "juste.mention",
         label: "Mention sous le prix",
-        aide: "Ce que le prix ne comprend pas. À tenir à jour avec le tarif : une mention fausse sous un prix engage le constructeur.",
-        valeur:
-          "Maison seule, modèle Pékin, hors terrain, hors adaptation, la maison uniquement.",
+        aide: "Ce que le prix ne comprend pas. Laissé vide, le site affiche la mention rattachée au modèle d'appel, qui suit le tarif. Dès que vous écrivez ici, c'est VOTRE phrase qui s'affiche — et elle cesse de suivre les changements de prix ou de modèle.",
+        /* ⚠ VIDE À DESSEIN, comme l'exige l'avertissement en tête de ce
+           fichier. Le gabarit affiche `REEL.mentionPrix`, qui vit à côté
+           du prix et du modèle d'appel dans `essensya.ts`. Recopier la
+           phrase ici la figerait : changer de modèle d'entrée de gamme
+           laisserait « modèle Pékin » sous un prix qui n'est plus le
+           sien. Sous un prix de constructeur, une mention fausse n'est
+           pas une coquille — elle engage. */
+        valeur: "",
         multiligne: true,
       },
       {

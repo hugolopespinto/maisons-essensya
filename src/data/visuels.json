@@ -2283,5 +2283,150 @@
         "type": "interieur"
       }
     ]
+  },
+  "pekin": {
+    "nom": "Pékin",
+    "vues": [
+      {
+        "cle": "vue-1-exterieur",
+        "src": "/maisons/pekin/vue-1-exterieur.webp",
+        "largeur": 1920,
+        "hauteur": 1080,
+        "empreinte": "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAADwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JZACdH8ADEkQ5T0mT+eJAAPHlPAuoFOiwdb7HUa+efJr50n8COF59yLE+dpxiahG3peNZ1BpFNMy/5poZpeH4VMQZoHP+C78pSp0aWLae60g0uljmfT+7kzx9RcvA6AAAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/pekin/vue-1-exterieur-480.avif",
+            "webp": "/maisons/pekin/vue-1-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/pekin/vue-1-exterieur-720.avif",
+            "webp": "/maisons/pekin/vue-1-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/pekin/vue-1-exterieur-1024.avif",
+            "webp": "/maisons/pekin/vue-1-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/pekin/vue-1-exterieur-1440.avif",
+            "webp": "/maisons/pekin/vue-1-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/pekin/vue-1-exterieur.avif",
+            "webp": "/maisons/pekin/vue-1-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-2-exterieur",
+        "src": "/maisons/pekin/vue-2-exterieur.webp",
+        "largeur": 1920,
+        "hauteur": 1080,
+        "empreinte": "data:image/webp;base64,UklGRpoAAABXRUJQVlA4II4AAACwBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JQBOkEUk/xbE7m9RKmg00p+06gkHAAP4xfR3mdLtX3VrAPtWQjzjkltPWzcWiQPR27fMyCD6iiAh910wvr+NaoxL0CK3RIeO7Tupnsu8aQNinEWrx0lv+WMwFithC99KLWcrzPJ1oFqF+3pc4aKlkqtMjmuAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/pekin/vue-2-exterieur-480.avif",
+            "webp": "/maisons/pekin/vue-2-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/pekin/vue-2-exterieur-720.avif",
+            "webp": "/maisons/pekin/vue-2-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/pekin/vue-2-exterieur-1024.avif",
+            "webp": "/maisons/pekin/vue-2-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/pekin/vue-2-exterieur-1440.avif",
+            "webp": "/maisons/pekin/vue-2-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/pekin/vue-2-exterieur.avif",
+            "webp": "/maisons/pekin/vue-2-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-3-exterieur",
+        "src": "/maisons/pekin/vue-3-exterieur.webp",
+        "largeur": 1920,
+        "hauteur": 1080,
+        "empreinte": "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAACwBACdASoUAAsAPu1iqU2ppaQiMAgBMB2JYgCdIIIJ/3YABiip/B2qeucbGYAAAN5iGF1dtb1SirKGlLZQLjJ5LsK6aync3nV9STDirvcd4K3fweOFtnE6JbSbzB48GynKnj0TcmS7cZAo3yb+HKRimTknZRyb4/mAnfXGthqs1ntzGAAAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/pekin/vue-3-exterieur-480.avif",
+            "webp": "/maisons/pekin/vue-3-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/pekin/vue-3-exterieur-720.avif",
+            "webp": "/maisons/pekin/vue-3-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/pekin/vue-3-exterieur-1024.avif",
+            "webp": "/maisons/pekin/vue-3-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/pekin/vue-3-exterieur-1440.avif",
+            "webp": "/maisons/pekin/vue-3-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/pekin/vue-3-exterieur.avif",
+            "webp": "/maisons/pekin/vue-3-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-4-terrasse",
+        "src": "/maisons/pekin/vue-4-terrasse.webp",
+        "largeur": 1920,
+        "hauteur": 1080,
+        "empreinte": "data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAACwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JZQC/OBcSAySlwEdj4AD9eNl85fM63nl0CY1uevuq1iYPsnGqCEGh22YoPrjnxbruc5OpvU6Yr9DTNSQa91gsfFzPZiH3bOR98P8ngYo8sl9SNvjeyUapwZLMTayf8W8wtHAqFAAAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/pekin/vue-4-terrasse-480.avif",
+            "webp": "/maisons/pekin/vue-4-terrasse-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/pekin/vue-4-terrasse-720.avif",
+            "webp": "/maisons/pekin/vue-4-terrasse-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/pekin/vue-4-terrasse-1024.avif",
+            "webp": "/maisons/pekin/vue-4-terrasse-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/pekin/vue-4-terrasse-1440.avif",
+            "webp": "/maisons/pekin/vue-4-terrasse-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/pekin/vue-4-terrasse.avif",
+            "webp": "/maisons/pekin/vue-4-terrasse.webp"
+          }
+        ],
+        "type": "exterieur"
+      }
+    ]
   }
 }

@@ -17,10 +17,10 @@ import { MODELES } from "./gamme";
    consigne, et elle structure encore /maisons, ses deux pages de
    déclinaison, le comparatif et les données structurées.
 
-   La livraison du client dit autre chose : DIX modèles avec leurs
+   La livraison du client dit autre chose : ONZE modèles avec leurs
    rendus (Ankara, Athènes, Berlin, Dakar, Dublin, Hanoi, Jakarta, Lima,
-   Lisbonne, Londres), plus un onzième — Pékin — qui porte le prix
-   d'appel de 78 000 € sans avoir de visuel. Les textes fournis parlent
+   Lisbonne, Londres et Pékin, ce dernier arrivé le 17/09), dont Pékin
+   qui porte le prix d'appel de 78 000 €. Les textes fournis parlent
    de « gamme », de « modèles », de « chaque plan de chaque modèle ».
 
    La page d'accueil a été refaite sur cette réalité. Le reste du site
@@ -79,8 +79,10 @@ export const PLACEHOLDER = {
    surprend un acquéreur en fin de parcours. La mention se déplace donc
    avec le prix, partout.
 
-   ⚠ Pékin n'a AUCUN visuel dans la livraison : le modèle qui porte le
-   prix d'appel est le seul qu'on ne puisse pas montrer. À réclamer.
+   Pékin a reçu ses visuels le 17/09 : quatre vues extérieures, aucune
+   intérieure. Le modèle qui porte le prix d'appel se montre enfin.
+   Restent à réclamer ses caractéristiques — surface, chambres, plan —
+   sans lesquelles sa fiche reste hors de l'index.
 
    ⚠ « dans les Landes » vient de la consigne de titre. Le flux Vitahome
    branché aujourd'hui sert la Charente-Maritime, la Vendée et

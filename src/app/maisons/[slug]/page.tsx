@@ -86,7 +86,9 @@ export default async function ModelePage({
 }) {
   const { slug } = await params;
   const m = modeleParSlug(slug);
-  /* Un modèle sans visuel n'a rien à montrer — Pékin est dans ce cas. */
+  /* Un modèle sans visuel n'a rien à montrer. Plus aucun n'est dans ce
+     cas depuis les visuels de Pékin, mais la garde reste : le catalogue
+     accueille des modèles avant leurs rendus, c'est sa raison d'être. */
   if (!m || !facadeDe(m)) notFound();
 
   const vues = vuesDe(m);
