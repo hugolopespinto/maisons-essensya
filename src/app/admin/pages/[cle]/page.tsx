@@ -3,7 +3,7 @@ import Link from "next/link";
 import Script from "next/script";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
-import { PAGES_DEFAUT, getContent, isWritable, patchContent } from "@/lib/store";
+import { PAGES_DEFAUT, getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
 import { assertAdmin, requireAdmin } from "../../actions";
 
@@ -107,7 +107,7 @@ export default async function EditionPagePage({
   const definition = PAGES_DEFAUT.find((p) => p.cle === cle);
   if (!definition) notFound();
 
-  const content = await getContent();
+  const content = await getContentFrais();
   const page = content.pages.find((p) => p.cle === cle) ?? definition;
   const inscriptible = await isWritable();
   const route = ROUTES[cle];
@@ -168,7 +168,7 @@ export default async function EditionPagePage({
       })),
     };
 
-    const actuel = await getContent();
+    const actuel = await getContentFrais();
     const suivantes = actuel.pages.some((p) => p.cle === cle)
       ? actuel.pages.map((p) => (p.cle === cle ? majPage : p))
       : [...actuel.pages, majPage];

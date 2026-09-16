@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getContent, isWritable, patchContent } from "@/lib/store";
+import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { TrackingConfig } from "@/lib/store/types";
 import { assertRole, requireRole } from "../actions";
 
@@ -125,7 +125,7 @@ async function enregistrer(data: FormData) {
   }
   if (refus.length) redirect(`/admin/tracking?err=${encodeURIComponent(refus.join(","))}`);
 
-  const content = await getContent();
+  const content = await getContentFrais();
   const coches = new Set(data.getAll("conv").map(String));
   /* Les événements connus du code d'abord ; puis ceux qui traîneraient
      dans le contenu sans exister (plus) dans le site — on ne les supprime
@@ -170,7 +170,7 @@ export default async function TrackingPage({
   await requireRole("admin");
 
   const [content, inscriptible, sp] = await Promise.all([
-    getContent(),
+    getContentFrais(),
     isWritable(),
     searchParams,
   ]);

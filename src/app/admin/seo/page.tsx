@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import MediaPicker from "@/components/admin/MediaPicker";
 import { SEO_LIMITES, SEO_ROUTES } from "@/lib/seo";
-import { getContent, isWritable, patchContent } from "@/lib/store";
+import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { SeoEntry } from "@/lib/store/types";
 import { assertAdmin, requireAdmin } from "../actions";
 
@@ -58,7 +58,7 @@ async function enregistrer(data: FormData) {
     noindex: data.get("noindex") === "on" ? true : undefined,
   };
 
-  const content = await getContent();
+  const content = await getContentFrais();
   const autres = content.seo.filter((e) => e.path !== route.path);
   /* Une entrée entièrement vide est supprimée plutôt que stockée : le
      fichier ne se remplit pas de coquilles, et l'écran réaffiche
@@ -116,7 +116,7 @@ export default async function SeoPage({
   await requireAdmin();
 
   const [content, inscriptible, sp] = await Promise.all([
-    getContent(),
+    getContentFrais(),
     isWritable(),
     searchParams,
   ]);

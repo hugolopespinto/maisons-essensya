@@ -421,7 +421,10 @@ export const EMPTY: Content = {
 /** Le contrat que tout pilote doit remplir. */
 interface Pilote {
   nom: "fichier" | "supabase";
-  read(): Promise<Partial<Content>>;
+  /** `frais` : sans cache. Voir `getContentFrais()` et le second client
+   *  du pilote Supabase — une lecture mise en cache avant une écriture
+   *  peut effacer ce qui a été créé depuis. */
+  read(frais?: boolean): Promise<Partial<Content>>;
   write(data: Content): Promise<void>;
   writable(): Promise<boolean>;
   /** Optionnel : écriture d'un seul domaine, quand le pilote sait le faire. */
@@ -603,6 +606,34 @@ export async function patchContent<K extends keyof Content>(
  *  passer par `patchContent`, la médiathèque doit la voir tout de suite. */
 export function invaliderCache(): void {
   cache = null;
+}
+
+/**
+ * Le contenu, lu SANS aucun cache.
+ *
+ * ⚠ CE QUE CETTE FONCTION PROTÈGE, ET POURQUOI ELLE N'EST PAS UN LUXE.
+ *
+ * Les écrans d'administration suivent tous le même geste : lire la liste
+ * complète, y ajouter ou modifier un élément, puis renvoyer LA LISTE
+ * ENTIÈRE à `patchContent()`. Or les pilotes traitent cette liste comme
+ * la vérité : une ligne présente en base mais absente de la liste reçue
+ * est SUPPRIMÉE (voir `ecrireAgences` et ses sœurs dans ./supabase).
+ *
+ * Conséquence : si la lecture initiale rend une liste périmée — parce
+ * qu'elle sort du cache mémoire de 5 s, ou du Data Cache de Next étiqueté
+ * à 30 minutes — alors tout ce qui a été créé depuis cet instantané
+ * disparaît à l'enregistrement suivant. Sans message, sans erreur, sans
+ * trace autre qu'une ligne du journal des versions qu'il faut savoir
+ * interpréter.
+ *
+ * Une lecture fraîche coûte un aller-retour réseau. Une suppression
+ * silencieuse coûte le travail de quelqu'un. Le choix n'est pas serré.
+ */
+export async function getContentFrais(): Promise<Content> {
+  cache = null;
+  const data = normaliser(await pilote.read(true));
+  cache = { data, at: Date.now() };
+  return data;
 }
 
 /** Vrai si le pilote sait écrire — le back-office l'affiche clairement. */

@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import MediaPicker from "@/components/admin/MediaPicker";
 import { AGENCIES, PLACEHOLDER } from "@/data/essensya";
-import { getContent, isWritable, patchContent } from "@/lib/store";
+import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { Reglages } from "@/lib/store/types";
 import { assertAdmin, requireAdmin } from "../actions";
 
@@ -162,7 +162,7 @@ export default async function ReglagesPage({
   await requireAdmin();
 
   const { ok, refus } = await searchParams;
-  const content = await getContent();
+  const content = await getContentFrais();
   const r = content.reglages;
   const reseaux = r.reseaux ?? {};
   const inscriptible = await isWritable();
@@ -179,7 +179,7 @@ export default async function ReglagesPage({
 
     /* On repart de l'état stocké : un champ écarté conserve sa valeur
        précédente plutôt que d'être effacé au passage. */
-    const actuel = (await getContent()).reglages;
+    const actuel = (await getContentFrais()).reglages;
     const ecartes: string[] = [];
 
     /* `undefined` (champ vidé) est toujours accepté — c'est le retour

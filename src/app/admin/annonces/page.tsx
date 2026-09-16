@@ -4,7 +4,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Fragment } from "react";
 import { annonceTitle, annonceUrl, dept, fmtPrice, fmtSurface } from "@/lib/format";
-import { getContent, isWritable, patchContent } from "@/lib/store";
+import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { AnnonceOverride } from "@/lib/store/types";
 import { findOverride, getAnnoncesFlux, overrideIndex } from "@/lib/vitahome/annonces";
 import type { Annonce } from "@/types";
@@ -80,7 +80,7 @@ async function parcelle(ref: string): Promise<Annonce | null> {
 
 /** Écrit — ou retire — l'écart d'une seule parcelle, sans toucher aux autres. */
 async function ecrire(ref: string, next: AnnonceOverride | null) {
-  const content = await getContent();
+  const content = await getContentFrais();
   const cle = ref.trim().toLowerCase();
   /* `String(...)` plutôt que `o.ref` : un contenu écrit à la main peut
      porter une entrée sans référence, et un écran d'administration ne
@@ -187,7 +187,7 @@ export default async function AdminAnnoncesPage({
 
   const [flux, content, writable, sp] = await Promise.all([
     getAnnoncesFlux(),
-    getContent(),
+    getContentFrais(),
     isWritable(),
     searchParams,
   ]);

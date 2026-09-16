@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { ESSENSYA_DATA, PLACEHOLDER } from "@/data/essensya";
-import { getContent, isWritable, patchContent } from "@/lib/store";
+import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { Textes } from "@/lib/store/types";
 import { assertAdmin, requireAdmin } from "../actions";
 
@@ -73,7 +73,7 @@ export default async function ContenuPage({
   await requireAdmin();
 
   const { ok } = await searchParams;
-  const content = await getContent();
+  const content = await getContentFrais();
   const t = content.textes;
   const inscriptible = await isWritable();
 

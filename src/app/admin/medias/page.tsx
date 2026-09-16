@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getContent, patchContent } from "@/lib/store";
+import { getContentFrais, patchContent } from "@/lib/store";
 import {
   etatMediatheque,
   mediasSansAlt,
@@ -168,7 +168,7 @@ export default async function AdminMediasPage({
 
   const { q, filtre, supprimer, ok, envoi } = await searchParams;
   const etat = etatMediatheque();
-  const contenu = await getContent();
+  const contenu = await getContentFrais();
   const medias = contenu.medias;
 
   const sansAlt = mediasSansAlt(medias);
@@ -206,7 +206,7 @@ export default async function AdminMediasPage({
       .slice(0, 300);
     if (!id) redirect("/admin/medias");
 
-    const actuel = await getContent();
+    const actuel = await getContentFrais();
     const cible = actuel.medias.find((m) => m.id === id);
     /* Média disparu (suppression concurrente, retour arrière) : on ne
        réécrit rien et on ne revalide pas le site pour rien. */

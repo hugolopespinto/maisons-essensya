@@ -495,39 +495,95 @@ export const ESSENSYA_DATA: EssensyaData = {
   /* ⚠ Agences provisoires, calées sur la zone réelle du flux Vitahome
      (Charente-Maritime, Deux-Sèvres). Le flux ne contient qu'une agence
      de démonstration : la liste réelle est à obtenir du client. */
-  /* ⚠ UNE SEULE AGENCE, ET AUCUNE ADRESSE POSTALE. C'est délibéré.
+  /* ⚠ LES CINQ AGENCES RÉELLES, transmises par le client le 17/09/2026.
+     Adresses, téléphones, e-mail et horaires : mot pour mot. Coordonnées :
+     Base Adresse Nationale, correspondance au numéro — pas de position
+     approchée à l'œil.
 
-     Il y en avait deux, à La Rochelle et à Thouars, avec numéros de rue,
-     coordonnées GPS et descriptions rédigées. Le secteur réel est les
-     Landes : tout cela était faux, et pas d'un peu — le site affichait
-     une entreprise implantée à 250 km de là, avec des communes
-     d'intervention inventées.
+     Ce bloc n'est PAS ce que le site affiche : les agences vivent dans le
+     back-office, et cette constante n'est qu'un repli, appliqué seulement
+     si la liste enregistrée est VIDE. Elle sert aussi de source au bouton
+     « reprendre les agences du code », qui n'apparaît que dans ce cas.
 
-     Les relocaliser à Mont-de-Marsan reviendrait à remplacer une fiction
-     par une autre, plus crédible donc plus dangereuse : un visiteur
-     pourrait se déplacer à une adresse qui n'existe pas. On garde donc
-     UNE entrée, sans rue et sans point sur la carte, le temps que le
-     client transmette ses vraies implantations.
+     Elle contenait jusqu'ici une agence de démonstration sans adresse.
+     C'était cohérent tant qu'on n'avait rien de vrai ; ça ne l'est plus,
+     et un repli qui restaure une fiction est un piège pour le jour où
+     quelqu'un vide la liste par erreur.
 
-     `lat`/`lng` restent indéfinis : le JSON-LD omet alors le bloc `geo`
-     plutôt que de planter un repère au hasard (voir src/lib/agences.ts).
-     `cities` reste vide : la liste sert au rattachement des pages de
-     zone, et rattacher à l'aveugle serait pire que ne rien rattacher. */
+     ⚠ `description` est vide, comme dans les fiches saisies par le
+     client : on n'écrit pas sa prose commerciale à sa place. Les cartes
+     d'agence s'affichent donc sans texte de présentation — à lui de les
+     remplir depuis le back-office. */
   agencies: [
     {
-      id: "agence-landes",
-      name: "Maisons Essensya — Landes",
-      zone: "Landes (40)",
-      address: "",
-      phone: P.phone,
-      email: "contact@essensya.fr",
-      hours: "Lun – Sam · 9h–12h / 14h–18h30",
-      lat: 0,
-      lng: 0,
-      image: IMG.agenceLr,
-      cities: [],
-      description:
-        "Nous construisons dans les Landes. Dites-nous où se situe votre projet : nous vous indiquons les terrains compatibles de votre secteur et le prix de votre maison avant le premier rendez-vous.",
+      id: "agence-de-canejan",
+      name: "Agence de Canéjan",
+      zone: "Gironde",
+      address: "11 chemin de la House – 33610 CANÉJAN",
+      phone: "06 17 29 78 03",
+      email: "accueil@essensya.fr",
+      hours: "Lundi au vendredi – 9h à 12h et 14h à 18h – Sur rdv le samedi",
+      lat: 44.750411,
+      lng: -0.641614,
+      image: SANS_PHOTO,
+      cities: ["Canéjan"],
+      description: "",
+    },
+    {
+      id: "agence-de-parentis",
+      name: "Agence de Parentis",
+      zone: "Landes",
+      address: "242 Rue de Chatry – 40160 PARENTIS EN BORN",
+      phone: "06 28 71 22 40",
+      email: "accueil@essensya.fr",
+      hours: "Lundi au vendredi – 9h à 12h et 14h à 18h – Sur rdv le samedi",
+      lat: 44.348739,
+      lng: -1.068182,
+      image: SANS_PHOTO,
+      cities: ["Parentis-en-Born"],
+      description: "",
+    },
+    {
+      id: "agence-de-saint-vincent-de-tyrosse",
+      name: "Agence de Saint-Vincent-de-Tyrosse",
+      zone: "Landes",
+      address: "1 impasse du Sablar – 40230 SAINT VINCENT DE TYROSSE",
+      phone: "06 74 62 16 73",
+      email: "accueil@essensya.fr",
+      hours: "Lundi au vendredi – 9h à 12h et 14h à 18h – Sur rdv le samedi",
+      lat: 43.663271,
+      lng: -1.292217,
+      image: SANS_PHOTO,
+      cities: ["Saint-Vincent-de-Tyrosse"],
+      description: "",
+    },
+    {
+      id: "agence-de-tartas",
+      name: "Agence de Tartas",
+      zone: "Landes",
+      address: "90 place du Luc – 40400 TARTAS",
+      phone: "06 77 95 57 76",
+      email: "accueil@essensya.fr",
+      hours: "Lundi au vendredi – 9h à 12h et 14h à 18h – Sur rdv le samedi",
+      lat: 43.834425,
+      lng: -0.812175,
+      image: SANS_PHOTO,
+      cities: ["Tartas"],
+      description: "",
+    },
+    {
+      id: "agence-de-hagetmau",
+      name: "Agence de Hagetmau",
+      zone: "Landes",
+      address: "141 bis rue Carnot – 40700 HAGETMAU",
+      phone: "06 14 65 11 59",
+      email: "accueil@essensya.fr",
+      hours: "Lundi au vendredi – 9h à 12h et 14h à 18h – Sur rdv le samedi",
+      lat: 43.654943,
+      lng: -0.592800,
+      image: SANS_PHOTO,
+      cities: ["Hagetmau"],
+      description: "",
     },
   ],
 

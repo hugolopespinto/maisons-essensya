@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import MediaPicker from "@/components/admin/MediaPicker";
 import { AGENCIES } from "@/data/essensya";
-import { getContent, isWritable, patchContent } from "@/lib/store";
+import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { Agence } from "@/lib/store/types";
 import { assertAdmin, requireAdmin } from "../actions";
 
@@ -149,7 +149,7 @@ export default async function AdminAgencesPage({
   await requireAdmin();
 
   const { edit, supprimer, ok } = await searchParams;
-  const content = await getContent();
+  const content = await getContentFrais();
   const agences = renumeroter(content.agences);
   const inscriptible = await isWritable();
 
@@ -174,7 +174,7 @@ export default async function AdminAgencesPage({
     "use server";
     await assertAdmin();
 
-    const actuel = await getContent();
+    const actuel = await getContentFrais();
     /* Deux clics de suite, ou deux onglets ouverts : on n'écrase pas un
        travail déjà commencé. */
     if (actuel.agences.length > 0) redirect("/admin/agences");
@@ -206,7 +206,7 @@ export default async function AdminAgencesPage({
     await assertAdmin();
 
     const origine = str(formData.get("idOrigine"));
-    const actuel = await getContent();
+    const actuel = await getContentFrais();
     const index = origine ? actuel.agences.findIndex((a) => a.id === origine) : -1;
     /* Le formulaire dit « je modifie l'agence X », et X n'existe plus :
        un autre onglet l'a supprimée entre-temps. On ne la ressuscite pas
@@ -262,7 +262,7 @@ export default async function AdminAgencesPage({
     await assertAdmin();
 
     const id = str(formData.get("id"));
-    const actuel = await getContent();
+    const actuel = await getContentFrais();
     /* Identifiant inconnu (double soumission, retour arrière) : on ne
        réécrit rien et on ne revalide rien pour rien. */
     if (!actuel.agences.some((a) => a.id === id)) redirect("/admin/agences");
@@ -281,7 +281,7 @@ export default async function AdminAgencesPage({
     const id = str(formData.get("id"));
     const vers = str(formData.get("sens")) === "bas" ? 1 : -1;
 
-    const actuel = await getContent();
+    const actuel = await getContentFrais();
     const liste = renumeroter(actuel.agences);
     const i = liste.findIndex((a) => a.id === id);
     const j = i + vers;
@@ -310,7 +310,7 @@ export default async function AdminAgencesPage({
     const id = str(formData.get("id"));
     if (!id) redirect("/admin/agences");
 
-    const actuel = await getContent();
+    const actuel = await getContentFrais();
     const reste = actuel.agences.filter((a) => a.id !== id);
     if (reste.length !== actuel.agences.length) {
       await patchContent("agences", renumeroter(reste));

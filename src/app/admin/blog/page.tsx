@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getContent, isWritable, patchContent } from "@/lib/store";
+import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { Article } from "@/lib/store/types";
 import { assertAdmin, requireAdmin } from "../actions";
 
@@ -52,7 +52,7 @@ export default async function AdminBlogPage({
   await requireAdmin();
 
   const { supprimer, ok } = await searchParams;
-  const content = await getContent();
+  const content = await getContentFrais();
   const articles = [...content.articles].sort(ordre);
   const inscriptible = await isWritable();
   const aSupprimer = supprimer ? (articles.find((a) => a.slug === supprimer) ?? null) : null;
@@ -66,7 +66,7 @@ export default async function AdminBlogPage({
     const slug = String(formData.get("slug") ?? "").trim();
     if (!slug) redirect("/admin/blog");
 
-    const actuel = await getContent();
+    const actuel = await getContentFrais();
     const reste = actuel.articles.filter((a) => a.slug !== slug);
     /* Rien à supprimer (double soumission, retour arrière) : on ne réécrit
        pas le fichier et on ne revalide rien pour rien. */

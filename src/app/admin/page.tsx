@@ -3,7 +3,7 @@ import Link from "next/link";
 import { authDriver, isAdminEnabled } from "@/lib/admin/auth";
 import { cleAnonManquante } from "@/lib/admin/supabase-auth";
 import { dept } from "@/lib/format";
-import { getContent, isWritable, storeDriver } from "@/lib/store";
+import { getContentFrais, isWritable, storeDriver } from "@/lib/store";
 import { getAnnonces } from "@/lib/vitahome/annonces";
 import { hasLiveFeed } from "@/lib/vitahome/config";
 import { requireAdmin } from "./actions";
@@ -84,7 +84,7 @@ interface Verif {
 export default async function AdminDashboard() {
   await requireAdmin();
 
-  const contenu = await getContent();
+  const contenu = await getContentFrais();
 
   /* Le flux Vitahome est un appel réseau : il ne doit jamais emporter le
      tableau de bord, qui est précisément l'écran où l'on vient constater

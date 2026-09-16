@@ -8,7 +8,7 @@ import { MODELES } from "@/data/gamme";
 import { articlesPublies } from "@/lib/blog";
 import { agencyUrl, deptUrl, houseUrl, landingUrl } from "@/lib/format";
 import { departementsPubliables } from "@/lib/geo";
-import { getContent, isWritable, patchContent } from "@/lib/store";
+import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { ColonneFooter, LienMenu, Menus } from "@/lib/store/types";
 import { assertAdmin, requireAdmin } from "../actions";
 
@@ -309,7 +309,7 @@ export default async function MenusPage({
   await requireAdmin();
 
   const { ok } = await searchParams;
-  const content = await getContent();
+  const content = await getContentFrais();
   const inscriptible = await isWritable();
 
   /* Rien d'enregistré = le site publie encore ses liens codés en dur :

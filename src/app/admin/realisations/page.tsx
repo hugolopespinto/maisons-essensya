@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import MediaPicker from "@/components/admin/MediaPicker";
-import { getContent, isWritable, patchContent } from "@/lib/store";
+import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { Realisation } from "@/lib/store/types";
 import { assertAdmin, requireAdmin } from "../actions";
 
@@ -62,7 +62,7 @@ export default async function AdminRealisations({
 }) {
   await requireAdmin();
   const { edit, nouveau } = await searchParams;
-  const [content, ecriture] = await Promise.all([getContent(), isWritable()]);
+  const [content, ecriture] = await Promise.all([getContentFrais(), isWritable()]);
   const liste = renumeroter(content.realisations);
 
   const enEdition = edit ? (liste.find((r) => r.id === edit) ?? null) : null;
@@ -84,7 +84,7 @@ export default async function AdminRealisations({
 
     /* On relit le contenu au moment d'écrire : entre l'affichage du
        formulaire et son envoi, une autre session a pu modifier la liste. */
-    const actuelles = renumeroter((await getContent()).realisations);
+    const actuelles = renumeroter((await getContentFrais()).realisations);
     const existante = actuelles.find((r) => r.id === id);
 
     const fiche: Realisation = {
@@ -113,7 +113,7 @@ export default async function AdminRealisations({
     "use server";
     await assertAdmin();
     const id = txt(formData.get("id"));
-    const actuelles = (await getContent()).realisations;
+    const actuelles = (await getContentFrais()).realisations;
     await patchContent(
       "realisations",
       actuelles.map((r) => (r.id === id ? { ...r, actif: !r.actif } : r)),
@@ -127,7 +127,7 @@ export default async function AdminRealisations({
     await assertAdmin();
     const id = txt(formData.get("id"));
     const sens = txt(formData.get("sens")) === "haut" ? -1 : 1;
-    const actuelles = renumeroter((await getContent()).realisations);
+    const actuelles = renumeroter((await getContentFrais()).realisations);
     const i = actuelles.findIndex((r) => r.id === id);
     const j = i + sens;
     if (i < 0 || j < 0 || j >= actuelles.length) redirect("/admin/realisations");
@@ -142,7 +142,7 @@ export default async function AdminRealisations({
     "use server";
     await assertAdmin();
     const id = txt(formData.get("id"));
-    const actuelles = (await getContent()).realisations;
+    const actuelles = (await getContentFrais()).realisations;
     await patchContent("realisations", renumeroter(actuelles.filter((r) => r.id !== id)));
     revalidatePath("/realisations");
     revalidatePath("/sitemap.xml");

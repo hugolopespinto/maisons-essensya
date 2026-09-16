@@ -137,6 +137,34 @@ const fetchMagasin: typeof fetch = (input, init) => {
   });
 };
 
+/* ⚠ UN SECOND CLIENT, SANS AUCUN CACHE, POUR LES LECTURES QUI PRÉCÈDENT
+   UNE ÉCRITURE.
+
+   Le client courant étiquette ses GET et les laisse vivre 30 minutes —
+   c'est ce qui permet aux pages publiques de rester pré-générées. Mais
+   les écrans d'administration lisent la liste complète, la modifient, et
+   la renvoient ENTIÈRE : une ligne absente de la liste reçue est
+   supprimée. Lire cette liste dans un cache, c'est risquer d'effacer ce
+   qui a été créé depuis l'instantané, sans message ni erreur.
+
+   Un client séparé plutôt qu'un paramètre : la distinction « je lis pour
+   afficher » / « je lis pour écrire » doit être visible à l'appel, pas
+   cachée dans un drapeau qu'on oublie de passer. */
+let clientFrais: SupabaseClient | null = null;
+
+function sbFrais(): SupabaseClient {
+  if (!isSupabaseConfigured()) {
+    throw new Error("Supabase n'est pas configuré.");
+  }
+  clientFrais ??= createClient(sbUrl(), sbKey(), {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    global: {
+      fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+    },
+  });
+  return clientFrais;
+}
+
 function sb(): SupabaseClient {
   if (!isSupabaseConfigured()) {
     throw new Error(
@@ -612,9 +640,10 @@ async function lireTableOptionnelle<T>(
   }
 }
 
-export async function read(): Promise<Partial<Content>> {
+export async function read(frais = false): Promise<Partial<Content>> {
   try {
-    const db = sb();
+    /* `frais` : lecture hors cache, pour les écrans qui vont écrire. */
+    const db = frais ? sbFrais() : sb();
     const [contenu, articles, annonces, agences, medias] = await Promise.all([
       db.from("content").select("key, value, updated_at"),
       db

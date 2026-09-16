@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getContent, patchContent, storeDriver } from "@/lib/store";
+import { getContentFrais, patchContent, storeDriver } from "@/lib/store";
 import { clientSupabase } from "@/lib/store/supabase";
 import type {
   Agence,
@@ -621,7 +621,7 @@ async function restaurerArticle(id: string, snapshot: unknown): Promise<Resultat
     /* Lecture d'appoint : son échec ne doit pas empêcher la restauration. */
   }
 
-  const actuel = await getContent();
+  const actuel = await getContentFrais();
   const autres = actuel.articles.filter((a) => a.slug !== slug && a.slug !== slugActuel);
   await patchContent("articles", [...autres, article]);
   return { ok: true };
@@ -640,7 +640,7 @@ async function restaurerAnnonce(ref: string, snapshot: unknown): Promise<Resulta
     masquee: r.masquee === true,
     seo: seoDe(r.seo),
   };
-  const actuel = await getContent();
+  const actuel = await getContentFrais();
   const autres = actuel.annonces.filter(
     (o) => String(o?.ref ?? "").trim().toLowerCase() !== cle.toLowerCase(),
   );
@@ -670,7 +670,7 @@ async function restaurerAgence(id: string, snapshot: unknown): Promise<Resultat>
     actif: r.actif !== false,
     ordre: nombreOuRien(r.ordre) ?? 0,
   };
-  const actuel = await getContent();
+  const actuel = await getContentFrais();
   const autres = actuel.agences.filter((a) => a.id !== cle);
   await patchContent(
     "agences",
@@ -681,7 +681,7 @@ async function restaurerAgence(id: string, snapshot: unknown): Promise<Resultat>
 
 async function restaurerMedia(id: string, snapshot: unknown): Promise<Resultat> {
   const r = objet(snapshot);
-  const actuel = await getContent();
+  const actuel = await getContentFrais();
   const fiche = actuel.medias.find((m) => m.id === id);
   /* La médiathèque ne se restaure pas : le fichier vit dans le bucket,
      et le journal n'en garde que la fiche. Seuls le nom et le texte

@@ -5,7 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import MediaPicker from "@/components/admin/MediaPicker";
 import { markdownToHtml, markdownToText } from "@/lib/markdown";
 import { resoudreMedia } from "@/lib/medias";
-import { getContent, patchContent } from "@/lib/store";
+import { getContentFrais, patchContent } from "@/lib/store";
 import type { Article } from "@/lib/store/types";
 import { assertAdmin, requireAdmin } from "../../actions";
 import "@/styles/pages/blog.css";
@@ -102,7 +102,7 @@ export default async function EditionArticlePage({
   const { apercu, ok, renomme } = await searchParams;
   const creation = slug === NOUVEAU;
 
-  const content = await getContent();
+  const content = await getContentFrais();
   const article = creation ? VIDE : (content.articles.find((a) => a.slug === slug) ?? null);
   /* Slug inconnu en modification : 404 franc. Basculer silencieusement en
      création laisserait croire que l'article existe encore. */
@@ -116,7 +116,7 @@ export default async function EditionArticlePage({
     await assertAdmin();
 
     const origine = str(formData.get("slugOrigine"));
-    const actuel = await getContent();
+    const actuel = await getContentFrais();
     const index = origine ? actuel.articles.findIndex((a) => a.slug === origine) : -1;
 
     const titre = str(formData.get("titre"));

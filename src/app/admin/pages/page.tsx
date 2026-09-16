@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PAGES_DEFAUT, getContent, isWritable } from "@/lib/store";
+import { PAGES_DEFAUT, getContentFrais, isWritable } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
 import { requireAdmin } from "../actions";
 
@@ -67,7 +67,7 @@ export default async function AdminPagesPage() {
      seulement la coquille. Et l'URL, elle, se tape. */
   await requireAdmin();
 
-  const content = await getContent();
+  const content = await getContentFrais();
   const pages = content.pages;
   const inscriptible = await isWritable();
 
