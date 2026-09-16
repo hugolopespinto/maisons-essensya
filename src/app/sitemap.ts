@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
-import { AGENCIES } from "@/data/essensya";
 import { modelesPubliables } from "@/data/gamme";
+import { agencesPubliees } from "@/lib/agences";
 import { articlesPublies } from "@/lib/blog";
 import { communeUrl, deptUrl } from "@/lib/format";
 import { communesPubliables, departementsPubliables } from "@/lib/geo";
@@ -45,7 +45,7 @@ const when = (iso: string | null) => {
 /* Le sitemap se régénère avec le flux : chaque annonce Vitahome devient
    une URL indexable — l'inverse exact du hash-routing du prototype. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [annonces, depts, { articles }] = await Promise.all([
+  const [annonces, depts, { articles }, agences] = await Promise.all([
     getAnnonces(),
     /* ⚠ `departementsPubliables()`, PAS `geographie()`. Le sitemap est une
        promesse faite à Google : chaque URL qu'il annonce doit répondre.
@@ -53,6 +53,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
        des erreurs dans la Search Console au lieu de pages. */
     departementsPubliables(),
     getContent(),
+    /* ⚠ LES AGENCES PUBLIÉES, PAS LA CONSTANTE DU CODE. Le sitemap lisait
+       `AGENCIES`, c'est-à-dire l'agence de démonstration écrite en dur.
+       Le jour où le client saisit ses vraies agences dans le back-office,
+       la constante cesse de s'appliquer aux pages — mais le sitemap, lui,
+       aurait continué d'annoncer à Google une fiche qui rend 404, en
+       passant sous silence les vraies. Une promesse faite à Google se lit
+       à la même source que les pages. */
+    agencesPubliees(),
   ]);
 
   const communes = depts.flatMap((d) =>
@@ -76,7 +84,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly" as const,
       priority: 0.6,
     })),
-    ...AGENCIES.map((g) => ({
+    ...agences.map((g) => ({
       url: `${BASE}/agences/${g.id}`,
       changeFrequency: "monthly" as const,
       priority: 0.7,

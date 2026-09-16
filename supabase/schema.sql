@@ -112,7 +112,18 @@ create index if not exists medias_recents_idx
 -- ⚠ On ne supprime pas une agence qui ferme : `actif = false` la retire
 -- du site en gardant sa fiche, ses villes et son historique.
 create table if not exists public.agences (
-  id           uuid        primary key default gen_random_uuid(),
+  -- ⚠ TEXTE, PAS UUID, ET C'EST UN CHOIX DE RÉFÉRENCEMENT.
+  -- Cet identifiant EST l'adresse publique : /agences/<id>. Le
+  -- back-office le dérive du nom, comme un slug d'article, pour que
+  -- l'URL reste lisible — « constructeur maison Tartas » se joue aussi
+  -- là. Un uuid donnerait /agences/6f3a1b2c-… : illisible pour un
+  -- visiteur, muet pour un moteur.
+  --
+  -- La colonne était en uuid, et le code coercait donc silencieusement
+  -- le slug calculé en un uuid tiré au hasard : l'identifiant lisible
+  -- était jeté sans que rien ne le signale, et le commentaire de
+  -- l'écran d'administration promettait exactement l'inverse.
+  id           text        primary key,
   nom          text        not null,
   zone         text        not null default '',
   adresse      text        not null default '',

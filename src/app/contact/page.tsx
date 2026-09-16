@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import AgencyCard, { telHref } from "@/components/AgencyCard";
 import LeadForm from "@/components/LeadForm";
-import { AGENCIES, PLACEHOLDER, PRICE_FROM } from "@/data/essensya";
+import { PLACEHOLDER, PRICE_FROM } from "@/data/essensya";
+import { agencesPubliees } from "@/lib/agences";
 import { fmtPrice } from "@/lib/format";
 import { getContent } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
@@ -43,7 +44,7 @@ function lecteurBlocs(pages: PageEditable[], clePage: string) {
 }
 
 export default async function ContactPage() {
-  const { pages } = await getContent();
+  const [{ pages }, agences] = await Promise.all([getContent(), agencesPubliees()]);
   const bloc = lecteurBlocs(pages, "contact");
   const chapo = bloc("hero.chapo");
 
@@ -127,7 +128,7 @@ export default async function ContactPage() {
             >
               <span className="from">Ou appelez-nous</span>
               {PLACEHOLDER.phone}
-              <small>{AGENCIES[0].hours} · appel non surtaxé</small>
+              <small>{agences[0]?.hours ?? ""} · appel non surtaxé</small>
             </a>
 
             <span
@@ -137,7 +138,9 @@ export default async function ContactPage() {
             >
               Ou directement en agence
             </span>
-            {AGENCIES.map((g) => (
+            {/* Les agences réellement publiées : le client en ouvre ou en
+                ferme une depuis le back-office, cette liste suit. */}
+            {agences.map((g) => (
               <AgencyCard agency={g} key={g.id} />
             ))}
             <p className="ct-direct" data-reveal>

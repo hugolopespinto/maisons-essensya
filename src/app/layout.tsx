@@ -9,6 +9,7 @@ import StickyCta from "@/components/StickyCta";
 import { AGENCIES, HOUSE, PLACEHOLDER, PRICE_FROM } from "@/data/essensya";
 import { deptUrl, fmtPrice } from "@/lib/format";
 import { departementsPubliables } from "@/lib/geo";
+import { agencesPubliees } from "@/lib/agences";
 import { resoudreMedia } from "@/lib/medias";
 import { resolveMetadata } from "@/lib/seo";
 import { getContent } from "@/lib/store";
@@ -203,7 +204,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
      générales) et Contenu (`textes.telephone`). Le plus spécifique
      gagne, et `PLACEHOLDER` reste le dernier recours. */
   const telephone = ou(reglages.telephone, ou(textes.telephone, PLACEHOLDER.phone));
-  const email = ou(reglages.email, AGENCIES[0].email);
+  /* Les agences publiées, lues une fois : elles alimentent le JSON-LD
+     du site et l'adresse de repli. La constante ne sert plus que de
+     dernier recours, quand aucune agence n'a été saisie. */
+  const agences = await agencesPubliees();
+  const email = ou(reglages.email, agences[0]?.email ?? AGENCIES[0].email);
   const adresse = saisi(reglages.adresse);
   const horaires = saisi(reglages.horaires);
   /* ⚠ LE LOGO OFFICIEL EST EMBARQUÉ, pas seulement téléversable.
@@ -260,17 +265,24 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     /* `sameAs` est ce qui rattache le site aux comptes officiels de
        l'entreprise : c'est la contrepartie SEO des liens du pied de page. */
     ...(reseaux.length ? { sameAs: reseaux.map((r) => r.href) } : {}),
-    areaServed: AGENCIES.map((g) => ({
+    /* ⚠ LES AGENCES PUBLIÉES, PAS LA CONSTANTE. Ce bloc déclare à
+       Google les implantations de l'entreprise : le panneau local, la
+       zone d'intervention, les numéros. Lu sur la constante, il aurait
+       annoncé l'agence de démonstration pendant que le site en affichait
+       cinq autres. */
+    areaServed: agences.map((g) => ({
       "@type": "AdministrativeArea",
       name: g.zone,
     })),
-    location: AGENCIES.map((g) => ({
+    location: agences.map((g) => ({
       "@type": "LocalBusiness",
       name: g.name,
       telephone: g.phone,
       email: g.email,
       address: { "@type": "PostalAddress", streetAddress: g.address, addressCountry: "FR" },
-      geo: { "@type": "GeoCoordinates", latitude: g.lat, longitude: g.lng },
+      /* Sans coordonnées saisies, pas de bloc `geo` : mieux vaut aucune
+         position qu'un repère au large du golfe de Guinée. */
+      ...(g.geo ? { geo: { "@type": "GeoCoordinates", latitude: g.geo.lat, longitude: g.geo.lng } } : {}),
     })),
   };
 

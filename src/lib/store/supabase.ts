@@ -373,9 +373,24 @@ const iso = (v: string | null | undefined): string | undefined => {
    pouvoir désigner une ligne avant de l'avoir enregistrée). Un
    identifiant qui n'est pas un uuid ferait échouer l'insertion côté
    Postgres avec un message incompréhensible : on en tire un propre. */
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const uuidValide = (v: string | undefined): string =>
-  v && UUID.test(v) ? v.toLowerCase() : randomUUID();
+/**
+ * L'identifiant d'une agence : un slug d'URL, pas un uuid.
+ *
+ * On accepte ce que l'appelant propose s'il est déjà propre — c'est ce
+ * qui permet de renommer une agence sans déplacer sa page — et on se
+ * rabat sur le nom sinon. Le tirage aléatoire reste le dernier recours :
+ * mieux vaut une URL laide qu'une clé primaire vide.
+ */
+const slugAgence = (id: string | undefined, nom: string): string => {
+  const propre = (v: string) =>
+    v
+      .normalize("NFD")
+      .replace(/\p{Mn}/gu, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  return propre(id ?? "") || propre(nom) || randomUUID();
+};
 
 function articleVersTs(r: LigneArticle): Article {
   return {
@@ -865,7 +880,22 @@ async function ecrireAgences(liste: Agence[], auteur: Auteur): Promise<void> {
   const gardes = new Set<string>();
 
   for (const agence of liste) {
-    const id = uuidValide(agence.id);
+    /* ⚠ PAS DE `uuidValide()` ICI, ET C'EST TOUT L'ENJEU.
+       L'identifiant d'une agence EST son adresse publique. Il était
+       passé par `uuidValide()`, qui remplace toute valeur non conforme
+       par un uuid tiré au hasard : le slug lisible calculé par l'écran
+       d'administration — « agence-de-tartas » — était donc jeté à
+       l'écriture, et l'agence se retrouvait à /agences/6f3a1b2c-…
+
+       Personne ne le voyait : l'écriture réussissait, la fiche
+       s'affichait, seule l'URL était illisible. Et le commentaire de
+       l'écran affirmait le contraire, ce qui garantissait qu'on ne
+       cherche pas là.
+
+       `slugAgence()` normalise sans dénaturer, et ne tire au sort qu'en
+       tout dernier recours — un nom composé uniquement de caractères
+       non latins, par exemple. */
+    const id = slugAgence(agence.id, agence.nom);
     const colonnes = agenceVersSql(agence);
     const ancienne = parId.get(id);
     gardes.add(id);
