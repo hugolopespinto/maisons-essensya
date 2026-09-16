@@ -914,6 +914,22 @@ async function ecrireAgences(liste: Agence[], auteur: Auteur): Promise<void> {
 
   if (aEcrire.length) {
     const { error } = await db.from("agences").upsert(aEcrire, { onConflict: "id" });
+    /* ⚠ L'ERREUR QUE PERSONNE NE SAURAIT LIRE.
+       Si la migration `migration-agences-id-texte.sql` n'a pas été
+       lancée, la colonne `id` est encore en `uuid` et Postgres répond
+       « invalid input syntax for type uuid: "agence-de-tartas" ». Côté
+       back-office, cela se traduit par une page d'erreur générique : le
+       client conclut que le formulaire est cassé et cherche du côté de
+       sa saisie, alors qu'il manque une requête SQL.
+       On remplace donc le message par celui qui dit quoi faire. */
+    if (error && /uuid/i.test(error.message)) {
+      throw new Error(
+        "[store/supabase] La colonne `agences.id` est encore de type uuid, " +
+          "alors que l'identifiant d'une agence est son adresse publique. " +
+          "Exécutez supabase/migration-agences-id-texte.sql dans l'éditeur SQL " +
+          "de Supabase, puis réessayez.",
+      );
+    }
     verifier("écriture de agences", error);
   }
   if (aSupprimer.length) {
