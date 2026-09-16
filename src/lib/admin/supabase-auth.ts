@@ -57,6 +57,65 @@ const serviceKey = (): string => process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
 const anonKey = (): string =>
   process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
+/* ════════════════════════════════════════════════════════════════
+   VÉRIFIER QUE LA CLÉ ANONYME EST VRAIMENT VALIDE
+
+   ⚠ LE PIÈGE QUE CETTE FONCTION EXISTE POUR FERMER.
+   `isSupabaseConfigured()` ne teste que la LONGUEUR de la clé anonyme.
+   Une clé non vide mais fausse — l'ancienne clé JWT du projet, celle
+   d'un autre projet, une valeur tronquée au copier-coller — passe donc
+   le test. L'écran de connexion annonce alors fièrement « Comptes
+   nommés (Supabase) », et TOUTES les connexions échouent, sans que rien
+   ne distingue cela d'un mot de passe faux.
+
+   Constaté en production : mot de passe correct, compte confirmé, ligne
+   `admins` en place, connexion refusée quand même. Le temps perdu à
+   chercher du côté du mot de passe est exactement ce que cette fonction
+   évite.
+
+   Le test est le plus léger possible : `GET /auth/v1/settings` avec la
+   clé en en-tête. Mesuré sur le projet réel — 200 si la clé est valide,
+   401 dans tous les autres cas (clé fausse, ancienne, vide).
+
+   ⚠ FERMÉ EN CAS DE DOUTE, MAIS DANS L'AUTRE SENS QUE L'AUTHENTIFICATION.
+   Si le réseau échoue, on rend `"inconnu"` et l'écran n'affiche RIEN.
+   Un avertissement de configuration affiché à tort sur une coupure
+   passagère enverrait quelqu'un modifier une variable qui allait bien.
+   ════════════════════════════════════════════════════════════════ */
+
+export type EtatCleAnon = "ok" | "rejetee" | "inconnu";
+
+/* Le résultat est stable entre deux requêtes : la clé ne change qu'au
+   redéploiement. On évite un aller-retour réseau à chaque affichage de
+   l'écran de connexion — qui est aussi la page qu'un attaquant
+   rechargerait en boucle. */
+let memoCleAnon: { etat: EtatCleAnon; at: number } | null = null;
+const CLE_ANON_TTL = 60_000;
+
+export async function etatCleAnon(): Promise<EtatCleAnon> {
+  if (!urlValide() || anonKey().length === 0) return "inconnu";
+  if (memoCleAnon && Date.now() - memoCleAnon.at < CLE_ANON_TTL) return memoCleAnon.etat;
+
+  let etat: EtatCleAnon = "inconnu";
+  try {
+    const ctrl = new AbortController();
+    const minuteur = setTimeout(() => ctrl.abort(), 4_000);
+    const r = await fetch(`${base()}/auth/v1/settings`, {
+      headers: { apikey: anonKey() },
+      cache: "no-store",
+      signal: ctrl.signal,
+    }).finally(() => clearTimeout(minuteur));
+    /* 401 = la clé est refusée. Tout autre statut, y compris une erreur
+       serveur passagère, ne prouve rien contre la clé. */
+    etat = r.status === 401 ? "rejetee" : r.ok ? "ok" : "inconnu";
+  } catch {
+    etat = "inconnu";
+  }
+
+  memoCleAnon = { etat, at: Date.now() };
+  return etat;
+}
+
 /** `editeur` : contenu, blog, SEO, annonces. `admin` : + tracking. */
 export type RoleAdmin = "editeur" | "admin";
 

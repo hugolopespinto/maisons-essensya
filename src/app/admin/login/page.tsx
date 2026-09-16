@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { authDriver, isAdminEnabled, isAuthenticated } from "@/lib/admin/auth";
+import { etatCleAnon } from "@/lib/admin/supabase-auth";
 
 /* ════════════════════════════════════════════════════════════════
    ÉCRAN DE CONNEXION
@@ -39,6 +40,13 @@ export default async function LoginPage({
   const { e } = await searchParams;
   const erreur = e === "1";
   const comptesNommes = authDriver() === "supabase";
+
+  /* ⚠ ON VÉRIFIE QUE LA CLÉ ANONYME EST VRAIMENT ACCEPTÉE, pas seulement
+     qu'elle est renseignée. Une clé fausse mais non vide fait afficher
+     « Comptes nommés (Supabase) » et échouer toutes les connexions, sans
+     rien qui distingue cela d'un mot de passe erroné. Voir la note en
+     tête de `etatCleAnon()`. Un seul aller-retour, mémorisé 60 s. */
+  const cleAnon = comptesNommes ? await etatCleAnon() : "inconnu";
 
   /* ── Back-office non configuré ──────────────────────────────────
      Sans Supabase NI mot de passe partagé, aucune session ne peut être
@@ -100,6 +108,24 @@ export default async function LoginPage({
       <h1 id="adm-login-t" style={{ fontSize: "1.5rem", margin: ".4rem 0 1rem" }}>
         Administration
       </h1>
+
+      {cleAnon === "rejetee" && (
+        /* Le seul message de l'écran qui s'adresse à l'exploitant et non
+           au visiteur : aucune saisie ne peut aboutir tant qu'il est là,
+           et le dire économise la demi-heure passée à retaper un mot de
+           passe qui était bon. */
+        <p className="adm-alerte" role="status" style={{ marginBottom: "1rem" }}>
+          <strong>Clé Supabase refusée.</strong> Le serveur possède bien une
+          valeur pour <code>SUPABASE_ANON_KEY</code>, mais Supabase la rejette
+          (HTTP&nbsp;401) : elle est erronée, périmée, ou appartient à un autre
+          projet. <strong>Aucune connexion ne peut aboutir</strong> tant qu&apos;elle
+          n&apos;est pas corrigée — le mot de passe n&apos;est pas en cause.
+          Reprenez la clé <em>publishable</em> du projet dans Supabase (Project
+          Settings → API Keys) et remplacez la variable chez l&apos;hébergeur, en
+          vérifiant qu&apos;elle est bien exposée aux fonctions et pas seulement
+          aux builds.
+        </p>
+      )}
 
       {/* POST classique vers un point d'entrée HTTP, et non une Server
           Action : les gestionnaires de mots de passe ne proposent
