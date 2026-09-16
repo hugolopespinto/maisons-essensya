@@ -95,6 +95,8 @@ interface Props {
   gtmEvent?: string;
   dark?: boolean;
   submitLabel?: string;
+  /** Classe du bouton d'envoi. Absent : le style par défaut du thème. */
+  submitClassName?: string;
   note?: ReactNode;
   successMessage?: string;
   className?: string;
@@ -109,6 +111,7 @@ export default function LeadForm({
   gtmEvent,
   dark = false,
   submitLabel = "Envoyer",
+  submitClassName,
   note = "Vos données ne servent qu'à traiter votre demande. Jamais revendues.",
   successMessage = "Merci — une agence Essensya vous recontacte sous 48 h.",
   className = "",
@@ -230,7 +233,7 @@ export default function LeadForm({
       <div className="c-form__actions">
         <button
           type="submit"
-          className={`c-btn${dark ? " c-btn--light" : " c-btn--solid"}`}
+          className={submitClassName ?? `c-btn${dark ? " c-btn--light" : " c-btn--solid"}`}
           disabled={state === "sending"}
         >
           {state === "sending" ? "Envoi…" : submitLabel} <span className="arrow">→</span>

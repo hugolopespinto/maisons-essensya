@@ -531,11 +531,22 @@ export const ESSENSYA_DATA: EssensyaData = {
     },
   ],
 
+  /* ⚠ TEXTES DU CLIENT, MOT POUR MOT. Trois d'entre eux apportent des
+     faits que le site ne connaissait pas, et qu'il faut répercuter
+     ailleurs :
+       · « 40 ans d'expérience au sein du groupe CIMI » — première
+         mention d'un groupe. À reprendre dans les mentions légales dès
+         que la raison sociale sera connue ;
+       · « 5 agences dans les Landes ET LA GIRONDE » — le site n'en
+         connaît qu'une, et son secteur s'arrêtait aux Landes. Les vraies
+         implantations restent à obtenir : voir la note du fichier sur
+         les agences provisoires ;
+       · « les 10 garanties du CCMI » — chiffre repris tel quel. */
   trust: [
     { icon: "shield", title: "Contrat CCMI", text: "Le cadre légal le plus protecteur pour faire construire." },
-    { icon: "ruler", title: "Constructeur-concepteur", text: "La maison est conçue, chiffrée et construite par nos équipes." },
-    { icon: "pin", title: "Agences locales", text: "Un interlocuteur proche de votre terrain, du premier jour à la livraison." },
-    { icon: "key", title: "Livraison garantie", text: "Prix et délais convenus contractuellement, garanties décennales incluses." },
+    { icon: "ruler", title: "Constructeur-concepteur", text: "La maison est conçue, chiffrée et construite par nos équipes. 40 ans d'expérience au sein du groupe CIMI." },
+    { icon: "pin", title: "Agences locales", text: "5 agences dans les Landes et la Gironde pour un interlocuteur proche de votre terrain, du premier jour à la livraison." },
+    { icon: "key", title: "Livraison garantie", text: "Les 10 garanties du CCMI dont l'assurance dommages-ouvrage." },
   ],
 
   concept: {

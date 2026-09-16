@@ -187,9 +187,32 @@ export async function POST(req: Request) {
     );
   }
 
+  /* ⚠ LE FORMULAIRE D'ACCUEIL ENVOIE `prenom` ET `nom` SÉPARÉMENT.
+     Deux champs à l'écran, c'est ce que le client demande, et c'est de
+     toute façon mieux pour lui : « Prénom & nom » en une seule ligne
+     ramenait « jean dupont », « DUPONT Jean » ou « j.dupont » selon
+     l'humeur du visiteur.
+
+     Mais on ne relaie PAS deux champs au CRM. Le payload Vitahome porte
+     des noms exacts, documentés — `name` en fait partie, `firstname` et
+     `lastname` ne sont pas confirmés. Inventer un nom de champ ferait
+     partir une donnée que le CRM jette en silence : le client croirait
+     avoir un prénom exploitable et n'aurait rien. On recompose donc
+     `name`, et on saura séparer le jour où la documentation Vitahome
+     confirmera les deux champs.
+
+     Les autres formulaires envoient toujours `name` directement : la
+     recomposition ne s'applique que si `name` est absent. */
+  const prenom = typeof fields?.prenom === "string" ? fields.prenom.trim() : "";
+  const nom = typeof fields?.nom === "string" ? fields.nom.trim() : "";
+  const champs =
+    !fields?.name && (prenom || nom)
+      ? { ...fields, name: `${prenom} ${nom}`.trim() }
+      : fields;
+
   const clean: Record<string, string> = {};
   for (const key of ALLOWED_FIELDS) {
-    const v = fields?.[key];
+    const v = champs?.[key];
     if (typeof v === "string" && v.trim()) {
       clean[key === "msg" ? "message" : key] = v.trim().slice(0, MAX_FIELD_LEN);
     }

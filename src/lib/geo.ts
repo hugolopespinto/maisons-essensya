@@ -114,6 +114,33 @@ export async function geographie(): Promise<Departement[]> {
     .sort((x, y) => y.annonces.length - x.annonces.length || x.nom.localeCompare(y.nom, "fr"));
 }
 
+/**
+ * Toutes les communes du flux, pour l'auto-complétion des formulaires.
+ *
+ * ⚠ RIEN À VOIR AVEC LE SEUIL DE PUBLICATION. Les pages de zone ne sont
+ * créées qu'au-dessus de `SEUIL_COMMUNE`, parce qu'une page doit avoir
+ * de quoi se lire. Une liste de suggestions, elle, n'a pas ce problème :
+ * plus elle est complète, plus elle aide. Une commune où nous n'avons
+ * qu'un terrain reste une commune où nous construisons — la retirer de
+ * l'auto-complétion ferait croire au visiteur qu'on ne la couvre pas.
+ *
+ * Le code postal accompagne le nom : le flux en sert un par annonce, et
+ * c'est souvent par lui qu'on cherche sa commune plutôt que par son
+ * orthographe exacte.
+ */
+export async function communesConnues(): Promise<{ nom: string; cp: string }[]> {
+  const annonces = await getAnnonces();
+  const vues = new Map<string, string>();
+  for (const a of annonces) {
+    const nom = a.city?.trim();
+    if (!nom || vues.has(nom)) continue;
+    vues.set(nom, a.zip?.trim() ?? "");
+  }
+  return [...vues.entries()]
+    .map(([nom, cp]) => ({ nom, cp }))
+    .sort((x, y) => x.nom.localeCompare(y.nom, "fr"));
+}
+
 /** Les communes qui méritent leur page — seuil appliqué ici, une seule fois. */
 export const communesPubliables = (d: Departement): Commune[] =>
   d.communes.filter((c) => c.annonces.length >= SEUIL_COMMUNE);

@@ -67,15 +67,28 @@ export default function HeroAccueil({
       <div className="hero-fixe__voile" aria-hidden="true" />
 
       <div className="container hero-fixe__texte">
-        <span className="c-label">{baseline}</span>
-        <h1 id="hero-t">{titre}</h1>
-        <div className="hero-fixe__actions">
-          <Link href="/maisons" className="c-btn c-btn--solid">
-            Voir nos modèles <span className="arrow">→</span>
-          </Link>
-          <Link href="/contact" className="c-btn c-btn--light">
-            Parler de mon projet
-          </Link>
+        {/* ⚠ PANNEAU OPAQUE, ET C'EST UNE CORRECTION DEMANDÉE.
+            Le titre s'étalait sur toute la largeur, par-dessus un dégradé
+            remontant jusqu'au tiers de l'image. Retour du client : « ça
+            mange trop le visuel de la maison ». Il a raison — la photo
+            était le sujet et on la recouvrait.
+
+            Le panneau borne le texte à 60 % de la largeur et rend la
+            moitié droite au visuel. Il apporte au passage ce qu'un
+            dégradé ne garantit jamais : un contraste qui ne dépend pas
+            de ce qu'il y a derrière. Un ciel clair ne peut plus effacer
+            le titre. */}
+        <div className="hero-fixe__panneau">
+          <span className="c-label">{baseline}</span>
+          <h1 id="hero-t">{titre}</h1>
+          <div className="hero-fixe__actions">
+            <Link href="/maisons" className="c-btn c-btn--solid">
+              Voir nos modèles <span className="arrow">→</span>
+            </Link>
+            <Link href="/contact" className="c-btn c-btn--light">
+              Parler de mon projet
+            </Link>
+          </div>
         </div>
       </div>
     </section>

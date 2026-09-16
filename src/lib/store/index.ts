@@ -56,21 +56,10 @@ export const PAGES_DEFAUT: PageEditable[] = [
     label: "Accueil",
     blocs: [
       {
-        cle: "recherche.surtitre",
-        label: "Petit titre au-dessus de la recherche",
-        aide: "Le mot en capitales au-dessus du moteur de recherche par ville.",
-        valeur: "Où construire",
-      },
-      {
-        cle: "recherche.titre",
-        label: "Titre de la section recherche",
-        valeur: "Trouvez le terrain, les maisons sont déjà dessinées.",
-      },
-      {
         cle: "hero.baseline",
         label: "Baseline, au-dessus du titre d'accueil",
         aide: "Le petit texte en capitales posé sur la grande image.",
-        valeur: "Votre maison au prix juste",
+        valeur: "L'essentiel de la qualité au meilleur prix",
       },
       {
         cle: "hero.titre",
@@ -137,33 +126,6 @@ export const PAGES_DEFAUT: PageEditable[] = [
         valeur: "L'opportunité du moment",
       },
       {
-        cle: "etapes.surtitre",
-        label: "Petit titre de la section « Comment ça marche »",
-        valeur: "Comment ça marche",
-      },
-      {
-        cle: "etapes.titre",
-        label: "Titre de la section « Comment ça marche »",
-        valeur: "Quatre étapes, pas quarante",
-      },
-      {
-        cle: "terrains.surtitre",
-        label: "Petit titre de la section terrains",
-        valeur: "Terrains & opportunités",
-      },
-      {
-        cle: "terrains.titre",
-        label: "Titre de la section terrains",
-        valeur: "Rendre la maison concrète",
-      },
-      {
-        cle: "terrains.texte",
-        label: "Paragraphe de la section terrains",
-        valeur:
-          "Nos agences repèrent les parcelles compatibles avec nos modèles, souvent avant leur mise sur le marché. La maison est choisie : il ne reste qu'à trouver où la poser.",
-        multiligne: true,
-      },
-      {
         cle: "engagements.surtitre",
         label: "Petit titre de la section « Nos engagements »",
         valeur: "Nos engagements",
@@ -181,13 +143,13 @@ export const PAGES_DEFAUT: PageEditable[] = [
       {
         cle: "cta.titre",
         label: "Titre du formulaire de rappel",
-        valeur: "Et si votre maison était déjà dessinée ?",
+        valeur: "Et si vous choisissiez Maisons Essensya",
       },
       {
         cle: "cta.texte",
         label: "Paragraphe du formulaire de rappel",
         valeur:
-          "Parlez-nous de votre projet. Une agence Essensya vous rappelle sous 48 h, sans engagement.",
+          "Parlez-nous de votre projet de construction. Un conseiller Maisons Essensya vous rappelle sous 48 h, sans engagement.",
         multiligne: true,
       },
     ],
@@ -205,7 +167,7 @@ export const PAGES_DEFAUT: PageEditable[] = [
         cle: "hero.chapo",
         label: "Chapô de la page",
         valeur:
-          "Une maison, deux déclinaisons, aucune option. Pourquoi nous n'en construisons qu'une — et pourquoi c'est votre budget qui y gagne.",
+          "Des plans optimisés jusqu'au dernier mètre carré, et les bons choix déjà faits. Pourquoi nos maisons coûtent moins cher — et pourquoi c'est votre budget qui y gagne.",
         multiligne: true,
       },
       {

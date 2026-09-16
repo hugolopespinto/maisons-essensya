@@ -390,3 +390,10 @@ body.lp-mode .header-cta{display:inline-flex}
   ::view-transition-old(*),
   ::view-transition-new(*){animation:none!important}
 }
+
+/* Bouton blanc sur fond sombre, inversé au survol — demandé pour l'appel
+   à l'action du bas de l'accueil. Le framboise de `--solid` y perdrait :
+   sur l'anthracite, c'est le blanc qui ressort le plus. Contraste du
+   noir sur blanc : 21:1, le maximum possible. */
+.c-btn--blanc{background:var(--blanc);border-color:var(--blanc);color:var(--anthracite)}
+.c-btn--blanc:hover{background:transparent;color:var(--blanc)}

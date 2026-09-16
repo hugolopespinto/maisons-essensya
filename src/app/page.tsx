@@ -1,23 +1,20 @@
-import Link from "next/link";
-import AnnonceCard from "@/components/AnnonceCard";
 import ArgumentRow from "@/components/ArgumentRow";
 import HeroAccueil from "@/components/HeroAccueil";
 import LeadForm from "@/components/LeadForm";
-import { AnnonceMedia } from "@/components/Substitut";
+import OpportuniteDuMoment, {
+  type OpportuniteItem,
+} from "@/components/OpportuniteDuMoment";
 import { Icon } from "@/components/icons";
-import { ESSENSYA_DATA, PLACEHOLDER, PRICE_FROM, REEL } from "@/data/essensya";
+import { ESSENSYA_DATA, REEL } from "@/data/essensya";
+import { facade } from "@/data/visuels";
 import { srcSet, vue } from "@/data/visuels";
 import "@/styles/accueil.css";
-import {
-  annonceTitle,
-  annonceUrl,
-  fmtPrice,
-  fmtSurface,
-} from "@/lib/format";
+import { annonceUrl, fmtPrice, fmtSurface } from "@/lib/format";
+import { communesConnues } from "@/lib/geo";
 import { jsonLd, siteSchema } from "@/lib/schema";
 import { getContent } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
-import { getAnnonces, getSpotlight } from "@/lib/vitahome/annonces";
+import { getAnnonces } from "@/lib/vitahome/annonces";
 
 const D = ESSENSYA_DATA;
 const delay = (s: string) => ({ "--reveal-delay": s }) as React.CSSProperties;
@@ -52,21 +49,56 @@ const PHOTOS_JUSTE = [
   { visuel: vue("dublin", "vue-2-exterieur"), alt: "Maison Essensya modèle Dublin, côté jardin" },
 ];
 
+/* ⚠ VISUEL DE SECOURS DU BLOC « OPPORTUNITÉ ».
+   Le client demande d'afficher la première image de l'annonce ; 90 % du
+   flux n'en a aucune. Plutôt qu'un cadre vide, on pose un rendu de
+   modèle — Dublin, comme il le suggère pour juger du résultat — et LA
+   CARTE LE DIT. Sans cette mention, un rendu posé sur une parcelle
+   laisse croire que c'est la maison qui y sera construite. */
+const VISUEL_SECOURS = facade("dublin");
+
+/** Le lot dans lequel le composant tire au sort, à chaque visite. */
+const TAILLE_LOT = 8;
+
 export default async function HomePage() {
-  const [content, annonces, spotlight] = await Promise.all([
+  const [content, annonces, communes] = await Promise.all([
     getContent(),
     getAnnonces(),
-    getSpotlight(),
+    communesConnues(),
   ]);
   const t = lecteurBlocs(content.pages, "accueil");
+
+  /* Les annonces terrain + maison les plus récentes. Le tri vient du
+     flux ; on ne garde que celles qui ont une ville, seul élément qui
+     compose le titre demandé (« Maison à Dax »). */
+  const opportunites: OpportuniteItem[] = annonces
+    .filter((a) => a.type === "terrain-maison" && a.city.trim())
+    .slice(0, TAILLE_LOT)
+    .map((a) => {
+      const sansPhoto = !a.image;
+      return {
+        id: a.id,
+        ville: a.city,
+        titre: `Maison à ${a.city}`,
+        href: annonceUrl(a),
+        image: a.image || VISUEL_SECOURS?.src || "",
+        imageIllustration: sansPhoto,
+        imageAlt: sansPhoto
+          ? "Vue d'architecte d'une maison Essensya"
+          : `Maison et terrain à ${a.city}`,
+        specs: [
+          fmtSurface(a.landSurface) && { label: "Terrain", valeur: fmtSurface(a.landSurface) },
+          fmtSurface(a.houseSurface) && { label: "Maison", valeur: fmtSurface(a.houseSurface) },
+          a.price !== null && { label: "Prix total", valeur: fmtPrice(a.price) },
+        ].filter(Boolean) as { label: string; valeur: string }[],
+        mention: a.mention ?? "",
+      };
+    });
   /* Même source que le layout : le nom saisi en Réglages, sinon celui
      du code. Un JSON-LD qui annoncerait un autre nom que la balise title
      serait une incohérence de plus pour Google à arbitrer. */
   const nomSite = content.reglages.nomSite?.trim() || "Maisons Essensya";
 
-  /* L'opportunité du moment est déjà en vedette : la redonner dans la
-     liste des récentes ferait doublon à deux écrans d'intervalle. */
-  const recentes = annonces.filter((a) => a.id !== spotlight?.id).slice(0, 3);
 
   return (
     <main className="page">
@@ -80,7 +112,7 @@ export default async function HomePage() {
       />
       <HeroAccueil
         visuel={vue("lisbonne", "vue-2-exterieur")}
-        baseline={t("hero.baseline", "Votre maison au prix juste")}
+        baseline={t("hero.baseline", "L'essentiel de la qualité au meilleur prix")}
         titre={t(
           "hero.titre",
           "Maisons Essensya, constructeur de maisons au prix juste dans les Landes",
@@ -88,55 +120,17 @@ export default async function HomePage() {
         alt="Maison Essensya modèle Lisbonne, vue de la terrasse"
       />
 
-      {/* ── Recherche géographique ──
-          En mono-produit la question n'est plus « quelle maison » mais
-          « où, et combien ». Un GET vers /annonces : pas de JS, indexable,
-          et l'URL produite est partageable. */}
-      <section className="s-search" id="recherche" aria-labelledby="recherche-t">
-        <div className="container">
-          <span className="c-label" style={{ color: "var(--sable)" }}>
-            {t("recherche.surtitre", "Où construire")}
-          </span>
-          <h2 id="recherche-t">
-            {t("recherche.titre", "Trouvez le terrain, les maisons sont déjà dessinées.")}
-          </h2>
-          <form className="s-search__form" action="/annonces" method="get">
-            <div className="c-field">
-              <label htmlFor="s-q">Ville ou code postal</label>
-              <input
-                type="search"
-                id="s-q"
-                name="q"
-                placeholder="Mont-de-Marsan, 40000, Dax…"
-                autoComplete="postal-code"
-              />
-            </div>
-            <div className="c-field">
-              <label htmlFor="s-type">Ce que je cherche</label>
-              <select id="s-type" name="type" defaultValue="">
-                <option value="">Terrain ou terrain + maison</option>
-                <option value="terrain-maison">Terrain + maison</option>
-                <option value="terrain">Terrain seul</option>
-              </select>
-            </div>
-            <div className="c-field">
-              <label htmlFor="s-max">Budget maximum (€)</label>
-              <input
-                type="number"
-                id="s-max"
-                name="max"
-                inputMode="numeric"
-                min={PRICE_FROM}
-                step={5000}
-                placeholder={String(PLACEHOLDER.priceFromTotal)}
-              />
-            </div>
-            <button type="submit" className="c-btn c-btn--light">
-              Voir les terrains <span className="arrow">→</span>
-            </button>
-          </form>
-        </div>
-      </section>
+      {/* ⚠ LE BLOC DE RECHERCHE A ÉTÉ RETIRÉ, SUR DEMANDE DU CLIENT
+          (« on enlève la partie Sélecteur de la home page »).
+
+          Il proposait trois champs — ville, type de bien, budget — et un
+          bouton vers /annonces. Ce n'est pas une perte de fonction : la
+          même recherche vit sur /annonces, avec sa carte et ses filtres
+          complets. Sur l'accueil, elle demandait au visiteur de choisir
+          avant de savoir ce qu'on lui propose.
+
+          Le formulaire du bas de page, lui, reste : il ne filtre rien, il
+          met en relation. */}
 
       <section className="s-juste" id="prix-juste">
         <div className="container">
@@ -264,112 +258,22 @@ export default async function HomePage() {
       </section>
 
       {/* ── L'opportunité du moment ──
-          Plus un second produit à mettre en avant : une annonce réelle,
-          terrain + maison, avec son prix total. Sans annonce éligible,
-          la section disparaît plutôt que d'afficher une promesse vide. */}
-      {spotlight && (
-        <section className="s-featured" id="opportunite">
-          <div className="s-featured__media">
-            <AnnonceMedia annonce={spotlight} />
-          </div>
-          <div className="container">
-            <span className="c-label" style={{ color: "var(--sable)" }} data-reveal>
-              {t("opportunite.surtitre", "L'opportunité du moment")}
-            </span>
-            <h2 data-reveal style={delay(".1s")}>
-              {annonceTitle(spotlight)}
-            </h2>
-            <div className="c-plate" data-reveal style={delay(".2s")}>
-              {fmtSurface(spotlight.landSurface) && (
-                <span className="c-plate__spec">
-                  Terrain <strong>{fmtSurface(spotlight.landSurface)}</strong>
-                </span>
-              )}
-              {fmtSurface(spotlight.houseSurface) && (
-                <span className="c-plate__spec">
-                  Maison <strong>{fmtSurface(spotlight.houseSurface)}</strong>
-                </span>
-              )}
-              <span className="c-plate__spec">
-                Prix total <strong>{fmtPrice(spotlight.price)}</strong>
-              </span>
-            </div>
-            <div data-reveal style={delay(".3s")}>
-              <Link href={annonceUrl(spotlight)} className="c-btn c-btn--light">
-                Voir cette opportunité <span className="arrow">→</span>
-              </Link>
-            </div>
-            {/* La mention de l'annonce engage le constructeur : elle suit
-                le prix partout où il est affiché. */}
-            {spotlight.mention && (
-              <p
-                className="u-measure"
-                style={{
-                  marginTop: "var(--s-4)",
-                  color: "var(--sable)",
-                  opacity: 0.7,
-                  fontSize: "var(--fs-small)",
-                }}
-              >
-                {spotlight.mention}
-              </p>
-            )}
-          </div>
-        </section>
-      )}
+          Une annonce tirée au sort parmi les plus récentes, différente à
+          chaque visite. Texte et image côte à côte : voir le composant,
+          qui explique pourquoi on ne les superpose plus. */}
+      <OpportuniteDuMoment
+        items={opportunites}
+        surtitre={t("opportunite.surtitre", "L'opportunité du moment")}
+      />
 
-      <section className="s-steps">
-        <div className="container">
-          <div className="c-section-head" data-reveal>
-            <span className="c-label c-label--accent">
-              {t("etapes.surtitre", "Comment ça marche")}
-            </span>
-            <h2>{t("etapes.titre", "Quatre étapes, pas quarante")}</h2>
-          </div>
-          <div className="s-steps__list">
-            {D.steps.map((i) => (
-              <div className="s-steps__item" data-reveal key={i.num}>
-                <span className="s-steps__num">{i.num}</span>
-                <h3>{i.title}</h3>
-                <p>{i.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ⚠ DEUX SECTIONS RETIRÉES, SUR DEMANDE DU CLIENT :
+          « Comment ça marche » et « Terrains & opportunités ».
 
-      <section className="s-opps" id="opportunites">
-        <div className="container">
-          <div className="c-section-head" data-reveal>
-            <span className="c-label c-label--accent">
-              {t("terrains.surtitre", "Terrains & opportunités")}
-            </span>
-            <h2>{t("terrains.titre", "Rendre la maison concrète")}</h2>
-            {/* Le repli contient une espace insécable (U+00A0) devant les
-                deux-points, exactement comme le gabarit aujourd'hui :
-                invisible ici, elle évite un deux-points en début de ligne. */}
-            <p
-              className="u-muted u-measure"
-              style={{ ...PRE_LINE, marginTop: "var(--s-2)" }}
-            >
-              {t(
-                "terrains.texte",
-                "Nos agences repèrent les parcelles compatibles avec la maison, souvent avant leur mise sur le marché. La maison est décidée : il ne reste qu'à choisir où la poser.",
-              )}
-            </p>
-          </div>
-          <div className="s-opps__grid">
-            {recentes.map((a) => (
-              <AnnonceCard annonce={a} key={a.id} />
-            ))}
-          </div>
-          <div className="s-opps__foot" data-reveal>
-            <Link href="/annonces" className="c-link">
-              Voir tous les terrains disponibles →
-            </Link>
-          </div>
-        </div>
-      </section>
+          Motif constant depuis le premier retour — « la home est trop
+          longue, trop fournie et peu lisible ». Le parcours en quatre
+          étapes reste sur /concept, et les terrains ont leur page, leur
+          carte et leurs filtres sur /annonces, désormais atteignable
+          depuis le bloc « opportunité » qui la précède. */}
 
       <section className="s-trust" id="agences">
         <div className="container">
@@ -415,31 +319,84 @@ export default async function HomePage() {
               gtmEvent="lead_callback_request"
               dark
               submitLabel="Être rappelé"
-              successMessage="Merci — une agence Essensya vous rappelle sous 48 h."
+              /* Fond blanc, écriture noire, inversé au survol — demandé.
+                 Le framboise des autres appels à l'action serait ici sur
+                 fond sombre : le blanc ressort davantage. */
+              submitClassName="c-btn c-btn--blanc"
+              successMessage="Merci — un conseiller Maisons Essensya vous rappelle sous 48 h."
             >
+              {/* ⚠ PRÉNOM ET NOM SONT DEUX CHAMPS, PLUS UN SEUL.
+                  Le formulaire demandait « Prénom & nom » en une ligne, ce
+                  qui ramenait « jean dupont », « DUPONT Jean » ou
+                  « j.dupont » selon l'humeur du visiteur. Deux champs
+                  guident la saisie.
+
+                  ⚠ Le CRM, lui, ne reçoit toujours qu'un `name` : le
+                  payload Vitahome porte des noms de champs documentés, et
+                  `firstname` / `lastname` n'y sont pas confirmés. La
+                  recomposition a lieu côté serveur — voir la note dans
+                  src/app/api/leads/route.ts. La séparation profite donc à
+                  la saisie, pas encore au fichier commercial.
+
+                  « Où en êtes-vous ? » disparaît : quatre champs, c'est
+                  la consigne, et c'est celui qui apportait le moins. */}
               <div className="c-form__row">
                 <div className="c-field">
-                  <label htmlFor="f-name">Prénom &amp; nom</label>
-                  <input type="text" id="f-name" name="name" required />
+                  <label htmlFor="f-prenom">Prénom</label>
+                  <input
+                    type="text"
+                    id="f-prenom"
+                    name="prenom"
+                    autoComplete="given-name"
+                    required
+                  />
                 </div>
                 <div className="c-field">
-                  <label htmlFor="f-phone">Téléphone</label>
-                  <input type="tel" id="f-phone" name="phone" required />
+                  <label htmlFor="f-nom">Nom</label>
+                  <input
+                    type="text"
+                    id="f-nom"
+                    name="nom"
+                    autoComplete="family-name"
+                    required
+                  />
                 </div>
               </div>
               <div className="c-form__row">
                 <div className="c-field">
-                  <label htmlFor="f-zone">Secteur du projet</label>
-                  <input type="text" id="f-zone" name="zone" placeholder="Ville ou code postal" />
+                  <label htmlFor="f-phone">Téléphone</label>
+                  <input
+                    type="tel"
+                    id="f-phone"
+                    name="phone"
+                    autoComplete="tel"
+                    required
+                  />
                 </div>
                 <div className="c-field">
-                  <label htmlFor="f-stage">Où en êtes-vous&nbsp;?</label>
-                  <select id="f-stage" name="stage" defaultValue="Je découvre">
-                    <option>Je découvre</option>
-                    <option>Je cherche un terrain</option>
-                    <option>J&apos;ai déjà un terrain</option>
-                    <option>Je compare des constructeurs</option>
-                  </select>
+                  <label htmlFor="f-zone">Secteur du projet</label>
+                  {/* ⚠ AUTO-COMPLÉTION PAR `<datalist>`, pas par un
+                      composant maison. Le navigateur fait le filtrage,
+                      sur le nom comme sur le code postal, sans une ligne
+                      de JavaScript — donc sans rien à charger, et le
+                      champ reste utilisable si le script échoue. Les
+                      communes viennent du flux : elles suivent le stock
+                      au lieu d'être une liste à maintenir. */}
+                  <input
+                    type="text"
+                    id="f-zone"
+                    name="zone"
+                    list="f-communes"
+                    autoComplete="address-level2"
+                    placeholder="Ville ou code postal"
+                  />
+                  <datalist id="f-communes">
+                    {communes.map((c) => (
+                      <option key={c.nom} value={c.nom}>
+                        {c.cp}
+                      </option>
+                    ))}
+                  </datalist>
                 </div>
               </div>
             </LeadForm>

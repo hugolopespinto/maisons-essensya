@@ -32,7 +32,14 @@
    35 % au ras du bord fait remonter le blanc à 4,12:1, et le voile
    s'efface avant le tiers de la hauteur : la toiture n'est pas
    assombrie, seule la barre l'est. */
-.hero-fixe__voile{position:absolute;inset:0;background:linear-gradient(to top,rgba(19,18,16,.82) 0%,rgba(19,18,16,.55) 34%,rgba(19,18,16,.10) 62%,rgba(19,18,16,.10) 80%,rgba(19,18,16,.35) 100%)}
+/* ⚠ LE VOILE DU BAS A ÉTÉ DIVISÉ PAR DEUX. Il servait à rendre un titre
+   lisible sur la photo ; ce rôle revient maintenant au panneau opaque, et
+   un voile dense par-dessus ne faisait plus qu’éteindre la maison — le
+   reproche exact du client. Il ne reste qu’un léger assombrissement du
+   bas, pour asseoir le panneau, et celui du HAUT, qui lui reste
+   indispensable : sans lui le logo blanc de l’en-tête tombe à 2,03:1 sur
+   le ciel (mesuré). */
+.hero-fixe__voile{position:absolute;inset:0;background:linear-gradient(to top,rgba(19,18,16,.42) 0%,rgba(19,18,16,.18) 26%,rgba(19,18,16,.06) 55%,rgba(19,18,16,.08) 80%,rgba(19,18,16,.35) 100%)}
 
 .hero-fixe__texte{position:relative;padding-block:var(--s-5) var(--s-6);color:var(--craie)}
 .hero-fixe__texte .c-label{color:var(--sable)}
@@ -94,3 +101,54 @@
 .s-forts__item p{color:var(--sable);opacity:.82;font-size:var(--fs-small);max-width:40ch}
 @media (max-width:900px){.s-forts__grid{grid-template-columns:1fr 1fr}}
 @media (max-width:600px){.s-forts__grid{grid-template-columns:1fr;gap:var(--s-4)}}
+
+/* ──────────────────────────────────────────────────────────────────
+   L'OPPORTUNITÉ DU MOMENT
+
+   ⚠ TEXTE ET IMAGE CÔTE À CÔTE, JAMAIS SUPERPOSÉS. L'ancienne version
+   posait le titre sur la photo, derrière un voile. Le client a relevé le
+   défaut avant nous : « le texte sera peu lisible et l'image également ».
+   Un voile assez dense pour rendre un titre lisible éteint la maison ;
+   assez léger pour montrer la maison, il ne suffit plus au titre. Les
+   deux besoins sont contradictoires — on les sépare au lieu d'arbitrer.
+   ────────────────────────────────────────────────────────────────── */
+.s-opp{background:var(--anthracite);color:var(--craie);padding:var(--s-6) 0}
+.s-opp__grid{display:grid;grid-template-columns:7fr 5fr;gap:var(--s-5);align-items:center}
+.s-opp__media{aspect-ratio:16/10;overflow:hidden;border-radius:var(--radius);background:var(--noir)}
+.s-opp__media img{width:100%;height:100%;object-fit:cover}
+.s-opp__corps .c-label{display:block;margin-bottom:var(--s-2)}
+/* Le sauge de la charte ne passe pas le contraste sur fond sombre non
+   plus : sur l'anthracite, c'est le sable qui porte le surtitre. */
+.s-opp__corps .c-label--accent{color:var(--sable)}
+.s-opp__corps h2{font-size:clamp(1.8rem,3.4vw,2.8rem)}
+.s-opp__plate{margin-top:var(--s-3);border-color:rgba(243,241,236,.22)}
+.s-opp__plate .c-plate__spec{color:var(--sable)}
+.s-opp__plate .c-plate__spec strong{color:var(--craie)}
+.s-opp__actions{display:flex;flex-wrap:wrap;gap:var(--s-2);margin-top:var(--s-4)}
+/* Le bouton secondaire est sur fond sombre : sa bordure anthracite par
+   défaut y serait invisible. */
+.s-opp__actions .c-btn:not(.c-btn--solid){border-color:var(--craie);color:var(--craie)}
+.s-opp__actions .c-btn:not(.c-btn--solid):hover{background:var(--craie);color:var(--anthracite)}
+.s-opp__note,.s-opp__mention{margin-top:var(--s-3);font-size:var(--fs-small);color:var(--sable);opacity:.72;max-width:46ch}
+@media (max-width:900px){
+  .s-opp__grid{grid-template-columns:1fr;gap:var(--s-4)}
+  .s-opp__actions .c-btn{flex:1 1 100%;justify-content:center}
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   HERO — LE TEXTE NE MANGE PLUS LA MAISON
+
+   ⚠ Le titre occupait toute la largeur, sur un dégradé dense remontant
+   jusqu'au tiers de l'image. Retour du client : « ça mange trop le
+   visuel de la maison ». Il a raison — la photo était le sujet, et on
+   l'avait couverte.
+
+   Le texte passe dans un panneau OPAQUE, borné en largeur, ancré en bas
+   à gauche. Deux gains d'un coup : la moitié droite de l'image est
+   rendue au visuel, et le contraste du texte ne dépend plus de ce qu'il
+   y a derrière — un panneau plein tient quel que soit le ciel.
+   ────────────────────────────────────────────────────────────────── */
+.hero-fixe__panneau{position:relative;background:rgba(19,18,16,.86);backdrop-filter:blur(6px);border-radius:var(--radius);padding:var(--s-4);max-width:min(40rem,60%)}
+.hero-fixe__panneau .c-label{color:var(--sable)}
+.hero-fixe__panneau h1{font-size:clamp(1.5rem,2.9vw,2.6rem);line-height:1.08;max-width:22ch;margin-top:.6rem}
+@media (max-width:900px){.hero-fixe__panneau{max-width:100%}}
