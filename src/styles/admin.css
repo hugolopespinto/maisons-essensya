@@ -290,7 +290,25 @@ body:has(.adm) .c-cookies { display: none !important; }
   text-transform: uppercase;
   color: var(--pierre);
 }
-.adm-field input,
+/* ⚠ LES CASES À COCHER SONT EXCLUES DE CETTE REMISE À ZÉRO, et c'est
+   une correction de bug, pas une préférence.
+
+   `appearance: none` efface le rendu natif d'un champ — bordure, flèche
+   de liste, ET la coche d'une case. Le sélecteur prenait tous les
+   `input` de `.adm-field` : les cases à cocher se retrouvaient donc
+   réduites à un carré vide, strictement identique cochée ou non. La
+   règle `accent-color` posée juste en dessous ne rattrapait rien —
+   elle ne teinte que le rendu NATIF, celui qu'on venait de supprimer.
+
+   Symptôme rapporté sur « Agence ouverte — visible sur le site » : un
+   interrupteur dont l'état est invisible. Dix cases du back-office
+   étaient dans ce cas, dont « Brouillon » sur le blog et les
+   consentements de l'écran Tracking.
+
+   Les cases du site public y échappaient : `LeadForm` force
+   `appearance: auto` en style en ligne. Le consentement RGPD, lui,
+   restait donc visible — ce qui est la moindre des choses. */
+.adm-field input:not([type="checkbox"]):not([type="radio"]),
 .adm-field select,
 .adm-field textarea {
   font-family: var(--f-body);
@@ -323,7 +341,19 @@ body:has(.adm) .c-cookies { display: none !important; }
 .adm-field__aide { font-size: var(--fs-label); color: var(--pierre); line-height: 1.5; }
 /* Cases à cocher : la disposition verticale ne leur convient pas. */
 .adm-field--case { flex-direction: row; align-items: center; gap: .6rem; }
-.adm-field--case input { width: auto; accent-color: var(--bois); }
+/* ⚠ `.adm-check` était employée par l'écran Réalisations alors qu'elle
+   n'existait nulle part : la case s'affichait sans alignement ni
+   libellé cliquable correctement espacé. Même présentation que
+   `.adm-field--case`, pour que les deux écrans se ressemblent. */
+.adm-check { display: flex; align-items: center; gap: .6rem; cursor: pointer; }
+.adm-check input { width: auto; accent-color: var(--vert-texte); }
+.adm-check span {
+  font-family: var(--f-body);
+  text-transform: none;
+  letter-spacing: .02em;
+  color: var(--anthracite);
+}
+.adm-field--case input { width: auto; accent-color: var(--vert-texte); }
 .adm-field--case > label {
   font-family: var(--f-body);
   text-transform: none;
