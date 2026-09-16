@@ -177,7 +177,20 @@ export async function lireAdmin(userId: string): Promise<Administrateur | null> 
     }
 
     const ligne = data as LigneAdmin | null;
-    if (!ligne || typeof ligne.email !== "string") return null;
+    if (!ligne || typeof ligne.email !== "string") {
+      /* Le mot de passe était BON — Supabase Auth vient de l'accepter —
+         mais la personne n'a pas de ligne dans `admins`. C'est un refus
+         légitime, et c'est la différence entre « a un compte » et
+         « administre ce site ». Il mérite pourtant sa trace : à l'écran,
+         il est indiscernable d'un mot de passe faux, et l'administrateur
+         qui vient de créer un compte dans Supabase sans ajouter la ligne
+         correspondante chercherait longtemps. */
+      console.warn(
+        `[admin/auth] authentification réussie, mais aucune ligne dans \`admins\` ` +
+          `pour cet utilisateur : accès refusé. Ajoutez-la pour ouvrir le back-office.`,
+      );
+      return null;
+    }
 
     /* Tout rôle inattendu redescend à `editeur` : un `role` mal saisi en
        base ne doit pas ouvrir les écrans sensibles. Moindre privilège. */
@@ -220,9 +233,45 @@ export async function signInAdmin(
       email: mail,
       password: motDePasse,
     });
-    if (error || !data.user?.id) return null;
+    if (error || !data.user?.id) {
+      /* ⚠ CET ÉCHEC ÉTAIT MUET, ET C'EST CE QUI REND UNE PANNE DE
+         CONNEXION INDÉBROUILLABLE EN PRODUCTION.
+
+         Le visiteur voit « connexion refusée » — et c'est bien ce qu'il
+         doit voir, on ne lui dit jamais lequel des deux champs est
+         faux. Mais côté serveur, trois causes très différentes
+         produisaient exactement le même silence :
+
+           · « Invalid login credentials » → le mot de passe est faux, ou
+             le compte n'existe pas. Rien à corriger dans le code ;
+           · « Invalid API key » → SUPABASE_ANON_KEY est absente,
+             périmée, ou ce n'est pas la clé de CE projet. Aucune
+             saisie ne pourra jamais aboutir ;
+           · une erreur réseau ou un abandon au bout de 8 s → Supabase
+             est injoignable depuis l'hébergeur.
+
+         Sans cette ligne, les trois se ressemblent : on cherche un mot
+         de passe pendant que c'est une variable d'environnement.
+
+         Le message de Supabase est générique par construction et ne
+         contient ni l'e-mail ni le mot de passe. On ne journalise donc
+         QUE lui et son statut — l'identité de la personne n'a rien à
+         faire dans le journal d'un hébergeur. */
+      console.warn(
+        `[admin/auth] connexion refusée par Supabase Auth : ${
+          error?.message ?? "réponse sans utilisateur"
+        }${error?.status ? ` (HTTP ${error.status})` : ""}`,
+      );
+      return null;
+    }
     userId = data.user.id;
-  } catch {
+  } catch (e) {
+    /* Abandon du `fetch` borné, DNS, TLS : tout ce qui n'est pas une
+       réponse de Supabase passe ici, et passait sans un mot. */
+    console.warn(
+      "[admin/auth] Supabase Auth injoignable :",
+      e instanceof Error ? e.message : String(e),
+    );
     return null;
   }
 
