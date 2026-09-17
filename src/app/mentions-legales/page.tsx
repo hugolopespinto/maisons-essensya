@@ -1,4 +1,6 @@
 import { resolveMetadata } from "@/lib/seo";
+import ACompleter from "@/components/ACompleter";
+import { lecteurBlocs } from "@/lib/blocs";
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -72,24 +74,6 @@ function P({ children }: { children: ReactNode }) {
   );
 }
 
-/** Trou assumé, rendu visible à l'écran : personne ne met en ligne sans le voir. */
-function ACompleter({ texte }: { texte: string }) {
-  return (
-    <mark
-      style={{
-        display: "inline-block",
-        background: "var(--bois-clair)",
-        color: "var(--bois-fonce)",
-        fontFamily: "var(--f-mono)",
-        fontSize: "var(--fs-small)",
-        padding: ".2em .55em",
-        borderRadius: "var(--radius)",
-      }}
-    >
-      {texte}
-    </mark>
-  );
-}
 
 export default async function MentionsLegalesPage() {
   /* ⚠ LE TÉLÉPHONE DES MENTIONS LÉGALES EST UNE OBLIGATION, pas un
@@ -97,7 +81,11 @@ export default async function MentionsLegalesPage() {
      permettant de contacter l'éditeur. Cette page affichait le numéro de
      démonstration en dur, sans jamais lire celui que le client saisit
      dans Réglages. */
-  const { reglages, textes } = await getContent();
+  const { reglages, textes, pages } = await getContent();
+  /* Les quinze mentions obligatoires viennent d'ici : « Pages → Mentions
+     légales » dans le back-office. Tant qu'un champ est vide, la page
+     affiche le pavé qui décrit ce qui manque. */
+  const t = lecteurBlocs(pages, "mentions-legales");
   const telephone = telephonePublie(reglages, textes, PLACEHOLDER.phone);
   return (
     <main className="page">
@@ -129,7 +117,7 @@ export default async function MentionsLegalesPage() {
           <p style={{ marginTop: "var(--s-2)" }}>
             {/* TODO conformité — bloquant. L'éditeur doit être identifiable :
                 dénomination, forme, capital, siège, immatriculation, TVA. */}
-            <ACompleter texte="[[À COMPLÉTER : dénomination sociale, forme juridique, montant du capital social, adresse du siège social, numéro SIREN, ville d'immatriculation au RCS, numéro de TVA intracommunautaire]]" />
+            <ACompleter texte="[[À COMPLÉTER : dénomination sociale, forme juridique, montant du capital social, adresse du siège social, numéro SIREN, ville d'immatriculation au RCS, numéro de TVA intracommunautaire]]" valeur={t("editeur.identite")} />
           </p>
           <SpecList
             rows={[
@@ -164,7 +152,7 @@ export default async function MentionsLegalesPage() {
           <p style={{ marginTop: "var(--s-2)" }}>
             {/* TODO conformité — il s'agit en principe du représentant légal
                 de la société éditrice. */}
-            <ACompleter texte="[[À COMPLÉTER : nom, prénom et qualité du directeur de la publication (en principe le représentant légal)]]" />
+            <ACompleter texte="[[À COMPLÉTER : nom, prénom et qualité du directeur de la publication (en principe le représentant légal)]]" valeur={t("editeur.directeur")} />
           </p>
 
           <H2 id="hebergeur">Hébergeur</H2>
@@ -176,7 +164,7 @@ export default async function MentionsLegalesPage() {
                 que l'adresse et le téléphone de l'hébergeur. Doit correspondre
                 à l'hébergeur réel retenu à la mise en production, et rester
                 cohérent avec le point 6 de /confidentialite. */}
-            <ACompleter texte="[[À COMPLÉTER : dénomination sociale de l'hébergeur, adresse postale, numéro de téléphone, pays d'hébergement des serveurs]]" />
+            <ACompleter texte="[[À COMPLÉTER : dénomination sociale de l'hébergeur, adresse postale, numéro de téléphone, pays d'hébergement des serveurs]]" valeur={t("hebergeur")} />
           </p>
 
           <H2 id="constructeur">
@@ -192,7 +180,7 @@ export default async function MentionsLegalesPage() {
             <p style={{ marginTop: ".5rem" }}>
               {/* TODO conformité — bloquant : le RCS doit figurer sur tous les
                   documents commerciaux, site inclus. */}
-              <ACompleter texte="[[À COMPLÉTER : numéro RCS et ville du greffe]]" />
+              <ACompleter texte="[[À COMPLÉTER : numéro RCS et ville du greffe]]" valeur={t("rcs")} />
             </p>
           </div>
           <div style={{ marginTop: "var(--s-3)" }}>
@@ -209,7 +197,7 @@ export default async function MentionsLegalesPage() {
                   assurances. Nom de l'assureur, n° de contrat et couverture
                   géographique sont obligatoires sur les documents
                   commerciaux. */}
-              <ACompleter texte="[[À COMPLÉTER : nom et adresse de l'assureur décennale, numéro de contrat, couverture géographique du contrat]]" />
+              <ACompleter texte="[[À COMPLÉTER : nom et adresse de l'assureur décennale, numéro de contrat, couverture géographique du contrat]]" valeur={t("assurance.decennale")} />
             </p>
           </div>
           <div style={{ marginTop: "var(--s-3)" }}>
@@ -227,7 +215,7 @@ export default async function MentionsLegalesPage() {
               {/* TODO conformité — bloquant : sans garant nommé, la promesse
                   « prix figé au contrat » faite ailleurs sur le site n'est pas
                   adossée. */}
-              <ACompleter texte="[[À COMPLÉTER : nom et adresse de l'établissement garant de livraison, référence de la garantie]]" />
+              <ACompleter texte="[[À COMPLÉTER : nom et adresse de l'établissement garant de livraison, référence de la garantie]]" valeur={t("garantie.livraison")} />
             </p>
           </div>
           <div style={{ marginTop: "var(--s-3)" }}>
@@ -236,7 +224,7 @@ export default async function MentionsLegalesPage() {
               {/* TODO conformité — à préciser : RC professionnelle, et le cas
                   échéant l'assurance dommages-ouvrage souscrite par le maître
                   d'ouvrage. */}
-              <ACompleter texte="[[À COMPLÉTER : assurance de responsabilité civile professionnelle (assureur, n° de contrat) et modalités de l'assurance dommages-ouvrage]]" />
+              <ACompleter texte="[[À COMPLÉTER : assurance de responsabilité civile professionnelle (assureur, n° de contrat) et modalités de l'assurance dommages-ouvrage]]" valeur={t("assurance.rcpro")} />
             </p>
           </div>
 
@@ -251,7 +239,7 @@ export default async function MentionsLegalesPage() {
           <p style={{ marginTop: "var(--s-2)" }}>
             {/* TODO conformité — bloquant : l'adhésion à un médiateur agréé est
                 obligatoire, et ses coordonnées doivent figurer sur le site. */}
-            <ACompleter texte="[[À COMPLÉTER : nom du médiateur de la consommation dont relève l'entreprise, adresse postale et adresse du site de saisine]]" />
+            <ACompleter texte="[[À COMPLÉTER : nom du médiateur de la consommation dont relève l'entreprise, adresse postale et adresse du site de saisine]]" valeur={t("mediateur")} />
           </p>
 
           <H2 id="propriete">Propriété intellectuelle</H2>
@@ -287,7 +275,7 @@ export default async function MentionsLegalesPage() {
                 RENDUS 3D, pas des photographies de maisons livrées. Le texte
                 ci-dessus le dit déjà ; il faudra le maintenir tant que le
                 constructeur n'aura pas fourni de vraies prises de vue. */}
-            <ACompleter texte="[[À COMPLÉTER : crédits photographiques définitifs (auteur, licence) et crédits de conception / réalisation du site]]" />
+            <ACompleter texte="[[À COMPLÉTER : crédits photographiques définitifs (auteur, licence) et crédits de conception / réalisation du site]]" valeur={t("credits")} />
           </p>
 
           <H2 id="donnees">Données personnelles et cookies</H2>

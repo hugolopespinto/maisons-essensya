@@ -9,29 +9,16 @@ import { ESSENSYA_DATA, REEL } from "@/data/essensya";
 import { facade } from "@/data/visuels";
 import { srcSet, vue } from "@/data/visuels";
 import "@/styles/accueil.css";
+import { lecteurBlocs } from "@/lib/blocs";
 import { annonceUrl, fmtPrice, fmtSurface } from "@/lib/format";
 import { communesConnues } from "@/lib/geo";
 import { jsonLd, siteSchema } from "@/lib/schema";
 import { getContent } from "@/lib/store";
-import type { PageEditable } from "@/lib/store/types";
 import { getAnnonces } from "@/lib/vitahome/annonces";
 
 const D = ESSENSYA_DATA;
 const delay = (s: string) => ({ "--reveal-delay": s }) as React.CSSProperties;
 
-/**
- * Lecteur des blocs saisis dans « Pages → Accueil ».
- *
- * Le texte du back-office se substitue à celui du gabarit UNIQUEMENT
- * s'il est renseigné : effacer un champ doit rendre au site sa phrase
- * d'origine — souvent celle qui affiche un prix calculé, à jour — et
- * jamais laisser un trou à l'écran.
- */
-function lecteurBlocs(pages: PageEditable[], clePage: string) {
-  const blocs = pages.find((p) => p.cle === clePage)?.blocs ?? [];
-  return (cle: string, defaut: string) =>
-    blocs.find((b) => b.cle === cle)?.valeur.trim() || defaut;
-}
 
 /* Les titres en deux temps sont saisis avec un vrai retour à la ligne :
    `pre-line` le rend à l'écran au lieu d'afficher le caractère brut. */

@@ -3,9 +3,9 @@ import Link from "next/link";
 import { MarkedList } from "@/components/SpecList";
 import { ESSENSYA_DATA, HOUSE, PRICE_FROM, REEL } from "@/data/essensya";
 import { MODELES } from "@/data/gamme";
+import { lecteurBlocs } from "@/lib/blocs";
 import { fmtPrice } from "@/lib/format";
 import { getContent } from "@/lib/store";
-import type { PageEditable } from "@/lib/store/types";
 import "@/styles/pages/concept.css";
 import { resolveMetadata } from "@/lib/seo";
 
@@ -79,18 +79,6 @@ const faqJsonLd = {
   })),
 };
 
-/**
- * Lecteur des blocs saisis dans « Pages → Notre concept ».
- *
- * Le texte du back-office ne se substitue au gabarit que s'il est
- * renseigné : un champ effacé rend au site sa phrase d'origine, jamais
- * un blanc.
- */
-function lecteurBlocs(pages: PageEditable[], clePage: string) {
-  const blocs = pages.find((p) => p.cle === clePage)?.blocs ?? [];
-  return (cle: string, defaut: string) =>
-    blocs.find((b) => b.cle === cle)?.valeur.trim() || defaut;
-}
 
 /* Les titres en deux temps sont saisis avec un vrai retour à la ligne :
    `pre-line` le rend à l'écran au lieu d'afficher le caractère brut. */

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PAGES_DEFAUT, getContentFrais, isWritable } from "@/lib/store";
+import { CHEMIN_PUBLIC, PAGES_DEFAUT, getContentFrais, isWritable } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
 import { requireAdmin } from "../actions";
 
@@ -45,14 +45,7 @@ export const metadata: Metadata = {
    ⚠ La même table existe dans `[cle]/page.tsx`, qui s'en sert pour
    revalider la route après écriture. Six lignes recopiées valent mieux
    qu'un import d'un fichier de route vers un autre. */
-const ROUTES: Record<string, string> = {
-  accueil: "/",
-  concept: "/concept",
-  maison: "/maisons",
-  annonces: "/annonces",
-  agences: "/agences",
-  contact: "/contact",
-};
+
 
 /** Nombre de blocs dont le texte servi s'écarte de celui livré dans le code. */
 function compterModifies(page: PageEditable): number {
@@ -145,7 +138,7 @@ export default async function AdminPagesPage() {
               <tbody>
                 {pages.map((page) => {
                   const modifies = compterModifies(page);
-                  const route = ROUTES[page.cle];
+                  const route = CHEMIN_PUBLIC[page.cle];
                   const lien = `/admin/pages/${encodeURIComponent(page.cle)}`;
                   return (
                     <tr key={page.cle}>

@@ -3,10 +3,10 @@ import Link from "next/link";
 import AgencyCard, { telHref } from "@/components/AgencyCard";
 import LeadForm from "@/components/LeadForm";
 import { PLACEHOLDER, PRICE_FROM } from "@/data/essensya";
+import { lecteurBlocs } from "@/lib/blocs";
 import { agencesPubliees } from "@/lib/agences";
 import { fmtPrice, telephonePublie } from "@/lib/format";
 import { getContent } from "@/lib/store";
-import type { PageEditable } from "@/lib/store/types";
 import "@/styles/pages/contact.css";
 import { resolveMetadata } from "@/lib/seo";
 import "@/styles/pages/agences.css"; // .c-agency-card en colonne latérale
@@ -31,17 +31,6 @@ const METADATA_DEFAUT: Metadata = {
    <LeadForm>, qui le rend sur les huit formulaires du site. Une case
    recopiée à la main est une case qu'on finit par oublier. */
 
-/**
- * Lecteur des blocs saisis dans « Pages → Contact ».
- *
- * Rien n'est remplacé tant que le champ est vide : c'est ce qui permet
- * au chapô de garder sa phrase d'origine — celle qui affiche le prix de
- * départ À JOUR — plutôt qu'une version figée ou un trou.
- */
-function lecteurBlocs(pages: PageEditable[], clePage: string) {
-  const blocs = pages.find((p) => p.cle === clePage)?.blocs ?? [];
-  return (cle: string) => blocs.find((b) => b.cle === cle)?.valeur.trim() ?? "";
-}
 
 export default async function ContactPage() {
   const [{ pages, reglages, textes }, agences] = await Promise.all([

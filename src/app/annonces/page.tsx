@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AnnoncesBrowser from "@/components/AnnoncesBrowser";
+import { lecteurBlocs } from "@/lib/blocs";
 import { annonceTitle } from "@/lib/format";
 import { filAriane, jsonLd, listeSchema } from "@/lib/schema";
 import { resolveMetadata } from "@/lib/seo";
 import { getContent } from "@/lib/store";
-import type { PageEditable } from "@/lib/store/types";
 import { getAnnonces } from "@/lib/vitahome/annonces";
 import "@/styles/pages/annonces.css";
 
@@ -14,17 +14,6 @@ const TITRE = "Terrains & maisons";
 const CHAPO =
   "Des terrains repérés par nos agences, seuls ou livrés avec la maison Essensya. Le lieu change, la maison ne change pas — et son prix non plus.";
 
-/**
- * Lecteur des blocs saisis dans « Pages → Terrains & opportunités ».
- *
- * La valeur du back-office l'emporte seulement si elle est renseignée :
- * un champ vidé rend au site son texte d'origine, jamais un blanc.
- */
-function lecteurBlocs(pages: PageEditable[], clePage: string) {
-  const blocs = pages.find((p) => p.cle === clePage)?.blocs ?? [];
-  return (cle: string, defaut: string) =>
-    blocs.find((b) => b.cle === cle)?.valeur.trim() || defaut;
-}
 
 /* Le chapô est affiché ET servi à Google : sans cela, le client corrige
    l'accroche de la page et la description des résultats de recherche

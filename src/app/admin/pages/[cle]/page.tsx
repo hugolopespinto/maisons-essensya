@@ -3,7 +3,7 @@ import Link from "next/link";
 import Script from "next/script";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
-import { PAGES_DEFAUT, getContentFrais, isWritable, patchContent } from "@/lib/store";
+import { CHEMIN_PUBLIC, PAGES_DEFAUT, getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
 import { assertAdmin, requireAdmin } from "../../actions";
 
@@ -49,18 +49,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-/* ⚠ Table recopiée de `../page.tsx` — même commentaire, mêmes six
-   routes. Ici elle sert à revalider : sans ce `revalidatePath`, l'ISR
-   continuerait à servir l'ancienne page et le client conclurait, à juste
-   titre, que son enregistrement n'a rien fait. */
-const ROUTES: Record<string, string> = {
-  accueil: "/",
-  concept: "/concept",
-  maison: "/maisons",
-  annonces: "/annonces",
-  agences: "/agences",
-  contact: "/contact",
-};
+
 
 /** Longueur au-delà de laquelle un titre d'une ligne devient risqué. */
 const SEUIL_TITRE = 70;
@@ -110,7 +99,7 @@ export default async function EditionPagePage({
   const content = await getContentFrais();
   const page = content.pages.find((p) => p.cle === cle) ?? definition;
   const inscriptible = await isWritable();
-  const route = ROUTES[cle];
+  const route = CHEMIN_PUBLIC[cle];
 
   const defauts = new Map(definition.blocs.map((b) => [b.cle, b.valeur]));
   /* On itère sur la définition, pas sur le stockage : l'ordre des blocs
@@ -177,7 +166,7 @@ export default async function EditionPagePage({
 
     /* Sans revalidation, l'ISR sert l'ancienne page : la modification est
        bien enregistrée mais invisible, et c'est indéfendable à l'écran. */
-    const cible = ROUTES[cle];
+    const cible = CHEMIN_PUBLIC[cle];
     if (cible) revalidatePath(cible);
 
     redirect(

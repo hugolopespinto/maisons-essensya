@@ -7,11 +7,11 @@ import SpecList, { MarkedList } from "@/components/SpecList";
 import { ESSENSYA_DATA, HOUSE, PRICE_FROM, REEL } from "@/data/essensya";
 import { gammeIncomplete, modelesAvecVisuels, MODELES } from "@/data/gamme";
 import { srcSet, vue } from "@/data/visuels";
+import { lecteurBlocs } from "@/lib/blocs";
 import { fmtPrice } from "@/lib/format";
 import { filAriane, jsonLd, listeSchema, produitGamme } from "@/lib/schema";
 import { resolveMetadata, titreGamme } from "@/lib/seo";
 import { getContent } from "@/lib/store";
-import type { PageEditable } from "@/lib/store/types";
 import "@/styles/pages/modele.css";
 import "@/styles/pages/maison.css";
 import "@/styles/pages/gamme.css";
@@ -67,18 +67,6 @@ const METADATA_DEFAUT: Metadata = {
   },
 };
 
-/**
- * Lecteur des blocs saisis dans « Pages → Nos modèles ».
- *
- * Le texte du back-office ne remplace celui du gabarit que s'il est
- * renseigné : vider un champ redonne la phrase d'origine — dont celles
- * qui affichent le prix à jour — et jamais du vide.
- */
-function lecteurBlocs(pages: PageEditable[], clePage: string) {
-  const blocs = pages.find((p) => p.cle === clePage)?.blocs ?? [];
-  return (cle: string, defaut: string) =>
-    blocs.find((b) => b.cle === cle)?.valeur.trim() || defaut;
-}
 
 const D = ESSENSYA_DATA;
 const PRE_LINE = { whiteSpace: "pre-line" } as const;

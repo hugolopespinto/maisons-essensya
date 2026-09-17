@@ -1,10 +1,13 @@
 import { resolveMetadata } from "@/lib/seo";
+import ACompleter from "@/components/ACompleter";
+import { lecteurBlocs } from "@/lib/blocs";
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import CookiePrefsLink from "@/components/CookiePrefsLink";
 import { SpecList } from "@/components/SpecList";
 import { AGENCIES } from "@/data/essensya";
+import { getContent } from "@/lib/store";
 
 /* ════════════════════════════════════════════════════════════════
    POLITIQUE DE PROTECTION DES DONNÉES
@@ -60,26 +63,14 @@ function P({ children }: { children: ReactNode }) {
   );
 }
 
-/** Trou assumé, rendu visible à l'écran : personne ne met en ligne sans le voir. */
-function ACompleter({ texte }: { texte: string }) {
-  return (
-    <mark
-      style={{
-        display: "inline-block",
-        background: "var(--bois-clair)",
-        color: "var(--bois-fonce)",
-        fontFamily: "var(--f-mono)",
-        fontSize: "var(--fs-small)",
-        padding: ".2em .55em",
-        borderRadius: "var(--radius)",
-      }}
-    >
-      {texte}
-    </mark>
-  );
-}
 
-export default function ConfidentialitePage() {
+export default async function ConfidentialitePage() {
+  /* Les six mentions du RGPD viennent de « Pages → Confidentialité ».
+     Aucune n'a de valeur par défaut dans le code : inventer une durée de
+     conservation ou une adresse d'exercice des droits serait pire que le
+     trou, qui, lui, se voit. */
+  const { pages } = await getContent();
+  const t = lecteurBlocs(pages, "confidentialite");
   return (
     <main className="page">
       <section className="p-head">
@@ -111,7 +102,7 @@ export default function ConfidentialitePage() {
             {/* TODO conformité — sans cette identité, la page n'est pas
                 valable : le RGPD (art. 13) impose l'identité et les
                 coordonnées du responsable du traitement. */}
-            <ACompleter texte="[[À COMPLÉTER : raison sociale, forme juridique, adresse du siège, SIREN / RCS]]" />
+            <ACompleter texte="[[À COMPLÉTER : raison sociale, forme juridique, adresse du siège, SIREN / RCS]]" valeur={t("responsable")} />
           </p>
           <P>
             En attendant, vous pouvez nous joindre par téléphone ou par écrit
@@ -254,7 +245,7 @@ export default function ConfidentialitePage() {
           <p style={{ marginTop: "var(--s-2)" }}>
             {/* TODO conformité — le contrat de sous-traitance art. 28 doit
                 exister par écrit. Demander sa référence et sa date. */}
-            <ACompleter texte="[[À COMPLÉTER : référence et date du contrat de sous-traitance signé avec Vitahome (art. 28 RGPD)]]" />
+            <ACompleter texte="[[À COMPLÉTER : référence et date du contrat de sous-traitance signé avec Vitahome (art. 28 RGPD)]]" valeur={t("soustraitant.vitahome")} />
           </p>
           <P>
             <strong>Google,</strong> uniquement si vous avez accepté la mesure
@@ -349,7 +340,7 @@ export default function ConfidentialitePage() {
                 Unsplash a quitté cette liste avec les photos qu'il servait :
                 les visuels viennent maintenant du constructeur et sont servis
                 par le site. Un destinataire de moins à documenter. */}
-            <ACompleter texte="[[À COMPLÉTER : pays depuis lesquels CARTO et Vitahome servent ces ressources, et garantie applicable en cas de transfert hors UE]]" />
+            <ACompleter texte="[[À COMPLÉTER : pays depuis lesquels CARTO et Vitahome servent ces ressources, et garantie applicable en cas de transfert hors UE]]" valeur={t("transferts")} />
           </p>
 
           <H2 id="duree">6. Combien de temps nous les gardons</H2>
@@ -366,7 +357,7 @@ export default function ConfidentialitePage() {
             {/* TODO conformité — le client doit confirmer ou corriger ces
                 durées, et elles doivent correspondre à ce qui est réellement
                 purgé dans Vitahome, pas à une intention. */}
-            <ACompleter texte="[[À COMPLÉTER : durée retenue pour les prospects (usuellement 3 ans après le dernier contact) et durée de conservation des dossiers contractuels]]" />
+            <ACompleter texte="[[À COMPLÉTER : durée retenue pour les prospects (usuellement 3 ans après le dernier contact) et durée de conservation des dossiers contractuels]]" valeur={t("conservation")} />
           </p>
           <P>
             Deux durées sont en revanche déjà fixées et vérifiables&nbsp;: votre
@@ -390,7 +381,7 @@ export default function ConfidentialitePage() {
                 UE, il faut nommer le pays ET la garantie (décision
                 d'adéquation ou clauses contractuelles types). Vérifier aussi
                 où Vitahome héberge ses serveurs. */}
-            <ACompleter texte="[[À COMPLÉTER : hébergeur du site, pays d'hébergement, localisation des serveurs Vitahome, et existence éventuelle d'un transfert hors UE avec la garantie applicable]]" />
+            <ACompleter texte="[[À COMPLÉTER : hébergeur du site, pays d'hébergement, localisation des serveurs Vitahome, et existence éventuelle d'un transfert hors UE avec la garantie applicable]]" valeur={t("hebergement")} />
           </p>
           <P>
             Si vous acceptez la mesure d&apos;audience, les données de
@@ -439,7 +430,7 @@ export default function ConfidentialitePage() {
                 à défaut, celle de l'agence principale est affichée pour ne pas
                 laisser le visiteur sans recours. Vérifier également si la
                 désignation d'un DPO est obligatoire pour cette structure. */}
-            <ACompleter texte="[[À COMPLÉTER : adresse e-mail de contact RGPD / DPO, adresse postale du responsable de traitement, et désignation ou non d'un délégué à la protection des données]]" />
+            <ACompleter texte="[[À COMPLÉTER : adresse e-mail de contact RGPD / DPO, adresse postale du responsable de traitement, et désignation ou non d'un délégué à la protection des données]]" valeur={t("dpo")} />
           </p>
           <P>
             Dans l&apos;attente, ces demandes sont reçues à l&apos;adresse{" "}
