@@ -4,6 +4,8 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { SpecList } from "@/components/SpecList";
 import { AGENCIES, PLACEHOLDER } from "@/data/essensya";
+import { telephonePublie } from "@/lib/format";
+import { getContent } from "@/lib/store";
 
 /* ════════════════════════════════════════════════════════════════
    MENTIONS LÉGALES
@@ -89,7 +91,14 @@ function ACompleter({ texte }: { texte: string }) {
   );
 }
 
-export default function MentionsLegalesPage() {
+export default async function MentionsLegalesPage() {
+  /* ⚠ LE TÉLÉPHONE DES MENTIONS LÉGALES EST UNE OBLIGATION, pas un
+     ornement : l'article 6-III de la LCEN impose les coordonnées
+     permettant de contacter l'éditeur. Cette page affichait le numéro de
+     démonstration en dur, sans jamais lire celui que le client saisit
+     dans Réglages. */
+  const { reglages, textes } = await getContent();
+  const telephone = telephonePublie(reglages, textes, PLACEHOLDER.phone);
   return (
     <main className="page">
       <section className="p-head">
@@ -126,7 +135,7 @@ export default function MentionsLegalesPage() {
             rows={[
               ["Nom commercial", "Maisons Essensya"],
               ["Activité", "Construction de maisons individuelles"],
-              ["Téléphone", PLACEHOLDER.phone],
+              ["Téléphone", telephone],
               [
                 "E-mail",
                 <a

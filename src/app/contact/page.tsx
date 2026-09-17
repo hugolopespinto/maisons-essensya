@@ -4,7 +4,7 @@ import AgencyCard, { telHref } from "@/components/AgencyCard";
 import LeadForm from "@/components/LeadForm";
 import { PLACEHOLDER, PRICE_FROM } from "@/data/essensya";
 import { agencesPubliees } from "@/lib/agences";
-import { fmtPrice } from "@/lib/format";
+import { fmtPrice, telephonePublie } from "@/lib/format";
 import { getContent } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
 import "@/styles/pages/contact.css";
@@ -44,7 +44,12 @@ function lecteurBlocs(pages: PageEditable[], clePage: string) {
 }
 
 export default async function ContactPage() {
-  const [{ pages }, agences] = await Promise.all([getContent(), agencesPubliees()]);
+  const [{ pages, reglages, textes }, agences] = await Promise.all([
+    getContent(),
+    agencesPubliees(),
+  ]);
+  /* Le numéro saisi en Réglages, pas celui de la maquette. */
+  const telephone = telephonePublie(reglages, textes, PLACEHOLDER.phone);
   const bloc = lecteurBlocs(pages, "contact");
   const chapo = bloc("hero.chapo");
 
@@ -122,12 +127,12 @@ export default async function ContactPage() {
                 appeler que remplir un champ : le numéro passe devant. */}
             <a
               className="c-price-xl"
-              href={telHref(PLACEHOLDER.phone)}
+              href={telHref(telephone)}
               style={{ fontSize: "clamp(1.7rem,4.6vw,2.6rem)" }}
               data-reveal
             >
               <span className="from">Ou appelez-nous</span>
-              {PLACEHOLDER.phone}
+              {telephone}
               <small>{agences[0]?.hours ?? ""} · appel non surtaxé</small>
             </a>
 

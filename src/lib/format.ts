@@ -29,6 +29,27 @@ export const deptUrl = (slugDept: string) => `/terrains/${slugDept}`;
 export const communeUrl = (slugDept: string, slugCommune: string) =>
   `/terrains/${slugDept}/${slugCommune}`;
 
+/**
+ * Le numéro de téléphone réellement publiable.
+ *
+ * ⚠ DEUX PAGES L'IGNORAIENT. `/contact` et les mentions légales
+ * affichaient `PLACEHOLDER.phone` — « 05 46 00 00 00 », le numéro de
+ * démonstration — en dur, alors que le client peut saisir le sien dans
+ * Réglages et que l'en-tête comme le pied de page le reprenaient déjà.
+ * Le back-office écrivait donc dans le vide sur les deux pages où ce
+ * numéro compte le plus : celle qui sert à appeler, et celle qui
+ * l'affiche au titre d'une obligation légale.
+ *
+ * L'ordre est celui du gabarit racine : Réglages, puis Textes du site,
+ * puis le numéro de démonstration en dernier recours — pour que la page
+ * ne serve jamais un trou.
+ */
+export const telephonePublie = (
+  reglages: { telephone?: string },
+  textes: { telephone?: string },
+  defaut: string,
+): string => reglages.telephone?.trim() || textes.telephone?.trim() || defaut;
+
 /* ════ LIBELLÉS ANNONCE ════ */
 export const annonceTitle = (a: Annonce) => {
   const s = fmtSurface(a.landSurface);
