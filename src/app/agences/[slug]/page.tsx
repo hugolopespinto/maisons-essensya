@@ -8,10 +8,12 @@ import SpecList from "@/components/SpecList";
 import { PRICE_FROM, REEL } from "@/data/essensya";
 import {
   agencesPubliees,
+  descriptionAgence,
   SANS_PHOTO,
   type AgenceAffichee,
 } from "@/lib/agences";
 import { agencyUrl, dept, fmtPrice } from "@/lib/format";
+import { couper, titreCourt } from "@/lib/seo";
 import { getAnnonces } from "@/lib/vitahome/annonces";
 import { SITE_URL } from "@/lib/site-url";
 import "@/styles/pages/agences.css";
@@ -54,9 +56,17 @@ export async function generateMetadata({
   const { slug } = await params;
   const g = (await agencesPubliees()).find((a) => a.id === slug);
   if (!g) return {};
+
   return {
-    title: `${g.name} — ${g.zone}`,
-    description: g.description.slice(0, 160),
+    title: titreCourt(g.name, g.zone),
+    /* ⚠ `g.description` EST VIDE SUR LES CINQ AGENCES. Le champ est
+       facultatif dans le back-office et le client ne l'a pas rempli :
+       les cinq fiches sortaient avec `<meta name="description"
+       content="">`, ce qui est pire que rien — Google écrit alors la
+       sienne à partir de n'importe quel bout de page. Le gabarit, lui,
+       savait déjà se passer du texte (voir plus bas) ; la métadonnée,
+       non. Le repli est bâti sur ce qu'on sait vraiment de l'agence. */
+    description: couper(g.description.trim() || descriptionAgence(g)),
     alternates: { canonical: agencyUrl(g) },
     openGraph: {
       title: `${g.name} — Maisons Essensya`,

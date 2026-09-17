@@ -17,6 +17,7 @@ import {
   housePart,
 } from "@/lib/format";
 import { annonceSchema, filAriane, jsonLd } from "@/lib/schema";
+import { couper, titreCourt } from "@/lib/seo";
 import { getAnnonceByRef, getAnnonceOverride, getAnnonces } from "@/lib/vitahome/annonces";
 import "@/styles/pages/annonce.css";
 
@@ -53,8 +54,11 @@ export async function generateMetadata({
   const seoTitle = trim(o?.seo?.title);
   const seoDesc = trim(o?.seo?.description) ?? trim(o?.accroche);
   return {
-    title: seoTitle ?? `${title} — ${fmtPrice(a.price)}`,
-    description: (seoDesc ?? a.description).slice(0, 160),
+    /* Le prix n'entre dans le titre que s'il y tient. Il était collé
+       systématiquement, et Google coupait la moitié des fiches — le
+       compteur du back-office les affichait en rouge. */
+    title: seoTitle ?? titreCourt(title, fmtPrice(a.price)),
+    description: couper(seoDesc ?? a.description),
     alternates: { canonical: annonceUrl(a) },
     /* Pas d'image sociale inventée : 9 annonces sur 10 n'en ont aucune. */
     openGraph: { title: seoTitle ?? title, ...(a.image ? { images: [a.image] } : {}) },

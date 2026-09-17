@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import MediaPicker from "@/components/admin/MediaPicker";
+import ChampCompte from "@/components/admin/ChampCompte";
 import { SEO_LIMITES, SEO_ROUTES } from "@/lib/seo";
 import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { SeoEntry } from "@/lib/store/types";
@@ -78,33 +79,6 @@ async function enregistrer(data: FormData) {
   redirect(`/admin/seo?ok=${encodeURIComponent(route.path)}`);
 }
 
-/* Compteurs de caractères. Un <script> inline plutôt qu'un composant
-   client : l'écran n'a besoin d'aucun état React, et le back-office reste
-   entièrement rendu par le serveur. Champ vide, on compte le placeholder —
-   c'est bien la longueur du défaut qui part en ligne. */
-const COMPTEURS = `
-(function(){
-  function maj(el){
-    var out = document.getElementById(el.getAttribute("data-compteur"));
-    if (!out) return;
-    var max = parseInt(el.getAttribute("data-limite"), 10);
-    var defaut = !el.value && !!el.placeholder;
-    var n = (el.value || el.placeholder || "").length;
-    out.textContent = n + " / " + max + (defaut ? " signes (defaut)" : " signes") +
-      (n > max ? " \\u2014 au-dela du seuil conseille" : "");
-    out.style.color = n > max ? "var(--bois-fonce)" : "var(--pierre)";
-  }
-  function tout(){
-    var l = document.querySelectorAll("[data-compteur]");
-    for (var i = 0; i < l.length; i++) maj(l[i]);
-  }
-  document.addEventListener("input", function(e){
-    if (e.target && e.target.getAttribute && e.target.getAttribute("data-compteur")) maj(e.target);
-  });
-  document.addEventListener("DOMContentLoaded", tout);
-  tout();
-})();
-`;
 
 export default async function SeoPage({
   searchParams,
@@ -169,8 +143,6 @@ export default async function SeoPage({
       {SEO_ROUTES.map((route) => {
         const e = content.seo.find((s) => s.path === route.path);
         const cle = route.path.replace(/[^a-z0-9]+/gi, "-") || "-";
-        const idT = `title-${cle}`;
-        const idD = `desc-${cle}`;
         return (
           <form key={route.path} action={enregistrer} className="adm-card">
             <input type="hidden" name="path" value={route.path} />
@@ -186,38 +158,24 @@ export default async function SeoPage({
             {route.aide && <p className="adm-note">{route.aide}</p>}
 
             <div className="adm-grid">
-              <div className="adm-field">
-                <label htmlFor={idT}>Balise title</label>
-                <input
-                  id={idT}
-                  name="title"
-                  type="text"
-                  autoComplete="off"
-                  defaultValue={e?.title ?? ""}
-                  placeholder={route.defaut.title ?? "Aucun titre par défaut"}
-                  data-limite={SEO_LIMITES.title}
-                  data-compteur={`${idT}-c`}
-                  aria-describedby={`${idT}-c`}
-                />
-                <small id={`${idT}-c`} className="adm-field__aide" />
-              </div>
+              <ChampCompte
+                nom="title"
+                label="Balise title"
+                valeur={e?.title ?? ""}
+                placeholder={route.defaut.title ?? "Aucun titre par défaut"}
+                max={SEO_LIMITES.title}
+              />
             </div>
 
             <div className="adm-grid">
-              <div className="adm-field">
-                <label htmlFor={idD}>Meta description</label>
-                <textarea
-                  id={idD}
-                  name="description"
-                  rows={3}
-                  defaultValue={e?.description ?? ""}
-                  placeholder={route.defaut.description ?? "Aucune description par défaut"}
-                  data-limite={SEO_LIMITES.description}
-                  data-compteur={`${idD}-c`}
-                  aria-describedby={`${idD}-c`}
-                />
-                <small id={`${idD}-c`} className="adm-field__aide" />
-              </div>
+              <ChampCompte
+                nom="description"
+                label="Meta description"
+                valeur={e?.description ?? ""}
+                placeholder={route.defaut.description ?? "Aucune description par défaut"}
+                max={SEO_LIMITES.description}
+                multiligne
+              />
             </div>
 
             <div className="adm-grid">
@@ -281,7 +239,6 @@ export default async function SeoPage({
       })}
 
       {/* Contenu statique : aucune donnée saisie n'y est interpolée. */}
-      <script dangerouslySetInnerHTML={{ __html: COMPTEURS }} />
     </>
   );
 }

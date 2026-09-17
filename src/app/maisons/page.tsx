@@ -9,7 +9,7 @@ import { gammeIncomplete, modelesAvecVisuels, MODELES } from "@/data/gamme";
 import { srcSet, vue } from "@/data/visuels";
 import { fmtPrice } from "@/lib/format";
 import { filAriane, jsonLd, listeSchema, produitGamme } from "@/lib/schema";
-import { resolveMetadata } from "@/lib/seo";
+import { resolveMetadata, titreGamme } from "@/lib/seo";
 import { getContent } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
 import "@/styles/pages/modele.css";
@@ -55,14 +55,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const METADATA_DEFAUT: Metadata = {
-  title: `Nos modèles de maisons — à partir de ${fmtPrice(PRICE_FROM)}`,
+  title: titreGamme(),
   description:
     `Une gamme de ${MODELES.length} modèles de maisons individuelles, optimisés jusqu'au dernier mètre carré. ` +
     `À partir de ${fmtPrice(PRICE_FROM)} — ${REEL.mentionPrix.toLowerCase()} ` +
     `Ce qui est compris et ce qui ne l'est pas, écrit noir sur blanc.`,
   alternates: { canonical: "/maisons" },
   openGraph: {
-    title: `Nos modèles de maisons — à partir de ${fmtPrice(PRICE_FROM)}`,
+    title: titreGamme(),
     images: [HOUSE.heroImage],
   },
 };

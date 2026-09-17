@@ -39,6 +39,28 @@ export const SANS_PHOTO =
  */
 export type AgenceAffichee = Agency & { geo?: { lat: number; lng: number } };
 
+/**
+ * La description de repli d'une agence, quand le client n'en a saisi
+ * aucune — c'est le cas des cinq.
+ *
+ * ⚠ ELLE NE DIT QUE CE QU'ON SAIT. Nom, zone, commune desservie : trois
+ * champs remplis par le back-office. Aucune promesse de service, aucun
+ * horaire inventé. C'est le minimum qui distingue les cinq fiches les
+ * unes des autres — une description identique sur cinq pages vaudrait à
+ * peine mieux qu'une absence.
+ *
+ * Elle sert UNIQUEMENT de repli : dès que le client écrit sa
+ * présentation, c'est la sienne qui part.
+ */
+export function descriptionAgence(g: Agency): string {
+  const villes = g.cities.filter(Boolean);
+  const ou =
+    villes.length > 0
+      ? `${villes.slice(0, 3).join(", ")}${villes.length > 3 ? " et alentours" : ""}`
+      : g.zone;
+  return `${g.name} : votre constructeur de maisons individuelles à ${ou}. Adresse, téléphone et contact pour étudier votre projet de construction.`;
+}
+
 /** Une `Agence` éditable → l'`Agency` qu'attendent les gabarits. */
 export async function versAgency(a: Agence): Promise<AgenceAffichee> {
   return {

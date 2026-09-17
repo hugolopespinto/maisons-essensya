@@ -48,7 +48,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const METADATA_DEFAUT: Metadata = {
-  title: "Le journal — faire construire, sans mauvaise surprise",
+  /* 41 signes au maximum : le gabarit ajoute « — Maisons Essensya », et
+     la version longue sortait à 72, coupée par Google. */
+  title: "Le journal — construire sans surprise",
   description:
     "Prix, contrat CCMI, terrain, financement : ce qu'il faut savoir avant de " +
     "faire construire sa maison, expliqué simplement par nos équipes.",

@@ -27,6 +27,67 @@ import type { SeoEntry } from "@/lib/store/types";
 /** Seuils indicatifs, repris par les compteurs du back-office. */
 export const SEO_LIMITES = { title: 60, description: 155 } as const;
 
+/**
+ * Raccourcit un texte à la limite, sans couper un mot en deux.
+ *
+ * ⚠ DEUX DÉFAUTS CORRIGÉS D'UN COUP. Les fiches d'annonce et d'agence
+ * faisaient `.slice(0, 160)` : d'abord 160 alors que ce fichier fixe 155
+ * et que le compteur du back-office mesure contre 155 — le client voyait
+ * donc en rouge des descriptions que le site venait de produire. Ensuite
+ * `slice` coupe où il tombe : « maison de plain-pied avec gar ».
+ *
+ * La coupe cherche la dernière frontière de mot, et l'ellipse dit que le
+ * texte continue. Un texte déjà assez court ressort intact.
+ */
+/**
+ * Ce qui reste à une page pour son titre, une fois le suffixe du gabarit
+ * ajouté.
+ *
+ * Le gabarit racine compose `%s — ${nomSite}` (layout.tsx). Le budget est
+ * donc calculé sur le nom par défaut : un client qui saisirait un nom plus
+ * long dans Réglages mangerait la marge — c'est une approximation assumée,
+ * et elle penche du bon côté tant que le nom ne s'allonge pas.
+ */
+export const BUDGET_TITRE = SEO_LIMITES.title - " — Maisons Essensya".length;
+
+/* ⚠ CES DEUX TITRES VIVAIENT EN DOUBLE : une fois dans le gabarit qui
+   les sert, une fois dans le défaut affiché en gris au client. Ils
+   sortaient à 61 et 64 signes — au-dessus de la limite que ce fichier
+   fixe et que le compteur du back-office applique. Une seule source,
+   et le client voit exactement ce qui part en ligne. */
+export const titreAccueil = (nomSite: string) =>
+  `${nomSite} — constructeur au prix juste, ${REEL.departement}`;
+
+export const titreGamme = () => `Nos modèles de maisons dès ${fmtPrice(PRICE_FROM)}`;
+
+/**
+ * Compose un titre en laissant tomber les compléments qui ne tiennent pas.
+ *
+ * Un complément est un « plus » : le prix d'une annonce, le département
+ * d'une agence. Utile quand il tient, jamais au prix d'un titre coupé par
+ * Google au milieu. L'ordre des arguments est l'ordre de priorité
+ * décroissante — le premier qui ne rentre pas est abandonné, les suivants
+ * sont quand même essayés.
+ */
+export function titreCourt(base: string, ...complements: string[]): string {
+  let t = base.trim().replace(/s+/g, " ");
+  for (const c of complements) {
+    const essai = `${t} — ${c.trim()}`;
+    if (c.trim() && essai.length <= BUDGET_TITRE) t = essai;
+  }
+  return t.length <= BUDGET_TITRE ? t : couper(t, BUDGET_TITRE);
+}
+
+export function couper(texte: string, max: number = SEO_LIMITES.description): string {
+  const t = texte.trim().replace(/s+/g, " ");
+  if (t.length <= max) return t;
+  /* −1 pour l'ellipse. On remonte au dernier espace, et on retire une
+     ponctuation laissée en bout de coupe. */
+  const brut = t.slice(0, max - 1);
+  const espace = brut.lastIndexOf(" ");
+  return `${(espace > max * 0.6 ? brut.slice(0, espace) : brut).replace(/[s,;:.-–—]+$/, "")}…`;
+}
+
 export interface SeoRoute {
   path: string;
   label: string;
@@ -59,7 +120,7 @@ export const SEO_ROUTES: SeoRoute[] = [
     label: "Accueil",
     aide: "La page la plus visitée. Son title sert aussi de titre de repli aux pages qui n'en définissent pas.",
     defaut: {
-      title: `Maisons Essensya — constructeur au prix juste dans les Landes`,
+      title: titreAccueil("Maisons Essensya"),
       description:
         `Une gamme de ${MODELES.length} modèles de maisons individuelles, optimisés jusqu'au ` +
         `dernier mètre carré. À partir de ${fmtPrice(PRICE_FROM)} — ${REEL.mentionPrix.toLowerCase()} ` +
@@ -70,7 +131,7 @@ export const SEO_ROUTES: SeoRoute[] = [
     path: "/maisons",
     label: "Nos modèles",
     defaut: {
-      title: `Nos modèles de maisons — à partir de ${fmtPrice(PRICE_FROM)}`,
+      title: titreGamme(),
       description:
         `Une gamme de ${MODELES.length} modèles de maisons individuelles, optimisés jusqu'au ` +
         `dernier mètre carré. À partir de ${fmtPrice(PRICE_FROM)} — ${REEL.mentionPrix.toLowerCase()} ` +
@@ -233,7 +294,26 @@ function fusionneTitle(fallback: Metadata["title"], titre: string): Metadata["ti
  * @param path     chemin de la route, tel qu'il figure dans `SEO_ROUTES`
  * @param fallback les `metadata` que la page produirait sans back-office
  */
-export async function resolveMetadata(path: string, fallback: Metadata): Promise<Metadata> {
+export async function resolveMetadata(
+  path: string,
+  fallbackBrut: Metadata,
+): Promise<Metadata> {
+  /* ⚠ LE DÉFAUT DU CODE EST BORNÉ ICI, ET UNE SEULE FOIS.
+     Les descriptions du gabarit se composent avec des données qui
+     bougent : le nombre de modèles, la liste des départements servis par
+     le flux, le nombre de terrains d'une commune. Écrites une fois sous
+     la limite, elles la dépassaient dès que le stock changeait — treize
+     pages sortaient au-dessus des 155 signes que ce fichier fixe et que
+     le compteur du back-office affiche au client.
+
+     La surcharge SAISIE PAR LE CLIENT, elle, n'est jamais coupée : c'est
+     son texte, le compteur l'avertit, et le tronquer en silence serait
+     lui reprendre une décision qu'on lui a explicitement donnée. */
+  const fallback: Metadata =
+    typeof fallbackBrut.description === "string"
+      ? { ...fallbackBrut, description: couper(fallbackBrut.description) }
+      : fallbackBrut;
+
   const cible = normalise(path);
   let entry: SeoEntry | undefined;
   try {

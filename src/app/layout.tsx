@@ -11,7 +11,7 @@ import { deptUrl, fmtPrice } from "@/lib/format";
 import { departementsPubliables } from "@/lib/geo";
 import { agencesPubliees } from "@/lib/agences";
 import { resoudreMedia } from "@/lib/medias";
-import { resolveMetadata } from "@/lib/seo";
+import { resolveMetadata, titreAccueil } from "@/lib/seo";
 import { getContent } from "@/lib/store";
 import type { ColonneFooter, LienMenu } from "@/lib/store/types";
 import { SITE_URL } from "@/lib/site-url";
@@ -159,7 +159,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const defaut: Metadata = {
     metadataBase: new URL(SITE_URL),
     title: {
-      default: `${nomSite} — constructeur au prix juste dans les Landes`,
+      default: titreAccueil(nomSite),
       template: `%s — ${nomSite}`,
     },
     description: DESCRIPTION_DEFAUT,
