@@ -13,8 +13,11 @@ const BASE = SITE_URL;
 /* Priorités : /maisons vaut l'accueil. C'est la page qui porte le prix
    et la gamme entière, et c'est elle que les requêtes de marque doivent
    atteindre — pas une page d'accueil de marque.
-   Les fiches de modèle restent en 0.6 : onze pages bâties sur le même
-   gabarit cannibaliseraient /maisons si on les remontait. */
+   Les fiches de modèle restent en 0.6. L'argument d'origine — onze pages
+   bâties sur le même gabarit cannibaliseraient /maisons — ne vaut plus
+   tel quel, puisqu'une seule est indexée. Il redeviendra vrai à mesure
+   que les caractéristiques arriveront, et d'ici là /maisons reste la
+   page qui doit capter les requêtes de gamme. */
 const STATICS: [string, number][] = [
   ["", 1],
   ["/maisons", 1],
@@ -77,8 +80,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
        promesse : une fiche sans surface ni prix n'est qu'une galerie, et
        en annoncer dix d'un coup fait exactement ce que Google sanctionne.
        Elles portent d'ailleurs `noindex` — les lister ici serait se
-       contredire. La liste est vide aujourd'hui, et se remplira toute
-       seule quand le client livrera ses caractéristiques. */
+       contredire. La liste contient Ankara depuis le 17/09, et se
+       remplira toute seule à mesure que les caractéristiques arriveront.
+
+       ⚠ L'`ItemList` DE /maisons, LUI, ANNONCE LES ONZE, et c'est
+       délibéré : un ItemList décrit ce que la page REND, il ne demande
+       pas l'indexation. N'en lister qu'un sur onze sous-décrirait la
+       page. Les deux fichiers ont dit le contraire l'un de l'autre assez
+       longtemps ; la règle est écrite des deux côtés. */
     ...modelesPubliables().map((m) => ({
       url: `${BASE}/maisons/${m.slug}`,
       changeFrequency: "monthly" as const,

@@ -5,6 +5,7 @@ import {
   plan as planVisuel,
   type Visuel,
 } from "./visuels";
+import { fmtSurface } from "@/lib/format";
 
 /* ════════════════════════════════════════════════════════════════
    LA GAMME — onze modèles, et ce qu'on en sait
@@ -14,8 +15,9 @@ import {
    d'après des capitales.
 
    ⚠ CE QU'ON N'A PAS, ET QU'ON N'INVENTERA PAS.
-   Aucune caractéristique n'a été transmise : ni surface, ni nombre de
-   chambres, ni prix par modèle. Un site de constructeur qui annonce
+   Un seul modèle est renseigné — Ankara, reçu le 17/09 — et il n'a même
+   pas de prix. Les dix autres n'ont ni surface, ni nombre de chambres,
+   ni prix. Un site de constructeur qui annonce
    « 92 m² » sur une maison dont personne ne connaît la surface expose
    son client bien au-delà du désagrément d'un chiffre faux — c'est un
    engagement commercial. Les champs sont donc OPTIONNELS, et le code
@@ -172,18 +174,113 @@ export const modelesAvecVisuels = (): Modele[] =>
 export const estPubliable = (m: Modele): boolean =>
   facade(m.slug) !== null && (m.surface !== undefined || m.prixDepart !== undefined);
 
-/** Les modèles réellement indexables aujourd'hui. Peut être vide, et l'est. */
+/** Les modèles réellement indexables. Ankara est le premier, depuis le 17/09. */
 export const modelesPubliables = (): Modele[] => CATALOGUE.filter(estPubliable);
 
 /**
- * Le catalogue est-il encore dépourvu de caractéristiques ?
+ * Reste-t-il des modèles montrables sans un seul chiffre ?
  *
- * Sert aux gabarits à choisir entre deux discours : présenter la gamme
- * par ses images en attendant, ou la présenter par ses chiffres une
- * fois qu'ils existent. Une seule condition à tester, au lieu de la
- * répéter dans chaque page.
+ * ⚠ CE N'EST PAS « AUCUN MODÈLE N'EST DOCUMENTÉ ». La fonction testait
+ * `modelesPubliables().length === 0`, ce qui était équivalent tant que
+ * les onze fiches étaient logées à la même enseigne. La surface d'Ankara
+ * a rompu l'équivalence : la bascule serait passée à `false`, effaçant
+ * de /maisons la phrase « les caractéristiques arrivent » AU MOMENT
+ * PRÉCIS où elle devient vraie pour les dix autres. Une grille de onze
+ * cartes dont une seule porte des chiffres, sans rien pour l'expliquer,
+ * c'est l'effet « site inachevé » que cette phrase existe pour éviter.
+ *
+ * Elle s'éteindra d'elle-même le jour où les onze seront documentés.
  */
-export const gammeSansCaracteristiques = (): boolean => modelesPubliables().length === 0;
+export const gammeIncomplete = (): boolean =>
+  modelesPubliables().length < modelesAvecVisuels().length;
+
+/* ──────────────────────────────────────────────────────────────────
+   CE QU'ON SAIT DIRE D'UN MODÈLE, ET EN UN SEUL ENDROIT
+
+   Trois pages composaient chacune leur version de la même phrase : la
+   fiche (title et description), l'écran Référencement du back-office
+   (le défaut affiché en gris au client) et la carte de la grille. Elles
+   avaient déjà divergé — le back-office promettait « La maison Ankara,
+   en images » là où la page servait ses 75 m².
+
+   ⚠ LE PRIX DE GAMME EST PASSÉ EN PARAMÈTRE, il n'est pas importé.
+   `essensya.ts` importe `MODELES` d'ici : lire `PRICE_FROM` depuis ce
+   fichier fermerait le cycle, et un `const` lu pendant l'initialisation
+   croisée des deux modules vaut `undefined` sans prévenir.
+   ────────────────────────────────────────────────────────────────── */
+
+/** Les caractéristiques connues, prêtes à énumérer. Vide si on ne sait rien. */
+export const specsModele = (m: Modele): string[] =>
+  [
+    m.surface !== undefined ? fmtSurface(m.surface) : null,
+    /* Le pluriel se calcule. Le gabarit écrivait « ${m.chambres} chambres »
+       en dur : le premier T2 du catalogue aurait affiché « 1 chambres »
+       dans un résultat Google. */
+    m.chambres !== undefined
+      ? `${m.chambres} chambre${m.chambres > 1 ? "s" : ""}`
+      : null,
+    m.pieces !== undefined ? `${m.pieces} pièces` : null,
+    m.garage === true ? "garage" : m.garage === false ? "sans garage" : null,
+  ].filter(Boolean) as string[];
+
+/** Le titre de la fiche, avec ce qu'on sait — et rien de plus. */
+export const titreModele = (m: Modele): string => {
+  const s = specsModele(m).slice(0, 2).join(", ");
+  return s ? `Maison ${m.nom} : ${s}` : `Maison ${m.nom}`;
+};
+
+/**
+ * La description servie à Google.
+ *
+ * ⚠ « DANS UNE GAMME À PARTIR DE », jamais « à partir de » tout court.
+ * La branche avec caractéristiques collait le prix d'appel au nom du
+ * modèle : « La maison Ankara : 75 m², 2 chambres […] à partir de
+ * 78 000 € ». À l'écran, la mention qui nomme Pékin rattrapait
+ * l'ambiguïté ; dans un résultat de recherche, rien ne la rattrape. Ce
+ * texte était invisible tant que la fiche portait `noindex` — il devient
+ * la vitrine du premier modèle indexé.
+ */
+export const descriptionModele = (m: Modele, prixGamme: string): string => {
+  const s = specsModele(m);
+  const queue = `Un plan optimisé jusqu'au dernier mètre carré, dans une gamme à partir de ${prixGamme} hors terrain.`;
+  return s.length > 0
+    ? `Maison ${m.nom} : ${s.join(", ")}. ${queue}`
+    : `La maison ${m.nom}, en images. ${queue}`;
+};
+
+/**
+ * Les modèles mis en avant hors contexte — le pied de page.
+ *
+ * Les publiables d'abord : ce sont les seules fiches qui peuvent
+ * recevoir du jus utilement. Le pied de page listait `MODELES.slice(0, 3)`,
+ * soit Ankara, Athènes et Berlin sur toutes les pages du site.
+ */
+export const modelesEnAvant = (n: number): Modele[] => [
+  ...modelesPubliables(),
+  ...modelesAvecVisuels().filter((x) => !estPubliable(x)),
+].slice(0, n);
+
+/**
+ * Les modèles voisins d'une fiche, pour le maillage interne.
+ *
+ * ⚠ CE N'ÉTAIT PAS UN `slice(0, 3)`. Les trois premiers de l'ordre
+ * alphabétique, c'est Ankara, Athènes et Berlin depuis les onze fiches —
+ * et Lisbonne, Londres et Pékin sans un seul lien entrant. Pékin est le
+ * modèle qui porte le prix d'appel du site.
+ *
+ * Les publiables d'abord, puis l'anneau à partir du modèle courant, pour
+ * qu'aucun ne reste orphelin. L'ordre est déterministe, donc stable en
+ * rendu statique, et la règle tient toute seule au douzième modèle.
+ */
+export const voisinsDe = (m: Modele, n: number): Modele[] => {
+  const tous = modelesAvecVisuels();
+  const i = tous.findIndex((x) => x.slug === m.slug);
+  const anneau = [...tous.slice(i + 1), ...tous.slice(0, i)];
+  return [
+    ...anneau.filter(estPubliable),
+    ...anneau.filter((x) => !estPubliable(x)),
+  ].slice(0, n);
+};
 
 /* ⚠ GARDE-FOU DE COHÉRENCE.
    Le catalogue ci-dessus est écrit à la main ; les visuels viennent d'un

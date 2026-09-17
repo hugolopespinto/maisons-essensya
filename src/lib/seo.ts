@@ -1,7 +1,12 @@
 import "server-only";
 import type { Metadata } from "next";
 import { PRICE_FROM, REEL } from "@/data/essensya";
-import { modelesAvecVisuels, MODELES } from "@/data/gamme";
+import {
+  descriptionModele,
+  modelesAvecVisuels,
+  titreModele,
+  MODELES,
+} from "@/data/gamme";
 import { fmtPrice } from "@/lib/format";
 import { getContent } from "@/lib/store";
 import type { SeoEntry } from "@/lib/store/types";
@@ -35,13 +40,16 @@ export interface SeoRoute {
   defaut: { title?: string; description?: string };
 }
 
-/* ⚠ Le défaut d'une fiche de modèle ne peut PAS citer de surface : nous
-   n'en avons aucune. Il nomme le modèle, ce qui est vrai, et rattache la
-   page au prix d'entrée de la gamme, qui l'est aussi. Le jour où les
-   caractéristiques arriveront, c'est ici qu'elles entreront. */
+/* ⚠ LES MÊMES CONSTRUCTEURS QUE LA PAGE, PAS UNE COPIE. Ce défaut est
+   affiché au client en placeholder gris de l'écran Référencement, sous la
+   promesse écrite que le gris est exactement ce qui part en ligne — et un
+   compteur de signes le mesure. Les deux textes avaient divergé dès la
+   première livraison : le back-office annonçait « La maison Ankara, en
+   images » là où la page servait « Maison Ankara : 75 m², 2 chambres ».
+   Le jour où les caractéristiques arrivent, les deux bougent ensemble. */
 const defautModele = (m: (typeof MODELES)[number]) => ({
-  title: `Maison ${m.nom} — Maisons Essensya`,
-  description: `La maison ${m.nom}, en images : un plan optimisé jusqu'au dernier mètre carré. Gamme à partir de ${fmtPrice(PRICE_FROM)} hors terrain.`,
+  title: `${titreModele(m)} — Maisons Essensya`,
+  description: descriptionModele(m, fmtPrice(PRICE_FROM)),
 });
 
 /** Les routes proposées à l'édition, dans l'ordre d'affichage. */
@@ -86,8 +94,12 @@ export const SEO_ROUTES: SeoRoute[] = [
   ...modelesAvecVisuels().map((m) => ({
     path: `/maisons/${m.slug}`,
     label: `Modèle — ${m.nom}`,
+    /* L'aide était servie aux onze entrées ; elle est fausse pour celles
+       qui ont leurs chiffres — leur titre les distingue déjà. */
     aide:
-      "Ces fiches se ressemblent beaucoup tant qu'elles n'ont pas leurs caractéristiques : donnez-leur des titres nettement différents, sinon Google choisit lui-même laquelle afficher.",
+      m.surface === undefined
+        ? "Ces fiches se ressemblent beaucoup tant qu'elles n'ont pas leurs caractéristiques : donnez-leur des titres nettement différents, sinon Google choisit lui-même laquelle afficher."
+        : undefined,
     defaut: defautModele(m),
   })),
   {

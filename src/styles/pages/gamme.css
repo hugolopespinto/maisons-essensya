@@ -36,9 +36,39 @@
    mérite l'échelle que les vues d'intérieur n'ont pas. */
 .g-fiche__galerie > :first-child{grid-column:1/-1}
 .g-fiche__vue{overflow:hidden;border-radius:var(--radius);background:var(--sable);aspect-ratio:16/10}
-.g-fiche__galerie > :first-child .g-fiche__vue{aspect-ratio:2/1}
+/* ⚠ SÉLECTEUR COMPOSÉ, PAS DESCENDANT. C'était
+   `> :first-child .g-fiche__vue` — un espace — alors que `.g-fiche__vue`
+   EST le premier enfant, pas un de ses descendants. La règle n'a donc
+   jamais rien stylé : la façade n'a jamais pris son format 2/1, ni son
+   annulation mobile. Corrigé, le rendu change — c'est la mise en page
+   que le code décrivait depuis le début. */
+.g-fiche__galerie > .g-fiche__vue:first-child{aspect-ratio:2/1}
+/* Sept modèles sur onze ont un nombre pair de vues : après la façade qui
+   prend toute la largeur, la dernière se retrouvait seule sur sa ligne,
+   à mi-largeur. Elle s'étale. */
+.g-fiche__galerie > .g-fiche__vue:last-child:nth-child(even){grid-column:1/-1}
 .g-fiche__vue img{width:100%;height:100%;object-fit:cover}
 @media (max-width:700px){
   .g-fiche__galerie{grid-template-columns:1fr}
-  .g-fiche__galerie > :first-child .g-fiche__vue{aspect-ratio:16/10}
+  .g-fiche__galerie > .g-fiche__vue:first-child{aspect-ratio:16/10}
 }
+
+/* ── LE H1 PORTEUR ──
+   Un seul H1, deux niveaux de lecture : le nom garde l'échelle
+   typographique, les caractéristiques s'inscrivent dessous en mono. */
+.p-head__nom{display:block}
+.p-head__specs{display:block;font-size:.32em;font-family:var(--f-mono);letter-spacing:.04em;color:var(--pierre);margin-top:var(--s-2)}
+
+/* Les ancres du premier écran. `#prix` et `#dossier` existaient sans
+   qu'aucun lien n'y mène. */
+.p-head__ancres{display:flex;flex-wrap:wrap;gap:var(--s-3) var(--s-4);margin-top:var(--s-4)}
+
+/* ── LE PLAN ──
+   `contain` et non `cover`, et une largeur bornée. Un plan recadré n'est
+   plus un plan : les axonométries livrées font 2160×1215, un cadre 4/3
+   leur mangerait un quart. Au-delà de ~900 px, elles s'étalent sans
+   mieux se lire. */
+.g-plan{padding:var(--s-6) 0}
+.g-plan__figure{max-width:900px;margin:0 auto}
+.g-plan__figure img{width:100%;height:auto;object-fit:contain;background:var(--sable);border-radius:var(--radius)}
+.g-plan__figure figcaption{margin-top:var(--s-2);font-size:var(--fs-small)}

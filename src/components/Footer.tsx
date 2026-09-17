@@ -1,7 +1,7 @@
 import Link from "next/link";
 import CookiePrefsLink from "@/components/CookiePrefsLink";
 import { REEL } from "@/data/essensya";
-import { MODELES } from "@/data/gamme";
+import { modelesEnAvant } from "@/data/gamme";
 import { fmtPrice, houseUrl } from "@/lib/format";
 
 /* ⚠ CETTE LISTE ÉTAIT ÉCRITE EN DUR, et elle était déjà fausse : elle
@@ -39,7 +39,10 @@ const colonnesDefaut = (zones: LienZone[]): ColonneChrome[] => [
        « Toute la gamme » mène au reste. */
     liens: [
       { href: houseUrl(), label: "Toute la gamme" },
-      ...MODELES.slice(0, 3).map((m) => ({ href: `/maisons/${m.slug}`, label: m.nom })),
+      /* Les publiables d'abord : `MODELES.slice(0, 3)` donnait Ankara,
+         Athènes et Berlin sur toutes les pages, et laissait Pékin — le
+         modèle qui porte le prix d'appel — sans lien depuis le pied. */
+      ...modelesEnAvant(3).map((m) => ({ href: `/maisons/${m.slug}`, label: m.nom })),
       { href: `${houseUrl()}#prix`, label: "Ce qui est compris" },
     ],
   },

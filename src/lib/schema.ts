@@ -126,6 +126,63 @@ export function produitGamme(): Noeud {
   };
 }
 
+/* ════ UN MODÈLE ════
+   Le pendant de `produitGamme()` à l'échelle d'une fiche, et il n'est
+   émis QUE si la fiche a quelque chose à déclarer.
+
+   ⚠ AUCUN `offers`, ET C'EST LE POINT DÉLICAT. Ankara a une surface mais
+   pas de prix : le seul montant disponible est celui de la gamme, qui
+   appartient à Pékin. L'attacher à un `Offer` sur /maisons/ankara serait
+   exactement la « donnée structurée trompeuse » décrite plus haut — un
+   engagement commercial sur un prix qui n'est pas celui du produit
+   balisé. L'`AggregateOffer` de la gamme reste sur /maisons, à sa place.
+
+   Ce qu'on déclare, ce sont les caractéristiques AFFICHÉES sur la page,
+   via `additionalProperty` : c'est le vocabulaire que schema.org prévoit
+   pour ce qu'aucune propriété native ne couvre, et il n'engage sur aucun
+   prix. Le jour où un modèle aura son `prixDepart`, l'`Offer` s'ajoutera
+   ici — et pas avant. */
+export function produitModele(
+  m: { nom: string; surface?: number; chambres?: number; pieces?: number; garage?: boolean },
+  imageSrc: string,
+  path: string,
+): Noeud {
+  const proprietes = [
+    m.surface !== undefined && {
+      "@type": "PropertyValue",
+      name: "Surface habitable",
+      value: m.surface,
+      unitCode: "MTK",
+    },
+    m.chambres !== undefined && {
+      "@type": "PropertyValue",
+      name: "Chambres",
+      value: m.chambres,
+    },
+    m.pieces !== undefined && {
+      "@type": "PropertyValue",
+      name: "Pièces",
+      value: m.pieces,
+    },
+    m.garage !== undefined && {
+      "@type": "PropertyValue",
+      name: "Garage",
+      value: m.garage ? "Oui" : "Non",
+    },
+  ].filter(Boolean);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: `Maison ${m.nom}`,
+    category: "Maison individuelle",
+    brand: { "@type": "Brand", name: "Maisons Essensya" },
+    image: [abs(imageSrc)],
+    url: abs(path),
+    additionalProperty: proprietes,
+  };
+}
+
 /* ════ UNE ANNONCE ════
    Un terrain, ou un terrain avec sa maison. On n'émet l'offre que si le
    prix existe réellement — le flux en livre à `null`. */

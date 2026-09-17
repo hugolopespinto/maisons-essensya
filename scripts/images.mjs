@@ -106,9 +106,22 @@ async function main() {
 
     catalogue[cle] = { nom: modele, vues: [] };
 
+    /* ⚠ DEUX FICHIERS QUI SE SLUGIFIENT PAREIL S'ÉCRASENT EN SILENCE.
+       « Plan RDC.png » et « plan-rdc.jpg » rendent la même clé : le second
+       remplacerait le premier sur le disque ET dans le catalogue, et le
+       journal annoncerait quand même deux vues. On s'arrête. */
+    const vues_ = new Set();
+
     for (const vue of vues) {
       const src = path.join(SOURCE, modele, vue);
       const base = slug(vue);
+      if (vues_.has(base)) {
+        throw new Error(
+          `Collision de nom dans ${modele} : « ${vue} » produit la clé ` +
+            `« ${base} », déjà prise. Renommez l'un des deux fichiers.`,
+        );
+      }
+      vues_.add(base);
       const meta = await sharp(src).metadata();
       const largeurSource = meta.width ?? 1376;
       const ratio = (meta.height ?? 768) / largeurSource;

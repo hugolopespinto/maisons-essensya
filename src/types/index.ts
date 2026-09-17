@@ -71,7 +71,8 @@ export interface HouseVersion {
   difference: string;
   /** [pièce, surface] */
   rooms_detail: [string, string][];
-  planImage: string;
+  /** `null` quand aucun plan ne décrit CETTE déclinaison — voir essensya.ts. */
+  planImage: string | null;
   image: string;
   alt: string;
   /** `modelSlug` Vitahome qui retombent sur cette déclinaison. */

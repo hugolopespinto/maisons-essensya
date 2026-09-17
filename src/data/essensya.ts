@@ -353,7 +353,15 @@ export const ESSENSYA_DATA: EssensyaData = {
         ["Entrée / dégagements", "9,3 m²"],
         ["Garage", "16,5 m²"],
       ],
-      planImage: IMG.plan,
+      /* ⚠ NULL, ET C'EST UNE CORRECTION. Ce champ pointait `IMG.plan`,
+         qui vient de devenir l'axonométrie réelle d'Athènes. Ces deux
+         déclinaisons sont celles inventées pour la maquette mono-produit ;
+         elles survivent parce que le flux Vitahome y renvoie encore par
+         `vitahomeSlugs`, et /annonces/[ref] lit `version?.planImage`. On
+         aurait donc servi le plan d'Athènes comme celui d'un produit dont
+         le détail de pièces annonce « Garage 16,5 m² » — un produit que ce
+         fichier documente lui-même comme inexistant. */
+      planImage: null,
       image: IMG.facadeLg,
       alt: "Maison Essensya en version 3 chambres",
       vitahomeSlugs: ["modele-c", "modele-b"],
@@ -379,7 +387,15 @@ export const ESSENSYA_DATA: EssensyaData = {
         ["Entrée / dégagements", "7,8 m²"],
         ["Garage", "14,5 m²"],
       ],
-      planImage: IMG.plan,
+      /* ⚠ NULL, ET C'EST UNE CORRECTION. Ce champ pointait `IMG.plan`,
+         qui vient de devenir l'axonométrie réelle d'Athènes. Ces deux
+         déclinaisons sont celles inventées pour la maquette mono-produit ;
+         elles survivent parce que le flux Vitahome y renvoie encore par
+         `vitahomeSlugs`, et /annonces/[ref] lit `version?.planImage`. On
+         aurait donc servi le plan d'Athènes comme celui d'un produit dont
+         le détail de pièces annonce « Garage 16,5 m² » — un produit que ce
+         fichier documente lui-même comme inexistant. */
+      planImage: null,
       image: IMG.facade,
       alt: "Maison Essensya en version 2 chambres",
       vitahomeSlugs: ["modele-a-1", "modele-a"],

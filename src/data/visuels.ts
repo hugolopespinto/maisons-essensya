@@ -10,12 +10,13 @@ import catalogue from "./visuels.json";
    réserve pas la place et la page saute au chargement — et une empreinte
    de 20 px qui tient le cadre en attendant le réseau.
 
-   ⚠ LES SOURCES ACTUELLES FONT 1376 px DE LARGE, et c'est le plafond :
-   le script ne fabrique jamais un palier plus grand que sa source. Sur
-   un écran très large, un bandeau pleine largeur sera donc légèrement
-   étiré. La limite est dans la livraison, pas dans le code — elle se
-   lève en redemandant les rendus en 2560 px, et les paliers
-   supplémentaires apparaîtront tout seuls au prochain passage du script.
+   ⚠ LE PLAFOND EST CELUI DE CHAQUE SOURCE, ET ELLES NE SE VALENT PLUS.
+   Le script ne fabrique jamais un palier plus grand que sa source. Les
+   rendus livrés en premier font 1376 px — sur un écran très large, un
+   bandeau pleine largeur sera légèrement étiré. Ceux de Pékin et les
+   plans font 1920 et 2160 px et produisent un palier de plus, tout
+   seuls. La limite est dans la livraison, pas dans le code : redemander
+   les premiers rendus en 2560 px suffit à la lever au prochain passage.
    ════════════════════════════════════════════════════════════════ */
 
 export interface Variante {

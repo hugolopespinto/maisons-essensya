@@ -5,7 +5,7 @@ import Compare from "@/components/Compare";
 import ModeleCard from "@/components/ModeleCard";
 import SpecList, { MarkedList } from "@/components/SpecList";
 import { ESSENSYA_DATA, HOUSE, PRICE_FROM, REEL } from "@/data/essensya";
-import { gammeSansCaracteristiques, modelesAvecVisuels, MODELES } from "@/data/gamme";
+import { gammeIncomplete, modelesAvecVisuels, MODELES } from "@/data/gamme";
 import { srcSet, vue } from "@/data/visuels";
 import { fmtPrice } from "@/lib/format";
 import { filAriane, jsonLd, listeSchema, produitGamme } from "@/lib/schema";
@@ -47,7 +47,7 @@ import "@/styles/pages/gamme.css";
    cherche une surface et n'en trouve aucune, sans explication, conclut
    que le site est inachevé. Lui dire que les fiches arrivent et lui
    offrir de demander le détail transforme le manque en prise de
-   contact. Il disparaîtra tout seul — voir `gammeSansCaracteristiques()`.
+   contact. Il disparaîtra tout seul — voir `gammeIncomplete()`.
    ════════════════════════════════════════════════════════════════ */
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -87,7 +87,7 @@ export default async function MaisonsPage() {
   const { pages } = await getContent();
   const t = lecteurBlocs(pages, "maison");
   const modeles = modelesAvecVisuels();
-  const enAttente = gammeSansCaracteristiques();
+  const enAttente = gammeIncomplete();
   const heroVisuel = vue("lisbonne", "vue-2-exterieur");
 
   return (
@@ -99,6 +99,13 @@ export default async function MaisonsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd(produitGamme()) }}
       />
+      {/* ⚠ LES ONZE, Y COMPRIS LES DIX EN `noindex`, ET C'EST DÉLIBÉRÉ.
+          Un `ItemList` décrit ce que la page REND ; il ne demande pas
+          l'indexation de ce qu'il liste. N'annoncer qu'Ankara
+          sous-décrirait une grille qui en montre onze. Le sitemap, lui,
+          est une promesse d'URL qui répondent : il n'annonce que les
+          publiables. Les deux règles sont écrites des deux côtés pour
+          qu'elles cessent de se contredire. */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -194,14 +201,16 @@ export default async function MaisonsPage() {
             ))}
           </div>
 
-          {/* Le manque, dit franchement, avec une sortie. Il s'efface de
-              lui-même dès qu'un modèle porte une surface ou un prix. */}
+          {/* Le manque, dit franchement, avec une sortie. Il s'efface le
+              jour où les ONZE modèles porteront leurs chiffres — pas dès
+              le premier : c'est exactement à ce moment-là que la phrase
+              devient vraie pour les dix autres. */}
           {enAttente && (
             <div className="g-attente">
               <p>
-                <strong>Les caractéristiques détaillées arrivent.</strong> Surfaces,
-                nombre de chambres, plans cotés et prix par modèle sont en cours de
-                mise en ligne.
+                <strong>Les caractéristiques arrivent modèle par modèle.</strong>{" "}
+                Surfaces, nombre de chambres et de pièces, et prix par modèle sont
+                en cours de publication.
               </p>
               <p>
                 Vous voulez le détail d&apos;un modèle dès maintenant ?{" "}
