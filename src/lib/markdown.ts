@@ -155,6 +155,64 @@ function liste(lignes: string[], motif: RegExp, balise: "ul" | "ol"): string {
 }
 
 /**
+ * Rend un bloc, titre compris, SANS PERDRE CE QUI LE SUIT.
+ *
+ * ⚠ LE DÉFAUT CORRIGÉ ICI FAISAIT DISPARAÎTRE DU TEXTE EN SILENCE. Le
+ * code reconnaissait un titre sur la première ligne d'un bloc, émettait
+ * le `<h2>`, puis passait au bloc suivant — jetant toutes les lignes
+ * restantes. Autrement dit, ceci :
+ *
+ *     ## Vos droits
+ *     Vous disposez d'un droit d'accès et d'effacement.
+ *
+ * rendait le titre, et rien d'autre. Le paragraphe n'apparaissait nulle
+ * part, aucune erreur n'était levée, et l'auteur ne pouvait s'en
+ * apercevoir qu'en relisant la page publique ligne à ligne.
+ *
+ * Personne ne l'avait vu parce que le blog, seul consommateur jusqu'ici,
+ * sépare naturellement ses titres par une ligne vide. Les pages légales
+ * vont être écrites par un juriste dans un champ de six lignes : l'oubli
+ * de la ligne vide y sera la norme, et le texte perdu serait du texte
+ * qui engage.
+ *
+ * Le titre est donc émis, puis LE RESTE est rendu à son tour — ce qui
+ * enchaîne correctement un titre suivi d'une liste ou d'un paragraphe.
+ */
+function rendreLignes(lignes: string[], html: string[]): void {
+  if (lignes.length === 0) return;
+  const premiere = lignes[0];
+
+  /* `###` avant `##`, l'inverse mangerait le troisième dièse. `#` seul
+     n'est pas reconnu : le h1 d'une page est son titre, saisi à part —
+     deux h1 dans une page est une erreur de référencement. */
+  const h3 = /^###\s+(.*)$/.exec(premiere);
+  if (h3) {
+    html.push(`<h3>${inline(h3[1].trim())}</h3>`);
+    rendreLignes(lignes.slice(1), html);
+    return;
+  }
+  const h2 = /^##\s+(.*)$/.exec(premiere);
+  if (h2) {
+    html.push(`<h2>${inline(h2[1].trim())}</h2>`);
+    rendreLignes(lignes.slice(1), html);
+    return;
+  }
+
+  if (PUCE.test(premiere)) {
+    html.push(liste(lignes, PUCE, "ul"));
+    return;
+  }
+  if (NUM.test(premiere)) {
+    html.push(liste(lignes, NUM, "ol"));
+    return;
+  }
+
+  /* Paragraphe : les retours à la ligne simples sont conservés en `<br />`.
+     Un auteur qui va à la ligne dans le champ attend de la voir. */
+  html.push(`<p>${lignes.map((l) => inline(l.trim())).join("<br />")}</p>`);
+}
+
+/**
  * Convertit du Markdown léger en HTML sûr.
  *
  * @param source Texte saisi dans le back-office. Peut être vide.
@@ -177,36 +235,7 @@ export function markdownToHtml(source: string): string {
     const bloc = brut.trim();
     if (!bloc) continue;
 
-    const lignes = bloc.split("\n");
-    const premiere = lignes[0];
-
-    /* Titres — `###` avant `##`, l'inverse mangerait le troisième dièse.
-       `#` seul n'est pas reconnu : le h1 d'un article est son titre, saisi
-       dans un champ dédié. Deux h1 dans une page est une erreur SEO. */
-    const h3 = /^###\s+(.*)$/.exec(premiere);
-    if (h3) {
-      html.push(`<h3>${inline(h3[1].trim())}</h3>`);
-      continue;
-    }
-    const h2 = /^##\s+(.*)$/.exec(premiere);
-    if (h2) {
-      html.push(`<h2>${inline(h2[1].trim())}</h2>`);
-      continue;
-    }
-
-    if (PUCE.test(premiere)) {
-      html.push(liste(lignes, PUCE, "ul"));
-      continue;
-    }
-    if (NUM.test(premiere)) {
-      html.push(liste(lignes, NUM, "ol"));
-      continue;
-    }
-
-    /* Paragraphe : les retours à la ligne simples sont conservés en `<br />`.
-       Un auteur qui va à la ligne dans le champ attend de la voir. */
-    const corps = lignes.map((l) => inline(l.trim())).join("<br />");
-    html.push(`<p>${corps}</p>`);
+    rendreLignes(bloc.split("\n"), html);
   }
 
   return html.join("\n");
