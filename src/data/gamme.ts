@@ -1,4 +1,10 @@
-import { modeles as modelesVisuels, facade, modele as modeleVisuels, type Visuel } from "./visuels";
+import {
+  modeles as modelesVisuels,
+  facade,
+  modele as modeleVisuels,
+  plan as planVisuel,
+  type Visuel,
+} from "./visuels";
 
 /* ════════════════════════════════════════════════════════════════
    LA GAMME — onze modèles, et ce qu'on en sait
@@ -57,8 +63,20 @@ export interface Modele {
   chambres?: number;
   /** Nombre de pièces principales. */
   pieces?: number;
-  /** Surface du garage, en m². */
-  garageSurface?: number;
+  /**
+   * Y a-t-il un garage — et rien de plus.
+   *
+   * Le champ était `garageSurface?: number`. Le client a tranché en
+   * livrant les chiffres d'Ankara : « indiquer s'il y a un garage ou
+   * pas, sa superficie n'est pas importante ». Demander une surface
+   * qu'il ne communiquera pas revenait à garantir que la ligne reste
+   * vide sur les onze fiches.
+   *
+   * `false` et `undefined` ne disent PAS la même chose : `false` =
+   * « pas de garage », information utile à afficher ; `undefined` =
+   * « on ne sait pas », et la ligne disparaît.
+   */
+  garage?: boolean;
   /** Prix maison seule, hors terrain et hors adaptation. */
   prixDepart?: number;
   /** Une phrase : pour qui ce modèle est fait. */
@@ -77,7 +95,11 @@ export interface Modele {
    tableau du client. Les remplir « en attendant » ferait disparaître le
    seul signal qui dit qu'ils manquent. */
 const CATALOGUE: Modele[] = [
-  { slug: "ankara", nom: "Ankara" },
+  /* Ankara : le SEUL modèle renseigné à ce jour, reçu le 17/09. Il n'a
+     pas de prix — le client ne l'a pas communiqué — mais sa surface
+     suffit à `estPubliable()`, ce qui en fait la première fiche
+     indexable du site. Les dix autres attendent leur tableau. */
+  { slug: "ankara", nom: "Ankara", surface: 75, chambres: 2, pieces: 3, garage: true },
   { slug: "athenes", nom: "Athènes" },
   { slug: "berlin", nom: "Berlin" },
   { slug: "dakar", nom: "Dakar" },
@@ -108,8 +130,19 @@ export const modeleParSlug = (slug: string): Modele | null =>
  */
 export const facadeDe = (m: Modele): Visuel | null => facade(m.slug);
 
-/** Toutes les vues d'un modèle, dans l'ordre livré. Vide si aucun visuel. */
-export const vuesDe = (m: Modele): Visuel[] => modeleVisuels(m.slug)?.vues ?? [];
+/**
+ * Les vues de la maison, dans l'ordre livré. Vide si aucun visuel.
+ *
+ * ⚠ LE PLAN EN EST EXCLU. Il vit dans le même catalogue, mais une
+ * axonométrie glissée au milieu des rendus se lit comme une photo de la
+ * maison — et surtout, elle mérite sa propre place sur la fiche : c'est
+ * ce que les visiteurs regardent en premier.
+ */
+export const vuesDe = (m: Modele): Visuel[] =>
+  (modeleVisuels(m.slug)?.vues ?? []).filter((v) => v.type !== "plan");
+
+/** Le plan axonométrique du modèle, ou `null` — neuf sur onze aujourd'hui. */
+export const planDe = (m: Modele): Visuel | null => planVisuel(m.slug);
 
 /**
  * Les modèles montrables : ceux qui ont au moins une image.

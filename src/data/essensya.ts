@@ -126,8 +126,11 @@ const IMG = {
   terrasse: V("hanoi", "vue-2-exterieur"),
   matiere: V("berlin", "vue-3-interieur"),
   volume: V("dublin", "vue-1-exterieur"),
-  /* ⚠ Ce n'est pas un plan : la livraison n'en contient pas. */
-  plan: V("jakarta", "vue-3-interieur"),
+  /* Enfin un vrai plan. Ce bloc s'intitule « Le plan » et s'appelle
+     « Zéro mètre carré perdu » ; il était illustré par l'intérieur d'un
+     autre modèle, faute de mieux. L'axonométrie d'Athènes est la seule
+     image qui démontre réellement ce que le texte affirme. */
+  plan: V("athenes", "plan-axonometrique"),
   chantier: V("londres", "vue-1-exterieur"),
   /* Aplat « sable » de 130 octets. Le navigateur résout `src=""` en
      rechargeant la page courante : le vide doit être explicite. */
@@ -404,7 +407,7 @@ export const ESSENSYA_DATA: EssensyaData = {
       text:
         "Une gamme de maisons individuelles optimisées pour les budgets serrés. Pas de dégagement inutile, pas de recoin qui ne sert à rien, une surface habitable où chaque mètre carré est habité. Des plans pensés et conçus pour optimiser chaque espace.",
       image: IMG.plan,
-      alt: "Intérieur d'une maison Essensya — volumes optimisés",
+      alt: "Plan axonométrique d'une maison Essensya — modèle Athènes",
       href: "/maisons",
       linkLabel: "Voir les plans de maisons",
     },

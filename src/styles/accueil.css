@@ -65,15 +65,22 @@
 .s-juste{padding:var(--s-7) 0;background:var(--vert-clair)}
 .s-juste__grid{display:grid;grid-template-columns:5fr 7fr;gap:var(--s-5)}
 .s-juste__note{margin-top:var(--s-3);color:var(--pierre);font-size:var(--fs-small);max-width:52ch}
-.s-juste__photos{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-3);margin-top:var(--s-5)}
+/* UNE GRANDE PUIS DEUX, et non trois à égalité : c'est la disposition
+   de la référence envoyée par le client. Trois vignettes de même taille
+   ne hiérarchisent rien ; la première image porte le modèle dont le
+   prix est annoncé juste au-dessus, elle doit dominer.
+
+   Les légendes sous les images sont biffées en rouge sur la référence :
+   il n'y en a pas, et il ne faut pas en remettre. */
+.s-juste__photos{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-3);margin-top:var(--s-5)}
 .s-juste__photo{aspect-ratio:4/3;overflow:hidden;border-radius:var(--radius);background-size:cover;background-position:center}
+.s-juste__photo:first-child{grid-column:1/-1;aspect-ratio:21/9}
 .s-juste__photo img{width:100%;height:100%;object-fit:cover}
 @media (max-width:900px){
   .s-juste__grid{grid-template-columns:1fr;gap:var(--s-4)}
-  .s-juste__photos{grid-template-columns:1fr 1fr}
-  /* Trois photos sur deux colonnes laisseraient un trou : la troisième
-     prend toute la largeur plutôt que la moitié. */
-  .s-juste__photo:last-child{grid-column:1/-1;aspect-ratio:16/9}
+  /* En colonne unique, un cadre 21/9 devient une bande trop basse pour
+     qu'on y lise une maison : la grande reprend le format des autres. */
+  .s-juste__photo:first-child{aspect-ratio:16/9}
 }
 
 /* ──────────────────────────────────────────────────────────────────

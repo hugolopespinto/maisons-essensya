@@ -33,7 +33,11 @@ export interface Visuel {
   /** Miniature encodée, posée en fond le temps du chargement. */
   empreinte: string;
   variantes: Variante[];
-  type: "exterieur" | "interieur";
+  /* « plan » désigne l'axonométrie 3D livrée par le client, pas un
+     rendu de la maison. Elle vit dans le même catalogue — mêmes
+     paliers, même empreinte, même srcset — mais aucune grille ni
+     galerie ne doit la servir comme une vue de plus. */
+  type: "exterieur" | "interieur" | "plan";
 }
 
 export interface Modele {
@@ -71,6 +75,17 @@ export function vue(cleModele: string, cleVue: string): Visuel {
 /** La première vue extérieure d'un modèle — sa façade de présentation. */
 export const facade = (cleModele: string): Visuel | null =>
   MODELES[cleModele]?.vues.find((v) => v.type === "exterieur") ?? null;
+
+/**
+ * Le plan axonométrique d'un modèle, ou `null`.
+ *
+ * `null` est le cas général aujourd'hui : le client n'a livré les plans
+ * que de deux modèles sur onze, et annonce les autres plus tard. Une
+ * section « le plan » doit donc disparaître entièrement quand il manque,
+ * pas afficher un cadre vide.
+ */
+export const plan = (cleModele: string): Visuel | null =>
+  MODELES[cleModele]?.vues.find((v) => v.type === "plan") ?? null;
 
 /**
  * Le `srcset` d'un format. C'est LUI qui répond à « des images plus

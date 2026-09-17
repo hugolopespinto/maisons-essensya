@@ -45,6 +45,18 @@ const PALIERS = [480, 720, 1024, 1440, 1920, 2560];
 
 const QUALITE = { webp: 78, avif: 50 };
 
+/* ⚠ LE NOM DU FICHIER EST LA SEULE SOURCE DU TYPE, et il ne dit pas
+   toujours « intérieur ». Le client nomme ses rendus par la pièce :
+   « Vue 3 séjour », « Vue 4 chambre 1 ». Tester le seul mot
+   « interieur » classait donc trois vues d'Ankara en extérieur, et la
+   fiche décrivait une chambre comme « vue extérieure » dans son texte
+   alternatif — lu par Google et par les lecteurs d'écran.
+
+   « terrasse » reste dehors de cette liste à dessein : une terrasse est
+   extérieure, et Pékin en a une. */
+const INTERIEUR =
+  /interieur|sejour|salon|chambre|cuisine|suite|dressing|salle|bain|douche|wc|degagement|buanderie|cellier/;
+
 /** « Vue 2 extérieur.png » → « vue-2-exterieur ». */
 const slug = (s) =>
   s
@@ -134,7 +146,13 @@ async function main() {
         hauteur: Math.round(largeurSource * ratio),
         empreinte: await empreinte(src),
         variantes,
-        type: /interieur/.test(base) ? "interieur" : "exterieur",
+        /* ⚠ LE PLAN N'EST PAS UNE VUE COMME LES AUTRES, et le distinguer
+           ici n'est pas cosmétique. `facade()` rend la PREMIÈRE vue de
+           type « exterieur » : un plan rangé dans cette catégorie
+           deviendrait la vignette du modèle dans les grilles, puisque
+           « Plan… » précède « Vue 1… » dans l'ordre alphabétique. Le
+           catalogue afficherait onze plans au lieu de onze maisons. */
+        type: /^plan/.test(base) ? "plan" : INTERIEUR.test(base) ? "interieur" : "exterieur",
       });
     }
     console.log(`  ${modele.padEnd(12)} ${vues.length} vues`);

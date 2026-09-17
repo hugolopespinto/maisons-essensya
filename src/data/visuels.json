@@ -3,6 +3,46 @@
     "nom": "Ankara",
     "vues": [
       {
+        "cle": "plan-axonometrique",
+        "src": "/maisons/ankara/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRi4BAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSIgAAAABgFrbtmpn7XOe/qy+CqcMZrAoOUVwL7FpIDqOLDUQ9WU49/F7NUTEBKgIBphRXiJn97SBXCWA5Kx8Jc8bPWrKWXgP4ffuaa9RFTH1kYQkTpKP+z4qcaY/k/+QhL/kGpMEICZvk/g/TgbjeAWGnQySn+SKSFW4M3STvHWwGpJFcLSJq5bkhkylVlA4IIAAAADQAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JZwAD4ilsYYIU2ViUJ8AA/uyd53a6YhPdVd5q/owOjrML/iZ9y/mOuuvfxOnS+V+r4wSdYp6eg+DX767OkQkeD1TXXxyD2L27kn5L8odY8+m92Ar/rplah13/J+Sf/b7ng+um5TdYAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/ankara/plan-axonometrique-480.avif",
+            "webp": "/maisons/ankara/plan-axonometrique-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/ankara/plan-axonometrique-720.avif",
+            "webp": "/maisons/ankara/plan-axonometrique-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/ankara/plan-axonometrique-1024.avif",
+            "webp": "/maisons/ankara/plan-axonometrique-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/ankara/plan-axonometrique-1440.avif",
+            "webp": "/maisons/ankara/plan-axonometrique-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/ankara/plan-axonometrique-1920.avif",
+            "webp": "/maisons/ankara/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/ankara/plan-axonometrique.avif",
+            "webp": "/maisons/ankara/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
+      {
         "cle": "vue-1-avant",
         "src": "/maisons/ankara/vue-1-avant.webp",
         "largeur": 1376,
@@ -90,7 +130,7 @@
             "webp": "/maisons/ankara/vue-3-sejour.webp"
           }
         ],
-        "type": "exterieur"
+        "type": "interieur"
       },
       {
         "cle": "vue-4-chambre-1",
@@ -120,7 +160,7 @@
             "webp": "/maisons/ankara/vue-4-chambre-1.webp"
           }
         ],
-        "type": "exterieur"
+        "type": "interieur"
       },
       {
         "cle": "vue-5-chambre-2",
@@ -150,13 +190,53 @@
             "webp": "/maisons/ankara/vue-5-chambre-2.webp"
           }
         ],
-        "type": "exterieur"
+        "type": "interieur"
       }
     ]
   },
   "athenes": {
     "nom": "Athènes",
     "vues": [
+      {
+        "cle": "plan-axonometrique",
+        "src": "/maisons/athenes/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRl4BAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSKYAAAABgFtte0Ll/ZIreOUT0DvMAb1b6dBxWAFaSq0oWYDWS1/A3ZP8RS47RMQEKHcOoOBFxczTuDHTXgK8ExU9Nft2+7k331niX0ftZgjBPn8fTlf6azNR2rJgKaWQbP3wACSqd+3PLMW/aPHFdvBydH1biBaTWYjBpikKMXBj0e4H154tpd8OvEDUTl/YKmpbPrezEk6AFw3jLRSgaqgfrwwVhJN8QSgHVlA4IJIAAACQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JZQAEQW8YiYAPlOXZWDbFmx3+q8AA/s4HOmkqm6Yygm+W71cafQ+k5jePUVT+M0PjHx9ZUlMUN9R9l3uKypOU0B0e8Y60oGAMHYSUZiJXO3fxIeLjHBQhuXETWjz5mdqE0P7t5pwf8D+zmA+lUCw2HcDJKgagG4oAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/athenes/plan-axonometrique-480.avif",
+            "webp": "/maisons/athenes/plan-axonometrique-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/athenes/plan-axonometrique-720.avif",
+            "webp": "/maisons/athenes/plan-axonometrique-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/athenes/plan-axonometrique-1024.avif",
+            "webp": "/maisons/athenes/plan-axonometrique-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/athenes/plan-axonometrique-1440.avif",
+            "webp": "/maisons/athenes/plan-axonometrique-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/athenes/plan-axonometrique-1920.avif",
+            "webp": "/maisons/athenes/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/athenes/plan-axonometrique.avif",
+            "webp": "/maisons/athenes/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
       {
         "cle": "vue-1-avant",
         "src": "/maisons/athenes/vue-1-avant.webp",

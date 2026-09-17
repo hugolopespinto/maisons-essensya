@@ -100,7 +100,10 @@ export default async function ModelePage({
     m.surface !== undefined ? ["Surface habitable", fmtSurface(m.surface)] : null,
     m.chambres !== undefined ? ["Chambres", String(m.chambres)] : null,
     m.pieces !== undefined ? ["Pièces", String(m.pieces)] : null,
-    m.garageSurface !== undefined ? ["Garage", fmtSurface(m.garageSurface)] : null,
+    /* « Oui » / « Non », et non une surface : le client a dit que la
+       superficie du garage n'avait pas d'importance. `false` s'affiche
+       donc, `undefined` fait disparaître la ligne. */
+    m.garage !== undefined ? ["Garage", m.garage ? "Oui" : "Non"] : null,
   ].filter(Boolean) as [string, string][];
 
   return (
