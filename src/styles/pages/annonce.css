@@ -95,3 +95,18 @@
   .a-cta__panel{animation:none}
   .a-house__media img{transition:none}
 }
+
+/* ⚠ LA BARRE FIXE SUR LES TRÈS PETITS ÉCRANS.
+   `.a-cta__bar .c-btn { flex:none }` interdit au bouton de se serrer,
+   et le prix porte `white-space:nowrap`. À 320 px, les deux ensemble ne
+   tenaient plus : « 238 000 € » était rogné de 15 px, c'est-à-dire que
+   le visiteur lisait « 238 000 » sans savoir si c'était la fin. Un prix
+   coupé sur une barre d'achat est le pire endroit possible.
+
+   Le bouton cède en premier — son libellé est connu du contexte, le
+   montant non. */
+@media (max-width: 400px) {
+  .a-cta__bar { gap: var(--s-1); padding-inline: var(--s-2); }
+  .a-cta__bar .c-btn { flex: 0 1 auto; min-width: 0; padding-inline: 1rem; }
+  .a-cta__price strong { white-space: normal; }
+}

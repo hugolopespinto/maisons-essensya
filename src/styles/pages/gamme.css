@@ -57,7 +57,10 @@
    Un seul H1, deux niveaux de lecture : le nom garde l'échelle
    typographique, les caractéristiques s'inscrivent dessous en mono. */
 .p-head__nom{display:block}
-.p-head__specs{display:block;font-size:.32em;font-family:var(--f-mono);letter-spacing:.04em;color:var(--pierre);margin-top:var(--s-2)}
+/* `.32em` du H1 : sur téléphone, où le titre descend à 2.1rem, cela
+   faisait 11,3 px — sous le seuil de lisibilité. Le plancher garde la
+   proportion sur grand écran et la rattrape sur petit. */
+.p-head__specs{display:block;font-size:max(.75rem,.32em);font-family:var(--f-mono);letter-spacing:.04em;color:var(--pierre);margin-top:var(--s-2)}
 
 /* Les ancres du premier écran. `#prix` et `#dossier` existaient sans
    qu'aucun lien n'y mène. */
@@ -72,3 +75,10 @@
 .g-plan__figure{max-width:900px;margin:0 auto}
 .g-plan__figure img{width:100%;height:auto;object-fit:contain;background:var(--sable);border-radius:var(--radius)}
 .g-plan__figure figcaption{margin-top:var(--s-2);font-size:var(--fs-small)}
+
+/* Le lien « Étape suivante » débordait de 3 px à 320 px : son
+   libellé et sa flèche ne se pliaient pas. */
+@media (max-width: 400px) {
+  .g-next a, .m-next a { flex-wrap: wrap; min-width: 0; }
+  .g-next__name, .m-next__name { overflow-wrap: break-word; min-width: 0; }
+}

@@ -42,13 +42,18 @@ export const MARKETING_TEXT =
 /** Nom du champ leurre. Doit rester identique côté API (route.ts). */
 export const HONEYPOT_FIELD = "company";
 
+/* ⚠ 24 px, PAS 17. La WCAG 2.2 (critère 2.5.8) fixe 24 × 24 px comme
+   taille minimale d'une cible tactile ; la case en faisait 17, mesuré au
+   navigateur en 360 px de large. Et ce n'est pas une case ordinaire :
+   sans elle le formulaire ne part pas, donc la rater c'est ne pas
+   pouvoir demander un devis depuis un téléphone. */
 const CHECKBOX: CSSProperties = {
   appearance: "auto",
-  width: "1.05rem",
-  height: "1.05rem",
+  width: "1.5rem",
+  height: "1.5rem",
   padding: 0,
   flex: "none",
-  marginTop: ".15rem",
+  marginTop: ".05rem",
   accentColor: "var(--bois)",
 };
 

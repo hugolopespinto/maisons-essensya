@@ -8,3 +8,21 @@
 .ct-direct{margin-top:var(--s-4);border-top:var(--line);padding-top:var(--s-3);font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre)}
 .ct-direct a{color:var(--bois)}
 
+
+/* ⚠ `min-width:0` — LE DÉFAUT LE PLUS SUBTIL DU RELEVÉ MOBILE.
+   Sur un téléphone de 360 px, la grille calculait une colonne de
+   347 px dans une zone de contenu de 320. La cause n'est pas la
+   largeur demandée — elle vaut bien `1fr` sous 900 px — mais la règle
+   par défaut des éléments de grille : `min-width:auto` leur interdit de
+   descendre sous la largeur minimale de leur contenu. Avec 40 px de
+   marge intérieure de chaque côté, la carte du formulaire ne pouvait
+   plus se serrer, et la page se décalait de 7 px vers la droite.
+
+   La marge intérieure descend aussi : 80 px de marge sur 360 px
+   d'écran, c'est un quart de la largeur perdu avant le premier mot. */
+.ct-body .container > * { min-width: 0; }
+
+@media (max-width: 600px) {
+  .ct-body .container { gap: var(--s-4); }
+  .ct-form-card { padding: var(--s-3); }
+}

@@ -532,3 +532,81 @@ body:has(.adm) .c-cookies { display: none !important; }
   .adm-field select,
   .adm-field textarea { transition: none; }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   LE BACK-OFFICE SUR UN TÉLÉPHONE
+
+   Le client administre son site depuis l'appareil qu'il a sous la main,
+   et ce n'est pas toujours un ordinateur. Relevé au navigateur en
+   360 px sur les quinze écrans : aucune page ne déborde, mais les
+   cibles tactiles sont sous le seuil de 24 × 24 px de la WCAG 2.2.
+
+   Les cases à cocher sortaient à 13 px — la moitié du minimum. Ce sont
+   elles qui publient un article, rendent une agence visible ou
+   marquent une annonce enrichie : les rater, c'est publier autre chose
+   que ce qu'on croyait.
+   ══════════════════════════════════════════════════════════════════ */
+.adm-field input[type="checkbox"],
+.adm-field input[type="radio"],
+.adm-check input {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: none;
+}
+
+/* Un `<summary>` et les boutons discrets se touchent aussi. */
+.adm-card summary,
+.adm-field button,
+.adm-note button {
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Les cases restées hors d'un `.adm-field` — l'écran Tracking en a une,
+   et c'est elle qui arme la mesure d'audience. */
+.adm-card input[type="checkbox"],
+.adm-card input[type="radio"] { width: 1.5rem; height: 1.5rem; flex: none; }
+
+/* Les boutons discrets « parcourez votre ordinateur » et consorts. */
+.adm-card button { min-height: 24px; }
+
+/* Deux actions côte à côte dans 140 px : elles passent l'une sous
+   l'autre plutôt que de sortir du cadre. */
+.adm-actions--serre { flex-wrap: wrap; }
+
+/* Le chemin rappelé sous le nom d'une page tombait à 10,7 px. */
+.adm-list small.u-muted,
+.adm-card small.u-muted { font-size: max(.75rem, .85em); }
+
+/* Les liens des tableaux de listes — le nom d'une page, d'un article,
+   d'une agence. C'est la seule façon d'ouvrir une fiche, et ils
+   faisaient 17 px de haut. */
+@media (max-width: 900px) {
+  .adm-table a,
+  .adm-table th a,
+  .adm-table td a { display: inline-flex; align-items: center; min-height: 24px; }
+}
+
+/* Les liens hors tableau — fil d'Ariane de l'éditeur de page, retours. */
+@media (max-width: 900px) {
+  .adm-head a,
+  .adm-fil a,
+  .adm-card th a,
+  .adm-card td a { display: inline-flex; align-items: center; min-height: 24px; }
+}
+
+/* Un libellé long dans une colonne de 140 px : il se plie au lieu de
+   pousser le cadre. */
+.adm-actions--serre { min-width: 0; }
+.adm-actions--serre button,
+.adm-actions--serre a { white-space: normal; min-width: 0; text-align: left; }
+
+/* Le sélecteur de média : aperçu, libellé et deux boutons dans une
+   colonne de 230 px. L'ensemble se met en colonne plutôt que de pousser
+   le cadre. */
+@media (max-width: 400px) {
+  .adm-field > .adm-row,
+  .adm-field > div:has(> .adm-actions--serre) { flex-wrap: wrap; min-width: 0; }
+  .adm-grid { min-width: 0; }
+}

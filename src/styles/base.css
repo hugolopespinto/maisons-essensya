@@ -397,3 +397,125 @@ body.lp-mode .header-cta{display:inline-flex}
    noir sur blanc : 21:1, le maximum possible. */
 .c-btn--blanc{background:var(--blanc);border-color:var(--blanc);color:var(--anthracite)}
 .c-btn--blanc:hover{background:transparent;color:var(--blanc)}
+
+/* ══════════════════════════════════════════════════════════════════
+   TÉLÉPHONE — ce que la mesure a remonté, et rien d'autre
+
+   Relevé au navigateur sur 47 pages en 360 px de large, écrans du
+   back-office compris. La bonne nouvelle d'abord : AUCUN DÉBORDEMENT
+   HORIZONTAL DE PAGE. La mise en page tient. Ce qui suit corrige trois
+   familles de défauts, toutes mesurées, aucune supposée.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── 1. LES MOTS QUI DÉPASSENT ──
+   Un titre en capitales étroites peut tenir sur un seul mot plus large
+   que l'écran : « CONSTRUISONS » sortait à 339 px dans une colonne de
+   320 sur /terrains. Deux garde-fous complémentaires — la coupure de
+   mot ne sert qu'aux cas extrêmes (un nom de commune à rallonge), le
+   plancher de taille évite d'y arriver. */
+h1, h2, h3 { overflow-wrap: break-word; }
+
+/* ── 2. LES CIBLES TACTILES ──
+   La WCAG 2.2 (critère 2.5.8) demande 24 × 24 px. Les cases de
+   consentement en faisaient 17, et ce sont elles qu'il faut atteindre
+   pour envoyer une demande : le formulaire ne part pas sans. Sur un
+   pouce, 17 px se rate. Les liens légaux du pied de page, empilés à
+   18 px de haut, tombaient sous le seuil pour la même raison. */
+@media (max-width: 900px) {
+  .site-footer nav a,
+  .site-footer nav button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+  }
+}
+
+/* ── 3. LE TEXTE TROP PETIT ──
+   `--fs-label` vaut .72rem, soit 11,5 px : en dessous du seuil que
+   Google retient pour « texte lisible sur mobile », et c'est le corps
+   de TOUS les intitulés de champ, des boutons, du fil d'Ariane et du
+   pied de page. On ne touche qu'au téléphone — l'échelle de la maquette
+   reste intacte sur grand écran.
+
+   Le seuil est à 820 px pour couvrir la tablette en portrait — 768, 810
+   et 820 px sont les largeurs des iPad —, et non 600 : c'est aussi un
+   appareil tactile, tenu à la même distance qu'un téléphone.
+
+   ⚠ Conséquence assumée : ces éléments s'élargissent un peu, capitales
+   et interlettrage compris. Le relevé a été rejoué à cinq largeurs pour
+   vérifier que rien ne déborde. */
+@media (max-width: 820px) {
+  :root { --fs-label: .8rem; }
+}
+@media (max-width: 600px) {
+  :root {
+    --fs-hero: clamp(2.1rem, 8vw, 6.8rem);
+  }
+  /* Le bouton garde sa hauteur de doigt malgré le texte plus grand. */
+  .c-btn { padding: .95rem 1.4rem; }
+}
+
+/* ── 4. UNE LISTE DE SPÉCIFICATIONS QUI NE SE PLIAIT PAS ──
+   `.c-specs li` aligne un intitulé et sa valeur aux deux bouts d'une
+   ligne, l'intitulé en `flex:none`. À 360 px, les deux ensemble
+   faisaient 425 px : la valeur sortait de l'écran sur
+   /confidentialite, où ces lignes portent le détail des traitements de
+   données. Elles passent l'une sous l'autre. */
+@media (max-width: 520px) {
+  .c-specs li { flex-wrap: wrap; gap: .25rem; }
+  .c-specs li > span:last-child { width: 100%; text-align: left; }
+}
+
+/* ── 5. LE RESTE DU RELEVÉ TACTILE ET TYPOGRAPHIQUE ──
+   Trois derniers points mesurés en 360 px, après les correctifs
+   précédents. Le fil d'Ariane est présent sur toutes les pages
+   intérieures : ses liens faisaient 20 px de haut, et c'est le seul
+   moyen de remonter d'une fiche. Le « à partir de » des cartes
+   d'annonce tombait à 11,7 px, juste sous le seuil, parce qu'un
+   `<small>` sans taille propre hérite du 0,83 em du navigateur. */
+@media (max-width: 900px) {
+  .c-breadcrumb a,
+  .c-breadcrumb > span { display: inline-flex; align-items: center; min-height: 24px; }
+}
+/* ⚠ NE PAS ÉTENDRE CETTE RÈGLE À `.c-price-xl small`. Cette mention-là
+   hérite volontairement de `--fs-label` ; un `.8em` y vaut 0,8 fois le
+   prix géant, soit 41 px — essayé, mesuré, et la mention sortait de
+   l'écran. Le défaut ne concernait que la carte d'annonce. */
+.c-annonce__price small { font-size: max(.75rem, .9em); }
+
+/* ── 6. LE GRAND PRIX DÉBORDAIT ──
+   `clamp(3rem, 8vw, 6rem)` : sous 375 px de large, c'est le PLANCHER de
+   3rem qui s'applique, pas le `8vw`. « 78 000 € » en 48 px de chasse
+   fixe mesure 351 px — dans une colonne de 320. Le chiffre le plus
+   important du site sortait de l'écran sur l'accueil et sur /maisons,
+   c'est-à-dire sur les deux pages qui le portent.
+
+   Le plancher descend donc là où la fenêtre l'exige. `min()` compare le
+   plancher à une part de la largeur réelle : le prix occupe au plus
+   13 % de l'écran par caractère, quelle que soit la longueur du
+   montant — un prix à six chiffres tiendra comme celui-ci. */
+.c-price-xl { font-size: clamp(min(3rem, 13vw), 8vw, 6rem); }
+
+
+/* ── 7. LES CARTES D'AGENCE ──
+   Le nom de l'agence et son numéro de téléphone sont deux liens, et le
+   téléphone est l'action la plus utile de la page depuis un mobile. Ils
+   faisaient 18 et 21 px de haut. */
+@media (max-width: 900px) {
+  .c-agency-card a,
+  .c-agency-card__body a,
+  a[href^="tel:"] { display: inline-flex; align-items: center; min-height: 24px; }
+}
+
+/* ── 8. LES CHAMPS QUI REFUSAIENT DE SE SERRER ──
+   Même cause que la grille de /contact : un `<input>` a une largeur
+   intrinsèque d'une vingtaine de caractères, et `min-width:auto` sur un
+   élément de grille lui interdit de descendre en dessous. Sur un écran
+   de 320 px, le champ « Prénom & nom » réclamait 267 px dans une
+   colonne de 232 — alors que la grille, elle, était déjà passée à une
+   seule colonne. */
+.c-form__row > *,
+.c-field { min-width: 0; }
+.c-field input,
+.c-field select,
+.c-field textarea { max-width: 100%; }
