@@ -184,7 +184,13 @@ export default function Header({
     <img
       src={logoAffiche}
       alt=""
-      style={{ display: "block", height: "2.1rem", width: "auto" }}
+      /* ⚠ 2,6 rem, PAS 2,1. Le logo de la charte est HORIZONTAL : la
+         maison, puis « Maisons », puis « ESSENSYA » sur une seule ligne.
+         À 2,1 rem, cette composition rend le nom illisible — le raster
+         précédent tenait à cette hauteur parce qu'il était empilé et
+         recadré. La barre fait 76 px : 42 px de logo y laissent encore
+         17 px de respiration de chaque côté. */
+      style={{ display: "block", height: "2.6rem", width: "auto" }}
     />
   ) : (
     <>

@@ -224,12 +224,21 @@ export default async function RootLayout({ children }: { children: React.ReactNo
      absent. Les Réglages, eux, restent prioritaires : un client qui
      téléverse son logo le voit aux deux endroits.
 
-     La variante 1 en en-tête (maison + ESSENSYA) plutôt que le logo
-     complet : la barre fait 76 px, et le logo complet y réduirait
-     « Constructeur de maisons » à une ligne illisible. */
+     ⚠ EN SVG DEPUIS LE FICHIER VECTORIEL DU CLIENT. Les deux rasters
+     précédents étaient recadrés sur la maison et le mot ESSENSYA, dont
+     ils coupaient le premier E et le dernier A, et ils perdaient le mot
+     « Maisons ». À la hauteur du bandeau, le vectoriel rend le logo
+     COMPLET et horizontal, net sur tous les écrans, et plus léger que
+     le raster qu'il remplace — 6,9 Ko contre 16,1 pour la variante
+     claire.
+
+     ⚠ LE MOT « MAISONS » A ÉTÉ VECTORISÉ. Le fichier livré le portait
+     en élément <text> dans une police (Poppins Light) que ce site ne
+     charge pas — et qu'un SVG servi comme image ne peut pas charger.
+     Il se serait affiché dans la police de repli du navigateur. */
   const logoTeleverse = await resoudreMedia(reglages.logo);
-  const logo = logoTeleverse ?? "/marque/logo.webp";
-  const logoPied = logoTeleverse ?? "/marque/logo-blanc.webp";
+  const logo = logoTeleverse ?? "/marque/logo.svg";
+  const logoPied = logoTeleverse ?? "/marque/logo-blanc.svg";
 
   const reseaux = RESEAUX.map(([cle, label]) => ({
     label,
