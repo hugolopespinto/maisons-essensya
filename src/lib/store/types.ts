@@ -234,6 +234,15 @@ export interface BlocEditable {
   valeur: string;
   /** Rendu en zone de texte plutôt qu'en ligne unique. */
   multiligne?: boolean;
+  /**
+   * Le bloc contient du Markdown — corps d'une section légale.
+   *
+   * Change trois choses dans le back-office : un champ nettement plus
+   * haut (quelques centaines de mots, pas une ligne d'adresse), l'aide
+   * de syntaxe sous le champ, et la liste des éléments entre doubles
+   * accolades que ce corps doit conserver.
+   */
+  format?: "markdown";
 }
 
 export interface PageEditable {

@@ -3,6 +3,7 @@ import Link from "next/link";
 import Script from "next/script";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
+import { verifierCorps } from "@/lib/legal/verifier";
 import { CHEMIN_PUBLIC, PAGES_DEFAUT, getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
 import { assertAdmin, requireAdmin } from "../../actions";
@@ -83,12 +84,12 @@ export default async function EditionPagePage({
   searchParams,
 }: {
   params: Promise<{ cle: string }>;
-  searchParams: Promise<{ ok?: string }>;
+  searchParams: Promise<{ ok?: string; err?: string }>;
 }) {
   await requireAdmin();
 
   const { cle } = await params;
-  const { ok } = await searchParams;
+  const { ok, err } = await searchParams;
 
   /* La structure fait foi : une clé qui n'est pas au catalogue ne
      désigne aucun gabarit, donc aucune page à éditer. 404 franc plutôt
@@ -143,6 +144,25 @@ export default async function EditionPagePage({
       const k = txt(formData.get(`cle_${Number(arg)}`));
       const bloc = origine.blocs.find((b) => b.cle === k);
       if (bloc) saisies.set(bloc.cle, bloc.valeur);
+    }
+
+    /* ⚠ LES CORPS LÉGAUX SONT VÉRIFIÉS AVANT D'ÊTRE ÉCRITS. Un
+       paragraphe réécrit peut faire disparaître une mention obligatoire
+       ou le bouton de retrait du consentement sans que rien ne casse : la
+       page s'affiche, simplement sans l'assurance décennale. On refuse
+       l'enregistrement et on dit lequel manque. Tout le reste du texte
+       reste libre — c'est le but de l'opération. */
+    const refus: string[] = [];
+    for (const b of origine.blocs) {
+      if (b.format !== "markdown") continue;
+      const saisi = saisies.get(b.cle);
+      if (saisi === undefined) continue;
+      for (const e of verifierCorps(saisi, b.valeur)) refus.push(`${b.label} — ${e}`);
+    }
+    if (refus.length) {
+      redirect(
+        `/admin/pages/${encodeURIComponent(cle)}?err=${encodeURIComponent(refus.join(" · "))}`,
+      );
     }
 
     /* On réenregistre la page ENTIÈRE à partir de la définition : la
@@ -230,6 +250,14 @@ export default async function EditionPagePage({
         ) : null}
       </div>
 
+      {/* Un refus doit être lisible par un juriste, pas par un
+          développeur : il nomme la mention perdue et rappelle comment la
+          réécrire. */}
+      {err ? (
+        <p className="adm-note" role="alert" style={{ borderColor: "var(--bois)" }}>
+          <strong>Enregistrement refusé.</strong> {err}
+        </p>
+      ) : null}
       {ok === "1" ? (
         <p className="adm-note" role="status">
           Textes enregistrés.{" "}
@@ -276,10 +304,18 @@ export default async function EditionPagePage({
                 {bloc.label}
               </label>
               {bloc.multiligne ? (
+                /* ⚠ `data-format` CHANGE LA HAUTEUR DU CHAMP, et ce n'est
+                   pas cosmétique. La règle d'origine donne 9 rem, soit six
+                   lignes : le hublot a été dimensionné pour une adresse
+                   d'hébergeur. Une section de politique de données en fait
+                   quatre cents mots — l'éditer dans six lignes revient à
+                   relire un contrat par le trou d'une serrure, et c'est
+                   ainsi qu'on oublie un paragraphe. */
                 <textarea
                   id={idChamp}
                   name={idChamp}
-                  rows={4}
+                  rows={bloc.format === "markdown" ? 20 : 4}
+                  data-format={bloc.format}
                   defaultValue={bloc.valeur}
                   placeholder={defaut}
                 />

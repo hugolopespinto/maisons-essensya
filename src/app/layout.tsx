@@ -7,7 +7,7 @@ import Header, { CoquillePublique, type LienChrome } from "@/components/Header";
 import Reveal from "@/components/Reveal";
 import StickyCta from "@/components/StickyCta";
 import { AGENCIES, HOUSE, PLACEHOLDER, PRICE_FROM } from "@/data/essensya";
-import { deptUrl, fmtPrice } from "@/lib/format";
+import { emailPublie, deptUrl, fmtPrice } from "@/lib/format";
 import { departementsPubliables } from "@/lib/geo";
 import { agencesPubliees } from "@/lib/agences";
 import { resoudreMedia } from "@/lib/medias";
@@ -208,7 +208,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
      du site et l'adresse de repli. La constante ne sert plus que de
      dernier recours, quand aucune agence n'a été saisie. */
   const agences = await agencesPubliees();
-  const email = ou(reglages.email, agences[0]?.email ?? AGENCIES[0].email);
+  /* Une seule règle pour l'adresse publiée, partagée avec les deux
+     pages légales : c'est ce qui évite qu'elles se remettent à diverger. */
+  const email = emailPublie(reglages, agences[0]?.email ?? AGENCIES[0].email);
   const adresse = saisi(reglages.adresse);
   const horaires = saisi(reglages.horaires);
   /* ⚠ LE LOGO OFFICIEL EST EMBARQUÉ, pas seulement téléversable.

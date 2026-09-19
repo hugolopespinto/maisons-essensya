@@ -610,3 +610,18 @@ body:has(.adm) .c-cookies { display: none !important; }
   .adm-field > div:has(> .adm-actions--serre) { flex-wrap: wrap; min-width: 0; }
   .adm-grid { min-width: 0; }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   LES CORPS LÉGAUX
+
+   Un champ Markdown de page légale ne contient pas une ligne d'adresse
+   mais une section entière — jusqu'à quatre cents mots. La règle
+   générale des zones de texte pose 9 rem, soit environ six lignes :
+   elle a été écrite pour « une adresse d'hébergeur ou un contrat
+   d'assurance ». Relire une politique de données dans six lignes, c'est
+   ainsi qu'on oublie un paragraphe.
+   ══════════════════════════════════════════════════════════════════ */
+.adm-field textarea[data-format="markdown"] {
+  min-height: 26rem;
+  line-height: 1.7;
+}

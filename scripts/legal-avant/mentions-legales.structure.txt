@@ -1,0 +1,21 @@
+section#(sans id)
+lien → /
+h1
+section#(sans id)
+h2#editeur
+lien → mailto:accueil@essensya.fr
+lien → /agences
+h2#publication
+h2#hebergeur
+h2#constructeur
+h3
+h3
+h3
+h3
+h2#mediation
+h2#propriete
+h2#credits
+h2#donnees
+lien → /confidentialite
+lien → /cookies
+h2#droit

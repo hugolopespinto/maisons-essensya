@@ -134,8 +134,13 @@ function inline(text: string): string {
 
 /* ════ 4. BLOCS ════ */
 
-const PUCE = /^[-*]\s+(.*)$/;
-const NUM = /^\d{1,3}[.)]\s+(.*)$/;
+/* ⚠ EXPORTÉES POUR N'ÊTRE ÉCRITES QU'UNE FOIS. L'analyseur des pages
+   légales (src/lib/legal/analyse.ts) reconnaît la même grammaire de blocs
+   mais rend un arbre JSX au lieu d'une chaîne HTML. Deux émetteurs, une
+   seule grammaire : recopier ces motifs garantirait qu'un jour une liste
+   se comporte différemment dans le blog et dans les mentions légales. */
+export const PUCE = /^[-*]\s+(.*)$/;
+export const NUM = /^\d{1,3}[.)]\s+(.*)$/;
 
 /** Assemble une liste à partir des lignes d'un bloc. */
 function liste(lignes: string[], motif: RegExp, balise: "ul" | "ol"): string {

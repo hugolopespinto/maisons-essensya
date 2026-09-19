@@ -1,0 +1,73 @@
+Accueil / Confidentialité Protection de vos données
+Ce que nous recueillons quand vous remplissez un formulaire, ce que nous en faisons, à qui nous le transmettons — et ce que vous pouvez exiger de nous à tout moment.
+Dernière mise à jour · 12 septembre 2026
+1. Qui est responsable de vos données
+Le responsable du traitement est l'entreprise qui exploite ce site et qui décide de ce qui est fait de vos données :
+[[À COMPLÉTER : raison sociale, forme juridique, adresse du siège, SIREN / RCS]]
+En attendant, vous pouvez nous joindre par téléphone ou par écrit via la page contact ou l'une de nos agences .
+2. Quelles données, et par quel formulaire
+Nous ne recueillons de données que lorsque vous remplissez vous-même un formulaire : demande de rappel en page d'accueil, page contact, page de nos modèles et fiche de chaque modèle, fiche d'une annonce de terrain, page d'agence. Il n'y a sur ce site ni compte, ni mot de passe, ni paiement en ligne.
+Selon le formulaire, les champs proposés sont les suivants. Seuls le nom et le téléphone sont obligatoires — sans eux, nous ne pouvons pas vous rappeler :
+Prénom et nom Obligatoire. Pour savoir à qui nous nous adressons.
+Téléphone Obligatoire. C'est par là que l'agence vous recontacte.
+E-mail Facultatif. Pour vous envoyer une documentation ou un plan.
+Secteur du projet Facultatif. Commune ou code postal, pour orienter votre demande vers l'agence compétente.
+Avancement du projet Facultatif. « Je découvre », « je cherche un terrain », « j'ai déjà un terrain », « je compare des constructeurs ».
+Nature de la demande Facultatif. Être rappelé, prendre rendez-vous, question sur un terrain — ou le modèle qui vous intéresse.
+Message libre Facultatif. Son contenu est celui que vous écrivez : n'y indiquez rien de sensible (santé, opinions, situation familiale détaillée).
+À ces champs s'ajoutent automatiquement quelques éléments de contexte, qui servent uniquement à comprendre votre demande et à l'adresser à la bonne agence :
+Page d'origine L'adresse de la page depuis laquelle vous avez envoyé le formulaire.
+Annonce consultée Le résumé de l'annonce affichée à côté du formulaire : type de bien, commune, surfaces, prix.
+Commune de l'annonce Son code INSEE et son identifiant dans notre outil de gestion, pour rattacher la demande au bon secteur.
+Formulaire utilisé Un repère interne indiquant lequel des formulaires du site a été rempli.
+Preuve de votre consentement La date et l'heure auxquelles vous avez validé le formulaire, le texte exact de la case que vous avez cochée et sa version, ainsi que votre réponse sur la prospection commerciale. C'est la trace qui nous permet de prouver que vous avez été informé avant l'envoi.
+Ce site ne tient pas de base de données de son côté : votre demande est relayée telle quelle à l'outil de gestion commerciale décrit au point 4. Votre adresse IP est brièvement gardée en mémoire par le serveur — quelques minutes — pour limiter le nombre d'envois et écarter les robots ; elle n'est ni transmise à qui que ce soit, ni rattachée à votre demande. En cas d'échec d'envoi, le serveur note la nature de la panne, jamais le contenu de votre formulaire.
+3. Pourquoi, et sur quel fondement
+Vous recontacter Répondre à votre demande, vous rappeler, préparer un rendez-vous et vous adresser une proposition. Fondement : votre consentement, donné en cochant la case avant l'envoi du formulaire (art. 6.1.a du RGPD).
+Vous adresser nos offres Vous envoyer nos actualités et nos offres commerciales. C'est une case distincte, facultative, que vous cochez ou non : refuser n'empêche pas le traitement de votre demande. Fondement : votre consentement.
+Protéger nos formulaires Limiter le nombre d'envois par visiteur et écarter les robots. Fondement : notre intérêt légitime à ne pas laisser nos formulaires servir de relais au spam.
+Mesurer l'audience Savoir quelles pages sont consultées pour améliorer le site. Le dépôt des cookies de mesure repose sur votre consentement ; l'analyse des statistiques agrégées qui en découlent relève de notre intérêt légitime à faire fonctionner correctement notre site.
+Tenir nos obligations Si votre projet aboutit à un contrat de construction, la conservation des pièces contractuelles et comptables répond à une obligation légale (art. 6.1.c du RGPD).
+Aucune décision automatisée, aucun profilage : c'est une personne de l'agence qui lit votre demande et qui vous rappelle.
+4. Qui reçoit vos données
+L'agence Essensya concernée. Votre demande est traitée par les conseillers de l'agence compétente sur le secteur de votre projet.
+Vitahome, notre sous-traitant. La gestion des demandes passe par Vitahome ( pro.vitahome.fr ), éditeur du logiciel de gestion commerciale utilisé par le constructeur. Les informations que vous saisissez dans le formulaire lui sont transmises dès l'envoi et y sont enregistrées. Vitahome agit sur nos seules instructions, au titre de l'article 28 du RGPD, et n'a pas le droit d'utiliser vos données pour son propre compte.
+[[À COMPLÉTER : référence et date du contrat de sous-traitance signé avec Vitahome (art. 28 RGPD)]]
+Google, uniquement si vous avez accepté la mesure d'audience, et seulement pour les statistiques de navigation. Google ne reçoit jamais le contenu de vos formulaires.
+Vos données ne sont ni vendues, ni louées, ni cédées à des tiers à des fins publicitaires.
+Ces destinataires-là reçoivent ce que vous écrivez dans un formulaire. D'autres sociétés, elles, ne reçoivent rien de vos formulaires mais voient votre adresse IP du seul fait que la page s'affiche : elles sont nommées au point suivant.
+5. Fournisseurs techniques
+Afficher une page de ce site, c'est aussi aller chercher des images et des cartes chez d'autres sociétés que la nôtre. C'est votre navigateur qui les contacte, directement : ces sociétés voient donc votre adresse IP , la date et l'heure, le fichier demandé — et par là, la page que vous êtes en train de consulter — ainsi que ce que tout navigateur annonce de lui-même (son nom, sa version, votre langue). Cela se produit dès l'ouverture de la page, avant toute action de votre part, et quel que soit votre choix en matière de cookies.
+CARTO et OpenStreetMap Le fond de la carte des terrains. Les tuiles — les carrés d'image qui composent la carte — sont servies par CARTO (basemaps.cartocdn.com) à partir des données cartographiques d'OpenStreetMap. CARTO reçoit votre adresse IP ainsi que la zone et le niveau de zoom que vous regardez, donc le secteur géographique qui vous intéresse. Cela ne concerne que la page des annonces, et seulement lorsque la carte s'affiche.
+Vitahome Les photos et les plans des terrains et des maisons proviennent de l'outil de gestion commerciale du constructeur et sont servis par ses serveurs (pro.vitahome.fr et annonces.vitahome.fr). Vitahome reçoit donc votre adresse IP et l'annonce que vous consultez, indépendamment de tout formulaire.
+Pourquoi ces appels ne vous sont pas soumis au consentement. Ils ne déposent ni cookie, ni traceur, ni identifiant sur votre appareil, et ne servent ni à vous reconnaître, ni à vous suivre d'une page à l'autre. Ce sont des ressources nécessaires à l'affichage : sans elles, la carte reste vide et les pages sans images. L'accord préalable n'est exigé que pour lire ou écrire une information sur votre appareil, ce que ces requêtes ne font pas.
+Nous ne le minimisons pas pour autant, et vous devez le savoir : votre adresse IP est une donnée personnelle, sa transmission à ces trois prestataires est réelle, automatique et hors de votre contrôle comme du nôtre une fois la page ouverte. Nous n'avons aucune maîtrise de ce que ces sociétés en consignent dans leurs propres journaux techniques, ni du temps qu'elles les conservent : leurs politiques de confidentialité respectives font foi. Seul un blocage côté navigateur (extension, mode de navigation renforcé) permet de l'éviter — aucun réglage de notre site n'y suffirait.
+[[À COMPLÉTER : pays depuis lesquels CARTO et Vitahome servent ces ressources, et garantie applicable en cas de transfert hors UE]]
+6. Combien de temps nous les gardons
+La règle habituelle sur notre métier, et celle que recommande la CNIL, est la suivante : les données d'un prospect sont conservées trois ans à compter de votre dernier contact (appel, réponse à un e-mail, rendez-vous), puis supprimées ou anonymisées. Si votre projet devient un contrat, les pièces contractuelles et comptables sont conservées pendant la durée légale applicable, notamment au titre de la garantie décennale.
+[[À COMPLÉTER : durée retenue pour les prospects (usuellement 3 ans après le dernier contact) et durée de conservation des dossiers contractuels]]
+Deux durées sont en revanche déjà fixées et vérifiables : votre choix en matière de cookies est conservé 6 mois, et les cookies de mesure d'audience 13 mois au maximum. Le détail figure sur la page cookies .
+7. Où sont hébergées vos données
+Le site et l'outil de gestion commerciale reposent sur des serveurs dont la localisation conditionne l'existence, ou non, d'un transfert de données en dehors de l'Union européenne.
+[[À COMPLÉTER : hébergeur du site, pays d'hébergement, localisation des serveurs Vitahome, et existence éventuelle d'un transfert hors UE avec la garantie applicable]]
+Si vous acceptez la mesure d'audience, les données de navigation correspondantes peuvent être traitées par Google en dehors de l'Union européenne, encadrées par les clauses contractuelles types de la Commission européenne. Refuser les cookies de mesure suffit à écarter ce transfert.
+8. Vos droits
+Le RGPD vous donne sur vos données des droits que nous devons honorer dans un délai d'un mois :
+Accès Savoir si nous détenons des données sur vous et en obtenir une copie.
+Rectification Faire corriger une information inexacte ou incomplète.
+Effacement Demander la suppression de vos données.
+Limitation Demander le gel de leur utilisation le temps d'une vérification.
+Opposition Vous opposer à leur utilisation, notamment à la prospection commerciale.
+Portabilité Récupérer les données que vous nous avez fournies, dans un format lisible.
+Retrait du consentement Retirer votre accord à tout moment, sans avoir à vous justifier. Le retrait ne remet pas en cause ce qui a été fait avant.
+Directives post mortem Définir le sort de vos données après votre décès (art. 85 de la loi Informatique et Libertés).
+Pour exercer l'un de ces droits, écrivez-nous ; une preuve d'identité peut vous être demandée en cas de doute raisonnable sur l'auteur de la demande.
+[[À COMPLÉTER : adresse e-mail de contact RGPD / DPO, adresse postale du responsable de traitement, et désignation ou non d'un délégué à la protection des données]]
+Dans l'attente, ces demandes sont reçues à l'adresse accueil@essensya.fr et traitées comme telles.
+Si notre réponse ne vous satisfait pas, vous pouvez adresser une réclamation à la CNIL — 3 place de Fontenoy, TSA 80715, 75334 Paris Cedex 07 — ou en ligne sur cnil.fr .
+9. Cookies
+Aucun cookie de mesure ou de publicité n'est déposé avant votre accord, et refuser y est aussi simple qu'accepter. Le détail — finalités, cookies déposés, émetteurs, durées — figure sur la page cookies . Votre choix reste modifiable à tout moment :
+Modifier mes préférences →
+10. Mise à jour de cette page
+Ce texte évoluera si nos traitements changent — nouvel outil, nouveau destinataire, nouvelle finalité. La date ci-dessous fait foi ; en cas de changement substantiel, votre consentement vous sera redemandé.
+Version du 12 septembre 2026

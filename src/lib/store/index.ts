@@ -4,6 +4,7 @@ import type { Content, PageEditable } from "./types";
 import * as fichier from "./file";
 import { TAG_MAGASIN } from "./supabase";
 import * as supabase from "./supabase";
+import { PAGES_LEGALES } from "./pages-legales";
 
 /* ════════════════════════════════════════════════════════════════
    STOCKAGE DU CONTENU ÉDITABLE — sélecteur de pilote
@@ -439,139 +440,11 @@ export const PAGES_DEFAUT: PageEditable[] = [
       },
     ],
   },
-  /* ──────────────────────────────────────────────────────────────
-     LES DEUX PAGES LÉGALES
-
-     ⚠ TOUTES CES VALEURS SONT VIDES À DESSEIN, et elles doivent le
-     rester dans le code. Ce sont les seules mentions du site dont
-     l'exactitude engage juridiquement l'éditeur : dénomination sociale,
-     assureur décennal, durée de conservation des données, adresse
-     d'exercice des droits. Une valeur « par défaut » y serait un
-     mensonge par construction — on préfère le trou, qui se voit.
-
-     Tant qu'un champ est vide, la page affiche à sa place un pavé
-     surligné décrivant l'information attendue (voir
-     src/components/ACompleter.tsx). Dès que le client saisit sa valeur,
-     c'est elle qui s'affiche, en texte ordinaire.
-
-     Les champs sont multilignes : une adresse d'hébergeur ou un contrat
-     d'assurance tiennent rarement sur une ligne.
-     ────────────────────────────────────────────────────────────── */
-  {
-    cle: "mentions-legales",
-    label: "Mentions légales",
-    blocs: [
-      {
-        cle: "editeur.identite",
-        label: "Identité de l'éditeur",
-        aide: "Dénomination sociale, forme juridique, montant du capital social, adresse du siège, numéro SIREN, ville d'immatriculation au RCS et numéro de TVA intracommunautaire. Obligatoire : article 6-III de la LCEN.",
-        valeur: "",
-        multiligne: true,
-      },
-      {
-        cle: "editeur.directeur",
-        label: "Directeur de la publication",
-        aide: "Nom, prénom et qualité — en principe le représentant légal de la société.",
-        valeur: "",
-      },
-      {
-        cle: "hebergeur",
-        label: "Hébergeur du site",
-        aide: "Dénomination sociale, adresse postale, numéro de téléphone et pays d'hébergement des serveurs. À faire correspondre à l'hébergeur réellement retenu.",
-        valeur: "",
-        multiligne: true,
-      },
-      {
-        cle: "rcs",
-        label: "Immatriculation au RCS",
-        aide: "Numéro RCS et ville du greffe. Doit figurer sur tous les documents commerciaux.",
-        valeur: "",
-      },
-      {
-        cle: "assurance.decennale",
-        label: "Assurance décennale",
-        aide: "Nom et adresse de l'assureur, numéro de contrat et couverture géographique. Mention obligatoire pour un constructeur : article L.241-1 du code des assurances.",
-        valeur: "",
-        multiligne: true,
-      },
-      {
-        cle: "garantie.livraison",
-        label: "Garantie de livraison",
-        aide: "Nom et adresse de l'établissement garant, et référence de la garantie. Obligatoire dans le cadre du CCMI.",
-        valeur: "",
-        multiligne: true,
-      },
-      {
-        cle: "assurance.rcpro",
-        label: "Responsabilité civile et dommages-ouvrage",
-        aide: "Assureur et numéro de contrat de la RC professionnelle, et modalités de l'assurance dommages-ouvrage.",
-        valeur: "",
-        multiligne: true,
-      },
-      {
-        cle: "mediateur",
-        label: "Médiateur de la consommation",
-        aide: "Nom du médiateur dont relève l'entreprise, adresse postale et adresse du site de saisine. Obligatoire : article L.616-1 du code de la consommation.",
-        valeur: "",
-        multiligne: true,
-      },
-      {
-        cle: "credits",
-        label: "Crédits",
-        aide: "Crédits photographiques définitifs (auteur, licence) et crédits de conception et réalisation du site.",
-        valeur: "",
-        multiligne: true,
-      },
-    ],
-  },
-  {
-    cle: "confidentialite",
-    label: "Confidentialité",
-    blocs: [
-      {
-        cle: "responsable",
-        label: "Responsable du traitement",
-        aide: "Raison sociale, forme juridique, adresse du siège, SIREN / RCS. C'est l'entité juridiquement responsable des données collectées.",
-        valeur: "",
-        multiligne: true,
-      },
-      {
-        cle: "soustraitant.vitahome",
-        label: "Contrat de sous-traitance Vitahome",
-        aide: "Référence et date du contrat signé avec Vitahome au titre de l'article 28 du RGPD.",
-        valeur: "",
-        multiligne: true,
-      },
-      {
-        cle: "transferts",
-        label: "Transferts hors Union européenne",
-        aide: "Pays depuis lesquels CARTO et Vitahome servent leurs ressources, et garantie applicable en cas de transfert hors UE (clauses contractuelles types, décision d'adéquation…).",
-        valeur: "",
-        multiligne: true,
-      },
-      {
-        cle: "conservation",
-        label: "Durées de conservation",
-        aide: "Durée retenue pour les prospects — usuellement 3 ans après le dernier contact — et durée de conservation des dossiers contractuels.",
-        valeur: "",
-        multiligne: true,
-      },
-      {
-        cle: "hebergement",
-        label: "Hébergement et localisation des données",
-        aide: "Hébergeur du site, pays d'hébergement, localisation des serveurs Vitahome, et existence éventuelle d'un transfert hors UE.",
-        valeur: "",
-        multiligne: true,
-      },
-      {
-        cle: "dpo",
-        label: "Contact RGPD",
-        aide: "Adresse e-mail de contact RGPD, adresse postale du responsable de traitement, et désignation ou non d'un délégué à la protection des données. C'est par cette adresse que s'exercent les droits d'accès, de rectification et d'effacement.",
-        valeur: "",
-        multiligne: true,
-      },
-    ],
-  },
+  /* Les deux pages légales vivent dans leur propre fichier : leur texte
+     fait à lui seul quatre cents lignes, et deux règles opposées y
+     cohabitent — des corps qui ont un texte par défaut, des mentions
+     obligatoires qui doivent rester vides. Voir ./pages-legales.ts. */
+  ...PAGES_LEGALES,
 ];
 
 /** Contenu par défaut : le site fonctionne même sans aucune écriture. */

@@ -1,0 +1,21 @@
+section#(sans id)
+lien → /
+h1
+section#(sans id)
+h2#responsable
+lien → /contact
+lien → /agences
+h2#donnees
+h2#finalites
+h2#destinataires
+h2#fournisseurs
+h2#duree
+lien → /cookies
+h2#hebergement
+h2#droits
+lien → mailto:accueil@essensya.fr
+lien → https://www.cnil.fr
+h2#cookies
+lien → /cookies
+bouton
+h2#maj

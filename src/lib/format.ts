@@ -50,6 +50,24 @@ export const telephonePublie = (
   defaut: string,
 ): string => reglages.telephone?.trim() || textes.telephone?.trim() || defaut;
 
+/**
+ * L'adresse de contact réellement publiable.
+ *
+ * ⚠ MÊME DÉFAUT QUE LE TÉLÉPHONE, UN CRAN PLUS GRAVE. Les deux pages
+ * légales lisaient `AGENCIES[0].email` — l'adresse de l'agence de
+ * démonstration — dans une constante recopiée d'un fichier à l'autre,
+ * pendant que le client pouvait saisir la sienne dans Réglages. Le
+ * téléphone a été réparé au commit 0c3ee62 ; l'adresse était restée.
+ *
+ * Or ce n'est pas une coordonnée d'agrément : tant que le champ « contact
+ * RGPD » est vide, c'est par elle que s'exercent les droits d'accès et
+ * d'effacement. Une demande d'effacement partait donc vers une boîte
+ * dont personne ne garantit qu'elle est relevée, pendant que le délai
+ * légal d'un mois courait.
+ */
+export const emailPublie = (reglages: { email?: string }, defaut: string): string =>
+  reglages.email?.trim() || defaut;
+
 /* ════ LIBELLÉS ANNONCE ════ */
 export const annonceTitle = (a: Annonce) => {
   const s = fmtSurface(a.landSurface);
