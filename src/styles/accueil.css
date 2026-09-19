@@ -18,35 +18,82 @@
 .hero-fixe__media{position:absolute;inset:0;background-size:cover;background-position:center}
 .hero-fixe__media img{width:100%;height:100%;object-fit:cover}
 
-/* Le voile n'est pas décoratif : sans lui, un titre clair posé sur un
-   ciel clair tombe sous 2:1. Il est plus dense en bas, là où le texte
-   se trouve, et léger au milieu pour ne pas ternir la maison.
+/* ⚠ LE VOILE REPREND LE TRAVAIL DU PANNEAU OPAQUE, QUI A DISPARU.
+   Il porte maintenant deux charges distinctes, à deux endroits, et c'est
+   pour cela qu'il a cinq arrêts plutôt que deux.
 
-   ⚠ IL DESCEND AUSSI DEPUIS LE HAUT, et ce n'était pas le cas.
-   L'en-tête est transparent au-dessus de ce visuel : son logo et ses
-   liens sont blancs. Mesuré sur la bande des 76 premiers pixels du
-   rendu Lisbonne — un ciel à rgb(151, 186, 222) — le blanc n'y tenait
-   que 2,03:1, sous le minimum de 3:1 exigé d'un élément graphique. Le
-   logo existait mais ne se voyait pas.
+   EN BAS, un simple appui : le vrai travail de lisibilité est fait par
+   le socle du bloc de texte (`.hero-fixe__texte::before`), qui suit la
+   hauteur du texte au lieu de celle de l'écran.
 
-   35 % au ras du bord fait remonter le blanc à 4,12:1, et le voile
-   s'efface avant le tiers de la hauteur : la toiture n'est pas
-   assombrie, seule la barre l'est. */
-/* ⚠ LE VOILE DU BAS A ÉTÉ DIVISÉ PAR DEUX. Il servait à rendre un titre
-   lisible sur la photo ; ce rôle revient maintenant au panneau opaque, et
-   un voile dense par-dessus ne faisait plus qu’éteindre la maison — le
-   reproche exact du client. Il ne reste qu’un léger assombrissement du
-   bas, pour asseoir le panneau, et celui du HAUT, qui lui reste
-   indispensable : sans lui le logo blanc de l’en-tête tombe à 2,03:1 sur
-   le ciel (mesuré). */
-.hero-fixe__voile{position:absolute;inset:0;background:linear-gradient(to top,rgba(19,18,16,.42) 0%,rgba(19,18,16,.18) 26%,rgba(19,18,16,.06) 55%,rgba(19,18,16,.08) 80%,rgba(19,18,16,.35) 100%)}
+   AU MILIEU, il ne doit RIEN faire. La maison est rendue intacte : c'est
+   tout l'objet du changement, et quelques centièmes d'opacité de trop y
+   annuleraient le bénéfice.
 
-.hero-fixe__texte{position:relative;padding-block:var(--s-5) var(--s-6);color:var(--craie)}
+   EN HAUT, il reste indispensable, pour une raison mesurée et sans
+   rapport avec le titre. L'en-tête est transparent au-dessus de ce
+   visuel, son logo et ses liens sont clairs : mesuré sur la bande des
+   76 premiers pixels du rendu Lisbonne — un ciel à rgb(151, 186, 222) —
+   le blanc n'y tenait que 2,03:1, sous le minimum de 3:1 exigé d'un
+   élément graphique. Le logo existait sans se voir. Le voile le fait
+   remonter au-dessus du seuil, et s'efface avant le tiers de la
+   hauteur : la toiture n'est pas assombrie, seule la barre l'est.
+
+   ⚠ CONSÉQUENCE ASSUMÉE : le contraste du titre dépend désormais du bas
+   de l'image. Un premier plan très clair — une terrasse en plein soleil,
+   une allée de gravier blanc — l'affaiblirait. À revérifier à chaque
+   changement de visuel d'accueil. */
+.hero-fixe__voile{position:absolute;inset:0;background:linear-gradient(to top,rgba(19,18,16,.10) 0%,rgba(19,18,16,.05) 30%,rgba(19,18,16,.04) 70%,rgba(19,18,16,.46) 100%)}
+
+/* ⚠ LE DÉGRADÉ EST CALÉ SUR LE TEXTE, PAS SUR L'ÉCRAN, et c'est tout
+   l'enjeu. Un voile mesuré en pourcentage de la hauteur du hero ne peut
+   pas suivre un titre dont le nombre de lignes change : celui du client
+   fait 71 signes, soit trois lignes sur un écran large et SIX sur un
+   téléphone. Mesuré sur le rendu servi, sa première ligne tombait à
+   3,93:1 sur ordinateur et 1,79:1 sur téléphone — très en dessous des
+   4,5:1 exigés, parce qu'elle remontait sur la façade crème.
+
+   Le socle est donc porté par le bloc de texte lui-même : il fait sa
+   hauteur, quelle qu'elle soit, et s'éteint juste au-dessus. La maison
+   reste entière au-dessus de cette limite, et le contraste ne dépend
+   plus du format de l'écran.
+
+   `100vw` centré plutôt que `inset:0` : `.hero-fixe__texte` est un
+   `.container`, donc borné à 1280 px. Sans cela le dégradé s'arrêterait
+   net aux bords du conteneur sur un grand écran. */
+.hero-fixe__texte{position:relative;padding-block:var(--s-3) var(--s-6);color:var(--craie)}
+/* La transition tient dans le rembourrage HAUT du bloc, pas en travers du
+   texte : au-delà de 82 % le dégradé s'éteint, en deçà il est franc et
+   constant. Étalée sur toute la hauteur, elle laissait la première ligne
+   à 2,5:1.
+
+   ⚠ L'OPACITÉ EST RÉGLÉE SUR LE SEUIL, PAS AU JUGÉ. À .93 le titre
+   ressortait à 14:1 — très au-delà des 4,5:1 exigés — et la terrasse
+   disparaissait pour rien. À .76 il tient 9,5:1 sur écran large et 7,2:1
+   sur téléphone, et le mobilier de jardin reste lisible sous le texte.
+   La marge restante couvre un rendu plus clair que celui-ci. */
+.hero-fixe__texte::before{content:"";position:absolute;left:50%;transform:translateX(-50%);width:100vw;top:calc(var(--s-3) * -1);bottom:0;z-index:0;background:linear-gradient(to top,rgba(19,18,16,.76) 0%,rgba(19,18,16,.72) 66%,rgba(19,18,16,.66) 82%,rgba(19,18,16,.32) 93%,rgba(19,18,16,0) 100%);pointer-events:none}
+/* ⚠ `z-index:0` SUR LE SOCLE, ET LES ENFANTS AU-DESSUS. Avec `-1`, le
+   pseudo-élément passait DERRIÈRE la photo — un enfant à z-index négatif
+   descend sous les frères absolus de son parent. Résultat : le dégradé
+   n'apparaissait nulle part, et le titre restait posé sur la façade nue.
+   Le défaut est invisible à la lecture du CSS ; il se voit à l'écran. */
+.hero-fixe__texte > *{position:relative;z-index:1}
 .hero-fixe__texte .c-label{color:var(--sable)}
 /* Le titre est une phrase, pas un slogan de trois mots : il lui faut
    une échelle plus basse que `--fs-hero`, sinon il occupe l'écran
    entier sur mobile et ne se lit plus. */
-.hero-fixe h1{font-size:clamp(1.85rem,4.6vw,3.9rem);line-height:1.04;max-width:20ch;margin-top:var(--s-2)}
+/* ⚠ LA MESURE EST PASSÉE DE 24 À 38 SIGNES, ET CE N'EST PAS UN DÉTAIL
+   DE COMPOSITION. Le titre du client fait 71 signes : à 24 signes de
+   mesure il tombe sur QUATRE lignes, et sa première ligne remonte au
+   milieu de l'image, là où le dégradé s'est déjà éteint pour ne pas
+   ternir la maison. Mesuré sur le rendu servi : le blanc y passait sur
+   une façade crème, illisible.
+
+   À 38 signes il tient sur deux lignes et reste dans le tiers bas, celui
+   que le voile couvre franchement. L'échelle baisse légèrement pour que
+   deux lignes de 38 signes tiennent sans déborder sur un écran moyen. */
+.hero-fixe h1{font-size:clamp(1.8rem,3.6vw,3.15rem);line-height:1.06;max-width:38ch;margin-top:var(--s-2)}
 .hero-fixe__actions{display:flex;flex-wrap:wrap;gap:var(--s-2);margin-top:var(--s-4)}
 @media (max-width:560px){
   .hero-fixe{min-height:min(78svh,640px)}
@@ -155,7 +202,7 @@
    rendue au visuel, et le contraste du texte ne dépend plus de ce qu'il
    y a derrière — un panneau plein tient quel que soit le ciel.
    ────────────────────────────────────────────────────────────────── */
-.hero-fixe__panneau{position:relative;background:rgba(19,18,16,.86);backdrop-filter:blur(6px);border-radius:var(--radius);padding:var(--s-4);max-width:min(40rem,60%)}
-.hero-fixe__panneau .c-label{color:var(--sable)}
-.hero-fixe__panneau h1{font-size:clamp(1.5rem,2.9vw,2.6rem);line-height:1.08;max-width:22ch;margin-top:.6rem}
-@media (max-width:900px){.hero-fixe__panneau{max-width:100%}}
+/* `.hero-fixe__panneau` a été retiré : le rectangle opaque qu'il dessinait
+   masquait le sujet de la photo. Le texte repose désormais sur le dégradé et
+   occupe toute la largeur ; la mesure du titre passe de 20 à 24 signes — voir
+   la règle `.hero-fixe h1` plus haut, qui reste la seule à la fixer. */

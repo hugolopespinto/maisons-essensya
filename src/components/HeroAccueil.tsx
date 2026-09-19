@@ -67,28 +67,36 @@ export default function HeroAccueil({
       <div className="hero-fixe__voile" aria-hidden="true" />
 
       <div className="container hero-fixe__texte">
-        {/* ⚠ PANNEAU OPAQUE, ET C'EST UNE CORRECTION DEMANDÉE.
-            Le titre s'étalait sur toute la largeur, par-dessus un dégradé
-            remontant jusqu'au tiers de l'image. Retour du client : « ça
-            mange trop le visuel de la maison ». Il a raison — la photo
-            était le sujet et on la recouvrait.
+        {/* ⚠ PLUS DE PANNEAU OPAQUE : LE TEXTE REPOSE SUR LE DÉGRADÉ.
+            Trois états se sont succédé ici, et le troisième n'est pas un
+            retour au premier.
 
-            Le panneau borne le texte à 60 % de la largeur et rend la
-            moitié droite au visuel. Il apporte au passage ce qu'un
-            dégradé ne garantit jamais : un contraste qui ne dépend pas
-            de ce qu'il y a derrière. Un ciel clair ne peut plus effacer
-            le titre. */}
-        <div className="hero-fixe__panneau">
-          <span className="c-label">{baseline}</span>
-          <h1 id="hero-t">{titre}</h1>
-          <div className="hero-fixe__actions">
-            <Link href="/maisons" className="c-btn c-btn--solid">
-              Voir nos modèles <span className="arrow">→</span>
-            </Link>
-            <Link href="/contact" className="c-btn c-btn--light">
-              Parler de mon projet
-            </Link>
-          </div>
+            1. Le titre s'étalait sur toute la largeur, sur un dégradé
+               faible. Retour du client : « ça mange trop le visuel de la
+               maison ».
+            2. On a posé un rectangle opaque borné à 60 % de la largeur.
+               Il garantissait le contraste, mais recouvrait la terrasse
+               et le bas de la façade — c'est-à-dire ce qui donne envie.
+               La remarque du client valait donc toujours.
+            3. Le texte revient pleine largeur, mais le dégradé, lui, est
+               devenu franc en bas de l'image (voir `.hero-fixe__voile`).
+               Les deux tiers hauts — le toit, les deux pans, le ciel —
+               ne portent plus rien.
+
+            Ce que cela coûte, et qui est assumé : le contraste dépend
+            désormais du bas de l'image. Un visuel dont le premier plan
+            serait très clair l'affaiblirait. À vérifier à chaque
+            changement de rendu — c'est le prix de rendre la photo au
+            client. */}
+        <span className="c-label">{baseline}</span>
+        <h1 id="hero-t">{titre}</h1>
+        <div className="hero-fixe__actions">
+          <Link href="/maisons" className="c-btn c-btn--solid">
+            Voir nos modèles <span className="arrow">→</span>
+          </Link>
+          <Link href="/contact" className="c-btn c-btn--light">
+            Parler de mon projet
+          </Link>
         </div>
       </div>
     </section>
