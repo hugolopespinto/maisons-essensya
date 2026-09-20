@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import FilAriane from "@/components/FilAriane";
 import LeadForm, { ContactFields } from "@/components/LeadForm";
 import ModeleCard from "@/components/ModeleCard";
 import { MarkedList } from "@/components/SpecList";
@@ -19,7 +20,7 @@ import {
 } from "@/data/gamme";
 import { srcSet, type Visuel } from "@/data/visuels";
 import { fmtPrice, fmtSurface } from "@/lib/format";
-import { filAriane, jsonLd, produitModele } from "@/lib/schema";
+import { jsonLd, produitModele } from "@/lib/schema";
 import { resolveMetadata } from "@/lib/seo";
 import "@/styles/pages/modele.css";
 import "@/styles/pages/maison.css";
@@ -142,18 +143,6 @@ export default async function ModelePage({
           que la fiche a quelque chose à déclarer, et uniquement ce
           qu'elle AFFICHE. Toujours sans `offers` : le seul montant
           disponible est celui de la gamme, et il appartient à Pékin. */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLd(
-            filAriane([
-              { nom: "Accueil", path: "/" },
-              { nom: "Nos modèles", path: "/maisons" },
-              { nom: m.nom },
-            ]),
-          ),
-        }}
-      />
       {specs.length > 0 && facade && (
         <script
           type="application/ld+json"
@@ -165,13 +154,13 @@ export default async function ModelePage({
 
       <section className="p-head">
         <div className="container">
-          <nav className="c-breadcrumb" aria-label="Fil d'ariane">
-            <Link href="/">Accueil</Link>
-            <span className="sep">/</span>
-            <Link href="/maisons">Nos modèles</Link>
-            <span className="sep">/</span>
-            <span>{m.nom}</span>
-          </nav>
+          <FilAriane
+            items={[
+              { nom: "Accueil", path: "/" },
+              { nom: "Nos modèles", path: "/maisons" },
+              { nom: m.nom },
+            ]}
+          />
           <span className="c-label c-label--accent">Modèle</span>
           {/* Le H1 affichait « Ankara » : aucun terme de la requête visée.
               Un seul H1, deux niveaux visuels — l'échelle typographique ne

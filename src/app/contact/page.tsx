@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import FilAriane from "@/components/FilAriane";
 import AgencyCard, { telHref } from "@/components/AgencyCard";
 import LeadForm from "@/components/LeadForm";
 import { PLACEHOLDER, PRICE_FROM } from "@/data/essensya";
@@ -46,11 +46,7 @@ export default async function ContactPage() {
     <main className="page">
       <section className="p-head">
         <div className="container">
-          <nav className="c-breadcrumb" aria-label="Fil d'ariane">
-            <Link href="/">Accueil</Link>
-            <span className="sep">/</span>
-            <span>Contact</span>
-          </nav>
+          <FilAriane items={[{ nom: "Accueil", path: "/" }, { nom: "Contact" }]} />
           <h1>{bloc("hero.titre") || "Parler de votre projet"}</h1>
           {/* Chapô laissé vide dans le back-office : on garde la phrase
               d'origine, qui affiche le prix de départ à jour. La figer dans

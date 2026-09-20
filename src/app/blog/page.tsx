@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import FilAriane from "@/components/FilAriane";
 import { articlesPublies } from "@/lib/blog";
 import { getContent } from "@/lib/store";
 import { markdownToText } from "@/lib/markdown";
-import { SITE_URL } from "@/lib/site-url";
 import "@/styles/pages/blog.css";
 import { resolveMetadata } from "@/lib/seo";
 
@@ -57,7 +57,6 @@ const METADATA_DEFAUT: Metadata = {
   alternates: { canonical: "/blog" },
 };
 
-const BASE = SITE_URL;
 
 /** Date lisible, ou rien — un article mal daté ne doit pas afficher « Invalid Date ». */
 const fmtDate = (iso?: string): string => {
@@ -72,31 +71,19 @@ export default async function BlogPage() {
   const { articles } = await getContent();
   const liste = articlesPublies(articles);
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Accueil", item: BASE },
-      { "@type": "ListItem", position: 2, name: "Le journal", item: `${BASE}/blog` },
-    ],
-  };
+  /* ⚠ LE `BreadcrumbList` ÉCRIT À LA MAIN A ÉTÉ RETIRÉ D'ICI. Cette page
+     en déclarait un, à la main, en recopiant des libellés que le fil
+     d'ariane juste en dessous écrivait déjà — et sans passer par
+     `filAriane()`, qui existait pourtant. Depuis que <FilAriane> émet le
+     JSON-LD depuis la même liste que celle qu'il affiche, en garder un
+     ici publiait DEUX BreadcrumbList sur la page. */
 
   return (
     <main className="page">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-        }}
-      />
 
       <section className="p-head">
         <div className="container">
-          <nav className="c-breadcrumb" aria-label="Fil d'ariane">
-            <Link href="/">Accueil</Link>
-            <span className="sep">/</span>
-            <span>Le journal</span>
-          </nav>
+          <FilAriane items={[{ nom: "Accueil", path: "/" }, { nom: "Le journal" }]} />
           <h1>Le journal</h1>
           <p>
             Faire construire soulève toujours les mêmes questions : ce que couvre

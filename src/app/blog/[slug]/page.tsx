@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import FilAriane from "@/components/FilAriane";
 import { markdownToHtml, markdownToText } from "@/lib/markdown";
 import { articlesPublies } from "@/lib/blog";
 import { getContent } from "@/lib/store";
@@ -124,19 +125,11 @@ export default async function ArticlePage({
         publisher: { "@type": "Organization", name: "Maisons Essensya", url: BASE },
         ...(a.image ? { image: [a.image] } : {}),
       },
-      {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Accueil", item: BASE },
-          { "@type": "ListItem", position: 2, name: "Le journal", item: `${BASE}/blog` },
-          {
-            "@type": "ListItem",
-            position: 3,
-            name: a.titre,
-            item: `${BASE}/blog/${a.slug}`,
-          },
-        ],
-      },
+      /* ⚠ LE `BreadcrumbList` A ÉTÉ RETIRÉ DE CE GRAPHE. Il recopiait à
+         la main les libellés du fil d'ariane rendu plus bas, et il
+         donnait un `item` à la page courante — ce que la spécification
+         ne veut pas. <FilAriane> l'émet désormais lui-même, depuis la
+         même liste que celle qu'il affiche, et sans cette erreur. */
     ],
   };
 
@@ -152,13 +145,13 @@ export default async function ArticlePage({
       <article className="bl-article">
         <div className="container">
           <header className="bl-article__head">
-            <nav className="c-breadcrumb" aria-label="Fil d'ariane">
-              <Link href="/">Accueil</Link>
-              <span className="sep">/</span>
-              <Link href="/blog">Le journal</Link>
-              <span className="sep">/</span>
-              <span>{a.titre}</span>
-            </nav>
+            <FilAriane
+              items={[
+                { nom: "Accueil", path: "/" },
+                { nom: "Le journal", path: "/blog" },
+                { nom: a.titre },
+              ]}
+            />
             <h1>{a.titre}</h1>
             {a.chapo ? <p className="bl-article__chapo">{a.chapo}</p> : null}
             <div className="bl-meta">

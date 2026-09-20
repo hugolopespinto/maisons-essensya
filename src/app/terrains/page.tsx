@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import FilAriane from "@/components/FilAriane";
 import ZoneChiffres from "@/components/ZoneChiffres";
 import { PRICE_FROM } from "@/data/essensya";
 import { deptUrl, fmtPrice } from "@/lib/format";
 import { chiffres, departementsPubliables, SEUIL_DEPARTEMENT } from "@/lib/geo";
-import { filAriane, jsonLd, listeSchema } from "@/lib/schema";
+import { jsonLd, listeSchema } from "@/lib/schema";
 import { resolveMetadata } from "@/lib/seo";
 import "@/styles/pages/terrains.css";
 
@@ -57,20 +58,10 @@ export default async function TerrainsPage() {
           ),
         }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLd(filAriane([{ nom: "Accueil", path: "/" }, { nom: TITRE }])),
-        }}
-      />
 
       <section className="p-head">
         <div className="container">
-          <nav className="c-breadcrumb" aria-label="Fil d'ariane">
-            <Link href="/">Accueil</Link>
-            <span className="sep">/</span>
-            <span>Terrains</span>
-          </nav>
+          <FilAriane items={[{ nom: "Accueil", path: "/" }, { nom: "Terrains" }]} />
           <h1>{TITRE}</h1>
           <p>
             Nos agences repèrent les parcelles compatibles avec nos modèles, souvent

@@ -55,7 +55,7 @@
 .l-map__controls button:hover{border-color:var(--anthracite)}
 .l-map__sync{display:flex;gap:.6rem;align-items:center;margin-top:var(--s-2);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.08em;color:var(--pierre);cursor:pointer}
 .l-map__sync input{accent-color:var(--framboise)}
-.l-map__hint{margin-top:.5rem;font-family:var(--f-mono);font-size:var(--fs-label);color:var(--pierre);opacity:.7}
+.l-map__hint{margin-top:.5rem;font-family:var(--f-mono);font-size:var(--fs-label);color:var(--pierre)}
 @media (max-width:1000px){
   .l-filter select,.l-filter input[type="search"]{padding-top:.85rem;padding-bottom:.85rem}
   .l-map__controls button{width:44px;height:44px}

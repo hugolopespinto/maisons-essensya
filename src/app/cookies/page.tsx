@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import FilAriane from "@/components/FilAriane";
 import CookiePrefsLink from "@/components/CookiePrefsLink";
 import { SpecList } from "@/components/SpecList";
 import { CONSENT_COOKIE, FINALITES } from "@/lib/consent";
@@ -51,11 +52,7 @@ export default function CookiesPage() {
     <main className="page">
       <section className="p-head">
         <div className="container">
-          <nav className="c-breadcrumb" aria-label="Fil d'ariane">
-            <Link href="/">Accueil</Link>
-            <span className="sep">/</span>
-            <span>Cookies</span>
-          </nav>
+          <FilAriane items={[{ nom: "Accueil", path: "/" }, { nom: "Cookies" }]} />
           <h1>Gestion des cookies</h1>
           <p>
             Ce que nous déposons sur votre appareil, pourquoi, pour combien de temps

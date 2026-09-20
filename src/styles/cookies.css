@@ -100,6 +100,16 @@
 }
 
 /* Le bouton de preferences vit dans la meme nav que les liens legaux :
-   il doit avoir exactement leur apparence, pas celle d un bouton. */
-.footer-legal nav button{font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;opacity:.8;transition:opacity var(--dur-fast),color var(--dur-fast);padding:0}
-.footer-legal nav button:hover{opacity:1;color:var(--accent)}
+   il doit avoir exactement leur apparence, pas celle d un bouton.
+
+   ⚠ C'EST SON `opacity:.8` QUI L'EN ÉCARTAIT. Elle se multipliait avec
+   le .55 que portait `.footer-legal`, ce qui donnait 0,44 et laissait ce
+   seul libellé de la ligne à 3,73:1 quand ses trois voisins tenaient
+   5,18:1. Les deux opacités sont parties — la couleur du conteneur est
+   désormais écrite en clair — et le bouton rejoint ses voisins au pixel.
+
+   Le survol y gagne davantage encore : écrasé par l'opacité héritée, il
+   plafonnait à 3,50:1, c'est-à-dire qu'il DÉGRADAIT la lisibilité au
+   moment précis où l'on pointe le texte. Il est à 9,25:1. */
+.footer-legal nav button{font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;transition:color var(--dur-fast);padding:0}
+.footer-legal nav button:hover{color:var(--accent)}

@@ -34,7 +34,11 @@
   --beton:#C9CBCD;        /* filets 1 px */
   --beton-2:#B3B7BA;      /* lignes de tableau */
   --pierre:#62686D;       /* texte secondaire — 5,08:1 sur craie */
-  /* NON TEXTUEL : 3,45:1 sur craie, donc filets et pictos seulement. */
+  /* Gris discret. NON TEXTUEL SUR FOND CLAIR — 3,45:1 sur craie, donc
+     filets et pictos seulement. Sur le noir de la charte il monte à
+     4,91:1 et porte alors du texte : c'est lui qui tient la ligne légale
+     du pied de page à la fois discrète et lisible, là où une opacité de
+     .55 la laissait sous le seuil. */
   --pierre-clair:#7C838A;
   --anthracite:#2C2E35;   /* texte courant et fonds sombres */
   --noir:#001321;         /* le « Noir » de la charte */
@@ -190,9 +194,39 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
 .c-link:hover{border-color:var(--framboise);color:var(--framboise)}
 .c-section-head{margin-bottom:var(--s-5)}
 .c-section-head .c-label{display:block;margin-bottom:var(--s-2)}
-.c-breadcrumb{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.12em;text-transform:uppercase}
-.c-breadcrumb a{opacity:.7;transition:opacity var(--dur-fast)}
-.c-breadcrumb a:hover{opacity:1}
+/* ── FIL D'ARIANE ──
+   C'est une `<ol>` depuis que la hiérarchie est dans le balisage plutôt
+   que dans un caractère (voir FilAriane.tsx). `ul{list-style:none}` plus
+   haut ne couvre pas les `ol` : la puce se retire ici.
+
+   ⚠ L'OPACITÉ A DISPARU DES TROIS RÈGLES, ET CHAQUE SUPPRESSION EST
+   MESURÉE, PAS ESTHÉTIQUE :
+
+     · le lien était à 2,83:1 sur les treize pages claires — `opacity:.7`
+       appliquée à une couleur qui, elle, était déjà la bonne. Sans elle,
+       5,08:1. Changer le JETON n'apportait rien (`--muet` y vaut déjà
+       `--pierre`) et NUISAIT sur les héros photo, où il remplace la
+       craie héritée par du béton : 2,00 → 1,76:1. D'où : on retire
+       l'opacité, on ne touche pas à la couleur.
+
+     · le survol reposait sur cette opacité. Il passe au SOULIGNEMENT, et
+       non à une couleur d'accent : mesurée, la couleur faisait tomber le
+       survol de /maisons de 5,65:1 — conforme — à 3,08:1, parce qu'un
+       terracotta clair sur une photo de ciel ne tient pas. Un
+       soulignement tient sur n'importe quel fond.
+
+     · le séparateur garde sa discrétion, et c'est désormais légitime :
+       `aria-hidden` sur une liste ordonnée le rend décoratif au sens de
+       WCAG 1.4.3, donc aucun seuil ne s'y applique. */
+.c-breadcrumb{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;list-style:none;font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.12em;text-transform:uppercase}
+.c-breadcrumb li{display:inline-flex;align-items:center;gap:.6rem}
+.c-breadcrumb a{text-decoration:none;text-underline-offset:.25em;transition:text-decoration-color var(--dur-fast)}
+.c-breadcrumb a:hover{text-decoration:underline}
+/* « Vous êtes ici » : le seul élément plein du fil. Les liens restent un
+   cran en dessous — la hiérarchie des trois plans survit à la
+   suppression de l'opacité, elle passe juste du délavage au poids. */
+.c-breadcrumb [aria-current]{font-weight:500}
+.p-head .c-breadcrumb [aria-current],.a-head .c-breadcrumb [aria-current]{color:var(--anthracite)}
 .c-breadcrumb .sep{opacity:.4}
 .c-plate{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s-3) var(--s-4);border-top:var(--line);border-bottom:var(--line);padding:var(--s-2) 0;font-family:var(--f-mono);font-size:var(--fs-small)}
 .c-plate__name{font-family:var(--f-display);font-variation-settings:"wdth" 125;font-weight:700;text-transform:uppercase;font-size:1.1rem;letter-spacing:.02em}
@@ -381,7 +415,7 @@ body.lp-mode .header-cta{display:inline-flex}
 .footer-col a{display:block;font-size:var(--fs-small);padding:.3rem 0;opacity:.8;transition:opacity var(--dur-fast),color var(--dur-fast)}
 .footer-col a:hover{opacity:1;color:var(--accent)}
 .footer-brand p{font-size:var(--fs-small);opacity:.65;margin-top:var(--s-2);max-width:26em}
-.footer-legal{display:flex;flex-wrap:wrap;gap:var(--s-3);justify-content:space-between;padding-top:var(--s-3);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.1em;opacity:.55}
+.footer-legal{display:flex;flex-wrap:wrap;gap:var(--s-3);justify-content:space-between;padding-top:var(--s-3);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.1em;color:var(--pierre-clair)}
 .footer-legal nav{display:flex;gap:var(--s-3);flex-wrap:wrap}
 @media (max-width:900px){.footer-grid{grid-template-columns:1fr 1fr}.footer-brand{grid-column:1/-1}}
 

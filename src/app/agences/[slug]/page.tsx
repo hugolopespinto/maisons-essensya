@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import FilAriane from "@/components/FilAriane";
 import AgencyCard, { telHref } from "@/components/AgencyCard";
 import AnnonceCard from "@/components/AnnonceCard";
 import LeadForm, { ContactFields } from "@/components/LeadForm";
@@ -213,13 +214,13 @@ export default async function AgencyPage({
           <img src={g.image} alt={altPhoto} />
         </div>
         <div className="container">
-          <nav className="c-breadcrumb" aria-label="Fil d'ariane">
-            <Link href="/">Accueil</Link>
-            <span className="sep">/</span>
-            <Link href="/agences">Nos agences</Link>
-            <span className="sep">/</span>
-            <span>{g.zone || g.name}</span>
-          </nav>
+          <FilAriane
+            items={[
+              { nom: "Accueil", path: "/" },
+              { nom: "Nos agences", path: "/agences" },
+              { nom: g.zone || g.name },
+            ]}
+          />
           {g.zone ? (
             <span className="c-label" style={{ color: "var(--sable)" }}>
               {g.zone}

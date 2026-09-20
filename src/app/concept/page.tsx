@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import FilAriane from "@/components/FilAriane";
 import { MarkedList } from "@/components/SpecList";
 import { ESSENSYA_DATA, HOUSE, PRICE_FROM, REEL } from "@/data/essensya";
 import { MODELES } from "@/data/gamme";
@@ -101,11 +102,7 @@ export default async function ConceptPage() {
 
       <section className="p-head">
         <div className="container">
-          <nav className="c-breadcrumb" aria-label="Fil d'ariane">
-            <Link href="/">Accueil</Link>
-            <span className="sep">/</span>
-            <span>Notre concept</span>
-          </nav>
+          <FilAriane items={[{ nom: "Accueil", path: "/" }, { nom: "Notre concept" }]} />
           <h1>{t("hero.titre", "Le concept Essensya")}</h1>
           <p style={PRE_LINE}>
             {t(

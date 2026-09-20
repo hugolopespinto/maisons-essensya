@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import FilAriane from "@/components/FilAriane";
 import ProseLegale, { type ContexteLegal } from "@/components/legal/ProseLegale";
 import { AGENCIES, PLACEHOLDER } from "@/data/essensya";
 import { lecteurBlocs } from "@/lib/blocs";
@@ -61,11 +61,7 @@ export default async function ConfidentialitePage() {
     <main className="page">
       <section className="p-head">
         <div className="container">
-          <nav className="c-breadcrumb" aria-label="Fil d'ariane">
-            <Link href="/">Accueil</Link>
-            <span className="sep">/</span>
-            <span>Confidentialité</span>
-          </nav>
+          <FilAriane items={[{ nom: "Accueil", path: "/" }, { nom: "Confidentialité" }]} />
           <h1>{t("hero.titre")}</h1>
           <p>{t("hero.chapo")}</p>
         </div>

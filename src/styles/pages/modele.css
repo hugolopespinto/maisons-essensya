@@ -4,6 +4,25 @@
 .m-hero__bg img{width:100%;height:100%;object-fit:cover}
 .m-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,19,33,.5) 0%,rgba(0,19,33,.08) 40%,rgba(0,19,33,.78) 100%)}
 .m-hero .container{position:relative;z-index:2;padding-bottom:var(--s-5)}
+/* ⚠ VOILE ANCRÉ AU BLOC DE TEXTE, PAS À LA HAUTEUR DU HÉROS.
+   Le dégradé de `::after` ci-dessus est fort en bas (.78) et presque nul
+   au milieu (.08) — or le fil d'ariane et le sur-titre vivent justement
+   dans cette bande claire. Mesuré au pixel, fil masqué et boîte
+   capturée, le fil d'ariane y était à 3,70:1 en 1440 px et 2,00:1 en
+   390 px, alors que la remontée du DOM annonçait 8,56:1 en lisant le
+   `background:var(--noir)` que la photo recouvre. C'est le piège de ce
+   héros : il se mesure à l'écran, jamais dans l'arbre.
+
+   Le voile suit donc le texte, dont la hauteur varie avec le H1, au lieu
+   d'un pourcentage de la section. Même technique que le hero d'accueil,
+   et même précaution : z-index 0 sur le pseudo-élément — jamais négatif,
+   sinon il descend sous la photo — et 1 sur les enfants. */
+.m-hero .container::before{
+  content:"";position:absolute;left:50%;transform:translateX(-50%);
+  width:100vw;top:calc(var(--s-4) * -1);bottom:0;z-index:0;pointer-events:none;
+  background:linear-gradient(to top,rgba(0,19,33,.84) 0%,rgba(0,19,33,.74) 62%,rgba(0,19,33,.44) 88%,rgba(0,19,33,0) 100%);
+}
+.m-hero .container > *{position:relative;z-index:1}
 .m-hero .c-breadcrumb{margin-bottom:var(--s-4);color:var(--craie)}
 .m-hero h1{font-size:clamp(3rem,9vw,7.5rem)}
 .m-hero .c-plate{margin-top:var(--s-4);max-width:720px;border-color:rgba(242,243,243,.28)}

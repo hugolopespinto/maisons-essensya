@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ViewTransition } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import FilAriane from "@/components/FilAriane";
 import { AnnonceAside, AnnonceStickyForm } from "@/components/AnnonceCard";
 import { MarkedList, SpecList } from "@/components/SpecList";
 import { AnnonceMedia } from "@/components/Substitut";
@@ -16,7 +17,7 @@ import {
   houseUrl,
   housePart,
 } from "@/lib/format";
-import { annonceSchema, filAriane, jsonLd } from "@/lib/schema";
+import { annonceSchema, jsonLd } from "@/lib/schema";
 import { couper, titreCourt } from "@/lib/seo";
 import { getAnnonceByRef, getAnnonceOverride, getAnnonces } from "@/lib/vitahome/annonces";
 import "@/styles/pages/annonce.css";
@@ -124,27 +125,15 @@ export default async function AnnoncePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd(annonceSchema(a, title)) }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLd(
-            filAriane([
+      <section className="a-head">
+        <div className="container">
+          <FilAriane
+            items={[
               { nom: "Accueil", path: "/" },
               { nom: "Terrains & opportunités", path: "/annonces" },
               { nom: a.city },
-            ]),
-          ),
-        }}
-      />
-      <section className="a-head">
-        <div className="container">
-          <nav className="c-breadcrumb" aria-label="Fil d'ariane">
-            <Link href="/">Accueil</Link>
-            <span className="sep">/</span>
-            <Link href="/annonces">Terrains &amp; opportunités</Link>
-            <span className="sep">/</span>
-            <span>{a.city}</span>
-          </nav>
+            ]}
+          />
           <div className="a-head__top">
             <div>
               <span className={`c-tag${isTM ? "" : " c-tag--terrain"}`}>

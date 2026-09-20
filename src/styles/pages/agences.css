@@ -6,6 +6,16 @@
 .g-hero__bg img{width:100%;height:100%;object-fit:cover;opacity:.75}
 .g-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,19,33,.45) 0%,rgba(0,19,33,.15) 45%,rgba(0,19,33,.8) 100%)}
 .g-hero .container{position:relative;z-index:2;padding-bottom:var(--s-5)}
+/* Même correctif que `.m-hero` et pour la même raison mesurée : le fil
+   d'ariane de la fiche agence tombait dans la bande claire du dégradé,
+   à 2,75:1 en 1440 px sur un fond réel rgb(116,123,125). Voir la note
+   détaillée dans modele.css. */
+.g-hero .container::before{
+  content:"";position:absolute;left:50%;transform:translateX(-50%);
+  width:100vw;top:calc(var(--s-4) * -1);bottom:0;z-index:0;pointer-events:none;
+  background:linear-gradient(to top,rgba(0,19,33,.84) 0%,rgba(0,19,33,.74) 62%,rgba(0,19,33,.44) 88%,rgba(0,19,33,0) 100%);
+}
+.g-hero .container > *{position:relative;z-index:1}
 .g-hero .c-breadcrumb{color:var(--craie);margin-bottom:var(--s-3)}
 .g-hero h1{font-size:clamp(2.2rem,6vw,4.6rem)}
 .g-body{padding:var(--s-6) 0}

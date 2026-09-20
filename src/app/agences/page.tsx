@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import FilAriane from "@/components/FilAriane";
 import AgencyCard from "@/components/AgencyCard";
 import { REEL } from "@/data/essensya";
 import { agencesPubliees } from "@/lib/agences";
 import { fmtPrice } from "@/lib/format";
 import { resolveMetadata } from "@/lib/seo";
-import { filAriane, jsonLd, listeSchema } from "@/lib/schema";
+import { jsonLd, listeSchema } from "@/lib/schema";
 import { getContent } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
 import "@/styles/pages/agences.css";
@@ -79,19 +80,9 @@ export default async function AgencesPage() {
           ),
         }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLd(filAriane([{ nom: "Accueil", path: "/" }, { nom: titre }])),
-        }}
-      />
       <section className="p-head">
         <div className="container">
-          <nav className="c-breadcrumb" aria-label="Fil d'ariane">
-            <Link href="/">Accueil</Link>
-            <span className="sep">/</span>
-            <span>{titre}</span>
-          </nav>
+          <FilAriane items={[{ nom: "Accueil", path: "/" }, { nom: titre }]} />
           <h1>{titre}</h1>
           {/* Chapô laissé vide dans le back-office : on garde la phrase
               d'origine, qui affiche le prix de départ À JOUR. Une version

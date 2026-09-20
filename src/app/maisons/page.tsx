@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import FilAriane from "@/components/FilAriane";
 import LeadForm, { ContactFields } from "@/components/LeadForm";
 import Compare from "@/components/Compare";
 import ModeleCard from "@/components/ModeleCard";
@@ -9,7 +10,7 @@ import { gammeIncomplete, modelesAvecVisuels, MODELES } from "@/data/gamme";
 import { srcSet, vue } from "@/data/visuels";
 import { lecteurBlocs } from "@/lib/blocs";
 import { fmtPrice } from "@/lib/format";
-import { filAriane, jsonLd, listeSchema, produitGamme } from "@/lib/schema";
+import { jsonLd, listeSchema, produitGamme } from "@/lib/schema";
 import { resolveMetadata, titreGamme } from "@/lib/seo";
 import { getContent } from "@/lib/store";
 import "@/styles/pages/modele.css";
@@ -67,7 +68,6 @@ const METADATA_DEFAUT: Metadata = {
   },
 };
 
-
 const D = ESSENSYA_DATA;
 const PRE_LINE = { whiteSpace: "pre-line" } as const;
 
@@ -105,12 +105,6 @@ export default async function MaisonsPage() {
           ),
         }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLd(filAriane([{ nom: "Accueil", path: "/" }, { nom: "Nos modèles" }])),
-        }}
-      />
 
       {/* ── 1. Le prix, avant tout le reste ── */}
       <section className="m-hero mp-hero">
@@ -128,11 +122,7 @@ export default async function MaisonsPage() {
           </picture>
         </div>
         <div className="container">
-          <nav className="c-breadcrumb" aria-label="Fil d'ariane">
-            <Link href="/">Accueil</Link>
-            <span className="sep">/</span>
-            <span>Nos modèles</span>
-          </nav>
+          <FilAriane items={[{ nom: "Accueil", path: "/" }, { nom: "Nos modèles" }]} />
           <span className="c-label c-label--accent">
             {t("hero.surtitre", "La gamme Essensya")}
           </span>

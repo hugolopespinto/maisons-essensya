@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import FilAriane from "@/components/FilAriane";
 import AnnoncesBrowser from "@/components/AnnoncesBrowser";
 import { lecteurBlocs } from "@/lib/blocs";
 import { annonceTitle } from "@/lib/format";
-import { filAriane, jsonLd, listeSchema } from "@/lib/schema";
+import { jsonLd, listeSchema } from "@/lib/schema";
 import { resolveMetadata } from "@/lib/seo";
 import { getContent } from "@/lib/store";
 import { getAnnonces } from "@/lib/vitahome/annonces";
@@ -62,24 +62,14 @@ export default async function AnnoncesPage({
           ),
         }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLd(
-            filAriane([
-              { nom: "Accueil", path: "/" },
-              { nom: "Terrains & opportunités" },
-            ]),
-          ),
-        }}
-      />
       <section className="p-head">
         <div className="container">
-          <nav className="c-breadcrumb" aria-label="Fil d'ariane">
-            <Link href="/">Accueil</Link>
-            <span className="sep">/</span>
-            <span>Terrains &amp; opportunités</span>
-          </nav>
+          <FilAriane
+            items={[
+              { nom: "Accueil", path: "/" },
+              { nom: "Terrains & opportunités" },
+            ]}
+          />
           <h1>{t("hero.titre", TITRE)}</h1>
           <p style={{ whiteSpace: "pre-line" }}>{t("hero.chapo", CHAPO)}</p>
         </div>

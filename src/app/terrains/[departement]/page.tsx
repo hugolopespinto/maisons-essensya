@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import FilAriane from "@/components/FilAriane";
 import AnnonceCard from "@/components/AnnonceCard";
 import ZoneAgence from "@/components/ZoneAgence";
 import ZoneChiffres from "@/components/ZoneChiffres";
@@ -14,7 +15,7 @@ import {
   departementParSlug,
   departementsPubliables,
 } from "@/lib/geo";
-import { filAriane, jsonLd, listeSchema } from "@/lib/schema";
+import { jsonLd, listeSchema } from "@/lib/schema";
 import { resolveMetadata } from "@/lib/seo";
 import "@/styles/pages/terrains.css";
 
@@ -118,28 +119,16 @@ export default async function DepartementPage({
           ),
         }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLd(
-            filAriane([
-              { nom: "Accueil", path: "/" },
-              { nom: "Terrains", path: "/terrains" },
-              { nom: d.nom },
-            ]),
-          ),
-        }}
-      />
 
       <section className="p-head">
         <div className="container">
-          <nav className="c-breadcrumb" aria-label="Fil d'ariane">
-            <Link href="/">Accueil</Link>
-            <span className="sep">/</span>
-            <Link href="/terrains">Terrains</Link>
-            <span className="sep">/</span>
-            <span>{d.nom}</span>
-          </nav>
+          <FilAriane
+            items={[
+              { nom: "Accueil", path: "/" },
+              { nom: "Terrains", path: "/terrains" },
+              { nom: d.nom },
+            ]}
+          />
           <h1>{titre}</h1>
           <p>
             Des parcelles repérées par nos agences dans le département {d.nom},

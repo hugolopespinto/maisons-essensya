@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import FilAriane from "@/components/FilAriane";
 import { REEL } from "@/data/essensya";
 import { fmtPrice } from "@/lib/format";
 import { resoudreMedia } from "@/lib/medias";
-import { filAriane, jsonLd, listeSchema } from "@/lib/schema";
+import { jsonLd, listeSchema } from "@/lib/schema";
 import { resolveMetadata } from "@/lib/seo";
 import { getContent } from "@/lib/store";
 import type { Realisation } from "@/lib/store/types";
@@ -84,20 +85,10 @@ export default async function RealisationsPage() {
           }}
         />
       )}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: jsonLd(filAriane([{ nom: "Accueil", path: "/" }, { nom: TITRE }])),
-        }}
-      />
 
       <section className="p-head">
         <div className="container">
-          <nav className="c-breadcrumb" aria-label="Fil d'ariane">
-            <Link href="/">Accueil</Link>
-            <span className="sep">/</span>
-            <span>Réalisations</span>
-          </nav>
+          <FilAriane items={[{ nom: "Accueil", path: "/" }, { nom: "Réalisations" }]} />
           <h1>{TITRE}</h1>
           <p>
             Les maisons que nous avons construites et livrées dans les Landes.
