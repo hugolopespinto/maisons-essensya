@@ -225,7 +225,7 @@ const S = {
     alignItems: "center",
     justifyContent: "center",
     padding: "clamp(.5rem, 3vw, 2rem)",
-    background: "rgba(19, 18, 16, .55)",
+    background: "rgba(0,19,33, .55)",
   } as React.CSSProperties,
   panneau: {
     display: "flex",
@@ -236,7 +236,7 @@ const S = {
     border: "1px solid var(--beton)",
     borderRadius: "var(--radius)",
     background: "var(--craie)",
-    boxShadow: "0 1.5rem 3rem rgba(19, 18, 16, .28)",
+    boxShadow: "0 1.5rem 3rem rgba(0,19,33, .28)",
   } as React.CSSProperties,
   entete: {
     display: "flex",
@@ -271,8 +271,8 @@ const S = {
     color: "inherit",
   } as React.CSSProperties,
   tuileActive: {
-    borderColor: "var(--bois)",
-    boxShadow: "0 0 0 1px var(--bois)",
+    borderColor: "var(--accent)",
+    boxShadow: "0 0 0 1px var(--accent)",
   } as React.CSSProperties,
   depot: {
     display: "flex",
@@ -287,8 +287,8 @@ const S = {
     transition: "border-color var(--dur-fast), background var(--dur-fast)",
   } as React.CSSProperties,
   depotSurvol: {
-    borderColor: "var(--bois)",
-    background: "var(--bois-clair)",
+    borderColor: "var(--accent)",
+    background: "var(--alerte-fond)",
   } as React.CSSProperties,
   meta: {
     fontFamily: "var(--f-mono)",
@@ -475,7 +475,7 @@ export function TeleverseurMedias({
                 disabled={desactive}
                 style={{
                   font: "inherit",
-                  color: "var(--bois-fonce)",
+                  color: "var(--alerte)",
                   background: "none",
                   border: "none",
                   padding: 0,
@@ -772,7 +772,7 @@ export function MediaPicker({
                 {!choisi.alt.trim() && choisi.type !== "application/pdf" ? (
                   <>
                     <br />
-                    <span style={{ color: "var(--bois-fonce)" }}>
+                    <span style={{ color: "var(--alerte)" }}>
                       Sans texte alternatif — à renseigner dans la médiathèque.
                     </span>
                   </>

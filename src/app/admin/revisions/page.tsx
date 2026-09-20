@@ -800,7 +800,7 @@ const S_CHEMIN: React.CSSProperties = {
   letterSpacing: ".02em",
 };
 
-const S_AVANT: React.CSSProperties = { color: "var(--bois-fonce)" };
+const S_AVANT: React.CSSProperties = { color: "var(--alerte)" };
 const S_APRES: React.CSSProperties = { color: "var(--anthracite)" };
 const S_PAGINATION: React.CSSProperties = {
   display: "flex",

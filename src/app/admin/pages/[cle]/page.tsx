@@ -254,7 +254,7 @@ export default async function EditionPagePage({
           développeur : il nomme la mention perdue et rappelle comment la
           réécrire. */}
       {err ? (
-        <p className="adm-note" role="alert" style={{ borderColor: "var(--bois)" }}>
+        <p className="adm-note" role="alert" style={{ borderColor: "var(--accent)" }}>
           <strong>Enregistrement refusé.</strong> {err}
         </p>
       ) : null}

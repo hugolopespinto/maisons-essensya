@@ -256,7 +256,7 @@ export default async function AgencyPage({
               {fmtPrice(PRICE_FROM)}
               <small>
                 {REEL.mentionPrix}{" "}
-                <Link href="/maisons" style={{ color: "var(--bois)" }}>
+                <Link href="/maisons" style={{ color: "var(--accent)" }}>
                   voir ce qui est compris
                 </Link>
               </small>
@@ -307,7 +307,7 @@ export default async function AgencyPage({
                   <>
                     {" "}
                     — ou appelez directement le{" "}
-                    <a href={telHref(g.phone)} style={{ color: "var(--bois)" }}>
+                    <a href={telHref(g.phone)} style={{ color: "var(--accent)" }}>
                       {g.phone}
                     </a>
                   </>

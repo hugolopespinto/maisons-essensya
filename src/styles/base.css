@@ -1,22 +1,47 @@
 /* ════ 1. TOKENS ════ */
 :root{
-  --craie:#F3F1EC; --sable:#E8E3D9; --beton:#CFC9BD; --pierre:#6E675B;
-  --anthracite:#21201C; --noir:#131210; --bois:#9A6B3C; --blanc:#FFFFFF;
-  /* --pierre était #867E70, soit 3,54:1 sur craie — sous le seuil RGAA de
-     4,5:1 alors qu'il sert de couleur de texte courant. Assombri à 4,95:1.
-     L'ancienne valeur reste disponible pour les usages NON textuels
-     (filets, pictos décoratifs) où le contraste ne s'applique pas. */
-  --pierre-clair:#867E70;
-  /* Gris intermédiaire : l'écart béton→pierre était trop grand pour des
-     lignes de tableau, qui se voyaient plus que leur contenu. */
-  --beton-2:#B9B2A4;
-  /* Le bois porte déjà 5 rôles : il ne peut plus signaler une offre. */
-  --bois-clair:#F0E4D6; --bois-fonce:#7C5530;
-  /* Inclus / exclu : deux gris sémantiques, pas deux couleurs vives —
-     la palette est minérale, un vert et un rouge la trahiraient. */
-  --inclus:#4A6B4F; --exclu:#8A7F72;
+  /* ══════════════════════════════════════════════════════════════════
+     LES NEUTRES — RECALÉS SUR LA CHARTE
 
-  /* ════ COULEURS DE LA CHARTE ════
+     ⚠ ILS ÉTAIENT BEIGES, ET CE BEIGE N'EXISTE NULLE PART DANS LA
+     CHARTE. craie #F3F1EC, sable #E8E3D9, bois #9A6B3C : une famille
+     chaude inventée pour la maquette, qui donnait au site l'allure
+     d'une AUTRE marque que celle du logo. C'était le principal motif
+     du décalage — le brun pesait 80 usages, le vert de la charte 10.
+
+     La charte ne connaît que trois neutres. Deux sont écrits, le
+     troisième est mesuré dans son propre artwork (page 1 du PDF,
+     rendue à 1683 px, carré de 24×24 px parfaitement uni) :
+
+       fond de page                #FFFFFF
+       bandeau gris                #ECECED
+       tuile sombre du logo        #2C2E35
+       « Noir » (écrit, CMJN 60/0/0/100)   #001321
+
+     La rampe ci-dessous en découle. Les luminances sont conservées à
+     moins de 1,5 L* près des anciennes valeurs, si bien que TOUS les
+     contrastes mesurés auparavant restent valables — sauf l'anthracite,
+     volontairement éclairci de 12,2 à 19,0 L* pour rejoindre la tuile
+     de la charte, et qui porte encore le texte courant à 12,19:1.
+
+     Un contraste y gagne au passage : pierre sur sable était à 4,37:1,
+     donc SOUS le seuil de 4,5:1, pour du texte secondaire posé sur un
+     aplat secondaire. Il est à 4,55:1.
+     ══════════════════════════════════════════════════════════════════ */
+  --blanc:#FFFFFF;
+  --craie:#F2F3F3;        /* fond de page */
+  --sable:#E5E7E8;        /* aplats secondaires — le bandeau de la charte */
+  --beton:#C9CBCD;        /* filets 1 px */
+  --beton-2:#B3B7BA;      /* lignes de tableau */
+  --pierre:#62686D;       /* texte secondaire — 5,08:1 sur craie */
+  /* NON TEXTUEL : 3,45:1 sur craie, donc filets et pictos seulement. */
+  --pierre-clair:#7C838A;
+  --anthracite:#2C2E35;   /* texte courant et fonds sombres */
+  --noir:#001321;         /* le « Noir » de la charte */
+
+  /* ══════════════════════════════════════════════════════════════════
+     LES QUATRE COULEURS DE LA CHARTE
+
      Relevées dans « Charte Essensya.pdf », pas approchées à l'œil :
 
        Vert              RVB 111/150/119   # 77957a
@@ -31,21 +56,53 @@
      qu'un graphiste vérifiera, et le tracé du logo — mesuré à #6E9677 —
      reste dans la même famille. À signaler au client sans urgence.
 
-     ⚠ CE QUE LE CONTRASTE IMPOSE, ET QUI N'EST PAS NÉGOCIABLE :
-     le vert ne passe qu'à 2,92:1 sur la craie et 3,30:1 en blanc
-     dessus. Il ne peut donc porter AUCUN texte — ce qui rejoint
-     exactement la consigne « par touches » : filets, aplats, chiffres
-     décoratifs. Dès qu'un mot doit être lu, c'est --vert-texte (4,70:1)
-     qui s'applique, même teinte, simplement assombrie.
-     Le framboise, lui, passe à 6,18:1 en blanc dessus : il tient comme
-     fond de bouton, ce qui est précisément son rôle. */
-  --vert:#77957A;
-  --vert-texte:#5A715D;
-  --vert-clair:#E3E5DD;
-  --terracotta:#C87160;
-  --framboise:#B12D5B;
+     ⚠ CE QUE LE CONTRASTE IMPOSE, ET QUI N'EST PAS NÉGOCIABLE.
+     Ni le vert ni le terracotta ne peuvent porter du texte : 2,97:1 et
+     3,16:1 sur la craie, là où il en faut 4,5. Chacun a donc DEUX
+     variantes, même teinte, luminance seule modifiée :
+
+       ·-texte  la plus claire qui atteigne 4,5:1 sur fond clair ;
+       ·-clair  son miroir, pour les sections sombres, où la version
+                foncée tomberait à 1,8:1.
+
+     Cela rejoint exactement la consigne « par touches » : la teinte
+     pure va aux aplats, filets et pictos ; dès qu'un mot doit être lu,
+     c'est la variante qui s'applique. Le framboise, lui, passe à
+     5,56:1 sur craie et 6,18:1 en blanc dessus : il n'a pas besoin de
+     variante claire pour le texte, et tient comme fond de bouton.
+     ══════════════════════════════════════════════════════════════════ */
+  --vert:#77957A;            /* aplats et pictos — 2,97:1, jamais de texte */
+  --vert-texte:#566D58;      /* 5,07:1 sur craie · 4,55:1 sur sable */
+  --vert-clair:#A7BFAA;      /* sur fond sombre — 6,89:1 · 9,57:1 sur noir */
+  --vert-fond:#E4EAE5;       /* aplat clair — vert-texte dessus : 4,62:1 */
+  --terracotta:#C87160;      /* aplats et filets — 3,16:1, jamais de texte */
+  --terracotta-texte:#995548;/* 5,04:1 sur craie · 4,52:1 sur sable */
+  --terracotta-clair:#E3A897;/* sur fond sombre — 6,66:1 · 9,25:1 sur noir */
+  --framboise:#B12D5B;       /* 5,56:1 sur craie — texte ET fond de bouton */
   --framboise-fonce:#98274E;
-  --framboise-clair:#ECDDDE;
+  --framboise-fond:#F0DCE3;  /* aplat clair — framboise dessus : 4,73:1 */
+
+  /* ══════════════════════════════════════════════════════════════════
+     LES RÔLES — ce qu'une couleur FAIT, pas ce qu'elle est
+
+     `--accent` et `--focus` changent de valeur selon le fond (voir la
+     règle `.u-sombre` juste après). C'est ce qui remplace l'ancien
+     `--bois`, qui portait la même valeur partout et tombait donc à
+     2,5:1 dès qu'une section passait au sombre — le pied de page, le
+     bandeau cookies, le formulaire de rappel.
+     ══════════════════════════════════════════════════════════════════ */
+  --accent:var(--terracotta-texte);
+  --accent-vert:var(--vert-texte);
+  --accent-vif:var(--terracotta);
+  --muet:var(--pierre);
+  --focus:var(--framboise);
+  /* Attention / brouillon / à compléter : un terracotta brûlé, assez
+     distinct de l'accent pour qu'un placard « à compléter » ne se lise
+     pas comme une étiquette de ville. 6,72:1 sur craie. */
+  --alerte:#8E3B2C; --alerte-fond:#F8E7E2;
+  /* Inclus / exclu : le vert de la charte dit désormais « compris »,
+     ce qu'un gris sémantique disait mal. */
+  --inclus:var(--vert-texte); --exclu:var(--pierre);
   --f-display:var(--font-archivo),sans-serif; --f-body:var(--font-instrument),sans-serif; --f-mono:var(--font-plex-mono),monospace;
   --fs-hero:clamp(2.6rem,8vw,6.8rem); --fs-h2:clamp(2rem,4.6vw,3.6rem); --fs-h3:clamp(1.4rem,2.6vw,2rem);
   --fs-body:clamp(1rem,1.15vw,1.125rem); --fs-small:.875rem; --fs-label:.72rem;
@@ -54,6 +111,47 @@
   --radius:2px; --line:1px solid var(--beton);
   --ease:cubic-bezier(.22,.8,.24,1); --dur:.8s; --dur-fast:.35s;
   --header-h:76px;
+}
+
+/* ════ 1 bis. LES FONDS SOMBRES ════
+   Toute section dont le fond est anthracite ou noir bascule l'accent et
+   l'anneau de focus vers leurs versions claires. Une seule règle, au
+   lieu d'un arbitrage clair/sombre à chacun des soixante appels.
+
+   ⚠ CETTE LISTE DOIT SUIVRE LES FONDS. Une nouvelle section sombre qui
+   ne serait pas déclarée ici afficherait son accent à 1,8:1 — lisible
+   au relevé automatique de contraste (scripts de qualification), pas
+   forcément à l'œil du développeur qui l'ajoute.
+
+   ⚠ ET ELLE NE SE DEVINE PAS EN RELISANT LES FEUILLES DE STYLE. Écrite
+   de mémoire, elle oubliait cinq sections : `.s-proof`, `.m-hero`,
+   `.m-arch`, `.ct-form-card` et `.lp-hero` — dont la carte du
+   formulaire de contact, où « politique de confidentialité » tombait à
+   1,6:1. Elles ont été trouvées en interrogeant les pages RENDUES : on
+   cherche toute boîte au fond sombre dont `--accent` n'a pas basculé
+   (voir `fonds-sombres.mjs` dans les scripts de qualification). C'est
+   ce relevé-là qu'il faut rejouer après avoir ajouté une section. */
+.u-sombre,
+.hero-fixe,.s-forts,.s-opp,.s-cta,.s-proof,.s-philo,.site-footer,.mobile-nav,
+.c-cookies,.footer-legal,.g-hero,.a-aside__card,.pc-figures,
+.m-hero,.m-arch,.ct-form-card,.lp-hero,.skip-link{
+  --accent:var(--terracotta-clair);
+  --accent-vert:var(--vert-clair);
+  --muet:var(--beton);
+  --focus:var(--craie);
+}
+
+/* ⚠ ET LE CHEMIN INVERSE. Une carte claire posée DANS une section
+   sombre hérite des valeurs sombres : sur la landing, le formulaire est
+   un aplat de craie au milieu d'un hero noir, et « politique de
+   confidentialité » y tombait à 1,83:1. Ces îlots reprennent donc les
+   valeurs claires. Même règle qu'au-dessus : la liste se vérifie sur
+   les pages rendues, pas de tête. */
+.u-clair,.lp-form-card{
+  --accent:var(--terracotta-texte);
+  --accent-vert:var(--vert-texte);
+  --muet:var(--pierre);
+  --focus:var(--framboise);
 }
 
 /* ════ 2. BASE ════ */
@@ -67,10 +165,10 @@ button{font:inherit;cursor:pointer;background:none;border:none}
 h1,h2,h3{font-family:var(--f-display);font-variation-settings:"wdth" 118;font-weight:600;line-height:1.02;letter-spacing:-.015em;text-transform:uppercase}
 h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3)}
 .container{width:100%;max-width:var(--container);margin-inline:auto;padding-inline:var(--gutter)}
-.u-muted{color:var(--pierre)} .u-measure{max-width:34em}
-.c-label{font-family:var(--f-mono);font-size:var(--fs-label);font-weight:500;text-transform:uppercase;letter-spacing:.18em;color:var(--pierre)}
-.c-label--accent{color:var(--vert-texte)}
-:focus-visible{outline:2px solid var(--framboise);outline-offset:3px}
+.u-muted{color:var(--muet)} .u-measure{max-width:34em}
+.c-label{font-family:var(--f-mono);font-size:var(--fs-label);font-weight:500;text-transform:uppercase;letter-spacing:.18em;color:var(--muet)}
+.c-label--accent{color:var(--accent-vert)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
 .page{display:block}
 
 /* Tête de page standard (pages intérieures) */
@@ -102,7 +200,7 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
 .c-plate__spec strong{color:var(--anthracite);font-weight:500}
 .c-pictos{display:flex;flex-wrap:wrap;gap:var(--s-3) var(--s-4)}
 .c-picto{display:flex;align-items:center;gap:.65rem;font-family:var(--f-mono);font-size:var(--fs-small)}
-.c-picto svg{stroke:var(--vert-texte);flex:none}
+.c-picto svg{stroke:var(--accent-vert);flex:none}
 .c-picto span small{display:block;font-size:var(--fs-label);letter-spacing:.12em;text-transform:uppercase;color:var(--pierre)}
 .c-tag{display:inline-block;font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase;padding:.35rem .7rem;border-radius:var(--radius);background:var(--anthracite);color:var(--craie)}
 .c-tag--terrain{background:var(--vert-texte)}
@@ -113,7 +211,7 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
 .c-annonce:hover .c-annonce__media img{transform:scale(1.04)}
 .c-annonce__media .c-tag{position:absolute;top:var(--s-2);left:var(--s-2)}
 .c-annonce__body{padding:var(--s-3)}
-.c-annonce__loc{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.15em;text-transform:uppercase;color:var(--bois)}
+.c-annonce__loc{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.15em;text-transform:uppercase;color:var(--accent)}
 .c-annonce__title{font-family:var(--f-display);font-variation-settings:"wdth" 118;font-weight:600;text-transform:uppercase;font-size:1.05rem;margin:.4rem 0 .6rem}
 .c-annonce__specs{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.06em;color:var(--pierre);display:flex;flex-wrap:wrap;gap:.4rem 1rem}
 .c-annonce__price{margin-top:var(--s-2);padding-top:var(--s-2);border-top:var(--line);font-family:var(--f-mono);font-size:var(--fs-small)}
@@ -121,7 +219,7 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
 .c-annonce__price small{color:var(--pierre)}
 .c-opp{border:var(--line);border-radius:var(--radius);padding:var(--s-3);display:flex;flex-direction:column;gap:var(--s-2);background:var(--craie);transition:border-color var(--dur-fast)}
 .c-opp:hover{border-color:var(--anthracite)}
-.c-opp__loc{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.15em;text-transform:uppercase;color:var(--bois)}
+.c-opp__loc{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.15em;text-transform:uppercase;color:var(--accent)}
 .c-opp__title{font-family:var(--f-display);font-variation-settings:"wdth" 118;font-weight:600;text-transform:uppercase;font-size:1.05rem}
 .c-opp__meta{font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre)}
 /* Agency card */
@@ -131,7 +229,7 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
 .c-agency-card__media img{width:100%;height:100%;object-fit:cover;transition:transform 1s var(--ease)}
 .c-agency-card:hover .c-agency-card__media img{transform:scale(1.04)}
 .c-agency-card__body{padding:var(--s-3)}
-.c-agency-card__zone{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.15em;text-transform:uppercase;color:var(--bois)}
+.c-agency-card__zone{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.15em;text-transform:uppercase;color:var(--accent)}
 .c-agency-card__name{font-family:var(--f-display);font-variation-settings:"wdth" 120;font-weight:700;text-transform:uppercase;font-size:1.2rem;margin:.4rem 0 .5rem}
 .c-agency-card__meta{font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre)}
 /* Formulaire */
@@ -144,18 +242,18 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
 .c-field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23867E70' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center}
 /* Le focus ne doit JAMAIS être supprimé : changer la bordure ne suffit pas
    pour une navigation au clavier (RGAA 10.7). On garde le liseré. */
-.c-field input:focus-visible,.c-field select:focus-visible,.c-field textarea:focus-visible{outline:2px solid var(--bois);outline-offset:2px;border-color:var(--bois)}
-.c-field input:focus,.c-field select:focus,.c-field textarea:focus{border-color:var(--bois)}
-.c-form--dark .c-field input,.c-form--dark .c-field select,.c-form--dark .c-field textarea{border-color:rgba(243,241,236,.3);color:var(--craie)}
-.c-form--dark .c-field input:focus,.c-form--dark .c-field select:focus,.c-form--dark .c-field textarea:focus{border-color:var(--bois)}
+.c-field input:focus-visible,.c-field select:focus-visible,.c-field textarea:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-color:var(--focus)}
+.c-field input:focus,.c-field select:focus,.c-field textarea:focus{border-color:var(--focus)}
+.c-form--dark .c-field input,.c-form--dark .c-field select,.c-form--dark .c-field textarea{border-color:rgba(242,243,243,.3);color:var(--craie)}
+.c-form--dark .c-field input:focus,.c-form--dark .c-field select:focus,.c-form--dark .c-field textarea:focus{border-color:var(--focus)}
 .c-form--dark .c-field label{color:var(--sable);opacity:.7}
 .c-form--dark option{color:var(--anthracite)}
-.c-form__note{font-size:var(--fs-label);font-family:var(--f-mono);letter-spacing:.05em;opacity:.55}
-.c-form__success{display:none;font-family:var(--f-mono);font-size:var(--fs-small);border:1px solid var(--bois);border-radius:var(--radius);color:var(--bois);padding:var(--s-3);text-align:center;letter-spacing:.08em}
+.c-form__note{font-size:var(--fs-label);font-family:var(--f-mono);letter-spacing:.05em;color:var(--muet)}
+.c-form__success{display:none;font-family:var(--f-mono);font-size:var(--fs-small);border:1px solid var(--accent);border-radius:var(--radius);color:var(--accent);padding:var(--s-3);text-align:center;letter-spacing:.08em}
 .c-form.is-sent .c-form__success{display:block}
 .c-form.is-sent .c-form__row,.c-form.is-sent .c-form__actions,.c-form.is-sent .c-form__note,.c-form.is-sent .c-field{display:none}
 /* Sticky CTA mobile */
-.c-sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:90;display:none;padding:.85rem var(--gutter);padding-bottom:calc(.85rem + env(safe-area-inset-bottom));background:rgba(19,18,16,.92);backdrop-filter:blur(10px);transform:translateY(110%);transition:transform var(--dur-fast) var(--ease)}
+.c-sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:90;display:none;padding:.85rem var(--gutter);padding-bottom:calc(.85rem + env(safe-area-inset-bottom));background:rgba(0,19,33,.92);backdrop-filter:blur(10px);transform:translateY(110%);transition:transform var(--dur-fast) var(--ease)}
 .c-sticky-cta.is-visible{transform:none}
 .c-sticky-cta .c-btn{width:100%;justify-content:center}
 @media (max-width:768px){.c-sticky-cta{display:block}}
@@ -200,8 +298,8 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
 .c-specs li{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s-3);padding:var(--s-2) 0;border-bottom:var(--line);font-family:var(--f-mono);font-size:var(--fs-small)}
 .c-specs li > span:first-child{color:var(--pierre);text-transform:uppercase;font-size:var(--fs-label);letter-spacing:.14em;flex:none}
 .c-specs li > span:last-child{text-align:right}
-.c-specs--dark{border-color:rgba(243,241,236,.16)}
-.c-specs--dark li{border-color:rgba(243,241,236,.16)}
+.c-specs--dark{border-color:rgba(242,243,243,.16)}
+.c-specs--dark li{border-color:rgba(242,243,243,.16)}
 .c-specs--dark li > span:first-child{color:var(--sable);opacity:.6}
 /* Variante à puce : « compris » / « non compris » */
 .c-specs--marked li{display:flex;gap:.8rem;align-items:baseline;justify-content:flex-start;font-family:var(--f-body);font-size:var(--fs-small)}
@@ -221,7 +319,7 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
 .c-compare .is-us{background:var(--sable);color:var(--anthracite)}
 .c-compare thead .is-us{color:var(--anthracite);font-weight:500}
 .c-compare tr:last-child td,.c-compare tr:last-child th{border-bottom:none}
-.c-compare .is-gain{color:var(--bois-fonce)}
+.c-compare .is-gain{color:var(--vert-texte)}
 .c-compare__note{margin-top:var(--s-3);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.05em;color:var(--pierre);max-width:60ch}
 @media (max-width:560px){.c-compare th,.c-compare td{padding:var(--s-2) var(--s-2)}}
 
@@ -232,13 +330,13 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
 .c-sub text{font-family:var(--f-mono);fill:var(--pierre)}
 .c-sub__dim{font-size:9px;letter-spacing:.04em}
 .c-sub__surface{font-size:12px;font-weight:500;fill:var(--anthracite);letter-spacing:.02em}
-.c-sub__label{font-size:7.5px;text-transform:uppercase;letter-spacing:.18em;fill:var(--bois)}
+.c-sub__label{font-size:7.5px;text-transform:uppercase;letter-spacing:.18em;fill:var(--accent)}
 .c-sub__inner{font-size:9px;fill:var(--craie);letter-spacing:.02em}
 .c-sub__nord path{fill:var(--pierre-clair)}
 .c-sub__nord text{font-size:7px;letter-spacing:.1em;fill:var(--pierre-clair)}
 
 /* ── Bandeau d'offre : le seul endroit où le bois devient un aplat ── */
-.c-offer{display:inline-flex;align-items:center;gap:.6rem;background:var(--bois-clair);color:var(--bois-fonce);font-family:var(--f-mono);font-size:var(--fs-label);text-transform:uppercase;letter-spacing:.14em;padding:.5rem .9rem;border-radius:var(--radius)}
+.c-offer{display:inline-flex;align-items:center;gap:.6rem;background:var(--framboise-fond);color:var(--framboise);font-family:var(--f-mono);font-size:var(--fs-label);text-transform:uppercase;letter-spacing:.14em;padding:.5rem .9rem;border-radius:var(--radius)}
 
 /* ── Prix héroïque : le chiffre devient l'élément le plus grand de la page ──
    La DA plafonnait le prix à 3,6rem quand un h1 monte à 6,8rem : on vendait
@@ -253,7 +351,7 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
 
 /* ════ HEADER ════ */
 .site-header{position:fixed;inset:0 0 auto 0;z-index:100;height:var(--header-h);display:flex;align-items:center;transition:background var(--dur-fast) var(--ease),border-color var(--dur-fast) var(--ease),color var(--dur-fast) var(--ease);color:var(--craie);border-bottom:1px solid transparent}
-.site-header.is-solid{background:rgba(243,241,236,.92);backdrop-filter:blur(10px);color:var(--anthracite);border-color:var(--beton)}
+.site-header.is-solid{background:rgba(242,243,243,.92);backdrop-filter:blur(10px);color:var(--anthracite);border-color:var(--beton)}
 .site-header .container{display:flex;align-items:center;justify-content:space-between;gap:var(--s-3)}
 .logo{font-family:var(--f-display);font-variation-settings:"wdth" 125;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:1.05rem;line-height:1}
 .logo small{display:block;font-family:var(--f-mono);font-weight:400;font-size:.55rem;letter-spacing:.42em;margin-top:.25rem;opacity:.7}
@@ -278,10 +376,10 @@ body.lp-mode .header-cta{display:inline-flex}
 /* ════ 12. FOOTER ════ */
 .site-footer{background:var(--noir);color:var(--sable);padding:var(--s-6) 0 var(--s-4)}
 .site-footer .logo{color:var(--craie)}
-.footer-grid{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:var(--s-4);padding-bottom:var(--s-5);border-bottom:1px solid rgba(243,241,236,.14)}
-.footer-col h4{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.18em;text-transform:uppercase;color:var(--pierre);margin-bottom:var(--s-2);font-weight:500}
+.footer-grid{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:var(--s-4);padding-bottom:var(--s-5);border-bottom:1px solid rgba(242,243,243,.14)}
+.footer-col h4{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.18em;text-transform:uppercase;color:var(--muet);margin-bottom:var(--s-2);font-weight:500}
 .footer-col a{display:block;font-size:var(--fs-small);padding:.3rem 0;opacity:.8;transition:opacity var(--dur-fast),color var(--dur-fast)}
-.footer-col a:hover{opacity:1;color:var(--bois)}
+.footer-col a:hover{opacity:1;color:var(--accent)}
 .footer-brand p{font-size:var(--fs-small);opacity:.65;margin-top:var(--s-2);max-width:26em}
 .footer-legal{display:flex;flex-wrap:wrap;gap:var(--s-3);justify-content:space-between;padding-top:var(--s-3);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.1em;opacity:.55}
 .footer-legal nav{display:flex;gap:var(--s-3);flex-wrap:wrap}

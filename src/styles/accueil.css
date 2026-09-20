@@ -43,7 +43,7 @@
    de l'image. Un premier plan très clair — une terrasse en plein soleil,
    une allée de gravier blanc — l'affaiblirait. À revérifier à chaque
    changement de visuel d'accueil. */
-.hero-fixe__voile{position:absolute;inset:0;background:linear-gradient(to top,rgba(19,18,16,.10) 0%,rgba(19,18,16,.05) 30%,rgba(19,18,16,.04) 70%,rgba(19,18,16,.46) 100%)}
+.hero-fixe__voile{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,19,33,.10) 0%,rgba(0,19,33,.05) 30%,rgba(0,19,33,.04) 70%,rgba(0,19,33,.46) 100%)}
 
 /* ⚠ LE DÉGRADÉ EST CALÉ SUR LE TEXTE, PAS SUR L'ÉCRAN, et c'est tout
    l'enjeu. Un voile mesuré en pourcentage de la hauteur du hero ne peut
@@ -72,7 +72,7 @@
    disparaissait pour rien. À .76 il tient 9,5:1 sur écran large et 7,2:1
    sur téléphone, et le mobilier de jardin reste lisible sous le texte.
    La marge restante couvre un rendu plus clair que celui-ci. */
-.hero-fixe__texte::before{content:"";position:absolute;left:50%;transform:translateX(-50%);width:100vw;top:calc(var(--s-3) * -1);bottom:0;z-index:0;background:linear-gradient(to top,rgba(19,18,16,.76) 0%,rgba(19,18,16,.72) 66%,rgba(19,18,16,.66) 82%,rgba(19,18,16,.32) 93%,rgba(19,18,16,0) 100%);pointer-events:none}
+.hero-fixe__texte::before{content:"";position:absolute;left:50%;transform:translateX(-50%);width:100vw;top:calc(var(--s-3) * -1);bottom:0;z-index:0;background:linear-gradient(to top,rgba(0,19,33,.76) 0%,rgba(0,19,33,.72) 66%,rgba(0,19,33,.66) 82%,rgba(0,19,33,.32) 93%,rgba(0,19,33,0) 100%);pointer-events:none}
 /* ⚠ `z-index:0` SUR LE SOCLE, ET LES ENFANTS AU-DESSUS. Avec `-1`, le
    pseudo-élément passait DERRIÈRE la photo — un enfant à z-index négatif
    descend sous les frères absolus de son parent. Résultat : le dégradé
@@ -109,7 +109,7 @@
    dessous — demandée, et utile : elle montre le produit là où le bloc
    ne faisait que l'affirmer.
    ────────────────────────────────────────────────────────────────── */
-.s-juste{padding:var(--s-7) 0;background:var(--vert-clair)}
+.s-juste{padding:var(--s-7) 0;background:var(--vert-fond)}
 .s-juste__grid{display:grid;grid-template-columns:5fr 7fr;gap:var(--s-5)}
 .s-juste__note{margin-top:var(--s-3);color:var(--pierre);font-size:var(--fs-small);max-width:52ch}
 /* UNE GRANDE PUIS DEUX, et non trois à égalité : c'est la disposition
@@ -149,8 +149,8 @@
 .s-forts{padding:var(--s-7) 0;background:var(--anthracite);color:var(--craie)}
 .s-forts .c-label{color:var(--sable)}
 .s-forts__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-5) var(--s-4)}
-.s-forts__item{border-top:1px solid rgba(243,241,236,.22);padding-top:var(--s-3)}
-.s-forts__num{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.2em;color:var(--vert)}
+.s-forts__item{border-top:1px solid rgba(242,243,243,.22);padding-top:var(--s-3)}
+.s-forts__num{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.2em;color:var(--vert-clair)}
 .s-forts__item h3{font-size:1.15rem;margin:.6rem 0 .5rem}
 .s-forts__item p{color:var(--sable);opacity:.82;font-size:var(--fs-small);max-width:40ch}
 @media (max-width:900px){.s-forts__grid{grid-template-columns:1fr 1fr}}
@@ -175,7 +175,7 @@
    plus : sur l'anthracite, c'est le sable qui porte le surtitre. */
 .s-opp__corps .c-label--accent{color:var(--sable)}
 .s-opp__corps h2{font-size:clamp(1.8rem,3.4vw,2.8rem)}
-.s-opp__plate{margin-top:var(--s-3);border-color:rgba(243,241,236,.22)}
+.s-opp__plate{margin-top:var(--s-3);border-color:rgba(242,243,243,.22)}
 .s-opp__plate .c-plate__spec{color:var(--sable)}
 .s-opp__plate .c-plate__spec strong{color:var(--craie)}
 .s-opp__actions{display:flex;flex-wrap:wrap;gap:var(--s-2);margin-top:var(--s-4)}

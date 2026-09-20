@@ -58,8 +58,8 @@ export default async function LandingPage({
         </div>
         <div className="container">
           <div>
-            {/* Le seul aplat bois du site : il signale une offre datée,
-                pas une urgence fabriquée. */}
+            {/* Le seul aplat framboise du site : il signale une offre
+                datée, pas une urgence fabriquée. */}
             <span className="c-offer">Prix de lancement</span>
             <h1 style={{ marginTop: "var(--s-2)" }}>{lp.title}</h1>
             <p className="lp-hero__sub">{lp.subtitle}</p>

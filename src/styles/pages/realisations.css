@@ -19,7 +19,7 @@
 /* L'état vide. Encadré plutôt que flottant : un grand blanc au milieu
    d'une page se lit comme une erreur de chargement, un bloc encadré se
    lit comme une intention. */
-.rz-vide{border:1px dashed var(--beton);border-radius:var(--radius);padding:var(--s-6) var(--s-4);text-align:center;background:var(--vert-clair)}
+.rz-vide{border:1px dashed var(--beton);border-radius:var(--radius);padding:var(--s-6) var(--s-4);text-align:center;background:var(--vert-fond)}
 .rz-vide h2{font-size:var(--fs-h3)}
 .rz-vide p{margin:var(--s-3) auto 0;max-width:46ch;color:var(--pierre)}
 .rz-vide__actions{display:flex;flex-wrap:wrap;gap:var(--s-2);justify-content:center;margin-top:var(--s-4)}

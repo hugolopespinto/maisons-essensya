@@ -54,7 +54,7 @@ const CHECKBOX: CSSProperties = {
   padding: 0,
   flex: "none",
   marginTop: ".05rem",
-  accentColor: "var(--bois)",
+  accentColor: "var(--framboise)",
 };
 
 /* .c-field label est en mono capitales : c'est juste pour un intitulé de
@@ -76,7 +76,7 @@ const CONSENT_ROW: CSSProperties = {
   gap: ".7rem",
 };
 
-const POLICY_LINK: CSSProperties = { color: "var(--bois)", textDecoration: "underline" };
+const POLICY_LINK: CSSProperties = { color: "var(--accent)", textDecoration: "underline" };
 
 /* Leurre anti-robot : masqué en CSS, pas en `type="hidden"` — un champ
    caché HTML est ignoré des scripts de spam, un champ hors écran non.

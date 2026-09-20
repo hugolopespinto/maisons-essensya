@@ -3,7 +3,7 @@
 
    Même grammaire que le site public, en plus dense : fond craie, filets
    1px, libellés en mono capitales espacées, titres en display, accent
-   bois, rayon 2px, aucune ombre. Un back-office qui ressemble au site
+   terracotta, rayon 2px, aucune ombre. Un back-office qui ressemble au site
    qu'il pilote rassure davantage qu'un thème d'administration générique.
 
    ⚠ CONTRAT PARTAGÉ. Les quatre lots du back-office consomment les
@@ -116,14 +116,14 @@ body:has(.adm) .c-cookies { display: none !important; }
   transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease),
     border-color var(--dur-fast) var(--ease);
 }
-.adm__link:hover { background: var(--craie); border-left-color: var(--bois); }
+.adm__link:hover { background: var(--craie); border-left-color: var(--accent); }
 /* L'état actif exigerait `usePathname`, donc un composant client : hors
    périmètre de ce lot, qui ne livre que des composants serveur. Le jour
    où le back-office en gagne un, la règle est déjà écrite. */
 .adm__link[aria-current="page"] {
   background: var(--craie);
-  border-left-color: var(--bois);
-  color: var(--bois-fonce);
+  border-left-color: var(--accent);
+  color: var(--alerte);
 }
 .adm__link--out { color: var(--pierre); }
 .adm__link--out:hover { color: var(--anthracite); }
@@ -332,7 +332,7 @@ body:has(.adm) .c-cookies { display: none !important; }
 }
 .adm-field input:focus,
 .adm-field select:focus,
-.adm-field textarea:focus { border-color: var(--bois); }
+.adm-field textarea:focus { border-color: var(--focus); }
 .adm-field select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23867E70' stroke-width='1.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -387,14 +387,14 @@ body:has(.adm) .c-cookies { display: none !important; }
 .adm-actions--serre { margin-top: var(--s-2); padding-top: 0; border-top: none; }
 /* Boutons du back-office : même dessin que le site, plus compacts. */
 .adm .c-btn { padding: .7rem 1.15rem; }
-.adm .c-btn--danger { border-color: var(--bois-fonce); color: var(--bois-fonce); }
-.adm .c-btn--danger:hover { background: var(--bois-fonce); color: var(--craie); }
+.adm .c-btn--danger { border-color: var(--alerte); color: var(--alerte); }
+.adm .c-btn--danger:hover { background: var(--alerte); color: var(--craie); }
 
 /* ════ 14. BADGE D'ÉTAT ════
-   Deux états sémantiques, pas deux couleurs vives : la palette est
-   minérale, un rouge saturé la trahirait. Le vert d'inclusion et le bois
-   foncé sont déjà dans les tokens et passent tous deux 4,5:1 sur craie —
-   un badge d'alerte illisible ne sert personne. */
+   Deux états sémantiques pris dans la charte plutôt qu'inventés : le
+   vert d'inclusion et le terracotta brûlé de `--alerte`. Tous deux
+   passent 4,5:1 sur craie — un badge d'alerte illisible ne sert
+   personne. */
 .adm-badge {
   display: inline-flex;
   align-items: center;
@@ -419,7 +419,7 @@ body:has(.adm) .c-cookies { display: none !important; }
   background: currentColor;
 }
 .adm-badge--on { color: var(--inclus); border-color: var(--inclus); }
-.adm-badge--off { color: var(--bois-fonce); border-color: var(--bois-fonce); }
+.adm-badge--off { color: var(--alerte); border-color: var(--alerte); }
 
 /* ════ 15. ÉTAT VIDE ════ */
 .adm-empty {
@@ -445,13 +445,13 @@ body:has(.adm) .c-cookies { display: none !important; }
 /* ════ 16. NOTE ════ */
 .adm-note {
   padding: .75rem var(--s-2);
-  border-left: 2px solid var(--bois);
-  background: var(--bois-clair);
+  border-left: 2px solid var(--accent);
+  background: var(--alerte-fond);
   border-radius: 0 var(--radius) var(--radius) 0;
   font-size: var(--fs-small);
   line-height: 1.55;
 }
-.adm-note--alerte { border-left-color: var(--bois-fonce); }
+.adm-note--alerte { border-left-color: var(--alerte); }
 .adm-note strong { font-weight: 600; }
 .adm-note + .adm-note { margin-top: var(--s-2); }
 .adm-note a { text-decoration: underline; text-underline-offset: .2em; }
@@ -468,7 +468,7 @@ body:has(.adm) .c-cookies { display: none !important; }
 .adm textarea:focus-visible,
 .adm summary:focus-visible,
 .adm [tabindex]:focus-visible {
-  outline: 2px solid var(--bois);
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
   border-radius: var(--radius);
 }
@@ -521,7 +521,7 @@ body:has(.adm) .c-cookies { display: none !important; }
   .adm__link:hover,
   .adm__link[aria-current="page"] {
     border-left-color: transparent;
-    border-bottom-color: var(--bois);
+    border-bottom-color: var(--accent);
   }
   .adm__main { padding: var(--s-3) var(--gutter) var(--s-5); }
 }

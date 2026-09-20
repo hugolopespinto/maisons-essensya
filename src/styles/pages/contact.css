@@ -6,7 +6,7 @@
 .ct-form-card h2{font-size:1.3rem;margin-bottom:var(--s-3)}
 .ct-aside .c-agency-card + .c-agency-card{margin-top:var(--s-3)}
 .ct-direct{margin-top:var(--s-4);border-top:var(--line);padding-top:var(--s-3);font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre)}
-.ct-direct a{color:var(--bois)}
+.ct-direct a{color:var(--accent)}
 
 
 /* ⚠ `min-width:0` — LE DÉFAUT LE PLUS SUBTIL DU RELEVÉ MOBILE.

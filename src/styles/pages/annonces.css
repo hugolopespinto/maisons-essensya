@@ -1,20 +1,20 @@
 /* ════ 6. LISTING ANNONCES (.l-) ════ */
-.l-filters{position:sticky;top:var(--header-h);z-index:60;background:rgba(243,241,236,.95);backdrop-filter:blur(10px);border-top:var(--line);border-bottom:var(--line);padding:var(--s-2) 0}
+.l-filters{position:sticky;top:var(--header-h);z-index:60;background:rgba(242,243,243,.95);backdrop-filter:blur(10px);border-top:var(--line);border-bottom:var(--line);padding:var(--s-2) 0}
 .l-filters .container{display:flex;flex-wrap:wrap;gap:var(--s-2);align-items:end}
 .l-filter{display:flex;flex-direction:column;gap:.35rem}
 .l-filter label{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase;color:var(--pierre)}
 .l-filter select{font-family:var(--f-body);font-size:.92rem;padding:.6rem 2.2rem .6rem .8rem;background:transparent;border:1px solid var(--beton);border-radius:var(--radius);appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23867E70' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer}
-.l-filter select:focus{outline:none;border-color:var(--bois)}
+.l-filter select:focus{outline:none;border-color:var(--focus)}
 /* Recherche texte : la commune est la première question que se pose un
    acheteur, et le flux couvre des centaines de communes — un menu
    déroulant de localités n'était pas tenable. */
 .l-filter--wide{flex:1 1 240px;min-width:180px}
 .l-filter input[type="search"]{font-family:var(--f-body);font-size:.92rem;padding:.6rem .8rem;background:transparent;border:1px solid var(--beton);border-radius:var(--radius);color:inherit;width:100%;-webkit-appearance:none;appearance:none}
 .l-filter input[type="search"]::placeholder{color:var(--pierre-clair)}
-.l-filter input[type="search"]:focus{outline:none;border-color:var(--bois)}
+.l-filter input[type="search"]:focus{outline:none;border-color:var(--focus)}
 .l-filters__count{margin-left:auto;font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre)}
-.l-filters__reset{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.1em;text-transform:uppercase;color:var(--bois);padding:.6rem 0;border-bottom:1px solid transparent}
-.l-filters__reset:hover{border-color:var(--bois)}
+.l-filters__reset{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:.6rem 0;border-bottom:1px solid transparent}
+.l-filters__reset:hover{border-color:var(--accent)}
 .l-view-toggle{display:none;gap:0;border:var(--line);border-radius:var(--radius);overflow:hidden}
 .l-view-toggle button{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.12em;text-transform:uppercase;padding:.6rem 1rem;color:var(--pierre)}
 .l-view-toggle button.is-on{background:var(--anthracite);color:var(--craie)}
@@ -29,8 +29,8 @@
 .l-map__canvas{position:absolute;inset:0}
 .l-map__frame--loading{aspect-ratio:4/5}
 .leaflet-container{width:100%;height:100%;font-family:var(--f-body);background:var(--sable)}
-.leaflet-container a{color:var(--bois)}
-.leaflet-control-attribution{font-family:var(--f-mono);font-size:.62rem;background:rgba(243,241,236,.85);color:var(--pierre)}
+.leaflet-container a{color:var(--accent)}
+.leaflet-control-attribution{font-family:var(--f-mono);font-size:.62rem;background:rgba(242,243,243,.85);color:var(--pierre)}
 
 /* ════ POINTS & BULLES D'AGRÉGATION ════
    Une bulle par groupe d'annonces proches, chiffrée et dimensionnée
@@ -40,11 +40,11 @@
    endroit où l'on peut styler et animer librement. */
 .map-cluster,.map-pin{cursor:pointer}
 .map-cluster > span,.map-pin > span{display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:50%;font-family:var(--f-mono);line-height:1;transition:transform var(--dur-fast) var(--ease),background var(--dur-fast) var(--ease)}
-.map-cluster > span{background:var(--bois);color:var(--craie);border:2px solid rgba(243,241,236,.9);box-shadow:0 2px 10px rgba(19,18,16,.28);font-weight:500;font-size:.82rem}
+.map-cluster > span{background:var(--accent);color:var(--craie);border:2px solid rgba(242,243,243,.9);box-shadow:0 2px 10px rgba(0,19,33,.28);font-weight:500;font-size:.82rem}
 .map-cluster:hover > span,.map-cluster.is-hl > span{background:var(--anthracite);transform:scale(1.08)}
-.map-pin > span{background:var(--anthracite);color:var(--craie);border:2px solid var(--craie);box-shadow:0 2px 8px rgba(19,18,16,.28);font-size:.72rem}
-.map-pin:hover > span,.map-pin.is-hl > span{background:var(--bois);transform:scale(1.18)}
-.map-tip{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.04em;background:var(--anthracite);color:var(--craie);border:none;border-radius:var(--radius);box-shadow:0 4px 14px rgba(19,18,16,.25);padding:.4rem .6rem;white-space:nowrap}
+.map-pin > span{background:var(--anthracite);color:var(--craie);border:2px solid var(--craie);box-shadow:0 2px 8px rgba(0,19,33,.28);font-size:.72rem}
+.map-pin:hover > span,.map-pin.is-hl > span{background:var(--accent);transform:scale(1.18)}
+.map-tip{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.04em;background:var(--anthracite);color:var(--craie);border:none;border-radius:var(--radius);box-shadow:0 4px 14px rgba(0,19,33,.25);padding:.4rem .6rem;white-space:nowrap}
 .map-tip::before{border-top-color:var(--anthracite)}
 @media (prefers-reduced-motion:reduce){
   .map-cluster > span,.map-pin > span{transition:none}
@@ -54,7 +54,7 @@
 .l-map__controls button{width:36px;height:36px;background:var(--craie);border:var(--line);border-radius:var(--radius);font-family:var(--f-mono);font-size:1rem;line-height:1}
 .l-map__controls button:hover{border-color:var(--anthracite)}
 .l-map__sync{display:flex;gap:.6rem;align-items:center;margin-top:var(--s-2);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.08em;color:var(--pierre);cursor:pointer}
-.l-map__sync input{accent-color:var(--bois)}
+.l-map__sync input{accent-color:var(--framboise)}
 .l-map__hint{margin-top:.5rem;font-family:var(--f-mono);font-size:var(--fs-label);color:var(--pierre);opacity:.7}
 @media (max-width:1000px){
   .l-filter select,.l-filter input[type="search"]{padding-top:.85rem;padding-bottom:.85rem}

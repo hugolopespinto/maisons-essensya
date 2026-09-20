@@ -37,8 +37,8 @@ import type { CSSProperties } from "react";
 
 const MARQUEUR: CSSProperties = {
   display: "inline-block",
-  background: "var(--bois-clair)",
-  color: "var(--bois-fonce)",
+  background: "var(--alerte-fond)",
+  color: "var(--alerte)",
   fontFamily: "var(--f-mono)",
   fontSize: "var(--fs-small)",
   padding: ".2em .55em",

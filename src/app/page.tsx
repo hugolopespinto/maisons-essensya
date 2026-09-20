@@ -291,7 +291,7 @@ export default async function HomePage() {
       <section className="s-cta" id="projet">
         <div className="container s-cta__grid">
           <div>
-            <span className="c-label" style={{ color: "var(--bois)" }} data-reveal>
+            <span className="c-label" style={{ color: "var(--accent)" }} data-reveal>
               {t("cta.surtitre", "Votre projet")}
             </span>
             {/* Ici encore, les espaces insécables (U+00A0) des replis sont

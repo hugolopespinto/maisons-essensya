@@ -87,7 +87,7 @@ export default function ChampCompte({
       <small
         id={idAide}
         className="adm-field__aide"
-        style={{ color: trop ? "var(--bois-fonce)" : "var(--pierre)" }}
+        style={{ color: trop ? "var(--alerte)" : "var(--pierre)" }}
       >
         {compte} / {max} signes{surDefaut ? " (défaut)" : ""}
         {trop ? " — au-delà du seuil conseillé" : ""}

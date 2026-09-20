@@ -162,7 +162,14 @@ export default async function ConceptPage() {
       </section>
 
       <section
-        className="s-philo"
+        /* ⚠ `u-clair` N'EST PAS DÉCORATIF. Cette section est SOMBRE
+           partout ailleurs ; ici elle est renversée en clair par les
+           styles en ligne ci-dessous. Sans cette classe, elle hérite
+           des accents et du gris de texte prévus pour le fond sombre,
+           et le libellé « La méthode » s'affiche à 1,07:1 — invisible.
+           Toute reprise d'une section sombre sur fond clair doit la
+           porter (voir le bloc « FONDS SOMBRES » de base.css). */
+        className="s-philo u-clair"
         style={{ background: "var(--craie)", color: "var(--anthracite)" }}
       >
         <div className="container">
@@ -276,7 +283,7 @@ export default async function ConceptPage() {
 
       <section className="s-cta">
         <div className="container" style={{ textAlign: "center" }}>
-          <span className="c-label" style={{ color: "var(--bois)" }} data-reveal>
+          <span className="c-label" style={{ color: "var(--accent)" }} data-reveal>
             {t("cta.surtitre", "Et maintenant")}
           </span>
           <h2
@@ -301,7 +308,7 @@ export default async function ConceptPage() {
             <Link
               href="/contact"
               className="c-btn c-btn--light"
-              style={{ borderColor: "rgba(243,241,236,.35)" }}
+              style={{ borderColor: "rgba(242,243,243,.35)" }}
             >
               Parler de mon projet
             </Link>

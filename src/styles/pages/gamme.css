@@ -26,7 +26,7 @@
 
 /* L'avertissement « caractéristiques à venir ». Encadré, pas flottant :
    un texte gris perdu au milieu d'une grille se lit comme un bug. */
-.g-attente{border:1px dashed var(--beton);border-radius:var(--radius);background:var(--vert-clair);padding:var(--s-4);margin-top:var(--s-4)}
+.g-attente{border:1px dashed var(--beton);border-radius:var(--radius);background:var(--vert-fond);padding:var(--s-4);margin-top:var(--s-4)}
 .g-attente p{color:var(--pierre);font-size:var(--fs-small);max-width:62ch}
 .g-attente p + p{margin-top:.6rem}
 

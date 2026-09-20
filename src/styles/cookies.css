@@ -6,7 +6,7 @@
 .c-cookies{
   position:fixed;left:0;right:0;bottom:0;z-index:120;
   background:var(--noir);color:var(--craie);
-  border-top:1px solid rgba(243,241,236,.18);
+  border-top:1px solid rgba(242,243,243,.18);
   padding:var(--s-3) 0;
   padding-bottom:calc(var(--s-3) + env(safe-area-inset-bottom));
   animation:ckUp .45s var(--ease) both;
@@ -19,12 +19,12 @@
 .c-cookies__text{flex:1 1 380px;min-width:0}
 .c-cookies__titre{
   font-family:var(--f-mono);font-size:var(--fs-label);font-weight:500;
-  text-transform:uppercase;letter-spacing:.18em;color:var(--bois);
+  text-transform:uppercase;letter-spacing:.18em;color:var(--accent);
   margin-bottom:.5rem;
 }
 .c-cookies__text p{font-size:var(--fs-small);color:var(--sable);max-width:64ch;line-height:1.55}
 .c-cookies__text a{border-bottom:1px solid var(--pierre-clair);transition:border-color var(--dur-fast)}
-.c-cookies__text a:hover{border-color:var(--bois)}
+.c-cookies__text a:hover{border-color:var(--accent)}
 .c-cookies__actions{display:flex;align-items:center;gap:var(--s-2);flex-wrap:wrap}
 /* ⚠ « Tout refuser » et « Tout accepter » partagent .c-btn--light :
    même taille, même contraste, même niveau. Ne pas hiérarchiser l'un
@@ -34,7 +34,7 @@
   letter-spacing:.16em;color:var(--sable);border-bottom:1px solid var(--pierre-clair);
   padding:.3rem 0;transition:color var(--dur-fast),border-color var(--dur-fast);
 }
-.c-cookies__perso:hover{color:var(--bois);border-color:var(--bois)}
+.c-cookies__perso:hover{color:var(--accent);border-color:var(--accent)}
 @media (max-width:760px){
   .c-cookies__inner{flex-direction:column;align-items:stretch;gap:var(--s-3)}
   .c-cookies__actions{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-2)}
@@ -45,7 +45,7 @@
 /* ── Panneau de préférences ── */
 .c-cookies__overlay{
   position:fixed;inset:0;z-index:130;display:flex;align-items:center;justify-content:center;
-  background:rgba(19,18,16,.72);backdrop-filter:blur(6px);padding:var(--gutter);
+  background:rgba(0,19,33,.72);backdrop-filter:blur(6px);padding:var(--gutter);
   animation:ckFade .3s var(--ease) both;
 }
 @keyframes ckFade{from{opacity:0}to{opacity:1}}
@@ -85,7 +85,7 @@
 .c-switch input:checked + .c-switch__track{background:var(--anthracite);border-color:var(--anthracite)}
 .c-switch input:checked + .c-switch__track::after{transform:translateX(20px);background:var(--craie)}
 .c-switch input:disabled + .c-switch__track{opacity:.5;cursor:not-allowed}
-.c-switch input:focus-visible + .c-switch__track{outline:2px solid var(--bois);outline-offset:3px}
+.c-switch input:focus-visible + .c-switch__track{outline:2px solid var(--focus);outline-offset:3px}
 
 .c-cookies__foot{display:flex;flex-wrap:wrap;gap:var(--s-2);margin-top:var(--s-4);justify-content:flex-end}
 @media (max-width:560px){
@@ -102,4 +102,4 @@
 /* Le bouton de preferences vit dans la meme nav que les liens legaux :
    il doit avoir exactement leur apparence, pas celle d un bouton. */
 .footer-legal nav button{font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;opacity:.8;transition:opacity var(--dur-fast),color var(--dur-fast);padding:0}
-.footer-legal nav button:hover{opacity:1;color:var(--bois)}
+.footer-legal nav button:hover{opacity:1;color:var(--accent)}

@@ -18,24 +18,39 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-/* Les cinq derniers tokens ont été ajoutés pour le mono-produit : deux
-   gris de service (contraste, filets de tableau) et trois sémantiques
-   (offre, compris, non compris). Ils sont documentés ici avec leur rôle,
-   sinon ils seront réemployés à tort comme des couleurs libres. */
+/* ⚠ CE TABLEAU NE CONTIENT PLUS AUCUN CODE HEXADÉCIMAL, ET C'EST
+   VOLONTAIRE. Il en contenait treize, recopiés de `base.css`, et ils y
+   ont survécu au changement de palette : cette page a affiché « Bois
+   #9A6B3C » pendant que le site n'avait plus une seule touche de brun.
+   Une page qui documente les couleurs ne peut pas avoir sa propre
+   version des couleurs.
+
+   La pastille est donc peinte avec le token lui-même : elle ne peut pas
+   mentir. La valeur, elle, se lit à son seul endroit — le bloc TOKENS
+   de `src/styles/base.css`, où figurent aussi les contrastes mesurés. */
 const SWATCHES: [string, string, string][] = [
-  ["Craie", "#F3F1EC", "Fond de page"],
-  ["Sable", "#E8E3D9", "Aplats secondaires"],
-  ["Béton", "#CFC9BD", "Filets 1px"],
-  ["Béton 2", "#B9B2A4", "Lignes de tableau"],
-  ["Pierre", "#6E675B", "Texte secondaire (4,95:1)"],
-  ["Pierre clair", "#867E70", "Non textuel uniquement"],
-  ["Anthracite", "#21201C", "Texte courant"],
-  ["Noir", "#131210", "Footer"],
-  ["Bois", "#9A6B3C", "Accent, liens"],
-  ["Bois clair", "#F0E4D6", "Aplat d'offre"],
-  ["Bois foncé", "#7C5530", "Texte sur bois clair"],
-  ["Inclus", "#4A6B4F", "Puce « compris »"],
-  ["Exclu", "#8A7F72", "Puce « non compris »"],
+  ["Craie", "craie", "Fond de page"],
+  ["Sable", "sable", "Aplats secondaires — le bandeau gris de la charte"],
+  ["Béton", "beton", "Filets 1 px"],
+  ["Béton 2", "beton-2", "Lignes de tableau"],
+  ["Pierre", "pierre", "Texte secondaire — 5,08:1 sur craie"],
+  ["Pierre clair", "pierre-clair", "Non textuel — 3,45:1"],
+  ["Anthracite", "anthracite", "Texte courant et fonds sombres"],
+  ["Noir", "noir", "Pied de page — le « Noir » de la charte"],
+  ["Vert", "vert", "Charte — aplats et pictos, jamais de texte"],
+  ["Vert texte", "vert-texte", "Charte — texte, 5,07:1"],
+  ["Vert clair", "vert-clair", "Charte — texte sur fond sombre"],
+  ["Vert fond", "vert-fond", "Charte — aplat clair"],
+  ["Terracotta", "terracotta", "Charte — aplats et filets, jamais de texte"],
+  ["Terracotta texte", "terracotta-texte", "Charte — accent et liens, 5,04:1"],
+  ["Terracotta clair", "terracotta-clair", "Charte — accent sur fond sombre"],
+  ["Framboise", "framboise", "Charte — boutons et focus, 5,56:1"],
+  ["Framboise foncé", "framboise-fonce", "Survol du bouton plein"],
+  ["Framboise fond", "framboise-fond", "Aplat d'offre"],
+  ["Alerte", "alerte", "Attention, brouillon, à compléter"],
+  ["Alerte fond", "alerte-fond", "Aplat d'attention"],
+  ["Inclus", "inclus", "Puce « compris » — alias du vert texte"],
+  ["Exclu", "exclu", "Puce « non compris » — alias de pierre"],
 ];
 
 /** Un cadre au ratio des médias d'annonce, pour comparer les tracés. */
@@ -76,13 +91,13 @@ export default async function StyleguidePage() {
           <div className="sg-block">
             <span className="c-label">Palette</span>
             <div className="sg-swatches">
-              {SWATCHES.map(([n, c, role]) => (
-                <div className="sg-swatch" key={c}>
-                  <div style={{ background: c }} />
+              {SWATCHES.map(([n, token, role]) => (
+                <div className="sg-swatch" key={token}>
+                  <div style={{ background: `var(--${token})` }} />
                   <span>
                     {n}
                     <br />
-                    {c}
+                    <code>--{token}</code>
                     <br />
                     {role}
                   </span>
@@ -129,8 +144,8 @@ export default async function StyleguidePage() {
           <div className="sg-block">
             <span className="c-label">Bandeau d&apos;offre — .c-offer</span>
             <p className="u-muted u-measure" style={{ marginBottom: "var(--s-3)" }}>
-              Le seul aplat de bois du site. Il signale une offre datée, jamais
-              une qualité du produit — le bois porte déjà cinq rôles ailleurs.
+              Le seul aplat de framboise du site. Il signale une offre datée,
+              jamais une qualité du produit.
             </p>
             <div className="sg-row">
               <span className="c-offer">Prix de lancement</span>
@@ -168,7 +183,10 @@ export default async function StyleguidePage() {
                   ["Terrain", fmtSurface(null)],
                 ]}
               />
-              <div style={{ background: "var(--anthracite)", padding: "var(--s-3)" }}>
+              <div
+                className="u-sombre"
+                style={{ background: "var(--anthracite)", color: "var(--craie)", padding: "var(--s-3)" }}
+              >
                 <SpecList rows={HOUSE.materials} dark />
               </div>
             </div>

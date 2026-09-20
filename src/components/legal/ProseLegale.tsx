@@ -45,8 +45,8 @@ function JetonInconnu({ brut }: { brut: string }) {
   return (
     <mark
       style={{
-        background: "var(--bois-clair)",
-        color: "var(--bois-fonce)",
+        background: "var(--alerte-fond)",
+        color: "var(--alerte)",
         fontFamily: "var(--f-mono)",
         fontSize: "var(--fs-small)",
         padding: ".1em .4em",
