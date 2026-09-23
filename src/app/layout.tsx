@@ -7,7 +7,7 @@ import Header, { CoquillePublique, type LienChrome } from "@/components/Header";
 import Reveal from "@/components/Reveal";
 import StickyCta from "@/components/StickyCta";
 import { AGENCIES, HOUSE, PLACEHOLDER, PRICE_FROM } from "@/data/essensya";
-import { emailPublie, deptUrl, fmtPrice } from "@/lib/format";
+import { agencyUrl, emailPublie, deptUrl, fmtPrice } from "@/lib/format";
 import { departementsPubliables } from "@/lib/geo";
 import { agencesPubliees } from "@/lib/agences";
 import { resoudreMedia } from "@/lib/medias";
@@ -358,6 +358,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             reseaux={reseaux}
             colonnes={colonnesFooter(menus.footer)}
             zones={zones}
+            /* Le brief du 22/09 remplace la colonne des départements par
+               celle des cinq agences. Elles sont déjà lues plus haut pour
+               le JSON-LD : on les passe plutôt que de les relire. */
+            agences={agences.map((g) => ({ href: agencyUrl(g), label: g.name }))}
           />
           {/* Placé dans la coquille publique : un bandeau de consentement
               monté sur un écran d'administration n'a aucun sens, et il se

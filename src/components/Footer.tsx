@@ -1,8 +1,7 @@
 import Link from "next/link";
 import CookiePrefsLink from "@/components/CookiePrefsLink";
-import { REEL } from "@/data/essensya";
 import { modelesEnAvant } from "@/data/gamme";
-import { fmtPrice, houseUrl } from "@/lib/format";
+import { houseUrl } from "@/lib/format";
 
 /* ⚠ CETTE LISTE ÉTAIT ÉCRITE EN DUR, et elle était déjà fausse : elle
    annonçait les Deux-Sèvres et le Maine-et-Loire, absents du flux, et
@@ -29,14 +28,26 @@ export interface ColonneChrome {
 /* Colonnes d'origine. Comme pour l'en-tête, elles restent le REPLI des
    colonnes éditables : rien de saisi dans /admin/menus, ou tout effacé,
    et le pied de page garde exactement ces quatre colonnes. */
-const colonnesDefaut = (zones: LienZone[]): ColonneChrome[] => [
+const colonnesDefaut = (
+  zones: LienZone[],
+  agences: LienZone[],
+): ColonneChrome[] => [
   {
-    titre: "Nos maisons",
-    /* ⚠ Cette colonne listait « Version 2 chambres » et « Version
-       3 chambres » — deux déclinaisons inventées, sur toutes les pages du
-       site. Elle liste maintenant de vrais modèles. Trois seulement : une
-       colonne de pied de page qui en aligne onze ne se lit plus, et
-       « Toute la gamme » mène au reste. */
+    /* Le client écrit « Nos Maisons » avec une majuscule à Maisons. */
+    titre: "Nos Maisons",
+    /* ⚠ LE BRIEF DEMANDE « Maison 1 chambre » À « Maison 4 chambres »,
+       ET CES QUATRE PAGES N'EXISTENT PAS ENCORE. Elles figurent dans
+       l'arborescence du 22/09 sous « Plans de maisons ». Deux raisons de
+       ne pas les poser tout de suite :
+
+         · aucune route ne les sert — ce seraient quatre liens morts ;
+         · la donnée manque. Sur les onze modèles de `gamme.ts`, un seul
+           (Ankara) a son nombre de chambres renseigné. Les pages
+           existeraient, mais trois sur quatre seraient vides.
+
+       La colonne garde donc les liens qui mènent quelque part. Elle
+       passera au découpage par chambres le jour où les caractéristiques
+       des modèles seront livrées — c'est une bascule d'une ligne. */
     liens: [
       { href: houseUrl(), label: "Toute la gamme" },
       /* Les publiables d'abord : `MODELES.slice(0, 3)` donnait Ankara,
@@ -47,27 +58,44 @@ const colonnesDefaut = (zones: LienZone[]): ColonneChrome[] => [
     ],
   },
   {
-    titre: "Terrains",
+    titre: "Projets de construction",
+    /* ⚠ MÊME SITUATION. Le brief demande six entrées géographiques —
+       « Construire dans les Landes / au Pays basque / en Gironde » et
+       les « Terrains constructibles » correspondants. Aucune n'existe,
+       et le flux Vitahome ne sert aujourd'hui ni les Landes ni la
+       Gironde : il rend la Charente-Maritime, la Vendée et
+       l'Eure-et-Loir. Poser ces liens maintenant, ce serait annoncer un
+       stock qu'on n'a pas.
+
+       En attendant, la colonne mène au stock réel. */
     liens: [
       { href: "/annonces", label: "Tous nos terrains" },
       { href: "/annonces?type=terrain", label: "Terrain seul" },
       { href: "/annonces?type=terrain-maison", label: "Terrain + maison" },
-      { href: "/contact", label: "Demander un rappel" },
+      /* Vide quand le flux ne rend aucun département au-dessus du
+         seuil : on garde alors l'entrée vers l'index, qui sait le dire. */
+      ...(zones.length ? zones : [{ href: "/terrains", label: "Toutes nos zones" }]),
     ],
   },
   {
-    titre: "Où nous construisons",
-    /* Vide quand le flux ne rend aucun département au-dessus du seuil :
-       on garde alors l'entrée vers l'index, qui, lui, sait le dire. */
-    liens: zones.length ? zones : [{ href: "/terrains", label: "Toutes nos zones" }],
+    /* Le brief remplace « Où nous construisons » — qui listait les
+       départements du flux — par les cinq agences. Celles-ci existent
+       toutes, avec leur page : c'est la seule colonne du brief qui soit
+       intégralement câblable aujourd'hui. Les libellés viennent de la
+       base, donc une agence ajoutée ou renommée en back-office suit. */
+    titre: "Nos agences",
+    liens: agences.length ? agences : [{ href: "/agences", label: "Toutes nos agences" }],
   },
   {
-    titre: "Essensya",
+    titre: "L'expérience ESSENSYA",
+    /* Le brief en demande sept. Quatre n'existent pas encore —
+       « Qui sommes-nous », « L'accompagnement ESSENSYA » et les deux
+       guides — et attendent l'arborescence. Les trois autres sont là,
+       sous leur nom du brief. */
     liens: [
-      { href: "/concept", label: "Notre concept" },
+      { href: "/concept", label: "Le concept ESSENSYA" },
       { href: "/concept#engagements", label: "Nos engagements" },
       { href: "/realisations", label: "Nos réalisations" },
-      { href: "/agences", label: "Nos agences" },
       { href: "/contact", label: "Contact" },
     ],
   },
@@ -103,6 +131,8 @@ export interface FooterProps {
   colonnes?: ColonneChrome[];
   /** Les départements réellement publiables, calculés par le layout. */
   zones?: LienZone[];
+  /** Les agences publiées, dans l'ordre du back-office. */
+  agences?: LienZone[];
 }
 
 export default function Footer({
@@ -118,8 +148,9 @@ export default function Footer({
   reseaux,
   colonnes,
   zones = [],
+  agences = [],
 }: FooterProps) {
-  const cols = colonnes ?? colonnesDefaut(zones);
+  const cols = colonnes ?? colonnesDefaut(zones, agences);
 
   return (
     <footer className="site-footer" id="siteFooter">
@@ -141,17 +172,28 @@ export default function Footer({
                 </>
               )}
             </Link>
-            {/* ⚠ Ce paragraphe disait « une maison de plain-pied, deux
-                déclinaisons — 2 ou 3 chambres », et le prix qui allait
-                avec. Le client construit une GAMME : la phrase était
-                fausse sur toutes les pages du site à la fois, pied de
-                page oblige. Réécrite sans inventer de caractéristiques,
-                puisque nous n'avons pas encore celles des modèles. */}
+            {/* La baseline de la charte, que le pied de page n'affichait
+                pas : `baseline` vaut « Maisons », le petit mot du logo,
+                et il disparaît dès qu'un logo image est posé. Celle-ci
+                est la signature de la marque, elle doit rester visible
+                avec ou sans logo. */}
+            <p className="footer-baseline">
+              L&apos;essentiel de la qualité au meilleur prix
+            </p>
+            {/* ⚠ TEXTE DU CLIENT, REPRIS MOT POUR MOT (brief du 22/09).
+                Il remplace une phrase que nous avions écrite faute de
+                mieux. Deux choses à savoir avant de le retoucher :
+
+                · il annonce « dans les Landes et en Gironde », ce qui
+                  contredit le H1 de l'accueil, resté « dans les Landes »
+                  seul — et qui est indexé. L'écart est signalé, il se
+                  tranche côté client, pas ici ;
+                · il ne cite plus le prix. C'est volontaire de sa part ;
+                  ne pas le réintroduire au motif qu'il était là avant. */}
             <p>
-              Des modèles de maisons optimisés jusqu&apos;au dernier mètre
-              carré, conçus par notre bureau d&apos;études : c&apos;est ce qui
-              permet de les annoncer à partir de {fmtPrice(REEL.prixEntree)},
-              hors terrain.
+              Constructeur de maisons individuelles dans les Landes et en
+              Gironde. Des plans de maisons conçus intelligemment pour
+              conserver l&apos;essentiel de la qualité au meilleur prix.
             </p>
             <p style={STYLE_CONTACT}>
               <a href={telHref}>{telephone}</a>
@@ -189,8 +231,8 @@ export default function Footer({
               donc depuis n'importe quelle page. */}
           <nav aria-label="Informations légales">
             <Link href="/mentions-legales">Mentions légales</Link>
-            <Link href="/confidentialite">Confidentialité</Link>
-            <Link href="/cookies">Cookies</Link>
+            <Link href="/confidentialite">Politique de confidentialité</Link>
+            <Link href="/cookies">Gestion des cookies</Link>
             <CookiePrefsLink>Personnaliser les cookies</CookiePrefsLink>
           </nav>
           {/* Les réseaux étaient trois libellés morts. Ils sont désormais ce

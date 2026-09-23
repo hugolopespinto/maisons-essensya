@@ -440,6 +440,11 @@ body.lp-mode .header-cta{display:inline-flex}
 .footer-col a{display:block;font-size:var(--fs-small);padding:.3rem 0;opacity:.8;transition:opacity var(--dur-fast),color var(--dur-fast)}
 .footer-col a:hover{opacity:1;color:var(--accent)}
 .footer-brand p{font-size:var(--fs-small);opacity:.65;margin-top:var(--s-2);max-width:26em}
+/* La baseline de la charte. Sélecteur à deux classes, sinon l'`opacity`
+   de la règle du dessus l'emporte et la signature de la marque arrive
+   délavée à 65 %. Elle prend le vert de la charte, qui vaut ici sa
+   variante claire — 9,57:1 sur le noir. */
+.footer-brand .footer-baseline{opacity:1;color:var(--accent-vert);letter-spacing:.01em}
 .footer-legal{display:flex;flex-wrap:wrap;gap:var(--s-3);justify-content:space-between;padding-top:var(--s-3);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.1em;color:var(--pierre-clair)}
 .footer-legal nav{display:flex;gap:var(--s-3);flex-wrap:wrap}
 @media (max-width:900px){.footer-grid{grid-template-columns:1fr 1fr}.footer-brand{grid-column:1/-1}}
