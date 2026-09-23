@@ -60,12 +60,28 @@ const LINKS: LienChrome[] = [
 /* Pages où le header reste transparent tant qu'on n'a pas scrollé :
    celles qui ouvrent sur un visuel plein écran. Partout ailleurs il est
    solide dès le chargement (équivalent de `solidHeader` en v7).
-   `/maisons` s'y ajoute : la page produit n'est plus une grille de
-   modèles mais un hero plein écran, comme la fiche d'une déclinaison. */
+
+   ⚠ `/^\/maisons\/[^/]+$/` A ÉTÉ RETIRÉ DE CETTE LISTE, ET C'ÉTAIT LE
+   PIRE DÉFAUT DE CONTRASTE DU SITE : 1,00:1, sur onze pages produit.
+
+   La règle datait du temps où la fiche d'un modèle ouvrait, elle aussi,
+   sur un héros plein écran. Elle n'y ouvre plus depuis longtemps — elle
+   commence par `.p-head`, sur fond craie — mais l'en-tête, lui,
+   continuait de se rendre transparent, donc `color:var(--craie)` POSÉ
+   SUR de la craie. Mesuré au pixel : zéro pixel de différence entre
+   l'encre et le fond sur 13 104 pour le bouton d'appel, 45 sur 3 710
+   avec un écart maximal de 3 niveaux pour les liens de navigation. Toute
+   la navigation principale était littéralement invisible au chargement,
+   au-dessus de 900 px de large, jusqu'au premier défilement. Le survol
+   aggravait : `.main-nav a:hover{opacity:1}` alignait le texte
+   exactement sur le fond.
+
+   Aucun relevé ne le voyait : le balayage DOM exclut
+   `.site-header:not(.is-solid)` en supposant qu'il est mesuré ailleurs,
+   et il ne l'était nulle part. C'est corrigé dans heros-pixels.mjs. */
 const TRANSPARENT = [
   /^\/$/,
   /^\/maisons$/,
-  /^\/maisons\/[^/]+$/,
   /^\/agences\/[^/]+$/,
   /^\/lp\//,
 ];

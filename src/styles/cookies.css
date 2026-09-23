@@ -3,8 +3,17 @@
    voit 100 % des visiteurs. Mêmes filets 1px, même mono en capitales,
    même anthracite que le reste du site.                               */
 
+/* ⚠ SA HAUTEUR EST PLAFONNÉE, et ce n'est pas cosmétique. Mesuré au
+   pixel en 390×780, le bandeau occupait 573 px — soit 73 % de l'écran —
+   et recouvrait INTÉGRALEMENT le fil d'ariane des fiches agence : sur
+   les quatre pages testées, 8 400 pixels sur 8 400 de sa boîte étaient
+   masqués. L'anneau de focus de six arrêts clavier sur quatorze, dont
+   trois champs de formulaire, ne changeait alors plus un seul pixel :
+   l'utilisateur au clavier ne savait plus où il était (WCAG 2.2,
+   critère 2.4.11 « Focus Not Obscured »). */
 .c-cookies{
   position:fixed;left:0;right:0;bottom:0;z-index:120;
+  max-height:58svh;overflow-y:auto;overscroll-behavior:contain;
   background:var(--noir);color:var(--craie);
   border-top:1px solid rgba(242,243,243,.18);
   padding:var(--s-3) 0;

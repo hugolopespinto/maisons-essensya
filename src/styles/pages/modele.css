@@ -1,5 +1,12 @@
 /* ════ 5. FICHE MODÈLE (.m-) ════ */
-.m-hero{position:relative;min-height:92svh;display:flex;align-items:flex-end;color:var(--craie);background:var(--noir);overflow:hidden}
+/* ⚠ LE PADDING HAUT N'EST PAS DÉCORATIF : il réserve la place de
+   l'en-tête fixe. Sans lui, dès que la fenêtre est basse, le bloc de
+   texte devient plus haut que le héros et remonte SOUS la barre —
+   mesuré en 360×640, le fil d'ariane se retrouvait à y=0→24, entièrement
+   masqué par un en-tête de 76 px, et en 1280×720 à y=72, à moitié
+   dessous. Les contrastes relevés là (2,17:1 et 3,35:1) ne mesuraient
+   pas un défaut de voile mais un texte caché. */
+.m-hero{position:relative;min-height:92svh;display:flex;align-items:flex-end;color:var(--craie);background:var(--noir);overflow:hidden;padding-top:calc(var(--header-h) + var(--s-3))}
 .m-hero__bg{position:absolute;inset:0}
 .m-hero__bg img{width:100%;height:100%;object-fit:cover}
 .m-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,19,33,.5) 0%,rgba(0,19,33,.08) 40%,rgba(0,19,33,.78) 100%)}
@@ -16,13 +23,35 @@
    Le voile suit donc le texte, dont la hauteur varie avec le H1, au lieu
    d'un pourcentage de la section. Même technique que le hero d'accueil,
    et même précaution : z-index 0 sur le pseudo-élément — jamais négatif,
-   sinon il descend sous la photo — et 1 sur les enfants. */
+   sinon il descend sous la photo — et 1 sur les enfants.
+
+   ⚠ ET IL EST PLAFONNÉ, parce que sa première version ne l'était pas et
+   que c'était une régression mesurée. Sa hauteur valait « bloc de texte
+   + 40 px », soit 631 px INVARIANTS : à 1440×900 il couvrait 76 % du
+   héros, mais 89 % en 1366×768, 95 % en 1280×720 et 107 % en 360×640 —
+   il débordait, et `overflow:hidden` faisait le reste. La luminance de
+   la moitié haute du héros tombait de 126 à 72 (−42 %) sur un portable
+   ordinaire. « La maison reste visible » n'était vrai qu'aux deux
+   tailles où je l'avais regardée.
+
+   Le plafond rend la photo au-dessus du texte. Ce que le voile ne
+   couvre plus — le fil d'ariane et le sur-titre, qui sont en haut du
+   bloc — est tenu par une ombre portée : elle n'assombrit que le
+   pourtour des lettres, donc elle ne coûte aucun pixel de visuel. Elle
+   se mesure au pixel comme le reste (une ombre reste peinte sous un
+   texte rendu transparent, c'est le fond réel qui est relevé). */
 .m-hero .container::before{
   content:"";position:absolute;left:50%;transform:translateX(-50%);
-  width:100vw;top:calc(var(--s-4) * -1);bottom:0;z-index:0;pointer-events:none;
-  background:linear-gradient(to top,rgba(0,19,33,.84) 0%,rgba(0,19,33,.74) 62%,rgba(0,19,33,.44) 88%,rgba(0,19,33,0) 100%);
+  width:100vw;bottom:0;height:calc(100% + var(--s-4));max-height:58svh;
+  z-index:0;pointer-events:none;
+  background:linear-gradient(to top,rgba(0,19,33,.86) 0%,rgba(0,19,33,.68) 46%,rgba(0,19,33,.30) 78%,rgba(0,19,33,0) 100%);
 }
 .m-hero .container > *{position:relative;z-index:1}
+.m-hero .c-breadcrumb{text-shadow:0 1px 2px rgba(0,19,33,.92),0 0 8px rgba(0,19,33,.82)}
+/* Le sur-titre est en --vert-clair, sensiblement plus sombre que la
+   craie du fil : à ombre égale il plafonnait à 4,47:1, juste sous le
+   seuil. La sienne est donc plus dense. */
+.m-hero .c-label--accent{text-shadow:0 1px 2px rgba(0,19,33,.96),0 0 7px rgba(0,19,33,.94),0 0 15px rgba(0,19,33,.82)}
 .m-hero .c-breadcrumb{margin-bottom:var(--s-4);color:var(--craie)}
 .m-hero h1{font-size:clamp(3rem,9vw,7.5rem)}
 .m-hero .c-plate{margin-top:var(--s-4);max-width:720px;border-color:rgba(242,243,243,.28)}

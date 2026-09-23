@@ -10,7 +10,10 @@
    déroulant de localités n'était pas tenable. */
 .l-filter--wide{flex:1 1 240px;min-width:180px}
 .l-filter input[type="search"]{font-family:var(--f-body);font-size:.92rem;padding:.6rem .8rem;background:transparent;border:1px solid var(--beton);border-radius:var(--radius);color:inherit;width:100%;-webkit-appearance:none;appearance:none}
-.l-filter input[type="search"]::placeholder{color:var(--pierre-clair)}
+/* --pierre-clair est calibré pour les FILETS, pas pour du texte sur fond
+   clair : 3,48:1 mesuré au pixel sur l'invite de recherche, sous le seuil.
+   Une invite se lit, donc elle prend la couleur de texte secondaire. */
+.l-filter input[type="search"]::placeholder{color:var(--pierre)}
 .l-filter input[type="search"]:focus{outline:none;border-color:var(--focus)}
 .l-filters__count{margin-left:auto;font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre)}
 .l-filters__reset{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:.6rem 0;border-bottom:1px solid transparent}

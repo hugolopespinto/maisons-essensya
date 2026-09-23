@@ -24,11 +24,13 @@ import { filAriane, jsonLd } from "@/lib/schema";
 
    2. LES DONNÉES DU FIL ÉTAIENT SAISIES DEUX FOIS PAR PAGE : une fois
       en JSX pour l'affichage, une fois en argument de `filAriane()`
-      pour le JSON-LD. Elles avaient déjà divergé — six pages
-      (/concept, /contact, /blog, /cookies, /mentions-legales,
-      /confidentialite) affichaient un fil d'ariane sans jamais le
-      déclarer à Google. Ici la liste est écrite une fois et sert aux
-      deux ; l'oubli n'est plus possible.
+      pour le JSON-LD. Elles avaient déjà divergé — cinq pages
+      (/concept, /contact, /cookies, /mentions-legales, /confidentialite)
+      affichaient un fil d'ariane sans jamais le déclarer à Google, et
+      /blog faisait pire : il déclarait le sien À LA MAIN, sans passer
+      par `filAriane()`, avec un `item` sur la page courante que la
+      spécification interdit. Ici la liste est écrite une fois et sert
+      aux deux ; ni l'oubli ni la troisième copie ne sont plus possibles.
 
    3. LE LIEN ÉTAIT À 2,83:1. Il portait `opacity:.7`, ce qui le
       délavait sous le seuil sur les treize pages à fond clair. La
@@ -44,13 +46,24 @@ export interface Etape {
 }
 
 export default function FilAriane({ items }: { items: Etape[] }) {
+  /* ⚠ LE DERNIER MAILLON NE PEUT PAS AVOIR D'ADRESSE, et c'est le
+     composant qui le garantit plutôt que les dix-sept appelants. La
+     spécification `BreadcrumbList` veut un `ListItem` SANS `item` sur la
+     page courante ; un `path` oublié là produisait un balisage invalide
+     que rien n'aurait signalé — c'est exactement l'erreur que le blog
+     avait commise dans son schéma écrit à la main. Ici, l'oubli est
+     rattrapé au lieu d'être publié. */
+  const etapes = items.map((e, i) =>
+    i === items.length - 1 && e.path ? { nom: e.nom } : e,
+  );
+
   return (
     <>
       {/* Le même tableau que ci-dessous : le balisage et la déclaration
           à Google ne peuvent plus se contredire. */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLd(filAriane(items)) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(filAriane(etapes)) }}
       />
       <nav aria-label="Fil d'ariane">
         <ol className="c-breadcrumb">

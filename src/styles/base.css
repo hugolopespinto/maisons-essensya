@@ -220,7 +220,11 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
        WCAG 1.4.3, donc aucun seuil ne s'y applique. */
 .c-breadcrumb{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;list-style:none;font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.12em;text-transform:uppercase}
 .c-breadcrumb li{display:inline-flex;align-items:center;gap:.6rem}
-.c-breadcrumb a{text-decoration:none;text-underline-offset:.25em;transition:text-decoration-color var(--dur-fast)}
+/* Pas de `transition` ici : au repos il n'y a aucun soulignement, donc
+   rien à faire transiter — la règle promettait un fondu qui n'existait
+   pas. Le soulignement apparaît net, ce qui est le comportement attendu
+   d'un lien. */
+.c-breadcrumb a{text-decoration:none;text-underline-offset:.25em}
 .c-breadcrumb a:hover{text-decoration:underline}
 /* « Vous êtes ici » : le seul élément plein du fil. Les liens restent un
    cran en dessous — la hiérarchie des trois plans survit à la
@@ -383,10 +387,31 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
 .skip-link{position:absolute;left:-9999px;z-index:200;padding:.9rem 1.4rem;background:var(--anthracite);color:var(--craie);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.16em;text-transform:uppercase}
 .skip-link:focus{left:var(--gutter);top:.5rem}
 
-/* ════ HEADER ════ */
+/* ════ HEADER ════
+   ⚠ TANT QU'IL EST TRANSPARENT, IL EST POSÉ SUR UNE PHOTO — et rien ne
+   garantit qu'elle soit sombre. Mesurée au pixel sur les trois pages
+   concernées (/, /maisons, fiches agence), la navigation sortait entre
+   2,92:1 et 4,31:1 : vingt et un points sur vingt et un sous le seuil,
+   sur des ciels bleus à rgb(93,123,150). Le voile ci-dessous est le
+   pendant de celui des héros — une bande sombre en haut de page, qui
+   s'efface dès que l'en-tête devient solide et reprend son propre fond.
+
+   L'anneau de focus suit la même logique : le framboise tombait à
+   1,08:1 sur ces mêmes photos. Il passe à la craie, mais UNIQUEMENT à
+   l'état transparent — en l'appliquant partout, il deviendrait invisible
+   sur le fond craie de l'en-tête solide. */
 .site-header{position:fixed;inset:0 0 auto 0;z-index:100;height:var(--header-h);display:flex;align-items:center;transition:background var(--dur-fast) var(--ease),border-color var(--dur-fast) var(--ease),color var(--dur-fast) var(--ease);color:var(--craie);border-bottom:1px solid transparent}
+.site-header:not(.is-solid){--focus:var(--craie)}
+/* z-index 0 sur le voile et 1 sur le contenu — jamais -1 : un enfant à
+   z-index négatif descend sous le fond de son parent, et le voile du
+   hero d'accueil avait ainsi disparu derrière la photo sans que rien ne
+   le signale (trois révisions de CSS ont rendu la même mesure). */
+.site-header:not(.is-solid)::before{
+  content:"";position:absolute;inset:0 0 auto 0;height:calc(var(--header-h) * 2);z-index:0;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(0,19,33,.72) 0%,rgba(0,19,33,.58) 46%,rgba(0,19,33,.24) 78%,rgba(0,19,33,0) 100%);
+}
 .site-header.is-solid{background:rgba(242,243,243,.92);backdrop-filter:blur(10px);color:var(--anthracite);border-color:var(--beton)}
-.site-header .container{display:flex;align-items:center;justify-content:space-between;gap:var(--s-3)}
+.site-header .container{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:var(--s-3)}
 .logo{font-family:var(--f-display);font-variation-settings:"wdth" 125;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:1.05rem;line-height:1}
 .logo small{display:block;font-family:var(--f-mono);font-weight:400;font-size:.55rem;letter-spacing:.42em;margin-top:.25rem;opacity:.7}
 .main-nav{display:flex;gap:2.2rem}
@@ -605,9 +630,14 @@ h1, h2, h3 { overflow-wrap: break-word; }
    moyen de remonter d'une fiche. Le « à partir de » des cartes
    d'annonce tombait à 11,7 px, juste sous le seuil, parce qu'un
    `<small>` sans taille propre hérite du 0,83 em du navigateur. */
+/* ⚠ `.c-breadcrumb > span` NE MATCHAIT PLUS RIEN depuis que le fil est
+   une `<ol>` : les `<span>` sont désormais des petits-enfants, à
+   l'intérieur des `<li>`. La moitié de la règle était morte sans que
+   rien ne le dise — le sélecteur enfant direct est le premier à casser
+   quand on ajoute un niveau de balisage. C'est le `<li>` qu'on vise. */
 @media (max-width: 900px) {
   .c-breadcrumb a,
-  .c-breadcrumb > span { display: inline-flex; align-items: center; min-height: 24px; }
+  .c-breadcrumb li { display: inline-flex; align-items: center; min-height: 24px; }
 }
 /* ⚠ NE PAS ÉTENDRE CETTE RÈGLE À `.c-price-xl small`. Cette mention-là
    hérite volontairement de `--fs-label` ; un `.8em` y vaut 0,8 fois le
