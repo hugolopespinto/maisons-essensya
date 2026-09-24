@@ -29,10 +29,8 @@
    pendant la mise en tampon — le défaut qui avait fait dire au client
    que « le site ne fonctionne pas ».
 
-   La sortie est un fondu : sur le film définitif, la dernière image sera
-   le visuel hero lui-même et ce fondu deviendra invisible. Sur le
-   placeholder actuel (une maison qui n'est pas une Essensya), il masque
-   le raccord. */
+   Une fois levée, l'opacité ne redescend plus : le film tourne en
+   boucle tant que la page est ouverte. */
 .hero-fixe__film{position:absolute;inset:0;opacity:0;transition:opacity .65s ease;pointer-events:none;background:var(--anthracite)}
 .hero-fixe__film.is-visible{opacity:1}
 .hero-fixe__film video{display:block;width:100%;height:100%;object-fit:cover}

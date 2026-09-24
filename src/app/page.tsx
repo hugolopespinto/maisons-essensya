@@ -112,11 +112,10 @@ export default async function HomePage() {
         alt="Maison Essensya modèle Lisbonne, vue de la terrasse"
         /* ⚠ PLACEHOLDER DE DÉMONSTRATION — À REMPLACER AVANT MISE EN LIGNE.
            C'est la référence de 10 s fournie par le client, recadrée à 8 s
-           par HeroFilm (lecture de 2 s à 10 s, pour sauter la parcelle vide).
+           par HeroFilm (boucle de 2 s à 10 s, pour sauter la parcelle vide).
            La maison filmée n'est PAS une Essensya, et le fichier pèse 5 Mo
            en 720p : c'est bon pour montrer l'effet, pas pour le public.
-           Le film définitif doit être en 1920 de large, sous 2 Mo, et se
-           terminer exactement sur le visuel hero ci-dessus. */
+           Le film définitif doit être en 1920 de large et sous 2 Mo. */
         film="/film/chantier.mp4"
       />
 
