@@ -34,6 +34,11 @@ const STATICS: [string, number][] = [
   /* Pages légales : indexables — un visiteur qui cherche « mentions
      légales Essensya » doit les trouver — mais en priorité plancher.
      Elles ne portent aucune requête commerciale. */
+  /* Le plan du site est une page pour les VISITEURS, pas pour les
+     robots : elle est déclarée ici parce qu elle existe et qu elle est
+     utile, mais en priorité plancher. Les pages « en préparation » qu
+     elle liste, elles, restent hors du sitemap et en noindex. */
+  ["/plan-du-site", 0.2],
   ["/mentions-legales", 0.2],
   ["/confidentialite", 0.2],
 ];

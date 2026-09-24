@@ -7,8 +7,7 @@ import Header, { CoquillePublique, type LienChrome } from "@/components/Header";
 import Reveal from "@/components/Reveal";
 import StickyCta from "@/components/StickyCta";
 import { AGENCIES, HOUSE, PLACEHOLDER, PRICE_FROM } from "@/data/essensya";
-import { agencyUrl, emailPublie, deptUrl, fmtPrice } from "@/lib/format";
-import { departementsPubliables } from "@/lib/geo";
+import { agencyUrl, emailPublie, fmtPrice } from "@/lib/format";
 import { agencesPubliees } from "@/lib/agences";
 import { resoudreMedia } from "@/lib/medias";
 import { resolveMetadata, titreAccueil } from "@/lib/seo";
@@ -184,14 +183,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
      pas lire le contenu lui-même — d'où le passage par une prop. */
   const { tracking, reglages, textes, menus } = await getContent();
 
-  /* Les zones du pied de page suivent le stock. Elles vivaient écrites en
-     dur dans Footer.tsx, et la liste était déjà fausse : deux
-     départements annoncés n'existent pas dans le flux. Calculées ici, la
-     colonne ne peut plus promettre une page qui rend 404. */
-  const zones = (await departementsPubliables()).map((d) => ({
-    href: deptUrl(d.slug),
-    label: `${d.nom} (${d.code})`,
-  }));
+  /* ⚠ LE CALCUL DES ZONES A ÉTÉ RETIRÉ D'ICI. Le pied de page listait
+     les départements servis par le flux ; le brief du 22/09 remplace
+     cette colonne par les agences. Les pages de département n'ont pas
+     disparu — elles restent atteignables depuis /terrains et le plan du
+     site, et le sitemap continue de les déclarer. */
 
   /* Identité et coordonnées résolues UNE fois, puis passées à l'en-tête
      et au pied de page. Header est un composant client : il ne peut pas
@@ -357,7 +353,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             horaires={horaires}
             reseaux={reseaux}
             colonnes={colonnesFooter(menus.footer)}
-            zones={zones}
             /* Le brief du 22/09 remplace la colonne des départements par
                celle des cinq agences. Elles sont déjà lues plus haut pour
                le JSON-LD : on les passe plutôt que de les relire. */

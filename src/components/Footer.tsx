@@ -1,7 +1,5 @@
 import Link from "next/link";
 import CookiePrefsLink from "@/components/CookiePrefsLink";
-import { modelesEnAvant } from "@/data/gamme";
-import { houseUrl } from "@/lib/format";
 
 /* ⚠ CETTE LISTE ÉTAIT ÉCRITE EN DUR, et elle était déjà fausse : elle
    annonçait les Deux-Sèvres et le Maine-et-Loire, absents du flux, et
@@ -28,74 +26,84 @@ export interface ColonneChrome {
 /* Colonnes d'origine. Comme pour l'en-tête, elles restent le REPLI des
    colonnes éditables : rien de saisi dans /admin/menus, ou tout effacé,
    et le pied de page garde exactement ces quatre colonnes. */
-const colonnesDefaut = (
-  zones: LienZone[],
-  agences: LienZone[],
-): ColonneChrome[] => [
+/* ⚠ CE PIED DE PAGE SUIT LE BRIEF DU 22/09 AU MOT PRÈS, Y COMPRIS POUR
+   DES PAGES QUI N'ONT PAS ENCORE LEUR CONTENU. C'est une demande
+   explicite du client, et elle est tenable parce que ces pages EXISTENT :
+   elles répondent 200, expliquent qu'elles arrivent et renvoient vers
+   l'information équivalente (voir `EnPreparation.tsx`). Aucun de ces
+   liens ne mène à une 404.
+
+   Ce qu'il ne faut pas faire à la place, et qui a été écarté :
+     · pointer vers des URLs inexistantes — le pied de page est sur les
+       quarante-quatre pages du site, cela ferait autant de chemins vers
+       des 404, offerts à Google au passage ;
+     · afficher les libellés sans lien — le pied ne ressemblerait plus au
+       brief, et du texte gris non cliquable au milieu de liens est un
+       défaut d'interface.
+
+   Les pages en préparation sont en `noindex` et hors du sitemap : elles
+   sont atteignables par un visiteur, invisibles pour Google, et elles
+   basculeront sans changer d'URL le jour où leur contenu arrivera. */
+const colonnesDefaut = (agences: LienZone[]): ColonneChrome[] => [
   {
-    /* Le client écrit « Nos Maisons » avec une majuscule à Maisons. */
+    /* « Nos Maisons », avec la majuscule du brief. */
     titre: "Nos Maisons",
-    /* ⚠ LE BRIEF DEMANDE « Maison 1 chambre » À « Maison 4 chambres »,
-       ET CES QUATRE PAGES N'EXISTENT PAS ENCORE. Elles figurent dans
-       l'arborescence du 22/09 sous « Plans de maisons ». Deux raisons de
-       ne pas les poser tout de suite :
+    /* ⚠ LE CHEMIN EST /plans-de-maison ET NON /maisons/N-chambres,
+       parce que ces deux-là existaient déjà : `/maisons/2-chambres` et
+       `/maisons/3-chambres` étaient les anciennes déclinaisons du
+       mono-produit, redirigées en 308 vers /maisons (next.config.ts).
+       Les reprendre enverrait leur historique de référencement vers des
+       pages encore vides. Elles pourront être réclamées plus tard, quand
+       ces pages auront du contenu — ce sera une décision SEO à prendre,
+       pas un effet de bord.
 
-         · aucune route ne les sert — ce seraient quatre liens morts ;
-         · la donnée manque. Sur les onze modèles de `gamme.ts`, un seul
-           (Ankara) a son nombre de chambres renseigné. Les pages
-           existeraient, mais trois sur quatre seraient vides.
-
-       La colonne garde donc les liens qui mènent quelque part. Elle
-       passera au découpage par chambres le jour où les caractéristiques
-       des modèles seront livrées — c'est une bascule d'une ligne. */
+       Le brief remplace les noms de modèles par un découpage selon le
+       nombre de chambres. ⚠ La donnée manque encore : sur les onze
+       modèles de `gamme.ts`, seul Ankara a son nombre de chambres. Les
+       quatre pages existent et le disent ; elles se rempliront quand le
+       tableau des caractéristiques sera livré. */
     liens: [
-      { href: houseUrl(), label: "Toute la gamme" },
-      /* Les publiables d'abord : `MODELES.slice(0, 3)` donnait Ankara,
-         Athènes et Berlin sur toutes les pages, et laissait Pékin — le
-         modèle qui porte le prix d'appel — sans lien depuis le pied. */
-      ...modelesEnAvant(3).map((m) => ({ href: `/maisons/${m.slug}`, label: m.nom })),
-      { href: `${houseUrl()}#prix`, label: "Ce qui est compris" },
+      { href: "/plans-de-maison/1-chambre", label: "Maison 1 chambre" },
+      { href: "/plans-de-maison/2-chambres", label: "Maison 2 chambres" },
+      { href: "/plans-de-maison/3-chambres", label: "Maison 3 chambres" },
+      { href: "/plans-de-maison/4-chambres", label: "Maison 4 chambres" },
     ],
   },
   {
     titre: "Projets de construction",
-    /* ⚠ MÊME SITUATION. Le brief demande six entrées géographiques —
-       « Construire dans les Landes / au Pays basque / en Gironde » et
-       les « Terrains constructibles » correspondants. Aucune n'existe,
-       et le flux Vitahome ne sert aujourd'hui ni les Landes ni la
-       Gironde : il rend la Charente-Maritime, la Vendée et
-       l'Eure-et-Loir. Poser ces liens maintenant, ce serait annoncer un
-       stock qu'on n'a pas.
-
-       En attendant, la colonne mène au stock réel. */
+    /* Les six entrées géographiques du brief. ⚠ Le flux Vitahome ne sert
+       aujourd'hui ni les Landes, ni la Gironde, ni le Pays basque — il
+       rend la Charente-Maritime, la Vendée et l'Eure-et-Loir. Ces pages
+       annoncent donc un territoire, pas un stock, tant qu'un flux pour
+       ces départements n'est pas branché. */
     liens: [
-      { href: "/annonces", label: "Tous nos terrains" },
-      { href: "/annonces?type=terrain", label: "Terrain seul" },
-      { href: "/annonces?type=terrain-maison", label: "Terrain + maison" },
-      /* Vide quand le flux ne rend aucun département au-dessus du
-         seuil : on garde alors l'entrée vers l'index, qui sait le dire. */
-      ...(zones.length ? zones : [{ href: "/terrains", label: "Toutes nos zones" }]),
+      { href: "/construire/landes", label: "Construction de maisons dans les Landes" },
+      { href: "/construire/pays-basque", label: "Construction de maisons au Pays basque" },
+      { href: "/construire/gironde", label: "Construction de maisons en Gironde" },
+      { href: "/terrains-constructibles/landes", label: "Terrains constructibles dans les Landes" },
+      { href: "/terrains-constructibles/pays-basque", label: "Terrains constructibles au Pays basque" },
+      { href: "/terrains-constructibles/gironde", label: "Terrains constructibles en Gironde" },
     ],
   },
   {
-    /* Le brief remplace « Où nous construisons » — qui listait les
-       départements du flux — par les cinq agences. Celles-ci existent
-       toutes, avec leur page : c'est la seule colonne du brief qui soit
-       intégralement câblable aujourd'hui. Les libellés viennent de la
-       base, donc une agence ajoutée ou renommée en back-office suit. */
     titre: "Nos agences",
+    /* ⚠ LES LIBELLÉS VIENNENT DE LA BASE, PAS DU BRIEF, et c'est
+       délibéré : le brief écrit « Agence à Tartas » quand le back-office
+       dit « Agence de Tartas ». Recopier le brief ici figerait cinq noms
+       que Julien peut changer lui-même en trente secondes — et la
+       prochaine agence ouverte n'apparaîtrait pas. La source reste
+       l'écran Agences ; le libellé s'y corrige. */
     liens: agences.length ? agences : [{ href: "/agences", label: "Toutes nos agences" }],
   },
   {
     titre: "L'expérience ESSENSYA",
-    /* Le brief en demande sept. Quatre n'existent pas encore —
-       « Qui sommes-nous », « L'accompagnement ESSENSYA » et les deux
-       guides — et attendent l'arborescence. Les trois autres sont là,
-       sous leur nom du brief. */
     liens: [
+      { href: "/qui-sommes-nous", label: "Qui sommes-nous" },
       { href: "/concept", label: "Le concept ESSENSYA" },
+      { href: "/accompagnement", label: "L'accompagnement ESSENSYA" },
       { href: "/concept#engagements", label: "Nos engagements" },
-      { href: "/realisations", label: "Nos réalisations" },
+      { href: "/guides/choisir-son-plan-de-maison", label: "Guide pour choisir votre plan de maison" },
+      { href: "/guides/choisir-son-terrain", label: "Guide pour choisir votre terrain" },
       { href: "/contact", label: "Contact" },
     ],
   },
@@ -129,8 +137,6 @@ export interface FooterProps {
   reseaux: { label: string; href: string }[];
   /** Colonnes saisies en back-office. Absent = on garde les colonnes par défaut. */
   colonnes?: ColonneChrome[];
-  /** Les départements réellement publiables, calculés par le layout. */
-  zones?: LienZone[];
   /** Les agences publiées, dans l'ordre du back-office. */
   agences?: LienZone[];
 }
@@ -147,10 +153,9 @@ export default function Footer({
   horaires,
   reseaux,
   colonnes,
-  zones = [],
   agences = [],
 }: FooterProps) {
-  const cols = colonnes ?? colonnesDefaut(zones, agences);
+  const cols = colonnes ?? colonnesDefaut(agences);
 
   return (
     <footer className="site-footer" id="siteFooter">
@@ -233,6 +238,7 @@ export default function Footer({
             <Link href="/mentions-legales">Mentions légales</Link>
             <Link href="/confidentialite">Politique de confidentialité</Link>
             <Link href="/cookies">Gestion des cookies</Link>
+            <Link href="/plan-du-site">Plan du site</Link>
             <CookiePrefsLink>Personnaliser les cookies</CookiePrefsLink>
           </nav>
           {/* Les réseaux étaient trois libellés morts. Ils sont désormais ce

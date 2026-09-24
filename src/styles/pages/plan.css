@@ -1,0 +1,39 @@
+/* ════ PLAN DU SITE (.pl-) ET PAGES EN PRÉPARATION (.prep-) ════ */
+
+.pl-body{padding-bottom:var(--s-7)}
+.pl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-5) var(--s-4);align-items:start}
+@media (max-width:900px){.pl-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.pl-grid{grid-template-columns:1fr}}
+
+.pl-col h2{font-size:var(--fs-h3);padding-bottom:var(--s-2);border-bottom:var(--line)}
+.pl-col ul{margin-top:var(--s-2)}
+.pl-col li{padding:.45rem 0;display:flex;flex-wrap:wrap;align-items:baseline;gap:.5rem}
+.pl-col a{border-bottom:1px solid transparent;transition:border-color var(--dur-fast),color var(--dur-fast)}
+.pl-col a:hover{border-color:var(--accent);color:var(--accent)}
+/* La mention se lit comme une étiquette d'état, pas comme un lien : mono
+   capitales, couleur d'alerte. C'est elle qui évite au visiteur de
+   cliquer pour rien. */
+.pl-prep{
+  font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.1em;
+  text-transform:uppercase;color:var(--alerte);background:var(--alerte-fond);
+  padding:.1rem .4rem;border-radius:var(--radius);white-space:nowrap;
+}
+
+/* ════ LA PAGE EN PRÉPARATION ════ */
+.prep{padding-bottom:var(--s-7)}
+.prep__carte{
+  border:1px dashed var(--beton-2);border-radius:var(--radius);
+  background:var(--vert-fond);padding:var(--s-5) var(--s-4);max-width:46rem;
+}
+.prep__carte .c-label{display:block;margin-bottom:var(--s-2)}
+.prep__carte h2{font-size:var(--fs-h3)}
+.prep__carte > p{margin-top:var(--s-2);color:var(--muet)}
+.prep__relais{margin-top:var(--s-4);border-top:var(--line)}
+.prep__relais li{
+  padding:var(--s-3) 0;border-bottom:var(--line);
+  display:grid;grid-template-columns:minmax(14rem,auto) 1fr;gap:var(--s-2) var(--s-4);align-items:baseline;
+}
+@media (max-width:640px){.prep__relais li{grid-template-columns:1fr}}
+.prep__relais li > span{font-size:var(--fs-small);color:var(--muet)}
+.prep__contact{margin-top:var(--s-4);font-size:var(--fs-small);color:var(--muet)}
+.prep__contact .c-link{margin-left:.4rem}

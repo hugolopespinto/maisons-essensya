@@ -36,11 +36,17 @@ const nextConfig: NextConfig = {
   },
 
   async redirects() {
-    return ANCIENNES_DECLINAISONS.map((slug) => ({
-      source: `/maisons/${slug}`,
-      destination: "/maisons",
-      permanent: true,
-    }));
+    return [
+      ...ANCIENNES_DECLINAISONS.map((slug) => ({
+        source: `/maisons/${slug}`,
+        destination: "/maisons",
+        permanent: true,
+      })),
+      /* /plans-de-maison n est pas une page : c est le dossier des quatre
+         pages par nombre de chambres. Un visiteur qui raccourcit l URL
+         doit arriver sur la gamme, pas sur une 404. */
+      { source: "/plans-de-maison", destination: "/maisons", permanent: true },
+    ];
   },
 };
 
