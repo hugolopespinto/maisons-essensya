@@ -102,6 +102,50 @@ const paths: Record<IconName, { size: number; body: JSX.Element }> = {
       </>
     ),
   },
+  /* ── Les cinq pictos du bandeau « Nos points forts ». Même grille de
+     24 et même taille de rendu que les blocs de réassurance, pour que
+     le trait pèse exactement HAIRLINE comme partout ailleurs. ── */
+  compass: {
+    size: 28,
+    body: (
+      <>
+        <circle cx="12" cy="5" r="2" />
+        <path d="M11 7L6 19M13 7l5 12M8.5 15h7" />
+      </>
+    ),
+  },
+  checklist: {
+    size: 28,
+    body: (
+      <>
+        <path d="M10 6h10M10 12h10M10 18h10" />
+        <path d="M3 6l1.6 1.6L7.4 4.8M3 12l1.6 1.6 2.8-2.8M3 18l1.6 1.6 2.8-2.8" />
+      </>
+    ),
+  },
+  flow: {
+    size: 28,
+    body: <path d="M3 12h16M14 6l6 6-6 6" />,
+  },
+  wall: {
+    size: 28,
+    body: (
+      <>
+        <rect x="3" y="5" width="18" height="14" />
+        <path d="M3 12h18M9 5v7M15 5v7M12 12v7" />
+      </>
+    ),
+  },
+  team: {
+    size: 28,
+    body: (
+      <>
+        <circle cx="9" cy="8" r="3.2" />
+        <path d="M3 20c0-3.3 2.7-5.2 6-5.2s6 1.9 6 5.2" />
+        <path d="M16.2 5.4a3.2 3.2 0 010 5.2M17.6 15.2c2.1.6 3.4 2.2 3.4 4.8" />
+      </>
+    ),
+  },
 };
 
 export function Icon({ name }: { name: IconName }) {

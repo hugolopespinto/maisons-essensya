@@ -18,6 +18,25 @@
 .hero-fixe__media{position:absolute;inset:0;background-size:cover;background-position:center}
 .hero-fixe__media img{width:100%;height:100%;object-fit:cover}
 
+/* ⚠ LE FILM D'ARRIVÉE EST UN CALQUE, PAS UN REMPLACEMENT.
+   Il se superpose au visuel sans jamais s'y substituer : si la lecture
+   est refusée, si le fichier manque ou si le visiteur a demandé moins
+   d'animation, ce calque n'est même pas monté et l'accueil reste celui
+   d'avant, au pixel près.
+
+   L'opacité part de 0 et n'est levée qu'une fois la lecture réellement
+   engagée (événement `playing`). C'est ce qui évite le rectangle noir
+   pendant la mise en tampon — le défaut qui avait fait dire au client
+   que « le site ne fonctionne pas ».
+
+   La sortie est un fondu : sur le film définitif, la dernière image sera
+   le visuel hero lui-même et ce fondu deviendra invisible. Sur le
+   placeholder actuel (une maison qui n'est pas une Essensya), il masque
+   le raccord. */
+.hero-fixe__film{position:absolute;inset:0;opacity:0;transition:opacity .65s ease;pointer-events:none;background:var(--anthracite)}
+.hero-fixe__film.is-visible{opacity:1}
+.hero-fixe__film video{display:block;width:100%;height:100%;object-fit:cover}
+
 /* ⚠ LE VOILE REPREND LE TRAVAIL DU PANNEAU OPAQUE, QUI A DISPARU.
    Il porte maintenant deux charges distinctes, à deux endroits, et c'est
    pour cela qu'il a cinq arrêts plutôt que deux.
@@ -148,13 +167,69 @@
    ────────────────────────────────────────────────────────────────── */
 .s-forts{padding:var(--s-7) 0;background:var(--anthracite);color:var(--craie)}
 .s-forts .c-label{color:var(--sable)}
-.s-forts__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-5) var(--s-4)}
-.s-forts__item{border-top:1px solid rgba(242,243,243,.22);padding-top:var(--s-3)}
-.s-forts__num{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.2em;color:var(--vert-clair)}
-.s-forts__item h3{font-size:1.15rem;margin:.6rem 0 .5rem}
-.s-forts__item p{color:var(--sable);opacity:.82;font-size:var(--fs-small);max-width:40ch}
-@media (max-width:900px){.s-forts__grid{grid-template-columns:1fr 1fr}}
-@media (max-width:600px){.s-forts__grid{grid-template-columns:1fr;gap:var(--s-4)}}
+/* ══════ LE BANDEAU DE POINTS FORTS ══════
+   La grille de six blocs en texte seul a été remplacée par une grande
+   photo que six cartes viennent mordre. C'est le choix du client parmi
+   trois maquettes, et il reprend les références qu'il avait fournies.
+
+   ⚠ LA SECTION EST SUR FOND ANTHRACITE, ce que `.s-forts` fixe déjà
+   trois lignes plus haut. Toutes les valeurs qui suivent sont donc des
+   clairs posés sur du sombre : filets en craie translucide, jamais en
+   `--beton`, qui disparaîtrait. `.s-forts` figure d'ailleurs dans la
+   liste des fonds sombres de base.css, ce qui bascule `--focus` en
+   craie — le contour de focus reste donc visible sans rien ajouter ici.
+
+   ⚠ LE CADRE N'EST PAS DÉCORATIF. Le client l'a demandé explicitement
+   (« un encadrement des blocs pour bien les faire ressortir ») et il
+   porte une seconde charge : sur une photo, une carte sans bord flotte
+   sans qu'on sache où elle commence. C'est la recette de cadre du
+   dépôt — bord 1 px, rayon `--radius`, le bord s'éclaire au survol —
+   transposée sur fond sombre. */
+
+/* Pleine largeur : la photo sort du conteneur, les cartes y restent. */
+.s-bande__media{margin-top:var(--s-4)}
+.s-bande__media img{display:block;width:100%;height:clamp(300px,36vw,520px);object-fit:cover}
+
+.s-bande__rail{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s-2)}
+.s-bande__cell{display:flex}
+
+/* Le décalage qui fait mordre les cartes sur le bas de la photo. */
+.s-bande__rail{margin-top:clamp(-150px,-11vw,-90px)}
+
+.s-bande__carte{display:flex;flex-direction:column;gap:.6rem;width:100%;box-sizing:border-box;
+  padding:var(--s-3) calc(var(--s-2) + .15rem);
+  background:rgba(0,19,33,.74);
+  border:1px solid rgba(242,243,243,.26);border-radius:var(--radius);
+  transition:border-color var(--dur-fast) var(--ease),background var(--dur-fast) var(--ease)}
+@supports (backdrop-filter:blur(10px)){.s-bande__carte{backdrop-filter:blur(10px);background:rgba(0,19,33,.56)}}
+
+/* Seules les cartes qui MÈNENT quelque part réagissent au survol :
+   un bloc sans destination ne doit pas faire croire qu'il est cliquable. */
+a.s-bande__carte:hover{border-color:var(--craie);background:rgba(0,19,33,.88)}
+a.s-bande__carte:hover .s-bande__fleche{transform:translateX(4px)}
+
+.s-bande__tete{display:flex;align-items:center;gap:.6rem}
+.s-bande__num{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.2em;color:var(--vert-clair)}
+.s-bande__tete svg{margin-left:auto;width:22px;height:22px;stroke:var(--vert-clair);flex:none}
+.s-bande__carte h3{font-size:1rem;margin:0}
+.s-bande__carte p{color:var(--sable);opacity:.84;font-size:var(--fs-small);margin:0}
+.s-bande__fleche{margin-top:auto;padding-top:.4rem;color:var(--craie);
+  transition:transform var(--dur-fast) var(--ease)}
+
+/* ── Sous 1080 px, six cartes de front tombent sous 150 px : illisible.
+   Le bandeau devient un carrousel qu'on fait glisser au doigt. Pas de
+   flèches, donc pas de JavaScript : même mécanique que `.vm__nav`
+   (visite.css), qui fait déjà défiler des onglets dans ce dépôt. ── */
+@media (max-width:1080px){
+  .s-bande__rail{display:flex;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;
+    /* Marge négative + padding : le rail défile bord à bord sans que la
+       première carte se colle au bord de l'écran. */
+    margin-inline:calc(var(--gutter) * -1);padding-inline:var(--gutter);
+    padding-block:.25rem;margin-top:clamp(-96px,-12vw,-56px)}
+  .s-bande__rail::-webkit-scrollbar{display:none}
+  .s-bande__cell{scroll-snap-align:center;flex:none;width:min(74vw,286px)}
+  .s-bande__media img{height:clamp(240px,52vw,360px)}
+}
 
 /* ──────────────────────────────────────────────────────────────────
    L'OPPORTUNITÉ DU MOMENT

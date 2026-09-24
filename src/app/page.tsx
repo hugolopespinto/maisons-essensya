@@ -1,5 +1,6 @@
 import ArgumentRow from "@/components/ArgumentRow";
 import HeroAccueil from "@/components/HeroAccueil";
+import BandeauForts from "@/components/BandeauForts";
 import LeadForm from "@/components/LeadForm";
 import OpportuniteDuMoment, {
   type OpportuniteItem,
@@ -109,6 +110,14 @@ export default async function HomePage() {
           "Maisons Essensya, constructeur de maisons au prix juste dans les Landes",
         )}
         alt="Maison Essensya modèle Lisbonne, vue de la terrasse"
+        /* ⚠ PLACEHOLDER DE DÉMONSTRATION — À REMPLACER AVANT MISE EN LIGNE.
+           C'est la référence de 10 s fournie par le client, recadrée à 8 s
+           par HeroFilm (lecture de 2 s à 10 s, pour sauter la parcelle vide).
+           La maison filmée n'est PAS une Essensya, et le fichier pèse 5 Mo
+           en 720p : c'est bon pour montrer l'effet, pas pour le public.
+           Le film définitif doit être en 1920 de large, sous 2 Mo, et se
+           terminer exactement sur le visuel hero ci-dessus. */
+        film="/film/chantier.mp4"
       />
 
       {/* ⚠ LE BLOC DE RECHERCHE A ÉTÉ RETIRÉ, SUR DEMANDE DU CLIENT
@@ -230,25 +239,20 @@ export default async function HomePage() {
           Les composants `Compare` et `VersionCard` ne sont pas
           supprimés : /maisons les utilise toujours. */}
 
-      <section className="s-philo s-forts" id="points-forts">
-        <div className="container">
-          <div className="c-section-head" data-reveal>
-            <span className="c-label">{t("forts.surtitre", "Nos points forts")}</span>
-            <h2 style={PRE_LINE}>
-              {t("forts.titre", "Six raisons de construire avec nous")}
-            </h2>
-          </div>
-          <div className="s-forts__grid">
-            {D.philosophy.map((i) => (
-              <div className="s-forts__item" data-reveal key={i.num}>
-                <span className="s-forts__num">{i.num}</span>
-                <h3>{i.title}</h3>
-                <p>{i.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ⚠ LA GRILLE DE SIX BLOCS EN TEXTE SEUL A ÉTÉ REMPLACÉE par un
+          bandeau : une grande photo, six cartes encadrées qui mordent
+          dessus, chacune menant à une page. C'est le choix du client
+          parmi trois maquettes.
+
+          Le surtitre et le titre restent pilotés depuis le back-office :
+          seule la mise en forme a changé, pas la source des textes. */}
+      <BandeauForts
+        visuel={vue("lisbonne", "vue-1-exterieur")}
+        alt="Maison Essensya modèle Lisbonne, vue extérieure"
+        surtitre={t("forts.surtitre", "Nos points forts")}
+        titre={t("forts.titre", "Six raisons de construire avec nous")}
+        items={D.philosophy}
+      />
 
       {/* ── L'opportunité du moment ──
           Une annonce tirée au sort parmi les plus récentes, différente à

@@ -493,12 +493,47 @@ export const ESSENSYA_DATA: EssensyaData = {
      n°01 « Une maison, pas une gamme » a disparu de lui-même : il
      affirmait exactement le contraire de ce que le client vend. */
   philosophy: [
-    { num: "01", title: "Conception maîtrisée", text: "Chaque plan de chaque modèle a été optimisé poste par poste, matériau par matériau. Rien n'est laissé au hasard." },
-    { num: "02", title: "Les bons choix déjà faits", text: "Nous avons déjà sélectionné les meilleurs choix pour vous : volumes, équipements. Il ne vous reste plus qu'à personnaliser." },
-    { num: "03", title: "Processus simplifié", text: "Moins d'étapes, moins d'aller-retour, votre projet avance vite et bien en toute transparence." },
-    { num: "04", title: "Qualité", text: "Une RE 2020 respectée, des équipements sélectionnés, des exigences élevées : nous reproduisons ce qui fonctionne." },
-    { num: "05", title: "Garanties constructeur et CCMI", text: "CCMI, garanties décennales, assurance dommages-ouvrage, vous bénéficiez du cadre juridique le plus protecteur pour les futurs propriétaires." },
-    { num: "06", title: "Une équipe à vos côtés", text: "Un interlocuteur unique à chaque étape, c'est un accompagnement d'expert pour gagner du temps et de la tranquillité." },
+    /* ⚠ `text` = les mots du client, intacts. `textCourt` est la version
+       du bandeau de l'accueil, où une carte ne fait que 200 px : elle
+       s'ajoute, elle ne remplace pas. Les pages qui ont la place
+       affichent toujours `text`.
+
+       ⚠ LES SIX `href` SONT À CONFIRMER PAR LE CLIENT. Ils visent des
+       ancres qui existent réellement — vérifiées une par une, pas
+       devinées. Quatre des six retombent sur /concept : le site n'a pas
+       encore six pages distinctes qui méritent ce lien. Les pages qui
+       conviendraient (/accompagnement, les guides) sont en préparation
+       et en noindex, donc hors de question depuis l'accueil. */
+    {
+      num: "01", title: "Conception maîtrisée", icon: "compass", href: "/maisons#gamme",
+      text: "Chaque plan de chaque modèle a été optimisé poste par poste, matériau par matériau. Rien n'est laissé au hasard.",
+      textCourt: "Chaque plan optimisé poste par poste, matériau par matériau.",
+    },
+    {
+      num: "02", title: "Les bons choix déjà faits", icon: "checklist", href: "/maisons#prix",
+      text: "Nous avons déjà sélectionné les meilleurs choix pour vous : volumes, équipements. Il ne vous reste plus qu'à personnaliser.",
+      textCourt: "Volumes et équipements déjà sélectionnés. Il ne reste qu'à personnaliser.",
+    },
+    {
+      num: "03", title: "Processus simplifié", icon: "flow", href: "/concept",
+      text: "Moins d'étapes, moins d'aller-retour, votre projet avance vite et bien en toute transparence.",
+      textCourt: "Moins d'étapes, moins d'aller-retour, en toute transparence.",
+    },
+    {
+      num: "04", title: "Qualité", icon: "wall", href: "/concept#engagements",
+      text: "Une RE 2020 respectée, des équipements sélectionnés, des exigences élevées : nous reproduisons ce qui fonctionne.",
+      textCourt: "RE 2020 respectée, équipements sélectionnés, exigences élevées.",
+    },
+    {
+      num: "05", title: "Garanties constructeur et CCMI", icon: "shield", href: "/concept#faq",
+      text: "CCMI, garanties décennales, assurance dommages-ouvrage, vous bénéficiez du cadre juridique le plus protecteur pour les futurs propriétaires.",
+      textCourt: "CCMI, décennale, dommages-ouvrage : le cadre le plus protecteur.",
+    },
+    {
+      num: "06", title: "Une équipe à vos côtés", icon: "team", href: "/agences",
+      text: "Un interlocuteur unique à chaque étape, c'est un accompagnement d'expert pour gagner du temps et de la tranquillité.",
+      textCourt: "Un interlocuteur unique à chaque étape, du premier rendez-vous aux clés.",
+    },
   ],
 
   /* ⚠ Le parcours supposait qu'il n'y avait rien à choisir : « un seul

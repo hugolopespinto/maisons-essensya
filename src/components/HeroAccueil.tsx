@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { srcSet, type Visuel } from "@/data/visuels";
+import HeroFilm from "./HeroFilm";
 
 /* ════════════════════════════════════════════════════════════════
    HERO D'ACCUEIL — une image, un message, tout de suite
@@ -29,11 +30,19 @@ export default function HeroAccueil({
   baseline,
   titre,
   alt,
+  film,
 }: {
   visuel: Visuel;
   baseline: string;
   titre: string;
   alt: string;
+  /**
+   * Film d'arrivée optionnel, joué UNE FOIS par-dessus le visuel.
+   * Absent → ce composant reste exactement ce qu'il était : zéro
+   * JavaScript, zéro octet supplémentaire. Voir HeroFilm pour les
+   * garde-fous et pourquoi ils ne sont pas négociables ici.
+   */
+  film?: string;
 }) {
   return (
     <section className="hero-fixe" aria-labelledby="hero-t">
@@ -63,6 +72,12 @@ export default function HeroAccueil({
           />
         </picture>
       </div>
+
+      {/* Le film se place APRÈS le média et AVANT le voile : les trois
+          calques sont en `position:absolute`, donc l'ordre du document
+          suffit à les empiler. Le voile continue de porter le contraste
+          du titre, film ou pas. */}
+      {film ? <HeroFilm src={film} /> : null}
 
       <div className="hero-fixe__voile" aria-hidden="true" />
 

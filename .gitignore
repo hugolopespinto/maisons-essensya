@@ -44,3 +44,8 @@ next-env.d.ts
 # En production c'est Supabase qui persiste : ce fichier ne doit pas
 # suivre le dépôt, sinon chaque enregistrement de recette pollue les diffs.
 content/
+
+# Sources lourdes de la marque : les masters vidéo restent hors dépôt.
+# Ce qui est servi au visiteur vit dans public/, et lui seul est versionné.
+marque-source/*.mp4
+marque-source/*.mov

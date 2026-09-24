@@ -10,7 +10,11 @@
 
 export type IconName =
   | "shield" | "ruler" | "pin" | "key"
-  | "surface" | "bed" | "land" | "loc" | "price" | "garage";
+  | "surface" | "bed" | "land" | "loc" | "price" | "garage"
+  /* Ajoutées pour le bandeau « Nos points forts », qui demande un picto
+     par bloc. Le jeu d'origine décrit un bien immobilier — surface, lit,
+     terrain ; il ne savait dire ni « conception » ni « qualité ». */
+  | "compass" | "checklist" | "flow" | "wall" | "team";
 
 export interface GalleryItem {
   src: string;
@@ -139,7 +143,22 @@ export interface Agency {
 export interface NumberedItem {
   num: string;
   title: string;
+  /**
+   * ⚠ LE TEXTE DU CLIENT, MOT POUR MOT. On ne le raccourcit pas ici :
+   * c'est lui qui fait foi, et c'est lui qu'affichent les pages qui ont
+   * la place de le porter en entier.
+   */
   text: string;
+  /**
+   * Version courte, pour le bandeau de l'accueil où une carte ne fait que
+   * 200 px. Absente → `text` est affiché tel quel. Elle s'ajoute au texte
+   * long, elle ne le remplace jamais.
+   */
+  textCourt?: string;
+  /** Destination de la carte. Absente → la carte n'est pas un lien. */
+  href?: string;
+  /** Picto affiché à côté du numéro. */
+  icon?: IconName;
 }
 
 export interface TrustItem {
