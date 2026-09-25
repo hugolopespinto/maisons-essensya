@@ -24,16 +24,15 @@
    d'animation, ce calque n'est même pas monté et l'accueil reste celui
    d'avant, au pixel près.
 
-   L'opacité part de 0 et n'est levée qu'une fois la lecture réellement
-   engagée (événement `playing`). C'est ce qui évite le rectangle noir
-   pendant la mise en tampon — le défaut qui avait fait dire au client
-   que « le site ne fonctionne pas ».
-
-   Une fois levée, l'opacité ne redescend plus : le film tourne en
-   boucle tant que la page est ouverte. */
-.hero-fixe__film{position:absolute;inset:0;opacity:0;transition:opacity .65s ease;pointer-events:none;background:var(--anthracite)}
-.hero-fixe__film.is-visible{opacity:1}
-.hero-fixe__film video{display:block;width:100%;height:100%;object-fit:cover}
+   La toile WebGL est TRANSPARENTE tant que le film n'est pas prêt : on
+   voit la photo à travers, puis le film s'y pose en tache d'encre (voir
+   HeroFilm). Jamais de rectangle noir pendant le téléchargement — le
+   défaut qui avait fait dire au client que « le site ne fonctionne pas ». */
+.hero-fixe__film{position:absolute;inset:0;pointer-events:none}
+.hero-fixe__film canvas{display:block;width:100%;height:100%}
+/* Repli sans WebGL : l'ancien fondu, levé par l'événement `playing`. */
+.hero-fixe__film video{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .65s ease}
+.hero-fixe__film video.is-visible{opacity:1}
 
 /* ⚠ LE VOILE REPREND LE TRAVAIL DU PANNEAU OPAQUE, QUI A DISPARU.
    Il porte maintenant deux charges distinctes, à deux endroits, et c'est
@@ -111,12 +110,63 @@
    que le voile couvre franchement. L'échelle baisse légèrement pour que
    deux lignes de 38 signes tiennent sans déborder sur un écran moyen. */
 .hero-fixe h1{font-size:clamp(1.8rem,3.6vw,3.15rem);line-height:1.06;max-width:38ch;margin-top:var(--s-2)}
+/* Chaque mot du titre dans son cache, pour la montée mot par mot de
+   l'écran de chargement. ⚠ LE CACHE EST PERMANENT, PAS SEULEMENT PENDANT
+   L'ANIMATION : un bloc en ligne à `overflow:hidden` change de ligne de
+   base, et le basculer à la fin ferait sauter le titre d'un cran. Les
+   marges intérieures laissent passer les accents des capitales (É, À)
+   au-dessus et les jambages en dessous, compensées par des marges
+   négatives : l'interligne ne bouge pas. */
+.hero-fixe h1 .mot{display:inline-block;overflow:hidden;vertical-align:top;padding-block:.15em .1em;margin-block:-.15em -.1em}
+.hero-fixe h1 .mot > span{display:inline-block}
 .hero-fixe__actions{display:flex;flex-wrap:wrap;gap:var(--s-2);margin-top:var(--s-4)}
 @media (max-width:560px){
   .hero-fixe{min-height:min(78svh,640px)}
   .hero-fixe__actions{gap:.75rem}
   .hero-fixe__actions .c-btn{flex:1 1 100%;justify-content:center}
 }
+
+/* ──────────────────────────────────────────────────────────────────
+   ÉCRAN DE CHARGEMENT — première arrivée de la visite, sur ordinateur
+
+   Tout ici dépend du drapeau `data-intro-accueil`, posé sur <html> par
+   le script du <head> AVANT le premier affichage (voir IntroAccueil) :
+   c'est ce qui permet à l'écran de couvrir la page dès la première
+   image, et au texte d'être déjà caché quand il monte.
+
+   ⚠ CHAQUE RÈGLE EXIGE AUSSI QUE L'ÉCRAN EXISTE (`:has(#intro-accueil)`).
+   Le drapeau est posé sur toute arrivée en « / » ; si un jour l'accueil
+   s'affichait sans film, donc sans écran, le titre et l'en-tête
+   resteraient cachés jusqu'au délai de secours. Avec cette condition, il
+   ne se passe simplement rien. Un navigateur qui ignore `:has()` ignore
+   tout le bloc : pas d'écran, et une page intacte.
+
+   Le reste — compteur, dissolution, montée du texte — est piloté par
+   HeroFilm en styles en ligne, retirés à la fin.
+   ────────────────────────────────────────────────────────────────── */
+.intro-accueil{display:none}
+html[data-intro-accueil]:has(#intro-accueil){overflow:hidden}
+/* Au-dessus de l'en-tête (100), du bandeau cookies (120) et de sa
+   fenêtre (130) ; sous le lien d'évitement (200), qui doit rester
+   atteignable. */
+html[data-intro-accueil]:has(#intro-accueil) .intro-accueil{display:block;position:fixed;inset:0;z-index:150;background:var(--craie);color:var(--anthracite)}
+html[data-intro-accueil]:has(#intro-accueil) .site-header{opacity:0}
+html[data-intro-accueil]:has(#intro-accueil) .hero-fixe__texte .c-label,
+html[data-intro-accueil]:has(#intro-accueil) .hero-fixe__actions{opacity:0;transform:translateY(14px)}
+html[data-intro-accueil]:has(#intro-accueil) .hero-fixe h1 .mot > span{transform:translateY(110%)}
+/* La tache d'encre prend le relais de l'aplat : la toile peint la craie. */
+.intro-accueil.gl-prend{background:transparent}
+.intro-accueil__toile{position:absolute;inset:0;display:block;width:100%;height:100%}
+.intro-accueil__centre{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--s-3)}
+/* Le logo et le compteur entrent en CSS, sans attendre le JavaScript :
+   sur une connexion lente, l'écran n'est jamais un aplat muet. */
+.intro-accueil__logo{width:min(260px,60vw);height:auto;animation:intro-logo .6s var(--ease) both}
+/* `--pierre` sur craie : 5,08:1. */
+.intro-accueil__pct{font-family:var(--f-mono);font-size:.8rem;letter-spacing:.2em;color:var(--pierre);font-variant-numeric:tabular-nums;animation:intro-fondu .6s var(--ease) .1s both}
+.intro-accueil__passer{position:absolute;right:var(--gutter);bottom:var(--s-3);padding:.35rem 0;border-bottom:1px solid currentColor;color:var(--anthracite);font-family:var(--f-mono);font-size:var(--fs-label);font-weight:500;text-transform:uppercase;letter-spacing:.14em}
+.intro-accueil__passer:focus-visible{outline:2px solid var(--framboise);outline-offset:3px}
+@keyframes intro-logo{from{opacity:0;transform:translateY(24px)}}
+@keyframes intro-fondu{from{opacity:0}}
 
 /* ──────────────────────────────────────────────────────────────────
    LA MAISON JUSTE, LE PRIX JUSTE

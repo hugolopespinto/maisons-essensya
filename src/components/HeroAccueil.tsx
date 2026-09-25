@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { Fragment } from "react";
+import type { FilmAccueil } from "@/data/film-accueil";
 import { srcSet, type Visuel } from "@/data/visuels";
 import HeroFilm from "./HeroFilm";
+import IntroAccueil from "./IntroAccueil";
 
 /* ════════════════════════════════════════════════════════════════
    HERO D'ACCUEIL — une image, un message, tout de suite
@@ -14,11 +17,16 @@ import HeroFilm from "./HeroFilm";
    l'écran est une image muette, et un visiteur qui ne fait pas défiler
    ne voit jamais le prix.
 
-   Ce qui le remplace n'a AUCUN JavaScript : pas de `use client`, pas
-   d'écouteur de défilement, pas d'hydratation à attendre. Le titre est
-   dans le HTML servi, donc lisible à la première frame — c'est le
-   meilleur LCP qu'on puisse offrir, et accessoirement le meilleur
-   signal SEO.
+   Ce composant n'a AUCUN JavaScript : pas de `use client`, pas
+   d'écouteur de défilement. Le titre est dans le HTML servi — c'est le
+   meilleur LCP qu'on puisse offrir, et le meilleur signal SEO.
+
+   ⚠ SAUF À LA PREMIÈRE ARRIVÉE DE LA VISITE, SUR ORDINATEUR. Le client
+   a retenu depuis un écran de chargement façon Makhno Studio (voir
+   IntroAccueil) : le titre y reste caché 3,5 à 4,5 s, le temps que le
+   film se télécharge et que la page se dévoile. Choix fait en voyant ce
+   prix affiché sur la démo. Partout ailleurs — mobile, retours sur
+   l'accueil, animations réduites — ce qui précède reste vrai.
 
    ⚠ PAS DE CHIFFRES SUR CE VISUEL. Le client garde le principe des
    chiffres posés sur les images, mais l'exclut de ces rendus de
@@ -37,14 +45,22 @@ export default function HeroAccueil({
   titre: string;
   alt: string;
   /**
-   * Film d'arrivée optionnel, joué UNE FOIS par-dessus le visuel.
-   * Absent → ce composant reste exactement ce qu'il était : zéro
-   * JavaScript, zéro octet supplémentaire. Voir HeroFilm pour les
-   * garde-fous et pourquoi ils ne sont pas négociables ici.
+   * Film d'arrivée optionnel, posé à l'encre par-dessus le visuel, avec
+   * son écran de chargement. Absent → ni film ni écran : ce composant
+   * reste exactement ce qu'il était, zéro JavaScript. Voir HeroFilm et
+   * IntroAccueil pour les garde-fous.
    */
-  film?: string;
+  film?: FilmAccueil;
 }) {
+  /* Chaque mot dans son cache : c'est ce qui permet au titre de monter
+     mot par mot à la sortie de l'écran de chargement. Le texte servi est
+     inchangé — mêmes mots, mêmes espaces — pour Google comme pour les
+     lecteurs d'écran. */
+  const mots = titre.trim().split(/\s+/);
+
   return (
+    <>
+    {film ? <IntroAccueil /> : null}
     <section className="hero-fixe" aria-labelledby="hero-t">
       <div
         className="hero-fixe__media"
@@ -77,7 +93,7 @@ export default function HeroAccueil({
           calques sont en `position:absolute`, donc l'ordre du document
           suffit à les empiler. Le voile continue de porter le contraste
           du titre, film ou pas. */}
-      {film ? <HeroFilm src={film} /> : null}
+      {film ? <HeroFilm film={film} /> : null}
 
       <div className="hero-fixe__voile" aria-hidden="true" />
 
@@ -104,7 +120,16 @@ export default function HeroAccueil({
             changement de rendu — c'est le prix de rendre la photo au
             client. */}
         <span className="c-label">{baseline}</span>
-        <h1 id="hero-t">{titre}</h1>
+        <h1 id="hero-t">
+          {mots.map((m, i) => (
+            <Fragment key={i}>
+              {i > 0 ? " " : null}
+              <span className="mot">
+                <span>{m}</span>
+              </span>
+            </Fragment>
+          ))}
+        </h1>
         <div className="hero-fixe__actions">
           <Link href="/maisons" className="c-btn c-btn--solid">
             Voir nos modèles <span className="arrow">→</span>
@@ -115,5 +140,6 @@ export default function HeroAccueil({
         </div>
       </div>
     </section>
+    </>
   );
 }

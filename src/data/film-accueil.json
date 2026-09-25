@@ -1,0 +1,14 @@
+{
+  "src": "/film/chantier.mp4",
+  "largeur": 1280,
+  "hauteur": 720,
+  "debut": 2,
+  "fin": 10,
+  "profondeur": {
+    "src": "/film/chantier-profondeur.webp",
+    "pas": 0.5,
+    "nombre": 17,
+    "colonnes": 4,
+    "lignes": 5
+  }
+}

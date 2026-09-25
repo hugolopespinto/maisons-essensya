@@ -7,6 +7,7 @@ import OpportuniteDuMoment, {
 } from "@/components/OpportuniteDuMoment";
 import { Icon } from "@/components/icons";
 import { ESSENSYA_DATA, REEL } from "@/data/essensya";
+import { FILM_ACCUEIL } from "@/data/film-accueil";
 import { facade } from "@/data/visuels";
 import { srcSet, vue } from "@/data/visuels";
 import "@/styles/accueil.css";
@@ -111,12 +112,13 @@ export default async function HomePage() {
         )}
         alt="Maison Essensya modèle Lisbonne, vue de la terrasse"
         /* ⚠ PLACEHOLDER DE DÉMONSTRATION — À REMPLACER AVANT MISE EN LIGNE.
-           C'est la référence de 10 s fournie par le client, recadrée à 8 s
-           par HeroFilm (boucle de 2 s à 10 s, pour sauter la parcelle vide).
-           La maison filmée n'est PAS une Essensya, et le fichier pèse 5 Mo
-           en 720p : c'est bon pour montrer l'effet, pas pour le public.
-           Le film définitif doit être en 1920 de large et sous 2 Mo. */
-        film="/film/chantier.mp4"
+           C'est la référence de 10 s fournie par le client, jouée en boucle
+           de 2 s à 10 s pour sauter la parcelle vide. La maison filmée
+           n'est PAS une Essensya, et le fichier pèse 5 Mo en 720p : c'est
+           bon pour montrer l'effet, pas pour le public. Le film définitif
+           doit être en 1920 de large et sous 2 Mo, et sa planche de
+           profondeur régénérée — voir src/data/film-accueil.ts. */
+        film={FILM_ACCUEIL}
       />
 
       {/* ⚠ LE BLOC DE RECHERCHE A ÉTÉ RETIRÉ, SUR DEMANDE DU CLIENT

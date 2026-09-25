@@ -4,6 +4,7 @@ import Analytics, { ConsentDefaultScript, GtmNoScript } from "@/components/Analy
 import CookieBanner from "@/components/CookieBanner";
 import Footer, { type ColonneChrome } from "@/components/Footer";
 import Header, { CoquillePublique, type LienChrome } from "@/components/Header";
+import { IntroAccueilScript } from "@/components/IntroAccueil";
 import Reveal from "@/components/Reveal";
 import StickyCta from "@/components/StickyCta";
 import { AGENCIES, HOUSE, PLACEHOLDER, PRICE_FROM } from "@/data/essensya";
@@ -297,6 +298,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html
       lang="fr"
       className={`${archivo.variable} ${instrument.variable} ${plexMono.variable}`}
+      /* Le script de l'écran de chargement pose `data-intro-accueil` sur
+         <html> avant l'hydratation : sans ceci, React le signalerait comme
+         une divergence. Ne couvre que les attributs de <html>, pas ses
+         enfants. */
+      suppressHydrationWarning
     >
       <head>
         {/* Doit rester le tout premier script du document, et rester
@@ -305,6 +311,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             n'est chargé qu'après accord (mode « basic », voir Analytics) ;
             ce script garantit que même dans ce cas il démarre en refus. */}
         <ConsentDefaultScript />
+        {/* Décide, avant le premier affichage, si l'écran de chargement de
+            l'accueil doit passer. Sans effet sur toute autre page. Voir
+            IntroAccueil pour le pourquoi du <head>. */}
+        <IntroAccueilScript />
       </head>
       <body>
         {/* Rendu seulement si la mesure a été acceptée — sans quoi aucune
