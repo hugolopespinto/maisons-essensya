@@ -264,6 +264,82 @@ a.s-bande__carte:hover .s-bande__fleche{transform:translateX(4px)}
 .s-bande__fleche{margin-top:auto;padding-top:.4rem;color:var(--craie);
   transition:transform var(--dur-fast) var(--ease)}
 
+/* ── LE SURVOL, FAÇON MAKHNO STUDIO ──
+   Demandé par le client : « la card sélectionnée zoome un peu, les
+   autres diminuent ». Trois gestes, repris de leur accueil et de ses
+   réglages (courbe qui freine en fin de course, 0,6 s pour les cartes,
+   1,4 s pour la photo) :
+   · la carte visée avance et monte, son contour se dessine d'un trait ;
+   · les cinq autres reculent et s'effacent à moitié ;
+   · la photo s'approche et glisse légèrement vers la carte visée.
+
+   ⚠ RÉSERVÉ À LA SOURIS SUR GRAND ÉCRAN, ET HORS ANIMATIONS RÉDUITES.
+   Sous 1081 px le rail est un carrousel à défilement : une carte
+   agrandie y serait rognée en haut et en bas. Au doigt, il n'y a pas de
+   survol à montrer. Dans ces cas-là, le survol simple ci-dessus (bord
+   éclairé, flèche) reste seul.
+
+   ⚠ LES CARTES S'EFFACENT QUAND LE RAIL EST SURVOLÉ, PAS QUAND UNE
+   AUTRE CARTE L'EST. Avec `:has(carte:hover)`, passer d'une carte à sa
+   voisine traverse l'interstice de 16 px, où aucune carte n'est
+   survolée : les six reprendraient leur taille une fraction de seconde,
+   et la rangée battrait. Le rail, lui, reste survolé dans l'interstice. */
+@media (hover:hover) and (min-width:1081px) and (prefers-reduced-motion:no-preference){
+  .s-bande__media img{transform-origin:50% 60%}
+
+  a.s-bande__carte{position:relative;transform-origin:50% 100%;
+    transition:transform .6s var(--ease),opacity .6s var(--ease),background .6s var(--ease),border-color var(--dur-fast) var(--ease),box-shadow .6s var(--ease)}
+  /* ⚠ DEUX RÈGLES, JAMAIS UNE LISTE. Une liste qui contient un `:has()`
+     est réécrite au build en `:is(…)`, qui prend la spécificité de son
+     argument le plus lourd : la règle du rail passait alors devant celle
+     de la carte visée, et la carte sous la souris reculait avec les
+     autres. Constaté sur le build, invisible dans ce fichier.
+     `:not(:focus-visible)` : sans lui, la carte focalisée au clavier
+     s'effacerait avec les autres, pour la même raison de poids. */
+  .s-bande__rail:hover a.s-bande__carte{transform:scale(.955);opacity:.5}
+  .s-bande__rail:has(a.s-bande__carte:focus-visible) a.s-bande__carte:not(:focus-visible){transform:scale(.955);opacity:.5}
+  /* La carte visée. Son bord reste sobre : c'est le trait dessiné par
+     les pseudo-éléments ci-dessous qui le souligne. */
+  .s-bande__rail a.s-bande__carte:hover,
+  .s-bande__rail a.s-bande__carte:focus-visible{z-index:2;transform:translateY(-12px) scale(1.06);opacity:1;
+    background:rgba(0,19,33,.9);border-color:rgba(242,243,243,.26);box-shadow:0 30px 60px -24px rgba(0,0,0,.7)}
+
+  /* Le contour qui se dessine : le haut puis la droite, le bas puis la
+     gauche — deux coins opposés, deux traits qui se rejoignent. Au repos
+     les deux boîtes sont vides et transparentes ; en sortant, elles
+     s'éteignent en fondu avant de se replier. */
+  a.s-bande__carte::before,a.s-bande__carte::after{content:"";position:absolute;width:0;height:0;box-sizing:border-box;
+    border:1px solid transparent;border-radius:var(--radius);opacity:0;pointer-events:none;
+    transition:opacity .3s var(--ease),width 0s .3s,height 0s .3s}
+  a.s-bande__carte::before{top:-1px;left:-1px;border-top-color:var(--craie);border-right-color:var(--craie)}
+  a.s-bande__carte::after{bottom:-1px;right:-1px;border-bottom-color:var(--craie);border-left-color:var(--craie)}
+  a.s-bande__carte:is(:hover,:focus-visible)::before,
+  a.s-bande__carte:is(:hover,:focus-visible)::after{width:calc(100% + 2px);height:calc(100% + 2px);opacity:1}
+  a.s-bande__carte:is(:hover,:focus-visible)::before{transition:opacity 0s,width .2s linear .1s,height .2s linear .3s}
+  a.s-bande__carte:is(:hover,:focus-visible)::after{transition:opacity 0s .5s,width .2s linear .5s,height .2s linear .7s}
+
+  /* L'intérieur s'allume : numéro et picto passent du sauge à la craie,
+     le texte reprend toute son opacité, un trait pousse la flèche. */
+  .s-bande__num,.s-bande__tete svg,.s-bande__carte p{transition:color .4s var(--ease),stroke .4s var(--ease),opacity .4s var(--ease),transform .6s var(--ease)}
+  a.s-bande__carte:is(:hover,:focus-visible) .s-bande__num{color:var(--craie)}
+  a.s-bande__carte:is(:hover,:focus-visible) .s-bande__tete svg{stroke:var(--craie);transform:translateY(-2px) scale(1.12)}
+  a.s-bande__carte:is(:hover,:focus-visible) p{opacity:1}
+  .s-bande__fleche::before{content:"";display:inline-block;vertical-align:middle;width:0;height:1px;margin-right:0;background:currentColor;
+    transition:width .5s var(--ease),margin-right .5s var(--ease)}
+  a.s-bande__carte:is(:hover,:focus-visible) .s-bande__fleche{transform:none}
+  a.s-bande__carte:is(:hover,:focus-visible) .s-bande__fleche::before{width:28px;margin-right:.55rem}
+
+  /* La photo s'approche, et glisse vers la carte visée — de ±1,5 %, dans
+     la marge que lui laisse le zoom (2 % de chaque côté à 1,04). */
+  .s-bande:has(.s-bande__rail:hover) .s-bande__media img{transform:scale(1.035)}
+  .s-bande:has(.s-bande__cell:nth-child(1) a:is(:hover,:focus-visible)) .s-bande__media img{transform:scale(1.04) translateX(1.5%)}
+  .s-bande:has(.s-bande__cell:nth-child(2) a:is(:hover,:focus-visible)) .s-bande__media img{transform:scale(1.04) translateX(.9%)}
+  .s-bande:has(.s-bande__cell:nth-child(3) a:is(:hover,:focus-visible)) .s-bande__media img{transform:scale(1.04) translateX(.3%)}
+  .s-bande:has(.s-bande__cell:nth-child(4) a:is(:hover,:focus-visible)) .s-bande__media img{transform:scale(1.04) translateX(-.3%)}
+  .s-bande:has(.s-bande__cell:nth-child(5) a:is(:hover,:focus-visible)) .s-bande__media img{transform:scale(1.04) translateX(-.9%)}
+  .s-bande:has(.s-bande__cell:nth-child(6) a:is(:hover,:focus-visible)) .s-bande__media img{transform:scale(1.04) translateX(-1.5%)}
+}
+
 /* ── Sous 1080 px, six cartes de front tombent sous 150 px : illisible.
    Le bandeau devient un carrousel qu'on fait glisser au doigt. Pas de
    flèches, donc pas de JavaScript : même mécanique que `.vm__nav`

@@ -28,6 +28,10 @@ import type { NumberedItem } from "@/types";
    client pour une gestuelle que le doigt connaît déjà. C'est aussi le
    raisonnement du client — « l'internaute a l'habitude de ce format
    sur les réseaux sociaux, il fera défiler si l'info l'intéresse ».
+
+   Le survol façon Makhno Studio — la carte visée avance, les autres
+   reculent, la photo s'approche — est lui aussi du CSS pur, et ne
+   s'active qu'à la souris sur grand écran (voir accueil.css).
    ════════════════════════════════════════════════════════════════ */
 
 export default function BandeauForts({
@@ -57,7 +61,10 @@ export default function BandeauForts({
       {/* La photo sort du conteneur : elle va d'un bord à l'autre, et
           c'est ce qui donne au bandeau sa présence. Les cartes, elles,
           restent dans la grille du site. */}
-      <div className="s-bande__media">
+      {/* `c-reveal-img` : la photo entre en léger zoom arrière, comme les
+          autres grandes images du site. C'est aussi elle qui avance au
+          survol des cartes — voir « LE SURVOL » dans accueil.css. */}
+      <div className="s-bande__media c-reveal-img">
         <picture>
           <source type="image/avif" srcSet={srcSet(visuel, "avif")} sizes="100vw" />
           <source type="image/webp" srcSet={srcSet(visuel, "webp")} sizes="100vw" />
@@ -74,8 +81,12 @@ export default function BandeauForts({
 
       <div className="container">
         <ul className="s-bande__rail">
+          {/* ⚠ `data-reveal` SUR LA CELLULE, PAS SUR LA CARTE. La révélation
+              pose sa propre transformation et un délai de cascade (jusqu'à
+              320 ms, en style en ligne) : sur la carte, le survol en aurait
+              hérité et répondrait en retard. Chacun son élément. */}
           {items.map((i) => (
-            <li className="s-bande__cell" key={i.num}>
+            <li className="s-bande__cell" key={i.num} data-reveal>
               <Carte item={i} />
             </li>
           ))}
@@ -107,15 +118,11 @@ function Carte({ item }: { item: NumberedItem }) {
     </>
   );
 
-  /* `data-reveal` se pose sur la racine de la carte, lien compris —
-     comme sur ModeleCard et AnnonceCard. */
   return item.href ? (
-    <Link className="s-bande__carte" href={item.href} data-reveal>
+    <Link className="s-bande__carte" href={item.href}>
       {contenu}
     </Link>
   ) : (
-    <div className="s-bande__carte" data-reveal>
-      {contenu}
-    </div>
+    <div className="s-bande__carte">{contenu}</div>
   );
 }
