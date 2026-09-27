@@ -241,8 +241,12 @@ html[data-intro-accueil]:has(#intro-accueil) .hero-fixe h1 .mot > span{transform
 .s-bande__rail{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s-2)}
 .s-bande__cell{display:flex}
 
-/* Le décalage qui fait mordre les cartes sur le bas de la photo. */
-.s-bande__rail{margin-top:clamp(-150px,-11vw,-90px)}
+/* Le décalage qui fait mordre les cartes sur le bas de la photo.
+   ⚠ `position` + `z-index` : la photo est transformée (zoom d'entrée,
+   zoom au survol), et un élément transformé se peint au-dessus de tout
+   bloc non positionné qui le suit. Sans ce calque, elle recouvrirait le
+   haut des cartes là où elles la mordent. */
+.s-bande__rail{position:relative;z-index:1;margin-top:clamp(-150px,-11vw,-90px)}
 
 .s-bande__carte{display:flex;flex-direction:column;gap:.6rem;width:100%;box-sizing:border-box;
   padding:var(--s-3) calc(var(--s-2) + .15rem);
