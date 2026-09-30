@@ -34,18 +34,33 @@ import type { NumberedItem } from "@/types";
    s'active qu'à la souris sur grand écran (voir accueil.css).
    ════════════════════════════════════════════════════════════════ */
 
+/* Un pixel transparent : ce que reçoivent, à la place des photos de
+   survol, les écrans où le survol n'existe pas. Mêmes critères que le
+   CSS qui les montre — sans eux, un téléphone paierait six photos qu'il
+   n'affichera jamais. */
+const PIXEL_VIDE = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+const SANS_SURVOL = "(max-width:1080px), (hover:none), (prefers-reduced-motion:reduce)";
+
 export default function BandeauForts({
   visuel,
   alt,
   surtitre,
   titre,
   items,
+  fonds,
 }: {
   visuel: Visuel;
   alt: string;
   surtitre: string;
   titre: string;
   items: NumberedItem[];
+  /**
+   * Une photo par carte, dans l'ordre des cartes : elle remplace la photo
+   * du bandeau tant que sa carte est survolée. Facultatif — sans elle, la
+   * photo reste la même pour toutes. Une axonométrie (`type: "plan"`) est
+   * montrée en entier sur fond noir plutôt que recadrée.
+   */
+  fonds?: Visuel[];
 }) {
   return (
     <section className="s-forts s-bande" id="points-forts">
@@ -77,6 +92,21 @@ export default function BandeauForts({
             decoding="async"
           />
         </picture>
+        {/* Les photos de survol, empilées sur la première. Décoratives
+            (`alt=""`) : elles illustrent une carte dont le texte dit déjà
+            tout. */}
+        {fonds?.slice(0, items.length).map((f, i) => (
+          <picture
+            key={f.src}
+            className={`s-bande__fond${f.type === "plan" ? " s-bande__fond--plan" : ""}`}
+            data-carte={i + 1}
+          >
+            <source media={SANS_SURVOL} srcSet={PIXEL_VIDE} />
+            <source type="image/avif" srcSet={srcSet(f, "avif")} sizes="100vw" />
+            <source type="image/webp" srcSet={srcSet(f, "webp")} sizes="100vw" />
+            <img src={f.src} width={f.largeur} height={f.hauteur} alt="" loading="lazy" decoding="async" />
+          </picture>
+        ))}
       </div>
 
       <div className="container">

@@ -253,6 +253,20 @@ export default async function HomePage() {
         surtitre={t("forts.surtitre", "Nos points forts")}
         titre={t("forts.titre", "Six raisons de construire avec nous")}
         items={D.philosophy}
+        /* ⚠ ESSAI À FAIRE VALIDER — une photo par carte, prise dans les
+           rendus existants faute de photos dédiées. Dans l'ordre des
+           cartes : le plan (conception), la cuisine équipée (les bons
+           choix), une maison livrée (processus), la salle d'eau
+           (qualité), une façade (garanties), une terrasse (l'équipe).
+           La sixième appelle une vraie photo de l'équipe. */
+        fonds={[
+          vue("athenes", "plan-axonometrique"),
+          vue("athenes", "vue-4-interieur"),
+          vue("pekin", "vue-1-exterieur"),
+          vue("athenes", "vue-9-interieur"),
+          vue("hanoi", "vue-1-exterieur"),
+          vue("pekin", "vue-4-terrasse"),
+        ]}
       />
 
       {/* ── L'opportunité du moment ──

@@ -288,6 +288,11 @@ a.s-bande__carte:hover .s-bande__fleche{transform:translateX(4px)}
    voisine traverse l'interstice de 16 px, où aucune carte n'est
    survolée : les six reprendraient leur taille une fraction de seconde,
    et la rangée battrait. Le rail, lui, reste survolé dans l'interstice. */
+/* Hors survol possible, les photos de survol (prop `fonds`) n'existent
+   pas à l'écran — et le <source> à pixel vide leur évite d'être
+   téléchargées. ⚠ AVANT le bloc qui suit, qui les rend visibles : placée
+   après, cette règle l'emporterait à poids égal. */
+.s-bande__fond{display:none}
 @media (hover:hover) and (min-width:1081px) and (prefers-reduced-motion:no-preference){
   .s-bande__media img{transform-origin:50% 60%}
 
@@ -342,6 +347,42 @@ a.s-bande__carte:hover .s-bande__fleche{transform:translateX(4px)}
   .s-bande:has(.s-bande__cell:nth-child(4) a:is(:hover,:focus-visible)) .s-bande__media img{transform:scale(1.04) translateX(-.3%)}
   .s-bande:has(.s-bande__cell:nth-child(5) a:is(:hover,:focus-visible)) .s-bande__media img{transform:scale(1.04) translateX(-.9%)}
   .s-bande:has(.s-bande__cell:nth-child(6) a:is(:hover,:focus-visible)) .s-bande__media img{transform:scale(1.04) translateX(-1.5%)}
+
+  /* ── Une photo par carte (prop `fonds`) ──
+     La photo de la carte visée s'ouvre en cercle depuis le pied de cette
+     carte, et se referme vers elle quand on la quitte — ouverture lente,
+     fermeture plus vive, pour que l'image suivante prenne vite la place.
+     Passer d'une carte à sa voisine fait donc naître la nouvelle photo
+     au-dessus de l'ancienne qui se retire. */
+  .s-bande__media{position:relative}
+  /* ⚠ 1 PX AU REPOS, PAS 0. Un cercle nul rend l'image invisible aux
+     yeux du chargement différé (`loading="lazy"`) : elle n'était alors
+     téléchargée qu'au premier survol, qui montrait la photo par défaut
+     le temps du réseau. Constaté dans Chrome. Ce pixel est caché sous
+     le pied de la carte, qui mord sur la photo. */
+  .s-bande__fond{position:absolute;inset:0;display:block;
+    clip-path:circle(1px at var(--x,50%) 100%);transition:clip-path .6s var(--ease)}
+  .s-bande__fond img{width:100%;height:100%;object-fit:cover}
+  /* L'axonométrie est un objet détouré : recadrée, elle serait coupée ;
+     posée sur l'anthracite, elle flotterait. Entière, sur le noir. */
+  .s-bande__fond--plan{background:var(--noir)}
+  .s-bande__fond--plan img{object-fit:contain}
+  /* Le pied de chaque carte, en % de la largeur de la photo — calé sur
+     le conteneur de 1280 px centré. Approché au-delà : le cercle part
+     alors de quelques pixels à côté, ce qui ne se voit pas. */
+  .s-bande__fond[data-carte="1"]{--x:13%}
+  .s-bande__fond[data-carte="2"]{--x:28%}
+  .s-bande__fond[data-carte="3"]{--x:43%}
+  .s-bande__fond[data-carte="4"]{--x:57%}
+  .s-bande__fond[data-carte="5"]{--x:72%}
+  .s-bande__fond[data-carte="6"]{--x:87%}
+  .s-bande:has(.s-bande__cell:nth-child(1) a:is(:hover,:focus-visible)) .s-bande__fond[data-carte="1"],
+  .s-bande:has(.s-bande__cell:nth-child(2) a:is(:hover,:focus-visible)) .s-bande__fond[data-carte="2"],
+  .s-bande:has(.s-bande__cell:nth-child(3) a:is(:hover,:focus-visible)) .s-bande__fond[data-carte="3"],
+  .s-bande:has(.s-bande__cell:nth-child(4) a:is(:hover,:focus-visible)) .s-bande__fond[data-carte="4"],
+  .s-bande:has(.s-bande__cell:nth-child(5) a:is(:hover,:focus-visible)) .s-bande__fond[data-carte="5"],
+  .s-bande:has(.s-bande__cell:nth-child(6) a:is(:hover,:focus-visible)) .s-bande__fond[data-carte="6"]{
+    clip-path:circle(150% at var(--x,50%) 100%);transition:clip-path 1s var(--ease)}
 }
 
 /* ── Sous 1080 px, six cartes de front tombent sous 150 px : illisible.
