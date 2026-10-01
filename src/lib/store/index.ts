@@ -415,6 +415,17 @@ export const PAGES_DEFAUT: PageEditable[] = [
         valeur:
           "Votre commune n'est pas dans la liste ? Dites-nous où vous construisez",
       },
+      /* Vide à la livraison, et c'est voulu : un texte de référencement
+         écrit à la place du client parlerait de communes et de services
+         que personne n'a vérifiés. Vide = aucune section sur la page. */
+      {
+        cle: "seo.texte",
+        label: "Texte de référencement, sous les agences",
+        aide: "Affiché en bas de la page, après les fiches d'agence. Laissé vide, rien ne s'affiche. Mise en forme : « ## » en début de ligne pour un intertitre (« ### » pour un sous-titre), une ligne vide entre deux paragraphes, « - » en début de ligne pour une liste, **gras**, et [texte du lien](/maisons) pour un lien vers une autre page du site.",
+        valeur: "",
+        multiligne: true,
+        format: "markdown",
+      },
     ],
   },
   {

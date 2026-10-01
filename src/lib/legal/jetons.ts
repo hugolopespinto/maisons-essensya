@@ -96,8 +96,8 @@ export const MENTIONS: Record<string, Mention> = {
   },
   "transferts": {
     label: "Transferts hors Union européenne",
-    aide: "Pays depuis lesquels CARTO et Vitahome servent leurs ressources, et garantie applicable en cas de transfert hors UE (clauses contractuelles types, décision d'adéquation…).",
-    pave: "[[À COMPLÉTER : pays depuis lesquels CARTO et Vitahome servent ces ressources, et garantie applicable en cas de transfert hors UE]]",
+    aide: "Pays depuis lesquels Vitahome sert ses ressources, et garantie applicable en cas de transfert hors UE (clauses contractuelles types, décision d'adéquation…). Le fond de carte vient de l'IGN, établissement public français.",
+    pave: "[[À COMPLÉTER : pays depuis lesquels Vitahome sert ces ressources, et garantie applicable en cas de transfert hors UE]]",
   },
   "conservation": {
     label: "Durées de conservation",

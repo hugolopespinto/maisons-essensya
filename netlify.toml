@@ -102,8 +102,10 @@
 #       (la flèche des <select> en est un) et les aperçus next/image ;
 #       images.unsplash.com pour les visuels de maquette ;
 #       pro.vitahome.fr et annonces.vitahome.fr pour les photos du flux
-#       d'annonces ; *.basemaps.cartocdn.com pour les tuiles de la carte
-#       Leaflet ; googletagmanager / google-analytics pour les pixels.
+#       d'annonces ; data.geopf.fr pour les tuiles des cartes Leaflet
+#       (Plan IGN, voir src/lib/fond-de-carte.ts — CARTO, l'ancien
+#       fond, exige désormais une clé) ; googletagmanager /
+#       google-analytics pour les pixels.
 #
 #   connect-src
 #       Les appels XHR/fetch : le site lui-même (/api/leads), et la
@@ -155,7 +157,7 @@
     # une CSP sépare DEUX politiques — le navigateur appliquerait alors
     # l'intersection des deux et casserait la page. L'ordre des directives
     # suit celui du commentaire ci-dessus.
-    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://tagmanager.google.com https://www.google-analytics.com https://ssl.google-analytics.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https://images.unsplash.com https://pro.vitahome.fr https://annonces.vitahome.fr https://*.basemaps.cartocdn.com https://www.googletagmanager.com https://tagmanager.google.com https://www.google-analytics.com https://*.google-analytics.com; connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://stats.g.doubleclick.net; frame-src https://www.googletagmanager.com; media-src 'self' data: blob:; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
+    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://tagmanager.google.com https://www.google-analytics.com https://ssl.google-analytics.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https://images.unsplash.com https://pro.vitahome.fr https://annonces.vitahome.fr https://data.geopf.fr https://www.googletagmanager.com https://tagmanager.google.com https://www.google-analytics.com https://*.google-analytics.com; connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://stats.g.doubleclick.net; frame-src https://www.googletagmanager.com; media-src 'self' data: blob:; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
 
 # L'endpoint de collecte ne doit jamais être mis en cache, ni par le CDN
 # ni par un intermédiaire : une réponse de formulaire est personnelle.

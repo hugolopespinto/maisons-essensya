@@ -4,8 +4,9 @@
    C'est le SEUL endroit du projet où du contenu saisi dans le
    back-office devient du HTML injecté dans la page. Tout le reste du
    site passe par React, qui échappe pour nous. Ici non : le corps d'un
-   article est rendu avec `dangerouslySetInnerHTML`. Cette fonction est
-   donc la frontière de confiance, et elle est écrite comme telle.
+   article et le texte de référencement de /agences sont rendus avec
+   `dangerouslySetInnerHTML`. Cette fonction est donc la frontière de
+   confiance, et elle est écrite comme telle.
 
    ── STRATÉGIE D'ÉCHAPPEMENT ──
    Un seul principe, appliqué dans cet ordre et jamais dans l'autre :

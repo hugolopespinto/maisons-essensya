@@ -7,6 +7,7 @@ import { jsonLd, listeSchema } from "@/lib/schema";
 import { resolveMetadata } from "@/lib/seo";
 import { getContent } from "@/lib/store";
 import { getAnnonces } from "@/lib/vitahome/annonces";
+import "@/styles/carte.css";
 import "@/styles/pages/annonces.css";
 
 /* Singulier assumé : il n'y a qu'une maison, c'est le terrain qui change. */

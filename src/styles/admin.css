@@ -420,6 +420,62 @@ body:has(.adm) .c-cookies { display: none !important; }
 }
 .adm-badge--on { color: var(--inclus); border-color: var(--inclus); }
 .adm-badge--off { color: var(--alerte); border-color: var(--alerte); }
+/* Un badge et son « ? » côte à côte. */
+.adm-etat { display: inline-flex; align-items: center; gap: .5rem; }
+
+/* ════ 14 bis. BULLE D'AIDE (.adm-aide) ════
+   Le « ? » de src/components/admin/Aide.tsx. 24 px de côté : le
+   minimum tactile de la WCAG 2.2 (voir § 18). La bulle s'ouvre sous le
+   « ? » et se ferme d'un second appui. Pas d'ombre, comme le reste du back-office :
+   c'est le filet anthracite qui la détache du formulaire. */
+.adm-aide { position: relative; display: inline-block; }
+.adm-aide > summary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid var(--beton);
+  border-radius: 50%;
+  background: var(--craie);
+  font-family: var(--f-mono);
+  font-size: var(--fs-label);
+  line-height: 1;
+  color: var(--pierre);
+  cursor: pointer;
+  list-style: none;
+}
+.adm-aide > summary::-webkit-details-marker { display: none; }
+.adm-aide > summary:hover,
+.adm-aide[open] > summary { border-color: var(--anthracite); color: var(--anthracite); }
+.adm-aide__bulle {
+  position: absolute;
+  top: calc(100% + .5rem);
+  right: 0;
+  z-index: 20;
+  width: min(24rem, calc(100vw - 3rem));
+  padding: var(--s-2);
+  border: 1px solid var(--anthracite);
+  border-radius: var(--radius);
+  background: var(--blanc);
+  font-family: var(--f-body);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  letter-spacing: normal;
+  text-transform: none;
+  text-align: left;
+  white-space: normal;
+  color: var(--anthracite);
+}
+.adm-aide__bulle p + p { margin-top: .5rem; }
+/* Dans une ligne clé / valeur, la bulle se cale sur la LIGNE, pas sur
+   le « ? ». Sur mobile la ligne passe à la ligne et le « ? » se
+   retrouve à gauche : calée sur lui, la bulle débordait de la carte,
+   dont l'`overflow-x:auto` la coupait. Ici elle reste calée à droite
+   quand la place le permet, et prend toute la largeur sinon. */
+.adm-row:has(.adm-aide) { position: relative; }
+.adm-row .adm-aide { position: static; }
+.adm-row .adm-aide__bulle { left: 0; width: auto; max-width: 24rem; margin-left: auto; }
 
 /* ════ 15. ÉTAT VIDE ════ */
 .adm-empty {

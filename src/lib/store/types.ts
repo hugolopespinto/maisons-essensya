@@ -235,12 +235,13 @@ export interface BlocEditable {
   /** Rendu en zone de texte plutôt qu'en ligne unique. */
   multiligne?: boolean;
   /**
-   * Le bloc contient du Markdown — corps d'une section légale.
+   * Le bloc contient du Markdown — corps d'une section légale, ou texte
+   * de référencement (celui de /agences).
    *
-   * Change trois choses dans le back-office : un champ nettement plus
-   * haut (quelques centaines de mots, pas une ligne d'adresse), l'aide
-   * de syntaxe sous le champ, et la liste des éléments entre doubles
-   * accolades que ce corps doit conserver.
+   * Dans le back-office, le champ est nettement plus haut (quelques
+   * centaines de mots, pas une ligne d'adresse). Sur les deux pages
+   * légales seulement, l'enregistrement vérifie en plus que le corps
+   * garde ses éléments entre doubles accolades (src/lib/legal/verifier.ts).
    */
   format?: "markdown";
 }

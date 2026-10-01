@@ -7,6 +7,7 @@ import { articlesPublies } from "@/lib/blog";
 import { getContent } from "@/lib/store";
 import type { Article } from "@/lib/store/types";
 import { SITE_URL } from "@/lib/site-url";
+import "@/styles/prose.css";
 import "@/styles/pages/blog.css";
 
 /* ════════════════════════════════════════════════════════════════
@@ -169,11 +170,12 @@ export default async function ArticlePage({
             </figure>
           ) : null}
 
-          {/* Le seul `dangerouslySetInnerHTML` de contenu du site. Le HTML
+          {/* L'un des deux `dangerouslySetInnerHTML` de contenu du site,
+              avec le texte de référencement de /agences. Le HTML
               vient de `markdownToHtml`, qui échappe l'intégralité de la
               saisie AVANT d'émettre ses propres balises — voir la note de
               stratégie en tête de src/lib/markdown.ts. */}
-          <div className="bl-prose" dangerouslySetInnerHTML={{ __html: corps }} />
+          <div className="bl-prose c-prose" dangerouslySetInnerHTML={{ __html: corps }} />
 
           <footer className="bl-foot">
             <Link href="/blog" className="c-link">

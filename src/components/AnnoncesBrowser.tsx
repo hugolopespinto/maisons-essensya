@@ -11,7 +11,7 @@ import type { Annonce } from "@/types";
    rendue côté serveur. Le reste de la page, lui, reste pré-rendu. */
 const AnnoncesMap = dynamic(() => import("@/components/AnnoncesMap"), {
   ssr: false,
-  loading: () => <div className="l-map__frame l-map__frame--loading" />,
+  loading: () => <div className="c-map__frame l-map__frame--loading" />,
 });
 
 interface Filters {

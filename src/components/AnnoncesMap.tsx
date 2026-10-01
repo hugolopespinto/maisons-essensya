@@ -2,6 +2,7 @@
 import L from "leaflet";
 import "leaflet.markercluster";
 import { useCallback, useEffect, useRef } from "react";
+import { FOND_DE_CARTE } from "@/lib/fond-de-carte";
 import { annonceTitle, fmtPrice } from "@/lib/format";
 import type { Annonce } from "@/types";
 import "leaflet/dist/leaflet.css";
@@ -13,15 +14,8 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
    points individuels. Chaque déplacement remonte les bornes visibles
    au parent, qui filtre la liste — le contrat du prototype v7.
 
-   Fond de carte : n'importe quel fournisseur XYZ via
-   NEXT_PUBLIC_MAP_TILE_URL. Défaut CARTO Positron, sans clé.       */
-
-const TILE_URL =
-  process.env.NEXT_PUBLIC_MAP_TILE_URL ||
-  "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
-const TILE_ATTRIBUTION =
-  process.env.NEXT_PUBLIC_MAP_TILE_ATTRIBUTION ||
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+   Fond de carte : src/lib/fond-de-carte.ts, commun à toutes les
+   cartes du site.                                                  */
 
 export interface Bounds {
   north: number;
@@ -114,11 +108,7 @@ export default function AnnoncesMap({
     map.on("click focus", () => map.scrollWheelZoom.enable());
     map.on("mouseout", () => map.scrollWheelZoom.disable());
 
-    L.tileLayer(TILE_URL, {
-      attribution: TILE_ATTRIBUTION,
-      maxZoom: 19,
-      detectRetina: true,
-    }).addTo(map);
+    L.tileLayer(FOND_DE_CARTE.url, FOND_DE_CARTE.options).addTo(map);
 
     const cluster = L.markerClusterGroup({
       showCoverageOnHover: false,
@@ -248,9 +238,9 @@ export default function AnnoncesMap({
   }, [highlight]);
 
   return (
-    <div className="l-map__frame">
-      <div className="l-map__canvas" ref={hostRef} aria-label="Carte des opportunités" />
-      <div className="l-map__controls">
+    <div className="c-map__frame">
+      <div className="c-map__canvas" ref={hostRef} aria-label="Carte des opportunités" />
+      <div className="c-map__controls">
         <button onClick={() => mapRef.current?.zoomIn()} aria-label="Zoomer">
           +
         </button>

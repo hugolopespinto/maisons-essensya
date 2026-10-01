@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import Aide from "@/components/admin/Aide";
 import MediaPicker from "@/components/admin/MediaPicker";
 import ChampCompte from "@/components/admin/ChampCompte";
 import { SEO_LIMITES, SEO_ROUTES } from "@/lib/seo";
@@ -150,8 +151,37 @@ export default async function SeoPage({
 
             <div className="adm-row">
               <span>{route.path}</span>
-              <span className={`adm-badge adm-badge--${e ? "on" : "off"}`}>
-                {e ? "Personnalisé" : "Défaut du code"}
+              <span className="adm-etat">
+                <span className={`adm-badge adm-badge--${e ? "on" : "off"}`}>
+                  {e ? "Personnalisé" : "Défaut du code"}
+                </span>
+                {/* Le badge « off » est dessiné en couleur d'alerte : sans
+                    explication, un client y lit une erreur à corriger. */}
+                {e ? (
+                  <Aide label="Que veut dire « Personnalisé » ?">
+                    <p>
+                      Au moins un réglage de cette page a été modifié ici&nbsp;: c&apos;est votre
+                      texte que Google reçoit.
+                    </p>
+                    <p>
+                      Un champ laissé vide garde le texte prévu à la création du site,
+                      affiché en gris. Videz tous les champs (et décochez la case noindex)
+                      puis enregistrez pour revenir entièrement au texte d&apos;origine.
+                    </p>
+                  </Aide>
+                ) : (
+                  <Aide label="Que veut dire « Défaut du code » ?">
+                    <p>
+                      <strong>Ce n&apos;est pas une erreur.</strong> Personne n&apos;a encore
+                      modifié cette page ici&nbsp;: Google reçoit le titre et la description
+                      prévus à la création du site — le texte en gris dans les champs.
+                    </p>
+                    <p>
+                      Écrivez dans un champ puis enregistrez&nbsp;: votre texte le remplace, et
+                      le badge passe à «&nbsp;Personnalisé&nbsp;».
+                    </p>
+                  </Aide>
+                )}
               </span>
             </div>
 

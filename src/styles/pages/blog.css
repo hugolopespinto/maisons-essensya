@@ -49,23 +49,10 @@
 .bl-article__media figcaption{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.08em;color:var(--pierre);padding-top:.6rem}
 
 /* ── Corps de l'article ──
-   Le seul HTML généré du site (src/lib/markdown.ts). Les sélecteurs sont
-   donc écrits sur les balises, pas sur des classes : le convertisseur
-   n'en émet aucune, et c'est voulu — il reste minimal. */
-.bl-prose{margin-top:var(--s-5);max-width:66ch;font-size:1.0625rem;line-height:1.72}
-.bl-prose > *:first-child{margin-top:0}
-.bl-prose p{margin-top:var(--s-3)}
-.bl-prose h2{font-size:clamp(1.4rem,2.8vw,1.9rem);margin-top:var(--s-5);padding-top:var(--s-3);border-top:var(--line)}
-.bl-prose h3{font-size:clamp(1.1rem,2vw,1.3rem);margin-top:var(--s-4)}
-.bl-prose ul,.bl-prose ol{margin-top:var(--s-3);padding-left:0}
-.bl-prose li{position:relative;padding-left:1.6rem;margin-top:.6rem}
-.bl-prose ul li::before{content:"";position:absolute;left:.35rem;top:.72em;width:6px;height:1px;background:var(--accent)}
-.bl-prose ol{counter-reset:bl}
-.bl-prose ol li{counter-increment:bl}
-.bl-prose ol li::before{content:counter(bl,decimal-leading-zero);position:absolute;left:0;top:.15em;font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.1em;color:var(--accent)}
-.bl-prose strong{font-weight:600}
-.bl-prose a{border-bottom:1px solid var(--beton);transition:border-color var(--dur-fast),color var(--dur-fast)}
-.bl-prose a:hover{border-color:var(--accent);color:var(--accent)}
+   La typographie du Markdown rendu est commune au site :
+   src/styles/prose.css (.c-prose). Ne reste ici que sa place dans
+   l'article. */
+.bl-prose{margin-top:var(--s-5)}
 
 /* ── Pied d'article ── */
 .bl-foot{margin-top:var(--s-6);border-top:var(--line);padding-top:var(--s-4);display:flex;flex-wrap:wrap;gap:var(--s-3);justify-content:space-between;align-items:center}

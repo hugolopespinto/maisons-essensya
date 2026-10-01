@@ -8,6 +8,7 @@ import { resoudreMedia } from "@/lib/medias";
 import { getContentFrais, patchContent } from "@/lib/store";
 import type { Article } from "@/lib/store/types";
 import { assertAdmin, requireAdmin } from "../../actions";
+import "@/styles/prose.css";
 import "@/styles/pages/blog.css";
 
 /* ════════════════════════════════════════════════════════════════
@@ -215,11 +216,11 @@ export default async function EditionArticlePage({
             ) : null}
             {article.corps.trim() ? (
               <div
-                className="bl-prose"
+                className="bl-prose c-prose"
                 dangerouslySetInnerHTML={{ __html: markdownToHtml(article.corps) }}
               />
             ) : (
-              <p className="bl-prose u-muted">L&apos;article n&apos;a pas encore de corps.</p>
+              <p className="bl-prose c-prose u-muted">L&apos;article n&apos;a pas encore de corps.</p>
             )}
           </div>
         </article>

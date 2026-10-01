@@ -1,6 +1,18 @@
 /* ════ 8. AGENCES (.g-) — v5 ════ */
 .g-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-4);padding-bottom:var(--s-7)}
 @media (max-width:900px){.g-grid{grid-template-columns:1fr}}
+/* L'en-tête de /agences : le texte à gauche, la carte des agences dans
+   la colonne que le chapô laissait vide. Mêmes proportions que les deux
+   colonnes de la fiche (.g-body). Sous 900 px, la carte passe sous le
+   lien de contact, au-dessus des cartes d'agence. */
+.g-head{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:var(--s-5);align-items:center}
+.g-map .c-map__frame{aspect-ratio:4/3}
+@media (max-width:900px){.g-head{grid-template-columns:1fr;gap:var(--s-4)}}
+/* Le texte de référencement, sous les fiches (« Pages → Nos agences »).
+   Le filet de la section sépare déjà le texte des cartes : un intertitre
+   en tête n'en redessine pas un second juste en dessous. */
+.g-seo{border-top:var(--line);padding:var(--s-6) 0 var(--s-7)}
+.g-seo .c-prose > h2:first-child{border-top:0;padding-top:0}
 /* Même réserve que sur .m-hero : la place de l'en-tête fixe. */
 .g-hero{position:relative;min-height:56svh;display:flex;align-items:flex-end;color:var(--craie);background:var(--noir);overflow:hidden;padding-top:calc(var(--header-h) + var(--s-3))}
 .g-hero__bg{position:absolute;inset:0}

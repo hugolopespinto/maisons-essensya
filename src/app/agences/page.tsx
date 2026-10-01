@@ -2,13 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import FilAriane from "@/components/FilAriane";
 import AgencyCard from "@/components/AgencyCard";
+import AgencesMapLazy from "@/components/AgencesMapLazy";
 import { REEL } from "@/data/essensya";
 import { agencesPubliees } from "@/lib/agences";
-import { fmtPrice } from "@/lib/format";
+import { agencyUrl, fmtPrice } from "@/lib/format";
+import { markdownToHtml } from "@/lib/markdown";
 import { resolveMetadata } from "@/lib/seo";
 import { jsonLd, listeSchema } from "@/lib/schema";
 import { getContent } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
+import "@/styles/carte.css";
+import "@/styles/prose.css";
 import "@/styles/pages/agences.css";
 
 /* ════════════════════════════════════════════════════════════════
@@ -62,6 +66,17 @@ export default async function AgencesPage() {
   const lien =
     bloc(content.pages, "hero.lien") ||
     "Votre commune n'est pas dans la liste ? Dites-nous où vous construisez";
+  const texteSeo = markdownToHtml(bloc(content.pages, "seo.texte"));
+
+  /* Seules les agences dont les coordonnées ont été saisies vont sur la
+     carte — `geo` n'existe que si elles sont vraies (src/lib/agences.ts).
+     Les autres restent dans la liste, comme les annonces sans
+     coordonnées sur /annonces. */
+  const points = agences.flatMap((g) =>
+    g.geo
+      ? [{ id: g.id, nom: g.name, adresse: g.address, href: agencyUrl(g), ...g.geo }]
+      : [],
+  );
 
   return (
     <main className="page">
@@ -81,28 +96,35 @@ export default async function AgencesPage() {
         }}
       />
       <section className="p-head">
-        <div className="container">
-          <FilAriane items={[{ nom: "Accueil", path: "/" }, { nom: titre }]} />
-          <h1>{titre}</h1>
-          {/* Chapô laissé vide dans le back-office : on garde la phrase
-              d'origine, qui affiche le prix de départ À JOUR. Une version
-              figée dans le contenu mentirait au premier changement de
-              tarif — c'est exactement ce que dit l'aide du champ. */}
-          {chapo ? (
-            <p>{chapo}</p>
-          ) : (
-            <p>
-              Nous construisons dans les Landes, au même prix partout : à partir
-              de {fmtPrice(REEL.prixEntree)} hors terrain. Notre équipe connaît le
-              terrain de son secteur — au sens propre : les PLU, les lotissements
-              et les parcelles compatibles avec nos modèles.
+        <div className="container g-head">
+          <div>
+            <FilAriane items={[{ nom: "Accueil", path: "/" }, { nom: titre }]} />
+            <h1>{titre}</h1>
+            {/* Chapô laissé vide dans le back-office : on garde la phrase
+                d'origine, qui affiche le prix de départ À JOUR. Une version
+                figée dans le contenu mentirait au premier changement de
+                tarif — c'est exactement ce que dit l'aide du champ. */}
+            {chapo ? (
+              <p>{chapo}</p>
+            ) : (
+              <p>
+                Nous construisons dans les Landes, au même prix partout : à partir
+                de {fmtPrice(REEL.prixEntree)} hors terrain. Notre équipe connaît le
+                terrain de son secteur — au sens propre : les PLU, les lotissements
+                et les parcelles compatibles avec nos modèles.
+              </p>
+            )}
+            <p style={{ marginTop: "var(--s-3)" }}>
+              <Link href="/contact" className="c-link">
+                {lien} →
+              </Link>
             </p>
+          </div>
+          {points.length > 0 && (
+            <div className="g-map">
+              <AgencesMapLazy agences={points} />
+            </div>
           )}
-          <p style={{ marginTop: "var(--s-3)" }}>
-            <Link href="/contact" className="c-link">
-              {lien} →
-            </Link>
-          </p>
         </div>
       </section>
 
@@ -128,6 +150,20 @@ export default async function AgencesPage() {
           )}
         </div>
       </section>
+
+      {/* Le texte de référencement saisi dans « Pages → Nos agences ».
+          Placé après les fiches : le visiteur vient chercher une adresse,
+          on ne la lui fait pas attendre derrière trois paragraphes.
+          `dangerouslySetInnerHTML` sans risque : `markdownToHtml` échappe
+          toute la saisie AVANT d'émettre ses propres balises — voir la
+          note en tête de src/lib/markdown.ts. */}
+      {texteSeo ? (
+        <section className="g-seo">
+          <div className="container">
+            <div className="c-prose" dangerouslySetInnerHTML={{ __html: texteSeo }} />
+          </div>
+        </section>
+      ) : null}
     </main>
   );
 }

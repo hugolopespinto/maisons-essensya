@@ -1,0 +1,27 @@
+/* ════ TEXTE COURANT SAISI EN MARKDOWN (.c-prose) ════
+   Le HTML que produit src/lib/markdown.ts : le corps d'un article de
+   blog, le texte de référencement de /agences. Les sélecteurs sont
+   écrits sur les balises, pas sur des classes : le convertisseur n'en
+   émet aucune, et c'est voulu — il reste minimal.
+
+   Seule la typographie vit ici. La place du bloc dans sa page (marge
+   au-dessus, filet, fond) reste dans la feuille de la page : c'est pour
+   cela que ce fichier est à importer AVANT elle.
+
+   Sorti de blog.css (où il s'appelait .bl-prose) le jour où une
+   deuxième page en a eu besoin : deux copies de ces règles auraient
+   fini par composer une liste à puces de deux façons. */
+.c-prose{max-width:66ch;font-size:1.0625rem;line-height:1.72}
+.c-prose > *:first-child{margin-top:0}
+.c-prose p{margin-top:var(--s-3)}
+.c-prose h2{font-size:clamp(1.4rem,2.8vw,1.9rem);margin-top:var(--s-5);padding-top:var(--s-3);border-top:var(--line)}
+.c-prose h3{font-size:clamp(1.1rem,2vw,1.3rem);margin-top:var(--s-4)}
+.c-prose ul,.c-prose ol{margin-top:var(--s-3);padding-left:0}
+.c-prose li{position:relative;padding-left:1.6rem;margin-top:.6rem}
+.c-prose ul li::before{content:"";position:absolute;left:.35rem;top:.72em;width:6px;height:1px;background:var(--accent)}
+.c-prose ol{counter-reset:prose}
+.c-prose ol li{counter-increment:prose}
+.c-prose ol li::before{content:counter(prose,decimal-leading-zero);position:absolute;left:0;top:.15em;font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.1em;color:var(--accent)}
+.c-prose strong{font-weight:600}
+.c-prose a{border-bottom:1px solid var(--beton);transition:border-color var(--dur-fast),color var(--dur-fast)}
+.c-prose a:hover{border-color:var(--accent);color:var(--accent)}

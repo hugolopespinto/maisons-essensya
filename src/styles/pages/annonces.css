@@ -26,42 +26,14 @@
 .l-results{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-3)}
 .l-results__empty{grid-column:1/-1;font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre);border:1px dashed var(--beton);border-radius:var(--radius);padding:var(--s-4);text-align:center}
 .l-map{position:sticky;top:calc(var(--header-h) + 92px)}
-/* z-index:0 → contexte d'empilement local : les panes Leaflet (z 400+)
-   ne peuvent plus passer devant la barre de filtres ni le header. */
-.l-map__frame{border:var(--line);border-radius:var(--radius);background:var(--sable);overflow:hidden;position:relative;z-index:0;aspect-ratio:4/5}
-.l-map__canvas{position:absolute;inset:0}
+/* Le cadre, le fond, les points et les boutons de zoom sont communs
+   à toutes les cartes du site : src/styles/carte.css. */
 .l-map__frame--loading{aspect-ratio:4/5}
-.leaflet-container{width:100%;height:100%;font-family:var(--f-body);background:var(--sable)}
-.leaflet-container a{color:var(--accent)}
-.leaflet-control-attribution{font-family:var(--f-mono);font-size:.62rem;background:rgba(242,243,243,.85);color:var(--pierre)}
-
-/* ════ POINTS & BULLES D'AGRÉGATION ════
-   Une bulle par groupe d'annonces proches, chiffrée et dimensionnée
-   selon le nombre. Zoomer la scinde jusqu'aux points individuels.   */
-/* Leaflet positionne l'icône par un `transform` inline et lui impose
-   display:block : le rond est donc porté par le <span> intérieur, seul
-   endroit où l'on peut styler et animer librement. */
-.map-cluster,.map-pin{cursor:pointer}
-.map-cluster > span,.map-pin > span{display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:50%;font-family:var(--f-mono);line-height:1;transition:transform var(--dur-fast) var(--ease),background var(--dur-fast) var(--ease)}
-.map-cluster > span{background:var(--accent);color:var(--craie);border:2px solid rgba(242,243,243,.9);box-shadow:0 2px 10px rgba(0,19,33,.28);font-weight:500;font-size:.82rem}
-.map-cluster:hover > span,.map-cluster.is-hl > span{background:var(--anthracite);transform:scale(1.08)}
-.map-pin > span{background:var(--anthracite);color:var(--craie);border:2px solid var(--craie);box-shadow:0 2px 8px rgba(0,19,33,.28);font-size:.72rem}
-.map-pin:hover > span,.map-pin.is-hl > span{background:var(--accent);transform:scale(1.18)}
-.map-tip{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.04em;background:var(--anthracite);color:var(--craie);border:none;border-radius:var(--radius);box-shadow:0 4px 14px rgba(0,19,33,.25);padding:.4rem .6rem;white-space:nowrap}
-.map-tip::before{border-top-color:var(--anthracite)}
-@media (prefers-reduced-motion:reduce){
-  .map-cluster > span,.map-pin > span{transition:none}
-}
-
-.l-map__controls{position:absolute;top:var(--s-2);right:var(--s-2);z-index:900;display:flex;flex-direction:column;gap:6px}
-.l-map__controls button{width:36px;height:36px;background:var(--craie);border:var(--line);border-radius:var(--radius);font-family:var(--f-mono);font-size:1rem;line-height:1}
-.l-map__controls button:hover{border-color:var(--anthracite)}
 .l-map__sync{display:flex;gap:.6rem;align-items:center;margin-top:var(--s-2);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.08em;color:var(--pierre);cursor:pointer}
 .l-map__sync input{accent-color:var(--framboise)}
 .l-map__hint{margin-top:.5rem;font-family:var(--f-mono);font-size:var(--fs-label);color:var(--pierre)}
 @media (max-width:1000px){
   .l-filter select,.l-filter input[type="search"]{padding-top:.85rem;padding-bottom:.85rem}
-  .l-map__controls button{width:44px;height:44px}
   .l-view-toggle button{padding:.85rem 1.1rem}
   .l-body .container{grid-template-columns:1fr}
   .l-view-toggle{display:inline-flex}
@@ -70,7 +42,7 @@
   .l-body.is-map-mode .l-map{display:block}
   .l-body.is-map-mode .l-results{display:none}
   /* En vue Carte, la carte prend la hauteur utile de l'écran. */
-  .l-body.is-map-mode .l-map__frame{aspect-ratio:auto;height:calc(100svh - var(--header-h) - 150px)}
+  .l-body.is-map-mode .c-map__frame{aspect-ratio:auto;height:calc(100svh - var(--header-h) - 150px)}
 }
 
 
@@ -95,7 +67,7 @@
   .l-body.is-map-mode .l-map{
     display:block;position:fixed;inset:var(--header-h) 0 0;z-index:40;margin:0
   }
-  .l-body.is-map-mode .l-map__frame{aspect-ratio:auto;height:100%;border:0;border-radius:0}
+  .l-body.is-map-mode .c-map__frame{aspect-ratio:auto;height:100%;border:0;border-radius:0}
   /* Le réglage de synchronisation et l'explication n'ont pas leur place
      par-dessus la carte : ils sont repris dans la feuille. */
   .l-body.is-map-mode .l-map__sync,

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 import { verifierCorps } from "@/lib/legal/verifier";
 import { CHEMIN_PUBLIC, PAGES_DEFAUT, getContentFrais, isWritable, patchContent } from "@/lib/store";
+import { PAGES_LEGALES } from "@/lib/store/pages-legales";
 import type { PageEditable } from "@/lib/store/types";
 import { assertAdmin, requireAdmin } from "../../actions";
 
@@ -153,8 +154,12 @@ export default async function EditionPagePage({
        l'enregistrement et on dit lequel manque. Tout le reste du texte
        reste libre — c'est le but de l'opération. */
     const refus: string[] = [];
+    /* Sur les pages légales SEULEMENT. Le Markdown sert aussi ailleurs —
+       le texte de référencement de /agences — et un texte libre n'a ni
+       mention obligatoire à garder, ni obligation d'ouvrir sur un titre. */
+    const legale = PAGES_LEGALES.some((p) => p.cle === cle);
     for (const b of origine.blocs) {
-      if (b.format !== "markdown") continue;
+      if (!legale || b.format !== "markdown") continue;
       const saisi = saisies.get(b.cle);
       if (saisi === undefined) continue;
       for (const e of verifierCorps(saisi, b.valeur)) refus.push(`${b.label} — ${e}`);

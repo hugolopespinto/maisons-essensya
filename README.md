@@ -137,7 +137,14 @@ chiffrées**, qui se scindent au zoom jusqu'aux points individuels.
 
 Fond de carte : n'importe quel fournisseur XYZ via
 `NEXT_PUBLIC_MAP_TILE_URL` / `NEXT_PUBLIC_MAP_TILE_ATTRIBUTION`.
-Défaut : CARTO Positron, sans clé.
+Défaut : Plan IGN (Géoplateforme, `data.geopf.fr`), sans clé, désaturé
+en CSS — voir `src/lib/fond-de-carte.ts`. CARTO Positron, l'ancien
+défaut, exige désormais une clé et sert un filigrane « API KEY REQUIRED »
+sans elle.
+
+La page `/agences` porte une seconde carte, plus petite, avec les
+agences dont les coordonnées sont saisies (`AgencesMap`). Même fond,
+mêmes points, mêmes styles (`src/styles/carte.css`).
 
 ---
 
@@ -145,10 +152,11 @@ Défaut : CARTO Positron, sans clé.
 
 1. **Photos réelles** → passer les `<img>` en `next/image` (les domaines sont
    déjà autorisés dans `next.config.ts`). Gain AVIF/WebP + lazy natif.
-2. **Fond de carte** — la carte de `/annonces` tourne sur CARTO Positron,
-   sans clé. Pour un trafic de production, basculer sur un fournisseur
-   avec quota garanti (MapTiler, Mapbox, Google) : une seule variable,
-   `NEXT_PUBLIC_MAP_TILE_URL`, plus l'attribution correspondante.
+2. **Fond de carte** — les cartes de `/annonces` et `/agences` tournent sur
+   le Plan IGN, sans clé. Pour un autre rendu, basculer sur un fournisseur
+   XYZ (MapTiler, Stadia, CARTO avec clé…) : une seule variable,
+   `NEXT_PUBLIC_MAP_TILE_URL`, plus l'attribution correspondante — et son
+   domaine dans `img-src` (`netlify.toml`).
 3. **CMS** pour le contenu éditorial et les landings (`src/data/essensya.ts`).
    Le contrat de types ne bouge pas, seule la source change.
 4. **GTM** — les `dataLayer.push` sont câblés dans `LeadForm`
