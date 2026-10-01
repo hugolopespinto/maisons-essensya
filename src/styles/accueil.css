@@ -13,8 +13,15 @@
    une image, le texte dessus. `svh` et non `vh` : sur iOS, `vh` compte
    la barre d'adresse comme si elle n'existait pas, et le bas du bloc
    passe sous le pouce.
+
+   ⚠ `padding-top` = la hauteur de l'en-tête, qui est FIXE et posé
+   dessus. Tant que le texte tient dans la hauteur minimale, il reste
+   calé en bas et ce rembourrage ne change rien. Mais sur un téléphone
+   un peu court, baseline + titre sur cinq lignes + deux boutons pleine
+   largeur dépassent 78 svh : le bloc grandit alors par le haut, et la
+   baseline remontait SOUS la barre transparente, mêlée au logo.
    ────────────────────────────────────────────────────────────────── */
-.hero-fixe{position:relative;min-height:min(86svh,780px);display:flex;align-items:flex-end;overflow:hidden;background:var(--anthracite)}
+.hero-fixe{position:relative;min-height:min(86svh,780px);display:flex;align-items:flex-end;overflow:hidden;background:var(--anthracite);padding-top:var(--header-h)}
 .hero-fixe__media{position:absolute;inset:0;background-size:cover;background-position:center}
 .hero-fixe__media img{width:100%;height:100%;object-fit:cover}
 
