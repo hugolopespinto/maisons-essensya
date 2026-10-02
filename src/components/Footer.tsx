@@ -48,25 +48,21 @@ const colonnesDefaut = (agences: LienZone[]): ColonneChrome[] => [
   {
     /* « Nos Maisons », avec la majuscule du brief. */
     titre: "Nos Maisons",
-    /* ⚠ LE CHEMIN EST /plans-de-maison ET NON /maisons/N-chambres,
-       parce que ces deux-là existaient déjà : `/maisons/2-chambres` et
-       `/maisons/3-chambres` étaient les anciennes déclinaisons du
-       mono-produit, redirigées en 308 vers /maisons (next.config.ts).
-       Les reprendre enverrait leur historique de référencement vers des
-       pages encore vides. Elles pourront être réclamées plus tard, quand
-       ces pages auront du contenu — ce sera une décision SEO à prendre,
-       pas un effet de bord.
+    /* Le brief remplace les noms de modèles par un découpage selon le
+       nombre de chambres. Ces liens mènent, comme ceux du menu « Plans de
+       maisons », au listing des annonces filtré sur ce nombre de chambres
+       — la même destination, d'où qu'on clique.
 
-       Le brief remplace les noms de modèles par un découpage selon le
-       nombre de chambres. ⚠ La donnée manque encore : sur les onze
-       modèles de `gamme.ts`, seul Ankara a son nombre de chambres. Les
-       quatre pages existent et le disent ; elles se rempliront quand le
-       tableau des caractéristiques sera livré. */
+       ⚠ Les pages /plans-de-maison/N-chambres qu'ils visaient étaient
+       restées vides (sur les onze modèles de `gamme.ts`, seul Ankara a
+       son nombre de chambres). Elles redirigent désormais vers ce même
+       listing, en temporaire : elles pourront revenir quand les plans par
+       nombre de chambres seront livrés. */
     liens: [
-      { href: "/plans-de-maison/1-chambre", label: "Maison 1 chambre" },
-      { href: "/plans-de-maison/2-chambres", label: "Maison 2 chambres" },
-      { href: "/plans-de-maison/3-chambres", label: "Maison 3 chambres" },
-      { href: "/plans-de-maison/4-chambres", label: "Maison 4 chambres" },
+      { href: "/annonces?chambres=1", label: "Maison 1 chambre" },
+      { href: "/annonces?chambres=2", label: "Maison 2 chambres" },
+      { href: "/annonces?chambres=3", label: "Maison 3 chambres" },
+      { href: "/annonces?chambres=4", label: "Maison 4 chambres" },
     ],
   },
   {

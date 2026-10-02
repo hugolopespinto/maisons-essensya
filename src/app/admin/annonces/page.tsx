@@ -103,6 +103,10 @@ function rendreLaMain(a: Annonce) {
   for (const r of new Set([a.id, ...a.offres.map((o) => o.ref)])) {
     revalidatePath(`/annonces/${r.toLowerCase()}`);
   }
+  /* Les fiches de version (/annonces/{ref}/3-chambres) : un chemin
+     littéral ci-dessus ne les touche pas, et une annonce masquée y
+     resterait servie, formulaire compris, jusqu'au prochain cycle. */
+  revalidatePath("/annonces/[ref]/[version]", "page");
   revalidatePath("/");
   revalidatePath("/sitemap.xml");
   /* Un masquage doit aussi disparaître des listes secondaires. */

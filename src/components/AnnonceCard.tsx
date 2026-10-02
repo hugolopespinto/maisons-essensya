@@ -23,12 +23,16 @@ const tel = (p: string) => `tel:${p.replace(/[^+\d]/g, "")}`;
 
 export default function AnnonceCard({
   annonce: a,
+  href,
   reveal = true,
   highlighted = false,
   onMouseEnter,
   onMouseLeave,
 }: {
   annonce: Annonce;
+  /** La fiche à ouvrir, quand la carte montre une version précise de la
+   *  parcelle (listing filtré par chambres). Absent : la fiche ordinaire. */
+  href?: string;
   reveal?: boolean;
   /** Survol croisé avec la carte du listing. */
   highlighted?: boolean;
@@ -41,7 +45,7 @@ export default function AnnonceCard({
   return (
     <Link
       className={`c-annonce${highlighted ? " is-hl" : ""}`}
-      href={annonceUrl(a)}
+      href={href ?? annonceUrl(a)}
       data-annonce={a.id}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}

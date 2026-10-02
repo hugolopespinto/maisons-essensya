@@ -145,6 +145,7 @@ export default function AnnoncesMap({
     ro.observe(host);
 
     const markers = markersRef.current;
+    const cadree = fittedRef;
     return () => {
       ro.disconnect();
       map.off("moveend zoomend", push);
@@ -152,6 +153,12 @@ export default function AnnoncesMap({
       mapRef.current = null;
       clusterRef.current = null;
       markers.clear();
+      /* ⚠ LA CARTE DÉTRUITE EMPORTE SON CADRAGE. Sans cette ligne, en
+         développement, React monte la carte deux fois (StrictMode) : la
+         première se cadre et lève le drapeau, la seconde naît sur la vue
+         par défaut et ne se cadre jamais — et la liste, qui suit la zone
+         visible, affichait « 0 opportunité » sur toute la page. */
+      cadree.current = false;
     };
     // fitAll est stable (useCallback sans dépendance) : la carte n'est
     // donc créée qu'une fois.
@@ -211,7 +218,12 @@ export default function AnnoncesMap({
 
   /* ── « Réinitialiser » : retour au cadrage global ── */
   useEffect(() => {
-    if (fitToken > 0) fitAll();
+    if (fitToken === 0) return;
+    /* Carte masquée (vue Liste sur mobile) : le cadrage échoue. On ne
+       perd pas la demande pour autant — le ResizeObserver la rejoue dès
+       que la carte reprend sa taille. Seulement quand elle est masquée :
+       une liste vide après un choix manuel ne doit rien recadrer. */
+    if (!fitAll() && !isSized()) fittedRef.current = false;
   }, [fitToken, fitAll]);
 
   /* ── Survol d'une carte de résultat → point mis en avant ── */

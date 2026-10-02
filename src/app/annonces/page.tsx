@@ -89,7 +89,8 @@ export default async function AnnoncesPage({
           q: first(sp.q),
           type: first(sp.type),
           dept: first(sp.dept),
-          maxPrice: first(sp.max),
+          /* Destination des liens « Plans maison N chambres » du menu. */
+          bedrooms: first(sp.chambres),
         }}
       />
     </main>

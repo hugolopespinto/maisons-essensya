@@ -1,10 +1,12 @@
 "use client";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AnnonceCard from "@/components/AnnonceCard";
 import type { Bounds } from "@/components/AnnoncesMap";
 import { annonceUrl } from "@/lib/format";
+import { urlVersion, versionAChambres } from "@/lib/offres";
 import type { Annonce } from "@/types";
 
 /* Leaflet touche à `window` dès son import : la carte ne peut pas être
@@ -20,25 +22,56 @@ interface Filters {
   type: string;
   dept: string;
   bedrooms: string;
-  maxPrice: string;
   sort: string;
 }
 
+/* Pas de budget maximum : le filtre a été retiré à la demande du client.
+   Une ancienne URL en `?max=` reste valide, le paramètre est ignoré. */
 const INITIAL: Filters = {
   q: "",
   type: "all",
   dept: "all",
   bedrooms: "all",
-  maxPrice: "all",
   sort: "recent",
 };
 
 const TYPES = ["terrain", "terrain-maison"];
 
-/* Paliers calés sur le flux réel : la médiane T+M est à 161 000 € et
-   presque rien ne dépasse 250 000 €. Des paliers à 300/350 000 € ne
-   filtraient donc jamais rien. */
-const BUDGETS = ["120000", "150000", "180000", "220000"];
+/* ⚠ LE NOMBRE EXACT DE CHAMBRES, PLUS UN PLANCHER. Ce filtre est la
+   destination des liens « Plans maison N chambres » de la navigation
+   (`?chambres=N`) : « 2 chambres » doit montrer des maisons à deux
+   chambres, pas aussi celles à trois, comme le faisait « 2 et plus ».
+   De 1 à 4, comme le menu. Le flux ne compte aujourd'hui que des 2 et
+   des 3 chambres : 1 et 4 rendent une liste vide, que la page explique
+   au lieu de laisser croire à une zone trop étroite. */
+const CHAMBRES = ["1", "2", "3", "4"];
+
+const libelleChambres = (n: string) => `${n} chambre${n === "1" ? "" : "s"}`;
+
+type Initial = Partial<Record<"q" | "type" | "dept" | "bedrooms", string>>;
+
+/** La query qui décrit ces filtres — celle que l'URL porte. Le tri n'y
+ *  figure pas : il ne se partage pas. */
+function requeteDe(f: Filters): string {
+  const p = new URLSearchParams();
+  if (f.q.trim()) p.set("q", f.q.trim());
+  if (f.type !== "all") p.set("type", f.type);
+  if (f.dept !== "all") p.set("dept", f.dept);
+  if (f.bedrooms !== "all") p.set("chambres", f.bedrooms);
+  return p.toString();
+}
+
+/** Les filtres que l'URL demande, re-validés : une URL forgée à la main
+ *  ne doit pas produire un filtre inconnu. */
+function lireInitial(initial: Initial | undefined, depts: [string, string][]): Filters {
+  return {
+    ...INITIAL,
+    q: initial?.q ?? "",
+    type: TYPES.includes(initial?.type ?? "") ? initial!.type! : "all",
+    dept: depts.some(([code]) => code === initial?.dept) ? initial!.dept! : "all",
+    bedrooms: CHAMBRES.includes(initial?.bedrooms ?? "") ? initial!.bedrooms! : "all",
+  };
+}
 
 /* ── ACCROCHES DE LA FEUILLE DE RÉSULTATS (mobile, en vue carte) ──
    Trois positions plutôt qu'un glissé libre : on se cale toujours sur
@@ -76,7 +109,7 @@ export default function AnnoncesBrowser({
 }: {
   annonces: Annonce[];
   /** Filtres lus dans l'URL CÔTÉ SERVEUR — voir le commentaire de page.tsx. */
-  initial?: Partial<Record<"q" | "type" | "dept" | "maxPrice", string>>;
+  initial?: Initial;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -94,17 +127,48 @@ export default function AnnoncesBrowser({
      (/annonces?type=terrain) : l'état part de l'URL, jamais de zéro.
      Les valeurs arrivent du serveur, et elles sont re-validées ici —
      une URL forgée à la main ne doit pas produire un filtre inconnu. */
-  const [filters, setFilters] = useState<Filters>(() => ({
-    ...INITIAL,
-    q: initial?.q ?? "",
-    type: TYPES.includes(initial?.type ?? "") ? initial!.type! : "all",
-    dept: depts.some(([code]) => code === initial?.dept) ? initial!.dept! : "all",
-    maxPrice: BUDGETS.includes(initial?.maxPrice ?? "") ? initial!.maxPrice! : "all",
-  }));
+  const [filters, setFilters] = useState<Filters>(() => lireInitial(initial, depts));
 
   const [view, setView] = useState<Bounds | null>(null);
   /* Incrémenté par « Réinitialiser » : la carte se recadre sur tout. */
   const [fitToken, setFitToken] = useState(0);
+
+  /* ⚠ UN LIEN VERS /annonces?… DEPUIS /annonces NE REMONTE PAS CE
+     COMPOSANT. Next garde l'état d'une page quand seule la query change :
+     « Plans maison 3 chambres », cliqué dans le menu alors qu'on est déjà
+     sur le listing, changeait l'URL et laissait la liste telle quelle.
+     Le serveur, lui, renvoie bien le nouveau `initial` : on le reprend.
+
+     COMMENT ON RECONNAÎT UNE NAVIGATION. `initial` est un objet sérialisé
+     par le serveur : chaque rendu serveur en livre un NOUVEAU, alors
+     qu'un re-rendu local garde le même. Mais chaque filtre choisi ici
+     repasse aussi par le serveur (`router.replace` plus bas) et revient
+     en `initial` : c'est un écho, et il porte exactement les filtres
+     courants. D'où la règle : nouvel objet ET autre chose que les
+     filtres courants = une navigation, appliquée en entier — recherche
+     libre comprise, sans quoi un lien vers /annonces laisserait la liste
+     filtrée sur la commune tapée avant.
+     Un écho en retard ne peut pas défaire un choix plus récent : Next
+     abandonne un `replace` dès qu'un autre part, seul le dernier est
+     rendu. Et l'écho d'une frappe ne mange pas l'espace en cours de
+     saisie : la comparaison se fait sur la query, qui l'ignore aussi.
+     Pas de `key` sur le composant à la place : chaque `router.replace`
+     le remonterait, carte comprise, et le champ de recherche perdrait le
+     focus à chaque lettre. */
+  const [initialVu, setInitialVu] = useState(initial);
+  if (initial !== initialVu) {
+    setInitialVu(initial);
+    const lu = lireInitial(initial, depts);
+    if (requeteDe(lu) !== requeteDe(filters)) {
+      setFilters((f) => ({ ...lu, sort: f.sort }));
+      /* La carte se recadre sur les nouveaux résultats. Et tant qu'elle
+         ne l'a pas fait — masquée en vue Liste sur mobile, elle ne le
+         fera qu'une fois rouverte —, la liste n'est plus filtrée par la
+         zone de l'ANCIENNE recherche : elle paraîtrait vide. */
+      setView(null);
+      setFitToken((n) => n + 1);
+    }
+  }
   const [syncMap, setSyncMap] = useState(true);
   const [mapMode, setMapMode] = useState(false);
 
@@ -175,33 +239,44 @@ export default function AnnoncesBrowser({
       mounted.current = true;
       return;
     }
-    const p = new URLSearchParams();
-    if (filters.q.trim()) p.set("q", filters.q.trim());
-    if (filters.type !== "all") p.set("type", filters.type);
-    if (filters.dept !== "all") p.set("dept", filters.dept);
-    if (filters.maxPrice !== "all") p.set("max", filters.maxPrice);
-    const qs = p.toString();
+    const qs = requeteDe(filters);
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }, [filters, pathname, router]);
 
-  const items = useMemo(() => {
+  /* `liens` : où mène chaque carte. Sous un filtre chambres, la carte
+     montre la version à N chambres (voir src/lib/offres.ts) ; sa fiche
+     doit montrer LA MÊME, sinon le visiteur voit la maison changer au
+     clic et sa demande part au commercial avec la mauvaise référence. */
+  const { items, liens } = useMemo(() => {
     const f = filters;
     const q = norm(f.q);
-    let list = annonces.filter((a) => {
-      if (f.type !== "all" && a.type !== f.type) return false;
-      if (f.dept !== "all" && a.deptCode !== f.dept) return false;
-      if (f.bedrooms !== "all" && (a.bedrooms ?? 0) < +f.bedrooms) return false;
-      /* Un prix inconnu ne peut pas être promis sous un budget. */
-      if (f.maxPrice !== "all" && (a.price === null || a.price > +f.maxPrice)) return false;
-      if (q && !norm(`${a.city} ${a.zip} ${a.dept} ${a.deptCode}`).includes(q)) return false;
-      return true;
+    const chambres = f.bedrooms !== "all" ? +f.bedrooms : null;
+    const liens = new Map<string, string>();
+    let list = annonces.flatMap((a): Annonce[] => {
+      if (f.type !== "all" && a.type !== f.type) return [];
+      if (f.dept !== "all" && a.deptCode !== f.dept) return [];
+      if (q && !norm(`${a.city} ${a.zip} ${a.dept} ${a.deptCode}`).includes(q)) return [];
+      const v = chambres === null ? a : versionAChambres(a, chambres);
+      if (!v) return [];
+      liens.set(a.id, chambres === null ? annonceUrl(a) : urlVersion(a, chambres));
+      return [v];
     });
     list = [...list];
     if (f.sort === "price-asc") list.sort(byPrice(1));
     else if (f.sort === "price-desc") list.sort(byPrice(-1));
     else list.sort(byRecent);
-    return list;
+    return { items: list, liens };
   }, [annonces, filters]);
+
+  /* Jugé sur le flux ENTIER, pas sur la liste filtrée : « 2 chambres »
+     croisé avec « Terrain seul » ne rend rien, mais des maisons 2
+     chambres existent — leur nier l'existence serait faux. */
+  const chambresAbsentes = useMemo(
+    () =>
+      filters.bedrooms !== "all" &&
+      !annonces.some((a) => versionAChambres(a, +filters.bedrooms) !== null),
+    [annonces, filters.bedrooms],
+  );
 
   /* Une annonce sans coordonnées n'est pas plaçable — mais elle reste
      dans la liste : elle représente une vraie opportunité. */
@@ -235,7 +310,10 @@ export default function AnnoncesBrowser({
   };
 
   const onBoundsChange = useCallback((b: Bounds) => setView(b), []);
-  const onSelect = useCallback((a: Annonce) => router.push(annonceUrl(a)), [router]);
+  const onSelect = useCallback(
+    (a: Annonce) => router.push(liens.get(a.id) ?? annonceUrl(a)),
+    [router, liens],
+  );
 
   return (
     <>
@@ -275,19 +353,11 @@ export default function AnnoncesBrowser({
             <label htmlFor="fl-bed">Chambres</label>
             <select id="fl-bed" value={filters.bedrooms} onChange={set("bedrooms")}>
               <option value="all">Indifférent</option>
-              {/* Le flux ne contient pas de maison au-delà de 3 chambres. */}
-              <option value="2">2 et plus</option>
-              <option value="3">3 et plus</option>
-            </select>
-          </div>
-          <div className="l-filter">
-            <label htmlFor="fl-price">Budget max</label>
-            <select id="fl-price" value={filters.maxPrice} onChange={set("maxPrice")}>
-              <option value="all">Indifférent</option>
-              <option value="120000">120 000 €</option>
-              <option value="150000">150 000 €</option>
-              <option value="180000">180 000 €</option>
-              <option value="220000">220 000 €</option>
+              {CHAMBRES.map((n) => (
+                <option key={n} value={n}>
+                  {libelleChambres(n)}
+                </option>
+              ))}
             </select>
           </div>
           <div className="l-filter">
@@ -350,12 +420,25 @@ export default function AnnoncesBrowser({
                 <AnnonceCard
                   key={a.id}
                   annonce={a}
+                  href={liens.get(a.id)}
                   reveal={false}
                   highlighted={highlight === a.id}
                   onMouseEnter={() => setHighlight(a.id)}
                   onMouseLeave={() => setHighlight(null)}
                 />
               ))
+            ) : chambresAbsentes ? (
+              /* Rien à élargir : aucune annonce du flux n'a ce nombre de
+                 chambres, où que soit la carte. Le dire, plutôt que de
+                 renvoyer le visiteur déplacer une carte qui ne trouvera
+                 rien — il arrive souvent ici depuis le menu. */
+              <div className="l-results__empty">
+                Aucune maison {libelleChambres(filters.bedrooms)} parmi nos annonces en ce
+                moment.
+                <br />
+                Choisissez un autre nombre de chambres, ou{" "}
+                <Link href="/contact">parlez-nous de votre projet</Link>.
+              </div>
             ) : (
               <div className="l-results__empty">
                 Aucune opportunité dans cette zone avec ces critères.

@@ -243,6 +243,14 @@ export interface Offre {
   garageArea: number | null;
   planImage: string | null;
   price: number | null;
+  /* ⚠ PROPRES À CETTE OFFRE, PAS À LA PARCELLE. Le flux écrit titre et
+     description pour chaque couple terrain × maison (« … maison de
+     88,56 m² avec 2 chambres »). L'annonce regroupée garde ceux d'UNE
+     offre ; la fiche d'une autre version doit reprendre les siens, sans
+     quoi elle décrit la maison d'à côté. */
+  /** Titre du flux, ou le titre posé en back-office qui le remplace. */
+  title: string | null;
+  description: string;
 }
 
 export interface Annonce {

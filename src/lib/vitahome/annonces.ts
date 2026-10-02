@@ -169,6 +169,8 @@ export function mapAnnonce(raw: VitahomeAnnonce): Annonce | null {
     garageArea: num(house?.garageArea),
     planImage: plan,
     price: price(raw.price),
+    title: nz(raw.title),
+    description: nz(raw.description) ?? nz(house?.description) ?? "",
   };
 
   return {
@@ -442,9 +444,14 @@ function applyOverrides(list: Annonce[], index: Map<string, AnnonceOverride>): A
       continue;
     }
     if (o.masquee) continue;
+    const titre = nz(o.titre);
     out.push({
       ...a,
-      title: nz(o.titre) ?? a.title,
+      title: titre ?? a.title,
+      /* Le titre du back-office vaut pour la parcelle : il est recopié sur
+         chaque offre, pour qu'une fiche de version (src/lib/offres.ts),
+         qui reprend le titre de SON offre, ne le perde pas. */
+      offres: titre ? a.offres.map((of) => ({ ...of, title: titre })) : a.offres,
       /* Un coup de cœur ajoute une mise en avant, il n'en retire jamais :
          `highlighted` porte aussi isPriority / isExclusive côté Vitahome. */
       highlighted: o.coupDeCoeur === true || a.highlighted,

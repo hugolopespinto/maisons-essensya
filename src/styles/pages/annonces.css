@@ -25,6 +25,12 @@
 .l-body .container{display:grid;grid-template-columns:7fr 5fr;gap:var(--s-4);align-items:start}
 .l-results{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-3)}
 .l-results__empty{grid-column:1/-1;font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre);border:1px dashed var(--beton);border-radius:var(--radius);padding:var(--s-4);text-align:center}
+/* Le seul lien du message vide est sa seule porte de sortie : `a` hérite
+   la couleur du texte et perd son soulignement (base.css), il serait
+   introuvable sans ceci — et la RGAA (10.6) veut un lien repérable
+   autrement que par la seule couleur. */
+.l-results__empty a{color:var(--accent);text-decoration:underline;text-underline-offset:.2em}
+.l-results__empty a:hover{text-decoration-thickness:2px}
 .l-map{position:sticky;top:calc(var(--header-h) + 92px)}
 /* Le cadre, le fond, les points et les boutons de zoom sont communs
    à toutes les cartes du site : src/styles/carte.css. */
