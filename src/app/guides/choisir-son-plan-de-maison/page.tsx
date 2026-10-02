@@ -18,7 +18,7 @@ const METADATA_DEFAUT: Metadata = {
 export default function Page() {
   return (
     <EnPreparation
-      fil={[{ nom: "Accueil", path: "/" }, { nom: "Nos guides", path: "/blog" }, { nom: "Choisir votre plan de maison" }]}
+      fil={[{ nom: "Accueil", path: "/" }, { nom: "Nos guides", path: "/guides" }, { nom: "Choisir votre plan de maison" }]}
       titre={"Guide pour choisir votre plan de maison"}
       quand={"Les critères qui comptent vraiment pour choisir un plan, et ceux qui coûtent cher pour rien."}
       relais={[{ href: "/maisons", label: "Nos modèles", quoi: "Les plans disponibles et leurs caractéristiques." }, { href: "/blog", label: "Le journal", quoi: "Nos articles sur la construction." }]}

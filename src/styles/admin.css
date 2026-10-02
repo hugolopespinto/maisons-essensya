@@ -652,6 +652,21 @@ body:has(.adm) .c-cookies { display: none !important; }
   .adm-card td a { display: inline-flex; align-items: center; min-height: 24px; }
 }
 
+/* Menus : une rubrique d'en-tête, puis ses sous-liens en retrait. Le
+   filet reprend le framboise des sous-menus du site, en aplat clair. */
+.adm-rubrique + .adm-rubrique { margin-top: var(--s-3); padding-top: var(--s-3); border-top: var(--line); }
+.adm-sous-menu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  margin: var(--s-2) 0 0 var(--s-2);
+  padding-left: var(--s-3);
+  border-left: 2px solid var(--framboise-fond);
+}
+@media (max-width: 600px) {
+  .adm-sous-menu { margin-left: 0; padding-left: var(--s-2); }
+}
+
 /* Un libellé long dans une colonne de 140 px : il se plie au lieu de
    pousser le cadre. */
 .adm-actions--serre { min-width: 0; }

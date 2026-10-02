@@ -414,19 +414,108 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
 .site-header .container{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:var(--s-3)}
 .logo{font-family:var(--f-display);font-variation-settings:"wdth" 125;font-weight:800;text-transform:uppercase;letter-spacing:.04em;font-size:1.05rem;line-height:1}
 .logo small{display:block;font-family:var(--f-mono);font-weight:400;font-size:.55rem;letter-spacing:.42em;margin-top:.25rem;opacity:.7}
-.main-nav{display:flex;gap:2.2rem}
-.main-nav a{font-family:var(--f-mono);font-size:var(--fs-label);text-transform:uppercase;letter-spacing:.14em;opacity:.85;transition:opacity var(--dur-fast);padding:.5rem 0}
-.main-nav a:hover{opacity:1}
+/* ── LA BARRE ET SES SOUS-MENUS ──
+   Le conteneur, la barre et chaque rubrique s'étirent sur toute la
+   hauteur de l'en-tête : le panneau part ainsi exactement de son bord
+   inférieur (`top:100%` de la rubrique), et la zone de survol est
+   continue du titre jusqu'au premier lien — pas d'interstice où la
+   souris sortirait du menu en descendant vers lui. */
+/* ⚠ SIX RUBRIQUES AUX LIBELLÉS LONGS, UN LOGO ET UN BOUTON SUR UNE
+   LIGNE : c'est ce qui dicte les réglages ci-dessous, mesurés.
+     · Le conteneur de l'en-tête s'élargit jusqu'à 1600 px. Plafonné à
+       1280 comme le reste du site, il ne laissait aux rubriques que
+       800 px, même sur un écran de 1920 — elles en demandent 835 avant
+       le moindre espacement.
+     · L'interlettrage passe de .14 à .06 em : 90 px gagnés sur l'ensemble,
+       sans quitter la mono capitale des libellés et du bouton.
+     · Le numéro de téléphone ne tient qu'à partir de 1720 px : en deçà,
+       il reste dans le menu mobile, le pied de page et /contact.
+     · Le logo et le bouton ne rétrécissent JAMAIS. Sans `flex:none`, un
+       manque de place écrasait le logo à zéro pixel de large.
+     · Sous 1440 px, le bouton se resserre (30 px gagnés) ; sous 1360 px,
+       la barre passe au menu mobile — voir la règle en fin de section.
+     · Les libellés ne passent JAMAIS sur deux lignes. Essayé : chaque
+       titre coupé gardait la largeur de sa ligne la plus longue, son
+       chevron partait à 40 px du texte et les deux rubriques-boutons se
+       centraient quand les liens s'alignaient à gauche. Mesuré à 1366 px
+       AVEC une barre de défilement classique, il reste 12 px de marge :
+       un libellé allongé en back-office se paie donc vite, c'est l'écran
+       Menus qui le dit au client. */
+.site-header .container{align-self:stretch;max-width:1600px;gap:var(--s-2)}
+.site-header .logo,.header-cta{flex:none}
+.main-nav{display:flex;align-self:stretch}
+.main-nav__list{display:flex;align-items:stretch;gap:clamp(.8rem,1vw,1.75rem)}
+.main-nav__item{position:relative;display:flex;align-items:center}
+.main-nav__link{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--f-mono);font-size:var(--fs-label);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;opacity:.85;transition:opacity var(--dur-fast);padding:.5rem 0}
+.main-nav__link:hover,.main-nav__item.is-open>.main-nav__link{opacity:1}
+.main-nav__item--tel{display:none}
+@media (min-width:1720px){.main-nav__item--tel{display:flex}}
+/* 24 × 24 px : la cible minimale de la WCAG 2.2 (2.5.8) — le chevron
+   seul en fait 10. `color:inherit` est indispensable : un <button> ne
+   reçoit pas la couleur de son parent, et restait noir sur la photo de
+   l'accueil pendant que les liens voisins passaient à la craie. */
+.main-nav__toggle{display:inline-flex;align-items:center;justify-content:center;min-width:24px;min-height:24px;color:inherit;opacity:.85;transition:opacity var(--dur-fast)}
+.main-nav__toggle:hover,.main-nav__item.is-open>.main-nav__toggle{opacity:1}
+/* Le bouton à côté d'un lien centre son chevron dans 24 px : 7 px vides
+   de chaque côté. Celui de gauche sépare le chevron du libellé, comme
+   l'espacement interne des rubriques-boutons ; celui de droite doublait
+   l'espace avant la rubrique suivante. La marge négative le fait
+   déborder dans cet espace — la cible garde ses 24 px, le rythme de la
+   barre redevient régulier. */
+.main-nav__link+.main-nav__toggle{margin-right:-7px}
+.main-nav__toggle--titre{justify-content:flex-start}
+.nav-chevron{flex:none;transition:transform var(--dur-fast) var(--ease)}
+.main-nav__item.is-open .nav-chevron{transform:rotate(180deg)}
+/* Le panneau. Blanc et à l'encre anthracite quel que soit l'état de
+   l'en-tête — d'où `--focus` rétabli : à l'état transparent, l'anneau
+   passe à la craie (voir plus haut) et deviendrait invisible ici. Le
+   filet framboise reprend la couleur des sous-menus sur le schéma
+   d'arborescence du client.
+   Fermé, il est en `visibility:hidden` — ses liens sortent donc de la
+   tabulation — et cette visibilité ne bascule qu'APRÈS le fondu, sinon
+   il disparaîtrait d'un coup au lieu de s'effacer. */
+.main-nav__sub{position:absolute;top:100%;left:-1.25rem;z-index:2;min-width:16.5rem;padding:.6rem 0;background:var(--blanc);color:var(--anthracite);--focus:var(--framboise);border:1px solid var(--beton);border-top:2px solid var(--framboise);box-shadow:0 28px 48px -28px rgba(0,19,33,.4);opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity var(--dur-fast) var(--ease),transform var(--dur-fast) var(--ease),visibility 0s linear var(--dur-fast)}
+.main-nav__item.is-open>.main-nav__sub{opacity:1;visibility:visible;transform:none;transition:opacity var(--dur-fast) var(--ease),transform var(--dur-fast) var(--ease),visibility 0s}
+.main-nav__sub a{display:block;padding:.6rem 1.25rem;font-size:.95rem;line-height:1.35;white-space:nowrap;transition:color var(--dur-fast),background-color var(--dur-fast)}
+/* Framboise sur craie : 5,56:1. */
+.main-nav__sub a:hover{color:var(--framboise);background:var(--craie)}
+.main-nav__sub a:focus-visible{outline-offset:-2px}
 .header-cta{padding:.75rem 1.3rem}
 .site-header:not(.is-solid) .header-cta{border-color:var(--craie);color:var(--craie)}
 .site-header:not(.is-solid) .header-cta:hover{background:var(--craie);color:var(--anthracite)}
 .nav-toggle{display:none;flex-direction:column;gap:5px;padding:.5rem}
 .nav-toggle span{display:block;width:24px;height:2px;background:currentColor;transition:transform var(--dur-fast),opacity var(--dur-fast)}
-.mobile-nav{position:fixed;inset:0;z-index:99;background:var(--anthracite);color:var(--craie);display:flex;flex-direction:column;justify-content:center;padding:var(--gutter);opacity:0;visibility:hidden;transition:opacity var(--dur-fast),visibility var(--dur-fast)}
+/* ⚠ LE PANNEAU DÉFILE ET PART DU HAUT, IL N'EST PLUS CENTRÉ. Une
+   rubrique dépliée y ajoute jusqu'à neuf liens : centré, le contenu qui
+   dépasse l'écran débordait PAR LE HAUT, hors de portée du défilement.
+   Le rembourrage supérieur laisse la place à la barre, qui reste posée
+   au-dessus du panneau (z-index 100 contre 99). */
+.mobile-nav{position:fixed;inset:0;z-index:99;background:var(--anthracite);color:var(--craie);display:flex;flex-direction:column;justify-content:flex-start;overflow-y:auto;overscroll-behavior:contain;padding:calc(var(--header-h) + var(--s-3)) var(--gutter) var(--s-5);opacity:0;visibility:hidden;transition:opacity var(--dur-fast),visibility var(--dur-fast)}
 .mobile-nav.is-open{opacity:1;visibility:visible}
-.mobile-nav a{font-family:var(--f-display);font-variation-settings:"wdth" 118;font-weight:600;text-transform:uppercase;font-size:clamp(1.6rem,7vw,2.4rem);line-height:1.4}
-.mobile-nav .c-btn{margin-top:var(--s-4);align-self:flex-start}
-@media (max-width:900px){.main-nav,.header-cta{display:none}.nav-toggle{display:flex}}
+.mobile-nav__list{display:flex;flex-direction:column}
+.mobile-nav__link{display:flex;align-items:center;gap:.5em;width:100%;text-align:left;color:inherit;font-family:var(--f-display);font-variation-settings:"wdth" 118;font-weight:600;text-transform:uppercase;font-size:clamp(1.2rem,5vw,2.2rem);line-height:1.25;padding:.35rem 0}
+/* Chevron calé à droite pour TOUTES les rubriques : collé au texte, il
+   changeait de place selon que le titre tenait ou non sur une ligne. */
+.mobile-nav__toggle{justify-content:space-between}
+.mobile-nav__toggle .nav-chevron{width:.5em;height:.5em}
+.mobile-nav__groupe.is-open .nav-chevron{transform:rotate(180deg)}
+/* `[hidden]` doit être redit : le `display:flex` de la règle d'avant
+   l'emporterait sur celui du navigateur, et la rubrique ne se
+   replierait plus. */
+.mobile-nav__sub{display:flex;flex-direction:column;margin:.2rem 0 .8rem;padding-left:1rem;border-left:2px solid var(--framboise)}
+.mobile-nav__sub[hidden]{display:none}
+/* 44 px de haut : ce sont des cibles de pouce, empilées. */
+.mobile-nav__sub a{display:flex;align-items:center;min-height:44px;font-size:1.05rem;opacity:.85;transition:opacity var(--dur-fast),color var(--dur-fast)}
+.mobile-nav__sub a:hover{opacity:1;color:var(--accent)}
+.mobile-nav__tel{margin-top:var(--s-3);font-family:var(--f-mono);font-size:1rem;letter-spacing:.08em}
+.mobile-nav .c-btn{margin-top:var(--s-3);align-self:flex-start}
+/* Trois paliers. Le bouton reste affiché entre 901 et 1359 px, à côté du
+   menu mobile : c'est le seul chemin de l'en-tête vers /contact, et la
+   place ne manque plus une fois les rubriques repliées. En deçà, le
+   bouton collant du bas d'écran prend le relais. */
+@media (max-width:1439px){.header-cta{padding:.75rem 1rem;letter-spacing:.1em}}
+@media (max-width:1359px){.main-nav{display:none}.nav-toggle{display:flex}.header-cta{margin-left:auto}}
+@media (max-width:900px){.header-cta{display:none}}
 /* Mode landing : chrome réduit */
 body.lp-mode .main-nav, body.lp-mode .nav-toggle{display:none}
 body.lp-mode .header-cta{display:inline-flex}

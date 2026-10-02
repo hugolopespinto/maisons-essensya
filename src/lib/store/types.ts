@@ -173,8 +173,14 @@ export interface Agence {
 export interface LienMenu {
   id: string;
   label: string;
+  /** Peut rester vide pour une entrée d'en-tête qui porte un sous-menu :
+   *  son libellé ouvre alors le sous-menu sans mener à une page. */
   href: string;
   ordre: number;
+  /** Le sous-menu d'une entrée d'en-tête, ouvert au survol. Un seul
+   *  niveau : les liens qu'il contient n'en portent pas. Absent dans
+   *  les données enregistrées avant l'apparition des sous-menus. */
+  enfants?: LienMenu[];
 }
 
 export interface ColonneFooter {

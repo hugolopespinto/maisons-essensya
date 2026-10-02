@@ -18,7 +18,7 @@ const METADATA_DEFAUT: Metadata = {
 export default function Page() {
   return (
     <EnPreparation
-      fil={[{ nom: "Accueil", path: "/" }, { nom: "Nos guides", path: "/blog" }, { nom: "Choisir votre terrain" }]}
+      fil={[{ nom: "Accueil", path: "/" }, { nom: "Nos guides", path: "/guides" }, { nom: "Choisir votre terrain" }]}
       titre={"Guide pour choisir votre terrain"}
       quand={"Ce qu'il faut vérifier avant d'acheter un terrain, et ce qui se paie après la signature."}
       relais={[{ href: "/annonces?type=terrain", label: "Nos terrains", quoi: "Le stock disponible, avec sa carte." }, { href: "/concept#prix", label: "Ce que le prix comprend", quoi: "Terrain, viabilisation, taxes : ce qui est inclus ou non." }]}

@@ -186,7 +186,10 @@ export default async function ConceptPage() {
         </div>
       </section>
 
-      <section className="s-steps">
+      {/* Cible de « Les étapes de construction » dans la navigation, et
+          des liens du plan du site et de /accompagnement : l'ancre
+          manquait, ils atterrissaient tous en haut de page. */}
+      <section className="s-steps" id="etapes">
         <div className="container">
           <div className="c-section-head" data-reveal>
             <span className="c-label c-label--accent">

@@ -1,12 +1,21 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { NAVIGATION } from "@/data/navigation";
 
 /** Une entrée de navigation, déjà nettoyée par le layout racine. */
 export interface LienChrome {
   label: string;
   href: string;
+}
+
+/** Une rubrique de l'en-tête : un lien, un sous-menu, ou les deux. Sans
+ *  `href`, le libellé ne fait qu'ouvrir le sous-menu. */
+export interface EntreeChrome {
+  label: string;
+  href?: string;
+  enfants?: LienChrome[];
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -45,17 +54,35 @@ export function CoquillePublique({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-/* Navigation d'origine. Elle reste le REPLI du menu éditable : tant que
-   le client n'a rien saisi dans /admin/menus — ou s'il efface tout — le
-   site garde exactement ces entrées. Une liste vide ne peut donc pas
-   décapiter la navigation. */
-const LINKS: LienChrome[] = [
-  { href: "/maisons", label: "La maison" },
-  { href: "/annonces", label: "Terrains & opportunités" },
-  { href: "/realisations", label: "Réalisations" },
-  { href: "/concept", label: "Notre concept" },
-  { href: "/agences", label: "Nos agences" },
-];
+/* Le menu par défaut vit dans `src/data/navigation.ts`, partagé avec
+   l'écran Menus. Il reste le REPLI du menu éditable : tant que le client
+   n'a rien saisi dans /admin/menus — ou s'il efface tout — le site garde
+   exactement ces rubriques. Une liste vide ne peut donc pas décapiter la
+   navigation. */
+
+/* Délai avant qu'un sous-menu ouvert au survol se referme. Sans lui, la
+   souris qui glisse en diagonale du titre vers le troisième lien sort
+   une fraction de seconde de la zone, et le menu se ferme sous elle. */
+const DELAI_FERMETURE = 200;
+
+/** Le chevron des rubriques à sous-menu, au filet des icônes du site. */
+function Chevron() {
+  return (
+    <svg
+      className="nav-chevron"
+      width="10"
+      height="10"
+      viewBox="0 0 10 10"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M1.5 3.5 5 7l3.5-3.5" />
+    </svg>
+  );
+}
 
 /* Pages où le header reste transparent tant qu'on n'a pas scrollé :
    celles qui ouvrent sur un visuel plein écran. Partout ailleurs il est
@@ -103,14 +130,15 @@ export interface HeaderProps {
   telephone: string;
   /** Le `tel:` correspondant — calculé une fois dans le layout racine. */
   telHref: string;
-  /** Menu saisi en back-office. Absent = on garde `LINKS`. */
-  liens?: LienChrome[];
+  /** Menu saisi en back-office. Absent = on garde `NAVIGATION`. */
+  liens?: EntreeChrome[];
 }
 
 /** Le libellé « Contact » du panneau mobile ne doit pas doubler une
- *  entrée que le client aurait lui-même ajoutée à son menu. */
-const pointeVersContact = (l: LienChrome) =>
-  l.href.replace(/\/+$/, "").toLowerCase() === "/contact";
+ *  entrée que le client aurait lui-même ajoutée à son menu — à la barre
+ *  comme dans un sous-menu. */
+const pointeVersContact = (l: { href?: string }) =>
+  (l.href ?? "").replace(/\/+$/, "").toLowerCase() === "/contact";
 
 export default function Header({
   marque,
@@ -127,8 +155,101 @@ export default function Header({
   const navRef = useRef<HTMLElement | null>(null);
   const toggleRef = useRef<HTMLButtonElement | null>(null);
 
+  /* ── LES SOUS-MENUS DE LA BARRE ──
+     L'ouverture est pilotée par l'état, pas par `:hover` en CSS, pour
+     trois raisons :
+       · au toucher, `:hover` reste collé après le premier tap : le menu
+         ne se refermait plus sur tablette ;
+       · un lien cliqué dans le sous-menu laisse la souris posée dessus —
+         en CSS, il restait ouvert sur la page d'arrivée ;
+       · l'en-tête doit devenir opaque pendant qu'un menu est ouvert, et
+         c'est la même condition qui permute le logo (voir `solide`).
+     Deux façons d'ouvrir : le survol à la souris, qui se referme quand
+     la souris part, et le clic — tactile, clavier ou souris —, qui
+     épingle le menu jusqu'à Échap, un clic ailleurs ou la sortie du
+     focus. `parSurvol` retient laquelle des deux a ouvert le menu. */
+  const [ouvert, setOuvert] = useState<number | null>(null);
+  const parSurvol = useRef(false);
+  const minuterie = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const barreRef = useRef<HTMLElement | null>(null);
+  /* Le panneau mobile déplie une rubrique à la fois : ouvertes toutes
+     ensemble, elles ne tiendraient pas dans un écran de téléphone. */
+  const [deplie, setDeplie] = useState<number | null>(null);
+
   const alwaysSolid = !TRANSPARENT.some((re) => re.test(pathname));
-  const entrees = liens ?? LINKS;
+  const entrees: EntreeChrome[] = liens ?? NAVIGATION;
+
+  const annulerFermeture = () => {
+    if (minuterie.current) clearTimeout(minuterie.current);
+    minuterie.current = null;
+  };
+  /* Stable (refs et setter seulement) : l'effet d'Échap en dépend sans
+     se réabonner à chaque rendu. */
+  const fermerSousMenu = useCallback(() => {
+    if (minuterie.current) clearTimeout(minuterie.current);
+    minuterie.current = null;
+    parSurvol.current = false;
+    setOuvert(null);
+  }, []);
+  const survoler = (i: number) => {
+    annulerFermeture();
+    if (ouvert === i) return;
+    parSurvol.current = true;
+    setOuvert(i);
+  };
+  const quitter = () => {
+    // Un menu épinglé par un clic ne se referme pas parce que la souris part.
+    if (!parSurvol.current) return;
+    annulerFermeture();
+    minuterie.current = setTimeout(fermerSousMenu, DELAI_FERMETURE);
+  };
+  const basculer = (i: number) => {
+    annulerFermeture();
+    /* Un clic sur un menu ouvert AU SURVOL l'épingle au lieu de le
+       fermer : c'est le geste de quelqu'un qui veut qu'il reste là. */
+    if (ouvert === i && !parSurvol.current) {
+      fermerSousMenu();
+      return;
+    }
+    parSurvol.current = false;
+    setOuvert(i);
+  };
+
+  // Pas de fermeture programmée qui survive au démontage.
+  useEffect(() => {
+    const m = minuterie;
+    return () => {
+      if (m.current) clearTimeout(m.current);
+    };
+  }, []);
+
+  /* Échap et clic en dehors referment le sous-menu ouvert. Échap rend le
+     focus au bouton de la rubrique s'il était dans son sous-menu — sans
+     quoi il tomberait sur un lien devenu invisible. */
+  useEffect(() => {
+    if (ouvert === null) return;
+    const barre = barreRef.current;
+    if (!barre) return;
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      const rubrique = barre.querySelector<HTMLElement>(`[data-rubrique="${ouvert}"]`);
+      const bouton = rubrique?.querySelector<HTMLElement>("[aria-expanded]");
+      const dedans = rubrique?.contains(document.activeElement);
+      fermerSousMenu();
+      if (dedans) bouton?.focus();
+    };
+    const onPointer = (e: PointerEvent) => {
+      if (!barre.contains(e.target as Node)) fermerSousMenu();
+    };
+
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onPointer);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onPointer);
+    };
+  }, [ouvert, fermerSousMenu]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -152,7 +273,13 @@ export default function Header({
     const panel = navRef.current;
     if (!panel) return;
 
-    const items = () => Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE));
+    /* Seulement ce qui est affiché : les liens d'une rubrique repliée
+       sont dans le DOM mais `hidden`. Les compter ferait du dernier
+       d'entre eux la borne du piège, et la tabulation s'échapperait. */
+    const items = () =>
+      Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+        (el) => el.getClientRects().length > 0,
+      );
     items()[0]?.focus();
 
     const onKey = (e: KeyboardEvent) => {
@@ -191,8 +318,16 @@ export default function Header({
      la photo, la version blanche disparaît sur le crème. On les rend
      donc toutes les deux et on les permute au même moment que le fond,
      par la même condition. Le client qui téléverse SON logo n'en
-     fournit qu'un : il s'applique alors aux deux états, faute de mieux. */
-  const solide = alwaysSolid || scrolled || open;
+     fournit qu'un : il s'applique alors aux deux états, faute de mieux.
+
+     Un sous-menu ouvert rend lui aussi l'en-tête opaque : son panneau
+     blanc descendrait sinon d'une barre transparente posée sur la
+     photo, et le titre qui l'a ouvert resterait écrit en clair au-dessus
+     d'un fond qui ne l'est plus. */
+  const solide = alwaysSolid || scrolled || open || ouvert !== null;
+  const contactPresent = entrees.some(
+    (e) => pointeVersContact(e) || (e.enfants ?? []).some(pointeVersContact),
+  );
   const logoAffiche = (solide ? logo : (logoClair ?? logo)) ?? null;
 
   const marqueVisuelle = logoAffiche ? (
@@ -225,19 +360,97 @@ export default function Header({
           <Link className="logo" href="/" aria-label={`${marque} — accueil`}>
             {marqueVisuelle}
           </Link>
-          <nav className="main-nav" aria-label="Navigation principale">
-            {entrees.map((l, i) => (
-              <Link key={`${l.href}-${i}`} href={l.href}>
-                {l.label}
-              </Link>
-            ))}
-            {/* Sur ce métier, l'appel est le premier canal : aucun numéro
-                n'était composable nulle part. Il est logé dans .main-nav,
-                la seule zone que le CSS masque déjà sous 900px — le menu
-                mobile le reprend à l'identique en dessous. */}
-            <a href={telHref} aria-label={`Appeler le ${telephone}`}>
-              {telephone}
-            </a>
+          {/* Le motif « navigation à volets » du WAI : chaque rubrique à
+              sous-menu porte un vrai bouton `aria-expanded`, et PAS de
+              rôle `menu` — celui-ci promet au lecteur d'écran une
+              navigation aux flèches façon logiciel, que des liens de site
+              n'ont pas. Au clavier : Tab jusqu'au bouton, Entrée ouvre,
+              Tab parcourt les liens, Échap referme. */}
+          <nav className="main-nav" aria-label="Navigation principale" ref={barreRef}>
+            <ul className="main-nav__list">
+              {entrees.map((e, i) => {
+                const enfants = e.enfants ?? [];
+                const cle = `${e.href ?? e.label}-${i}`;
+                if (!enfants.length) {
+                  return e.href ? (
+                    <li className="main-nav__item" key={cle}>
+                      <Link className="main-nav__link" href={e.href}>
+                        {e.label}
+                      </Link>
+                    </li>
+                  ) : null;
+                }
+                const estOuvert = ouvert === i;
+                const idSous = `sous-menu-${i}`;
+                return (
+                  <li
+                    key={cle}
+                    data-rubrique={i}
+                    className={`main-nav__item main-nav__item--parent${estOuvert ? " is-open" : ""}`}
+                    /* `pointerType` écarte le toucher : un tap émet aussi un
+                       survol, qui ouvrirait le menu juste avant que le clic
+                       qui suit ne le referme. */
+                    onPointerEnter={(ev) => ev.pointerType === "mouse" && survoler(i)}
+                    onPointerLeave={(ev) => ev.pointerType === "mouse" && quitter()}
+                    onBlur={(ev) => {
+                      if (estOuvert && !ev.currentTarget.contains(ev.relatedTarget as Node | null)) {
+                        fermerSousMenu();
+                      }
+                    }}
+                  >
+                    {e.href ? (
+                      /* La rubrique a sa page : le libellé y mène, et un
+                         bouton distinct ouvre le sous-menu — au toucher et
+                         au clavier, où il n'y a pas de survol. */
+                      <>
+                        <Link className="main-nav__link" href={e.href} onClick={fermerSousMenu}>
+                          {e.label}
+                        </Link>
+                        <button
+                          type="button"
+                          className="main-nav__toggle"
+                          aria-expanded={estOuvert}
+                          aria-controls={idSous}
+                          onClick={() => basculer(i)}
+                        >
+                          <Chevron />
+                          <span className="u-sr-only">Sous-menu {e.label}</span>
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        type="button"
+                        className="main-nav__link main-nav__toggle main-nav__toggle--titre"
+                        aria-expanded={estOuvert}
+                        aria-controls={idSous}
+                        onClick={() => basculer(i)}
+                      >
+                        {e.label}
+                        <Chevron />
+                      </button>
+                    )}
+                    <ul className="main-nav__sub" id={idSous}>
+                      {enfants.map((c, k) => (
+                        <li key={`${c.href}-${k}`}>
+                          <Link href={c.href} onClick={fermerSousMenu}>
+                            {c.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                );
+              })}
+              {/* Sur ce métier, l'appel est le premier canal : aucun numéro
+                  n'était composable nulle part. Il est logé dans .main-nav,
+                  que le CSS masque avec le reste de la barre sous le seuil
+                  du menu mobile — celui-ci le reprend à l'identique. */}
+              <li className="main-nav__item main-nav__item--tel">
+                <a className="main-nav__link" href={telHref} aria-label={`Appeler le ${telephone}`}>
+                  {telephone}
+                </a>
+              </li>
+            </ul>
           </nav>
           <Link href="/contact" className="c-btn header-cta">
             Parler de mon projet
@@ -257,8 +470,9 @@ export default function Header({
         </div>
       </header>
 
-      {/* Le menu se referme au clic sur un lien — pas via un effet sur
-          le pathname, qui déclencherait un rendu en cascade.
+      {/* Le menu se referme au clic sur un LIEN — pas via un effet sur
+          le pathname, qui déclencherait un rendu en cascade, et pas au
+          clic sur un bouton de rubrique, qui ne fait que la déplier.
           Fermé, il est en `visibility:hidden` : ses liens sortent donc
           d'eux-mêmes de l'ordre de tabulation, rien à masquer en plus. */}
       <nav
@@ -266,15 +480,66 @@ export default function Header({
         id="mobileNav"
         ref={navRef}
         aria-label="Navigation mobile"
-        onClick={() => setOpen(false)}
+        onClick={(ev) => {
+          if ((ev.target as Element).closest("a")) setOpen(false);
+        }}
       >
-        {entrees.map((l, i) => (
-          <Link key={`${l.href}-${i}`} href={l.href}>
-            {l.label}
-          </Link>
-        ))}
-        {!entrees.some(pointeVersContact) && <Link href="/contact">Contact</Link>}
-        <a href={telHref} aria-label={`Appeler le ${telephone}`}>
+        <ul className="mobile-nav__list">
+          {entrees.map((e, i) => {
+            const enfants = e.enfants ?? [];
+            const cle = `${e.href ?? e.label}-${i}`;
+            if (!enfants.length) {
+              return e.href ? (
+                <li key={cle}>
+                  <Link className="mobile-nav__link" href={e.href}>
+                    {e.label}
+                  </Link>
+                </li>
+              ) : null;
+            }
+            const estDeplie = deplie === i;
+            const idSous = `sous-menu-mobile-${i}`;
+            return (
+              <li key={cle} className={`mobile-nav__groupe${estDeplie ? " is-open" : ""}`}>
+                <button
+                  type="button"
+                  className="mobile-nav__link mobile-nav__toggle"
+                  aria-expanded={estDeplie}
+                  aria-controls={idSous}
+                  onClick={() => setDeplie((d) => (d === i ? null : i))}
+                >
+                  {e.label}
+                  <Chevron />
+                </button>
+                <ul className="mobile-nav__sub" id={idSous} hidden={!estDeplie}>
+                  {/* Au doigt, le titre déplie : la page de la rubrique,
+                      quand elle en a une, devient donc le premier lien. */}
+                  {e.href ? (
+                    <li>
+                      <Link href={e.href}>
+                        Tout voir<span className="u-sr-only"> : {e.label}</span>{" "}
+                        <span aria-hidden="true">→</span>
+                      </Link>
+                    </li>
+                  ) : null}
+                  {enfants.map((c, k) => (
+                    <li key={`${c.href}-${k}`}>
+                      <Link href={c.href}>{c.label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            );
+          })}
+          {!contactPresent && (
+            <li>
+              <Link className="mobile-nav__link" href="/contact">
+                Contact
+              </Link>
+            </li>
+          )}
+        </ul>
+        <a className="mobile-nav__tel" href={telHref} aria-label={`Appeler le ${telephone}`}>
           {telephone}
         </a>
         <Link href="/contact" className="c-btn c-btn--light">

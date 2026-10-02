@@ -3,7 +3,7 @@ import { Archivo, IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
 import Analytics, { ConsentDefaultScript, GtmNoScript } from "@/components/Analytics";
 import CookieBanner from "@/components/CookieBanner";
 import Footer, { type ColonneChrome } from "@/components/Footer";
-import Header, { CoquillePublique, type LienChrome } from "@/components/Header";
+import Header, { CoquillePublique, type EntreeChrome, type LienChrome } from "@/components/Header";
 import { IntroAccueilScript } from "@/components/IntroAccueil";
 import Reveal from "@/components/Reveal";
 import StickyCta from "@/components/StickyCta";
@@ -103,6 +103,21 @@ function liensMenu(liens: LienMenu[]): LienChrome[] | undefined {
     .filter((l) => l.label.trim() && l.href.trim())
     .sort((a, b) => a.ordre - b.ordre)
     .map((l) => ({ label: l.label.trim(), href: l.href.trim() }));
+  return propres.length ? propres : undefined;
+}
+
+/** L'en-tête, lui, porte des sous-menus. Une rubrique sans adresse est
+ *  légitime SI elle a des liens à dérouler — sinon elle n'est qu'un
+ *  libellé mort, et elle est écartée comme une ligne incomplète. */
+function entreesMenu(liens: LienMenu[]): EntreeChrome[] | undefined {
+  const propres = [...liens]
+    .sort((a, b) => a.ordre - b.ordre)
+    .map((l) => ({
+      label: l.label.trim(),
+      href: l.href.trim() || undefined,
+      enfants: liensMenu(l.enfants ?? []),
+    }))
+    .filter((e) => e.label && (e.href || e.enfants));
   return propres.length ? propres : undefined;
 }
 
@@ -339,7 +354,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             logoClair={logoPied}
             telephone={telephone}
             telHref={telHref(telephone)}
-            liens={liensMenu(menus.header)}
+            liens={entreesMenu(menus.header)}
           />
         </CoquillePublique>
         {/* La cible du lien d'évitement est portée ici plutôt que sur le

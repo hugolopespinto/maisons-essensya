@@ -5,6 +5,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AGENCIES, ESSENSYA_DATA } from "@/data/essensya";
 import { MODELES } from "@/data/gamme";
+import { NAVIGATION } from "@/data/navigation";
 import { articlesPublies } from "@/lib/blog";
 import { agencyUrl, deptUrl, houseUrl, landingUrl } from "@/lib/format";
 import { departementsPubliables } from "@/lib/geo";
@@ -40,11 +41,11 @@ import { assertAdmin, requireAdmin } from "../actions";
       il ne se voit pas depuis le back-office tant que personne ne l'a
       cliqué.
 
-   ⚠ CE QUI N'EST PAS ENCORE BRANCHÉ : `src/components/Header.tsx` et
-   `src/components/Footer.tsx` ont toujours leurs liens écrits en dur.
-   Cet écran ÉCRIT la donnée (`Content.menus`) ; il reste à la faire lire
-   par ces deux composants. Le bandeau d'avertissement en tête de page le
-   dit au client — il est à retirer le jour du branchement.
+   4. UN SEUL NIVEAU DE SOUS-MENU, ET SEULEMENT DANS L'EN-TÊTE. C'est
+      ce que dessine l'arborescence du client : six rubriques, et sous
+      certaines d'entre elles les liens qui s'ouvrent au survol. Une
+      rubrique qui porte un sous-menu peut n'avoir aucune adresse — son
+      titre ne fait alors qu'ouvrir la liste.
    ════════════════════════════════════════════════════════════════ */
 
 export const dynamic = "force-dynamic";
@@ -71,16 +72,41 @@ export const metadata: Metadata = {
    ────────────────────────────────────────────────────────────────── */
 type Suggestion = { href: string; label: string };
 
+/* ⚠ LES PAGES DU PIED DE PAGE ET DE LA NAVIGATION Y MANQUAIENT : les
+   quinze pages créées pour le pied de page n'avaient pas été reportées
+   ici, si bien que l'écran signalait comme « page inexistante » des
+   liens parfaitement valides — ceux-là mêmes qu'il affiche par défaut. */
 const PAGES_FIXES: Suggestion[] = [
   { href: "/", label: "Accueil" },
   { href: "/maisons", label: "La maison" },
+  { href: "/annonces?chambres=1", label: "Plans maison 1 chambre" },
+  { href: "/annonces?chambres=2", label: "Plans maison 2 chambres" },
+  { href: "/annonces?chambres=3", label: "Plans maison 3 chambres" },
+  { href: "/annonces?chambres=4", label: "Plans maison 4 chambres" },
   { href: "/concept", label: "Notre concept" },
   { href: "/annonces", label: "Terrains & opportunités" },
   { href: "/terrains", label: "Où nous construisons" },
+  { href: "/construire/landes", label: "Construire dans les Landes" },
+  { href: "/construire/pays-basque", label: "Construire au Pays basque" },
+  { href: "/construire/gironde", label: "Construire en Gironde" },
+  { href: "/terrains-constructibles/landes", label: "Terrains constructibles — Landes" },
+  { href: "/terrains-constructibles/pays-basque", label: "Terrains constructibles — Pays basque" },
+  { href: "/terrains-constructibles/gironde", label: "Terrains constructibles — Gironde" },
+  { href: "/guides", label: "Nos guides de construction" },
+  { href: "/guides/choisir-son-terrain", label: "Guide — choisir son terrain" },
+  { href: "/guides/choisir-son-plan-de-maison", label: "Guide — choisir son plan de maison" },
+  { href: "/simulateur-de-financement", label: "Simulateur de financement" },
+  { href: "/qui-sommes-nous", label: "Qui sommes-nous" },
+  { href: "/garanties", label: "Nos garanties" },
+  { href: "/equipes", label: "Nos équipes" },
+  { href: "/parrainage", label: "Parrainage" },
+  { href: "/avis-clients", label: "Avis clients" },
+  { href: "/accompagnement", label: "L'accompagnement ESSENSYA" },
   { href: "/realisations", label: "Réalisations" },
   { href: "/agences", label: "Nos agences" },
   { href: "/blog", label: "Blog" },
   { href: "/contact", label: "Contact" },
+  { href: "/plan-du-site", label: "Plan du site" },
   { href: "/mentions-legales", label: "Mentions légales" },
   { href: "/confidentialite", label: "Confidentialité" },
   { href: "/cookies", label: "Gestion des cookies" },
@@ -89,6 +115,20 @@ const PAGES_FIXES: Suggestion[] = [
 /* Route réelle, mais réservée à l'équipe technique : on ne la propose
    pas au client, on se contente de ne pas la signaler comme morte. */
 const ROUTES_TECHNIQUES = ["/styleguide"];
+
+/* Adresses qui ne sont plus des pages mais qui répondent encore, par une
+   redirection de next.config.ts. Un menu enregistré avant leur
+   disparition les contient peut-être : on ne les propose plus, mais les
+   signaler comme mortes ferait corriger au client un lien qui marche. */
+const ROUTES_REDIRIGEES = [
+  "/maisons/2-chambres",
+  "/maisons/3-chambres",
+  "/plans-de-maison",
+  "/plans-de-maison/1-chambre",
+  "/plans-de-maison/2-chambres",
+  "/plans-de-maison/3-chambres",
+  "/plans-de-maison/4-chambres",
+];
 
 /** "/maisons/" et "/maisons" désignent la même route. */
 function normaliseChemin(p: string): string {
@@ -99,12 +139,15 @@ function normaliseChemin(p: string): string {
 /* ──────────────────────────────────────────────────────────────────
    LES MENUS ACTUELLEMENT PUBLIÉS
 
-   Recopiés de `src/components/Header.tsx` et `src/components/Footer.tsx`
-   — rien d'inventé : c'est mot pour mot ce que le visiteur voit
-   aujourd'hui. Tant que rien n'a été enregistré, le formulaire s'ouvre
-   sur ces liens-là. Le client remet donc en forme un menu qu'il
-   reconnaît, au lieu de reconstruire de mémoire une navigation depuis
-   une page blanche — et sans risque d'en perdre une entrée au passage.
+   Rien d'inventé : c'est ce que le visiteur voit aujourd'hui. Tant que
+   rien n'a été enregistré, le formulaire s'ouvre sur ces liens-là. Le
+   client remet donc en forme un menu qu'il reconnaît, au lieu de
+   reconstruire de mémoire une navigation depuis une page blanche — et
+   sans risque d'en perdre une entrée au passage.
+
+   L'en-tête est LU dans `src/data/navigation.ts`, la source même du
+   composant : recopié à la main, il avait déjà divergé (il ignorait
+   « Réalisations »). Le pied de page, lui, reste recopié ci-dessous.
 
    Le premier enregistrement fait basculer la donnée dans le stockage ;
    ces constantes ne sont alors plus consultées.
@@ -116,12 +159,10 @@ const lien = (id: string, label: string, href: string, ordre: number): LienMenu 
   ordre,
 });
 
-const HEADER_ACTUEL: LienMenu[] = [
-  lien("h-maison", "La maison", houseUrl(), 0),
-  lien("h-annonces", "Terrains & opportunités", "/annonces", 1),
-  lien("h-concept", "Notre concept", "/concept", 2),
-  lien("h-agences", "Nos agences", "/agences", 3),
-];
+const HEADER_ACTUEL: LienMenu[] = NAVIGATION.map((e, i) => ({
+  ...lien(`h-${i}`, e.label, e.href ?? "", i),
+  enfants: (e.enfants ?? []).map((c, k) => lien(`h-${i}-${k}`, c.label, c.href, k)),
+}));
 
 const colonne = (
   id: string,
@@ -206,14 +247,28 @@ type Etat = { niveau: "ok" | "info" | "alerte"; message: string };
 function analyser(l: LienMenu, connues: Set<string>, brouillons: Set<string>): Etat {
   const label = l.label.trim();
   const href = l.href.trim();
+  /* Une rubrique d'en-tête qui déroule des liens n'a pas besoin de page
+     à elle : sans adresse, son titre ouvre le sous-menu. */
+  const aSousMenu = (l.enfants ?? []).some((c) => c.label.trim() && c.href.trim());
 
   if (!label && !href) {
-    return { niveau: "info", message: "Ligne vide : elle sera ignorée à l'enregistrement." };
+    return aSousMenu
+      ? {
+          niveau: "alerte",
+          message: "Libellé manquant : sans titre, cette rubrique et son sous-menu ne seront pas affichés.",
+        }
+      : { niveau: "info", message: "Ligne vide : elle sera ignorée à l'enregistrement." };
   }
   if (!label) {
     return {
       niveau: "alerte",
       message: "Libellé manquant : sans texte, le lien ne peut pas être affiché.",
+    };
+  }
+  if (!href && aSousMenu) {
+    return {
+      niveau: "info",
+      message: "Sans adresse : le titre ouvre le sous-menu, il ne mène pas à une page.",
     };
   }
   if (!href) {
@@ -354,12 +409,17 @@ export default async function MenusPage({
   const connues = new Set([
     ...suggestions.map((s) => normaliseChemin(s.href)),
     ...ROUTES_TECHNIQUES,
+    ...ROUTES_REDIRIGEES,
   ]);
 
   const etatEntete = header.map((l) => analyser(l, connues, brouillons));
+  const etatSousMenus = header.map((l) =>
+    (l.enfants ?? []).map((c) => analyser(c, connues, brouillons)),
+  );
   const etatPied = footer.map((c) => c.liens.map((l) => analyser(l, connues, brouillons)));
   const alertes =
     etatEntete.filter((e) => e.niveau === "alerte").length +
+    etatSousMenus.flat().filter((e) => e.niveau === "alerte").length +
     etatPied.flat().filter((e) => e.niveau === "alerte").length;
 
   /* ════════ ACTION ════════ */
@@ -380,7 +440,12 @@ export default async function MenusPage({
 
     const entete: LienMenu[] = [];
     const nbEntete = compte(formData.get("hCount"), MAX_LIENS);
-    for (let i = 0; i < nbEntete; i += 1) entete.push(lireLien(`h_${i}`));
+    for (let i = 0; i < nbEntete; i += 1) {
+      const enfants: LienMenu[] = [];
+      const nbEnfants = compte(formData.get(`h_${i}_n`), MAX_LIENS);
+      for (let k = 0; k < nbEnfants; k += 1) enfants.push(lireLien(`h_${i}_e_${k}`));
+      entete.push({ ...lireLien(`h_${i}`), enfants });
+    }
 
     const colonnes: ColonneFooter[] = [];
     const nbColonnes = compte(formData.get("cCount"), MAX_COLONNES);
@@ -403,6 +468,7 @@ export default async function MenusPage({
     const i = Number(a);
     const j = Number(b);
     const col = colonnes[i];
+    const sous = entete[i]?.enfants;
 
     const echanger = <T,>(liste: T[], de: number, vers: number) => {
       if (de < 0 || vers < 0 || de >= liste.length || vers >= liste.length) return;
@@ -413,6 +479,10 @@ export default async function MenusPage({
     else if (op === "h.monter") echanger(entete, i, i - 1);
     else if (op === "h.descendre") echanger(entete, i, i + 1);
     else if (op === "h.suppr" && i >= 0 && i < entete.length) entete.splice(i, 1);
+    else if (op === "e.ajouter" && sous) sous.push(videLien());
+    else if (op === "e.monter" && sous) echanger(sous, j, j - 1);
+    else if (op === "e.descendre" && sous) echanger(sous, j, j + 1);
+    else if (op === "e.suppr" && sous && j >= 0 && j < sous.length) sous.splice(j, 1);
     else if (op === "c.ajouter") {
       colonnes.push({ id: randomUUID(), titre: "", liens: [videLien()], ordre: 0 });
     } else if (op === "c.monter") echanger(colonnes, i, i - 1);
@@ -431,8 +501,17 @@ export default async function MenusPage({
     const utiles = (liens: LienMenu[]) =>
       propre ? liens.filter((l) => l.label !== "" || l.href !== "") : liens;
 
+    /* Une rubrique sans titre ni adresse n'est pas vide pour autant si
+       elle porte encore des sous-liens : elle est gardée, et l'écran la
+       signale au lieu de jeter ses liens avec elle. */
+    const enteteRangee = ranger(
+      entete
+        .map((l) => ({ ...l, enfants: ranger(utiles(l.enfants ?? [])) }))
+        .filter((l) => !propre || l.label !== "" || l.href !== "" || l.enfants.length > 0),
+    );
+
     const menus: Menus = {
-      header: ranger(utiles(entete)),
+      header: enteteRangee,
       footer: colonnes
         .map((c) => ({ ...c, liens: ranger(utiles(c.liens)) }))
         .filter((c) => !propre || c.titre !== "" || c.liens.length > 0)
@@ -449,7 +528,13 @@ export default async function MenusPage({
     /* On revient à la section travaillée : après avoir ajouté un lien
        dans la troisième colonne du pied de page, se retrouver en haut de
        l'écran est une petite punition à chaque clic. */
-    const ancre = op.startsWith("h.") ? "#entete" : propre ? "" : "#pied";
+    const ancre = op.startsWith("e.")
+      ? `#rubrique-${i}`
+      : op.startsWith("h.")
+        ? "#entete"
+        : propre
+          ? ""
+          : "#pied";
     redirect(`/admin/menus${propre ? "?ok=1" : ""}${ancre}`);
   }
 
@@ -647,9 +732,11 @@ export default async function MenusPage({
       <section className="adm-card" id="entete">
         <h2>Menu d&apos;en-tête</h2>
         <p className="adm-field__aide">
-          Les liens affichés en haut de chaque page, de gauche à droite — et dans le
-          même ordre dans le menu mobile. Quatre à six entrées : au-delà, la barre se
-          replie et plus personne ne les voit.
+          Les rubriques affichées en haut de chaque page, de gauche à droite — et dans
+          le même ordre dans le menu mobile. Six au plus : au-delà, elles ne tiennent
+          plus sur une ligne. Chaque rubrique peut porter un sous-menu, qui s&apos;ouvre
+          au survol ; une rubrique à sous-menu peut rester sans adresse, son titre
+          ouvre alors simplement la liste.
           {heriteEntete
             ? " Les liens ci-dessous sont ceux affichés aujourd'hui, repris du code : corrigez-les, le premier enregistrement vous en donne la main."
             : ""}
@@ -665,18 +752,53 @@ export default async function MenusPage({
             La barre de navigation ne proposerait plus que le bouton « Contact ».
           </p>
         ) : (
-          header.map((l, i) =>
-            ligneLien({
-              l,
-              etat: etatEntete[i],
-              pre: `h_${i}`,
-              opMonter: `h.monter:${i}`,
-              opDescendre: `h.descendre:${i}`,
-              opSuppr: `h.suppr:${i}`,
-              premier: i === 0,
-              dernier: i === header.length - 1,
-            }),
-          )
+          header.map((l, i) => {
+            const enfants = l.enfants ?? [];
+            const nom = l.label.trim() || `la rubrique ${i + 1}`;
+            return (
+              <div className="adm-rubrique" id={`rubrique-${i}`} key={l.id}>
+                {ligneLien({
+                  l,
+                  etat: etatEntete[i],
+                  pre: `h_${i}`,
+                  opMonter: `h.monter:${i}`,
+                  opDescendre: `h.descendre:${i}`,
+                  opSuppr: `h.suppr:${i}`,
+                  premier: i === 0,
+                  dernier: i === header.length - 1,
+                })}
+                <input type="hidden" name={`h_${i}_n`} value={enfants.length} />
+                <div className="adm-sous-menu">
+                  <span className="adm-field__label">
+                    Sous-menu{l.label.trim() ? ` — ${l.label.trim()}` : ""}
+                  </span>
+                  {enfants.length === 0 ? (
+                    <p className="adm-field__aide">
+                      Aucun sous-lien : ce lien s&apos;affiche seul dans la barre.
+                    </p>
+                  ) : (
+                    enfants.map((c, k) =>
+                      ligneLien({
+                        l: c,
+                        etat: etatSousMenus[i][k],
+                        pre: `h_${i}_e_${k}`,
+                        opMonter: `e.monter:${i}:${k}`,
+                        opDescendre: `e.descendre:${i}:${k}`,
+                        opSuppr: `e.suppr:${i}:${k}`,
+                        premier: k === 0,
+                        dernier: k === enfants.length - 1,
+                      }),
+                    )
+                  )}
+                  <div className="adm-actions adm-actions--serre">
+                    <button type="submit" name="op" value={`e.ajouter:${i}`} className="c-btn">
+                      Ajouter un sous-lien<span className="u-sr-only"> à {nom}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })
         )}
 
         <div className="adm-actions">
