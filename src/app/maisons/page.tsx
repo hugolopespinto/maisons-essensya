@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import ChampCommune from "@/components/ChampCommune";
 import FilAriane from "@/components/FilAriane";
 import LeadForm, { ContactFields } from "@/components/LeadForm";
 import ModeleCard from "@/components/ModeleCard";
@@ -308,7 +309,7 @@ export default async function MaisonsPage() {
               <ContactFields prefix="mf" />
               <div className="c-field">
                 <label htmlFor="mf-zone">Commune ou code postal du projet</label>
-                <input type="text" id="mf-zone" name="zone" placeholder="Ex. 40000" />
+                <ChampCommune id="mf-zone" placeholder="Ex. 40000" />
               </div>
               {/* ⚠ Ce champ proposait « 2 chambres » ou « 3 chambres » et
                   envoyait ce choix au CRM du client. Il liste maintenant

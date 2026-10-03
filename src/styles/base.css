@@ -286,6 +286,19 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
 .c-form--dark .c-field input:focus,.c-form--dark .c-field select:focus,.c-form--dark .c-field textarea:focus{border-color:var(--focus)}
 .c-form--dark .c-field label{color:var(--sable);opacity:.7}
 .c-form--dark option{color:var(--anthracite)}
+/* Auto-complétion (ChampCommune) : la liste se pose PAR-DESSUS les champs
+   suivants plutôt que de les repousser — le formulaire ne saute pas à
+   chaque frappe. */
+.c-combo{position:relative}
+.c-combo input{width:100%}
+.c-combo__list{position:absolute;z-index:30;top:calc(100% + 4px);left:0;right:0;margin:0;padding:.3rem 0;list-style:none;max-height:18rem;overflow-y:auto;background:var(--blanc);color:var(--anthracite);border:1px solid var(--beton);border-radius:var(--radius);box-shadow:0 14px 32px rgba(0,0,0,.18)}
+.c-combo__list[hidden]{display:none}
+.c-combo__option{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding:.7rem 1rem;cursor:pointer;font-size:1rem;line-height:1.3}
+.c-combo__option[aria-selected="true"]{background:var(--framboise-fond)}
+.c-combo__code{flex:none;font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.06em;color:var(--pierre)}
+.c-form--dark .c-combo__list{background:color-mix(in srgb,var(--anthracite) 90%,var(--blanc));color:var(--craie);border-color:rgba(242,243,243,.3);box-shadow:0 14px 32px rgba(0,0,0,.45)}
+.c-form--dark .c-combo__option[aria-selected="true"]{background:rgba(242,243,243,.1)}
+.c-form--dark .c-combo__code{color:var(--sable);opacity:.75}
 .c-form__note{font-size:var(--fs-label);font-family:var(--f-mono);letter-spacing:.05em;color:var(--muet)}
 .c-form__success{display:none;font-family:var(--f-mono);font-size:var(--fs-small);border:1px solid var(--accent);border-radius:var(--radius);color:var(--accent);padding:var(--s-3);text-align:center;letter-spacing:.08em}
 .c-form.is-sent .c-form__success{display:block}

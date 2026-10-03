@@ -1,4 +1,5 @@
 import ArgumentRow from "@/components/ArgumentRow";
+import ChampCommune from "@/components/ChampCommune";
 import HeroAccueil from "@/components/HeroAccueil";
 import BandeauForts from "@/components/BandeauForts";
 import LeadForm from "@/components/LeadForm";
@@ -13,7 +14,6 @@ import { srcSet, vue } from "@/data/visuels";
 import "@/styles/accueil.css";
 import { lecteurBlocs } from "@/lib/blocs";
 import { annonceUrl, fmtPrice, fmtSurface } from "@/lib/format";
-import { communesConnues } from "@/lib/geo";
 import { jsonLd, siteSchema } from "@/lib/schema";
 import { getContent } from "@/lib/store";
 import { getAnnonces } from "@/lib/vitahome/annonces";
@@ -54,11 +54,7 @@ const VISUEL_SECOURS = facade("dublin");
 const TAILLE_LOT = 8;
 
 export default async function HomePage() {
-  const [content, annonces, communes] = await Promise.all([
-    getContent(),
-    getAnnonces(),
-    communesConnues(),
-  ]);
+  const [content, annonces] = await Promise.all([getContent(), getAnnonces()]);
   const t = lecteurBlocs(content.pages, "accueil");
 
   /* Les annonces terrain + maison les plus récentes. Le tri vient du
@@ -387,28 +383,10 @@ export default async function HomePage() {
                 </div>
                 <div className="c-field">
                   <label htmlFor="f-zone">Secteur du projet</label>
-                  {/* ⚠ AUTO-COMPLÉTION PAR `<datalist>`, pas par un
-                      composant maison. Le navigateur fait le filtrage,
-                      sur le nom comme sur le code postal, sans une ligne
-                      de JavaScript — donc sans rien à charger, et le
-                      champ reste utilisable si le script échoue. Les
-                      communes viennent du flux : elles suivent le stock
-                      au lieu d'être une liste à maintenir. */}
-                  <input
-                    type="text"
-                    id="f-zone"
-                    name="zone"
-                    list="f-communes"
-                    autoComplete="address-level2"
-                    placeholder="Ville ou code postal"
-                  />
-                  <datalist id="f-communes">
-                    {communes.map((c) => (
-                      <option key={c.nom} value={c.nom}>
-                        {c.cp}
-                      </option>
-                    ))}
-                  </datalist>
+                  {/* Toutes les communes de France, par nom ou par code
+                      postal — pourquoi plus de `<datalist>` : voir
+                      src/components/ChampCommune.tsx. */}
+                  <ChampCommune id="f-zone" placeholder="Ville ou code postal" />
                 </div>
               </div>
             </LeadForm>

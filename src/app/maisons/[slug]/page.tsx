@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import ChampCommune from "@/components/ChampCommune";
 import FilAriane from "@/components/FilAriane";
 import LeadForm, { ContactFields } from "@/components/LeadForm";
 import ModeleCard from "@/components/ModeleCard";
@@ -377,12 +378,7 @@ export default async function ModelePage({
               <input type="hidden" name="reason" value={`Modèle ${m.nom}`} />
               <div className="c-field">
                 <label htmlFor={`md-${m.slug}-zone`}>Commune ou code postal</label>
-                <input
-                  type="text"
-                  id={`md-${m.slug}-zone`}
-                  name="zone"
-                  placeholder="Ex. 40000"
-                />
+                <ChampCommune id={`md-${m.slug}-zone`} placeholder="Ex. 40000" />
               </div>
             </LeadForm>
           </div>

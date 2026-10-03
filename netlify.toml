@@ -108,7 +108,9 @@
 #       google-analytics pour les pixels.
 #
 #   connect-src
-#       Les appels XHR/fetch : le site lui-même (/api/leads), et la
+#       Les appels XHR/fetch : le site lui-même (/api/leads, et
+#       /api/communes pour l'auto-complétion — index embarqué, aucun
+#       appel à geo.api.gouv.fr au runtime : ne pas l'ajouter ici), et la
 #       télémétrie GA4, qui a plusieurs points de collecte régionaux
 #       (*.analytics.google.com) selon le pays du visiteur.
 #
