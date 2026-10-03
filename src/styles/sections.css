@@ -161,11 +161,6 @@
 .c-version__foot{padding:0 var(--s-3) var(--s-3)}
 @media (max-width:900px){.s-versions__grid{grid-template-columns:1fr}}
 
-/* ── Comparatif de prix ── */
-.s-compare{padding:var(--s-7) 0}
-.s-compare__intro{color:var(--pierre);max-width:46ch;margin-top:var(--s-2)}
-.s-compare .c-compare__wrap{margin-top:var(--s-5)}
-
 /* ── Le prix, en très grand, dans le hero piloté au scroll ──
       Il devient le plus gros chiffre de la page : c'est le geste qui fait
       basculer la DA du « premium » vers « accessible et transparent ». */

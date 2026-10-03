@@ -75,7 +75,9 @@
    grep sur les fichiers TSX). Le nouveau bloc plan ne les recycle pas — `.m-plan__grid`
    imposait `aspect-ratio:4/3` et `object-fit:cover`, or un plan recadré
    n'est plus un plan. Il vit dans gamme.css sous `.g-plan`. */
-.m-features{padding-bottom:var(--s-7)}
+/* Padding haut ET bas : la section suit le bloc sombre `.m-arch` sur
+   /maisons, et son sur-titre collait à la bordure. */
+.m-features{padding:var(--s-7) 0}
 .m-features__grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:var(--line)}
 .m-features__item{padding:var(--s-3) var(--s-3) var(--s-3) 0;border-bottom:var(--line);font-size:var(--fs-small);color:var(--pierre)}
 .m-features__item b{display:block;color:var(--anthracite);font-weight:600;margin-bottom:.3rem}

@@ -231,14 +231,14 @@ export default async function HomePage() {
           · le sélecteur de déclinaisons.
 
           Le motif est le même pour les deux : « la home est trop longue,
-          trop fournie et peu lisible ». Le comparatif reste vivant sur
-          /maisons, où il a sa place — le visiteur y est déjà convaincu
-          qu'il veut comprendre. Le sélecteur, lui, n'a plus d'objet sur
-          l'accueil d'une gamme de dix modèles : c'est le rôle de
-          /maisons.
+          trop fournie et peu lisible ». Le comparatif a ensuite quitté
+          /maisons aussi, où le client ne voulait pas de mise en regard
+          avec un « constructeur classique ». Le sélecteur, lui, n'a plus
+          d'objet sur l'accueil d'une gamme de dix modèles : c'est le rôle
+          de /maisons.
 
-          Les composants `Compare` et `VersionCard` ne sont pas
-          supprimés : /maisons les utilise toujours. */}
+          Le composant `Compare` reste documenté au styleguide ;
+          `VersionCard` a été remplacé par `ModeleCard`. */}
 
       {/* ⚠ LA GRILLE DE SIX BLOCS EN TEXTE SEUL A ÉTÉ REMPLACÉE par un
           bandeau : une grande photo, six cartes encadrées qui mordent

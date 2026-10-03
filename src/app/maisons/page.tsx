@@ -2,11 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import FilAriane from "@/components/FilAriane";
 import LeadForm, { ContactFields } from "@/components/LeadForm";
-import Compare from "@/components/Compare";
 import ModeleCard from "@/components/ModeleCard";
 import PrixCompris from "@/components/PrixCompris";
 import SpecList from "@/components/SpecList";
-import { ESSENSYA_DATA, HOUSE, PRICE_FROM, REEL } from "@/data/essensya";
+import { HOUSE, PRICE_FROM, REEL } from "@/data/essensya";
 import { gammeIncomplete, modelesAvecVisuels, MODELES } from "@/data/gamme";
 import { srcSet, vue } from "@/data/visuels";
 import { lecteurBlocs } from "@/lib/blocs";
@@ -42,7 +41,7 @@ import "@/styles/pages/gamme.css";
 
    CE QUE LA PAGE DIT MAINTENANT, et rien de plus : la gamme existe,
    voici ses modèles en images, voici le prix d'entrée avec son
-   périmètre exact, voici ce qui est compris et ce qui ne l'est pas.
+   périmètre exact, voici ce que le prix comprend.
 
    ⚠ TANT QUE LES CARACTÉRISTIQUES MANQUENT, ON LE DIT. Le bloc
    « caractéristiques à venir » n'est pas un pis-aller : un visiteur qui
@@ -61,7 +60,7 @@ const METADATA_DEFAUT: Metadata = {
   description:
     `Une gamme de ${MODELES.length} modèles de maisons individuelles, optimisés jusqu'au dernier mètre carré. ` +
     `À partir de ${fmtPrice(PRICE_FROM)} — ${REEL.mentionPrix.toLowerCase()} ` +
-    `Ce qui est compris et ce qui ne l'est pas, écrit noir sur blanc.`,
+    `Ce que le prix comprend, écrit noir sur blanc.`,
   alternates: { canonical: "/maisons" },
   openGraph: {
     title: titreGamme(),
@@ -69,7 +68,6 @@ const METADATA_DEFAUT: Metadata = {
   },
 };
 
-const D = ESSENSYA_DATA;
 const PRE_LINE = { whiteSpace: "pre-line" } as const;
 
 export default async function MaisonsPage() {
@@ -269,22 +267,13 @@ export default async function MaisonsPage() {
         </div>
       </section>
 
-      {/* ── 7. Le comparatif ──
-             Déplacé de l'accueil, que le client trouvait trop longue. Il
-             garde ici toute sa place : le visiteur qui descend jusque-là
-             veut comprendre le prix. */}
-      <section className="s-compare" id="comparatif">
-        <div className="container">
-          <div className="c-section-head" data-reveal>
-            <span className="c-label c-label--accent">{t("comparatif.surtitre", "Le prix")}</span>
-            <h2>{D.compare.title}</h2>
-            <p className="s-compare__intro">{D.compare.intro}</p>
-          </div>
-          <Compare data={D.compare} />
-        </div>
-      </section>
+      {/* ⚠ LE COMPARATIF « POURQUOI C'EST MOINS CHER » A ÉTÉ RETIRÉ ICI,
+          sur demande du client : pas de mise en regard avec un
+          « constructeur classique », le prix se dit par ce qu'il
+          comprend. Il avait déjà quitté l'accueil, jugée trop longue.
+          `Compare` reste documenté au styleguide. */}
 
-      {/* ── 8. Le dossier ── */}
+      {/* ── 7. Le dossier ── */}
       <section className="s-cta" id="dossier">
         <div className="container">
           <div className="s-cta__grid">
@@ -341,7 +330,7 @@ export default async function MaisonsPage() {
         </div>
       </section>
 
-      {/* ── 9. L'étape d'après ── */}
+      {/* ── 8. L'étape d'après ── */}
       <section className="m-next">
         <div className="container">
           <Link href="/annonces">

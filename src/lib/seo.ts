@@ -135,7 +135,7 @@ export const SEO_ROUTES: SeoRoute[] = [
       description:
         `Une gamme de ${MODELES.length} modèles de maisons individuelles, optimisés jusqu'au ` +
         `dernier mètre carré. À partir de ${fmtPrice(PRICE_FROM)} — ${REEL.mentionPrix.toLowerCase()} ` +
-        `Ce qui est compris et ce qui ne l'est pas, écrit noir sur blanc.`,
+        `Ce que le prix comprend, écrit noir sur blanc.`,
     },
   },
   /* Une entrée par modèle, générée depuis le catalogue : un modèle

@@ -350,12 +350,6 @@ export const PAGES_DEFAUT: PageEditable[] = [
         valeur: "Ce que le prix comprend",
       },
       {
-        cle: "comparatif.surtitre",
-        label: "Petit titre du comparatif",
-        aide: "Le comparatif « Pourquoi c'est moins cher » a quitté l'accueil, jugée trop longue, pour cette page où le visiteur veut comprendre le prix.",
-        valeur: "Le prix",
-      },
-      {
         cle: "dossier.surtitre",
         label: "Petit titre du formulaire de fin",
         valeur: "Le dossier",
