@@ -48,8 +48,6 @@
    avant de dire ce qu'il couvre, jamais l'inverse. */
 .mp-prices { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-4); padding-bottom: var(--s-4); margin-bottom: var(--s-5); border-bottom: 1px solid var(--beton); }
 .mp-prices .c-price-xl { margin-top: var(--s-2); font-size: clamp(2.1rem, 5.4vw, 3.6rem); }
-.mp-price__col h3 { font-size: 1.05rem; margin-bottom: var(--s-3); }
-.mp-price__col--out h3 { color: var(--pierre); }
 @media (max-width: 640px) { .mp-prices { grid-template-columns: 1fr; } }
 
 /* ── Le formulaire (ORIGIN-ID 52) ── */

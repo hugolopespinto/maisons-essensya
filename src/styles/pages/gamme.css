@@ -53,18 +53,31 @@
   .g-fiche__galerie > .g-fiche__vue:first-child{aspect-ratio:16/10}
 }
 
-/* ── LE H1 PORTEUR ──
-   Un seul H1, deux niveaux de lecture : le nom garde l'échelle
-   typographique, les caractéristiques s'inscrivent dessous en mono. */
-.p-head__nom{display:block}
-/* `.32em` du H1 : sur téléphone, où le titre descend à 2.1rem, cela
-   faisait 11,3 px — sous le seuil de lisibilité. Le plancher garde la
-   proportion sur grand écran et la rattrape sur petit. */
-.p-head__specs{display:block;font-size:max(.75rem,.32em);font-family:var(--f-mono);letter-spacing:.04em;color:var(--pierre);margin-top:var(--s-2)}
+/* ── LES CARACTÉRISTIQUES ──
+   Les pictos sous le H1, posés comme sur une fiche annonce. */
+.p-head .c-pictos{margin-top:var(--s-4);border-top:var(--line);padding-top:var(--s-3)}
 
 /* Les ancres du premier écran. `#prix` et `#dossier` existaient sans
    qu'aucun lien n'y mène. */
 .p-head__ancres{display:flex;flex-wrap:wrap;gap:var(--s-3) var(--s-4);margin-top:var(--s-4)}
+
+/* ── CE QUE LE PRIX COMPREND ──
+   Une planche de cases bordées de filets, comme le cartouche d'un plan :
+   un numéro mono suivi d'un trait, une ligne en capitales. Des bordures
+   plutôt qu'un `gap` sur fond `--beton` : si la liste passe à cinq ou
+   sept, la case manquante reste vide au lieu de faire un pavé gris. */
+.g-inclus{display:grid;grid-template-columns:repeat(3,1fr);border-top:var(--line);border-left:var(--line)}
+.g-inclus__item{display:flex;flex-direction:column;justify-content:space-between;gap:var(--s-4);min-height:11rem;padding:var(--s-4);background:var(--craie);border-right:var(--line);border-bottom:var(--line)}
+.g-inclus__num{display:flex;align-items:center;gap:.8rem;font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.2em;color:var(--accent-vert)}
+.g-inclus__num::after{content:"";width:2.5rem;height:1px;background:var(--vert)}
+.g-inclus__txt{font-family:var(--f-display);font-variation-settings:"wdth" 118;font-weight:600;font-size:1.15rem;line-height:1.15;letter-spacing:-.005em;text-transform:uppercase;max-width:22ch;text-wrap:balance}
+.g-inclus__suite{margin-top:var(--s-4)}
+@media (max-width:900px){.g-inclus{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){
+  .g-inclus{grid-template-columns:1fr}
+  .g-inclus__item{min-height:0;gap:var(--s-2);padding:var(--s-3)}
+  .g-inclus__txt{max-width:none}
+}
 
 /* ── LE PLAN ──
    `contain` et non `cover`, et une largeur bornée. Un plan recadré n'est

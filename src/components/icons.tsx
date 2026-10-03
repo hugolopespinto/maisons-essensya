@@ -102,6 +102,17 @@ const paths: Record<IconName, { size: number; body: JSX.Element }> = {
       </>
     ),
   },
+  /* Une porte et sa poignée : le nombre de pièces d'un modèle. La
+     surface, déjà dessinée en plan quadrillé, ne pouvait pas le dire. */
+  door: {
+    size: 20,
+    body: (
+      <>
+        <path d="M3 21h18M6 21V3h12v18" />
+        <circle cx="14.5" cy="12" r=".9" />
+      </>
+    ),
+  },
   /* ── Les cinq pictos du bandeau « Nos points forts ». Même grille de
      24 et même taille de rendu que les blocs de réassurance, pour que
      le trait pèse exactement HAIRLINE comme partout ailleurs. ── */

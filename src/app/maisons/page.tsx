@@ -4,7 +4,8 @@ import FilAriane from "@/components/FilAriane";
 import LeadForm, { ContactFields } from "@/components/LeadForm";
 import Compare from "@/components/Compare";
 import ModeleCard from "@/components/ModeleCard";
-import SpecList, { MarkedList } from "@/components/SpecList";
+import PrixCompris from "@/components/PrixCompris";
+import SpecList from "@/components/SpecList";
 import { ESSENSYA_DATA, HOUSE, PRICE_FROM, REEL } from "@/data/essensya";
 import { gammeIncomplete, modelesAvecVisuels, MODELES } from "@/data/gamme";
 import { srcSet, vue } from "@/data/visuels";
@@ -242,26 +243,24 @@ export default async function MaisonsPage() {
       </section>
 
       {/* ── 6. LE BLOC PRIX ──
-             Les exclusions sont affichées aussi grand que les inclusions.
-             C'est une obligation CCMI autant qu'un argument : un prix bas
-             dont on cache le périmètre n'est pas cru. */}
+             Ce que le prix comprend, et seulement ça : la colonne « Non
+             compris » est partie à la demande du client. La mention sous
+             la planche reste — c'est elle qui rattache le prix d'appel à
+             Pékin, hors terrain et hors adaptation.
+
+             ⚠ `prix.titreCompris`, PAS `prix.titre`. Le titre annonçait
+             « ce qu'il ne comprend pas » ; une page déjà enregistrée dans
+             le back-office garde cette phrase en stock et l'aurait servie
+             par-dessus le nouveau défaut. Une clé neuve, c'est un bloc
+             neuf : l'ancienne valeur n'est plus lue (voir `fusionnerPages`). */}
       <section className="m-price mp-anchor" id="prix">
         <div className="container">
           <div className="c-section-head">
             <span className="c-label">{t("prix.surtitre", "Le prix")}</span>
-            <h2>{t("prix.titre", "Ce qu'il comprend, ce qu'il ne comprend pas")}</h2>
+            <h2>{t("prix.titreCompris", "Ce que le prix comprend")}</h2>
           </div>
 
-          <div className="m-price__grid">
-            <div className="mp-price__col">
-              <h3>Compris dans le prix</h3>
-              <MarkedList items={HOUSE.included} variant="in" />
-            </div>
-            <div className="mp-price__col mp-price__col--out">
-              <h3>Non compris</h3>
-              <MarkedList items={HOUSE.excluded} variant="out" />
-            </div>
-          </div>
+          <PrixCompris />
 
           <p className="m-price__note">
             {fmtPrice(PRICE_FROM)} — {REEL.mentionPrix} Chiffrage définitif selon le

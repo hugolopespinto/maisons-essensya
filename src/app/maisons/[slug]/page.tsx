@@ -4,8 +4,9 @@ import { notFound } from "next/navigation";
 import FilAriane from "@/components/FilAriane";
 import LeadForm, { ContactFields } from "@/components/LeadForm";
 import ModeleCard from "@/components/ModeleCard";
-import { MarkedList } from "@/components/SpecList";
-import { HOUSE, PRICE_FROM, REEL } from "@/data/essensya";
+import PrixCompris from "@/components/PrixCompris";
+import { Picto } from "@/components/icons";
+import { PRICE_FROM, REEL } from "@/data/essensya";
 import {
   descriptionModele,
   estPubliable,
@@ -22,6 +23,7 @@ import { srcSet, type Visuel } from "@/data/visuels";
 import { fmtPrice, fmtSurface } from "@/lib/format";
 import { jsonLd, produitModele } from "@/lib/schema";
 import { resolveMetadata } from "@/lib/seo";
+import type { IconName } from "@/types";
 import "@/styles/pages/modele.css";
 import "@/styles/pages/maison.css";
 import "@/styles/pages/gamme.css";
@@ -126,15 +128,21 @@ export default async function ModelePage({
   const facade = facadeDe(m);
   const autres = voisinsDe(m, 3);
 
-  const specs: [string, string][] = [
-    m.surface !== undefined ? ["Surface habitable", fmtSurface(m.surface)] : null,
-    m.chambres !== undefined ? ["Chambres", String(m.chambres)] : null,
-    m.pieces !== undefined ? ["Pièces", String(m.pieces)] : null,
+  /* Les pictos des fiches annonce : même jeu d'icônes, même lecture
+     — le chiffre, puis ce qu'il compte. */
+  const specs = [
+    m.surface !== undefined
+      ? { icon: "surface", value: fmtSurface(m.surface), label: "Surface habitable" }
+      : null,
+    m.chambres !== undefined ? { icon: "bed", value: m.chambres, label: "Chambres" } : null,
+    m.pieces !== undefined ? { icon: "door", value: m.pieces, label: "Pièces" } : null,
     /* « Oui » / « Non », et non une surface : le client a dit que la
        superficie du garage n'avait pas d'importance. `false` s'affiche
-       donc, `undefined` fait disparaître la ligne. */
-    m.garage !== undefined ? ["Garage", m.garage ? "Oui" : "Non"] : null,
-  ].filter(Boolean) as [string, string][];
+       donc, `undefined` fait disparaître le picto. */
+    m.garage !== undefined
+      ? { icon: "garage", value: m.garage ? "Oui" : "Non", label: "Garage" }
+      : null,
+  ].filter(Boolean) as { icon: IconName; value: string | number; label: string }[];
 
   return (
     <main className="page">
@@ -163,23 +171,19 @@ export default async function ModelePage({
           />
           <span className="c-label c-label--accent">Modèle</span>
           {/* Le H1 affichait « Ankara » : aucun terme de la requête visée.
-              Un seul H1, deux niveaux visuels — l'échelle typographique ne
-              bouge pas, les mots arrivent. Le département n'y entre PAS :
-              il ferait doublon avec l'accueil et /maisons, et la fiche
-              concourt sur la typologie, pas sur la géographie. */}
-          <h1>
-            <span className="p-head__nom">Maison {m.nom}</span>
-            {specs.length > 0 && (
-              <span className="p-head__specs">{specsModele(m).join(" · ")}</span>
-            )}
-          </h1>
+              Il portait aussi, en sous-ligne, « 75 m² · 2 chambres · 3
+              pièces · garage » — mot pour mot ce que les pictos disent
+              juste dessous. La sous-ligne est partie : les chiffres restent
+              dans le <title> (`titreModele`) et dans les pictos. Le
+              département n'y entre PAS : il ferait doublon avec l'accueil
+              et /maisons, et la fiche concourt sur la typologie, pas sur la
+              géographie. */}
+          <h1>Maison {m.nom}</h1>
 
           {specs.length > 0 ? (
-            <div className="c-plate" style={{ marginTop: "var(--s-3)" }}>
-              {specs.map(([k, v]) => (
-                <span className="c-plate__spec" key={k}>
-                  {k} <strong>{v}</strong>
-                </span>
+            <div className="c-pictos">
+              {specs.map((s) => (
+                <Picto icon={s.icon} value={s.value} label={s.label} key={s.label} />
               ))}
             </div>
           ) : (
@@ -333,18 +337,14 @@ export default async function ModelePage({
         <div className="container">
           <div className="c-section-head">
             <span className="c-label">Le prix</span>
-            <h2>Ce qu&apos;il comprend, ce qu&apos;il ne comprend pas</h2>
+            <h2>Ce que le prix comprend</h2>
           </div>
-          <div className="m-price__grid">
-            <div className="mp-price__col">
-              <h3>Compris dans le prix</h3>
-              <MarkedList items={HOUSE.included} variant="in" />
-            </div>
-            <div className="mp-price__col mp-price__col--out">
-              <h3>Non compris</h3>
-              <MarkedList items={HOUSE.excluded} variant="out" />
-            </div>
-          </div>
+          <PrixCompris />
+          <p className="g-inclus__suite">
+            <a href="#dossier" className="c-link">
+              Le détail dans le dossier ↓
+            </a>
+          </p>
         </div>
       </section>
 

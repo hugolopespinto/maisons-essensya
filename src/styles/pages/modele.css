@@ -84,14 +84,12 @@
 .m-features__item:nth-child(3n+1){padding-left:0}
 @media (max-width:900px){.m-features__grid{grid-template-columns:1fr}.m-features__item{border-right:none !important;padding-left:0 !important}}
 .m-price{background:var(--sable);padding:var(--s-7) 0}
-.m-price__grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-6);align-items:start}
 .m-price__amount{font-family:var(--f-mono);font-weight:500;font-size:clamp(2.2rem,5vw,3.6rem);line-height:1;margin-top:var(--s-3)}
 .m-price__amount small{display:block;font-size:var(--fs-label);letter-spacing:.16em;text-transform:uppercase;color:var(--pierre);margin-top:.6rem}
 .m-price__included{border-top:1px solid var(--beton)}
 .m-price__included li{padding:var(--s-2) 0;border-bottom:1px solid var(--beton);font-size:var(--fs-small);display:flex;gap:.8rem;align-items:baseline}
 .m-price__included li::before{content:"—";color:var(--accent);font-family:var(--f-mono)}
 .m-price__note{margin-top:var(--s-3);font-size:var(--fs-label);font-family:var(--f-mono);color:var(--pierre);letter-spacing:.05em}
-@media (max-width:900px){.m-price__grid{grid-template-columns:1fr}}
 .m-opps{padding:var(--s-7) 0}
 .m-opps__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-3)}
 @media (max-width:900px){.m-opps__grid{grid-template-columns:1fr}}

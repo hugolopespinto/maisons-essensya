@@ -10,7 +10,7 @@
 
 export type IconName =
   | "shield" | "ruler" | "pin" | "key"
-  | "surface" | "bed" | "land" | "loc" | "price" | "garage"
+  | "surface" | "bed" | "land" | "loc" | "price" | "garage" | "door"
   /* Ajoutées pour le bandeau « Nos points forts », qui demande un picto
      par bloc. Le jeu d'origine décrit un bien immobilier — surface, lit,
      terrain ; il ne savait dire ni « conception » ni « qualité ». */
