@@ -70,7 +70,12 @@ export const titreGamme = () => `Nos modèles de maisons dès ${fmtPrice(PRICE_F
  * sont quand même essayés.
  */
 export function titreCourt(base: string, ...complements: string[]): string {
-  let t = base.trim().replace(/s+/g, " ");
+  /* ⚠ `\s`, PAS `s`. La barre oblique inverse avait disparu de ces trois
+     expressions : `/s+/g` remplaçait chaque LETTRE « s » par une espace.
+     Toutes les meta descriptions par défaut et les titres d'agence et
+     d'annonce étaient servis à Google ainsi : « Une gamme de mai on
+     individuelle  optimi ée », « Agence de Tarta  — Landes ». */
+  let t = base.trim().replace(/\s+/g, " ");
   for (const c of complements) {
     const essai = `${t} — ${c.trim()}`;
     if (c.trim() && essai.length <= BUDGET_TITRE) t = essai;
@@ -79,13 +84,16 @@ export function titreCourt(base: string, ...complements: string[]): string {
 }
 
 export function couper(texte: string, max: number = SEO_LIMITES.description): string {
-  const t = texte.trim().replace(/s+/g, " ");
+  const t = texte.trim().replace(/\s+/g, " ");
   if (t.length <= max) return t;
   /* −1 pour l'ellipse. On remonte au dernier espace, et on retire une
      ponctuation laissée en bout de coupe. */
   const brut = t.slice(0, max - 1);
   const espace = brut.lastIndexOf(" ");
-  return `${(espace > max * 0.6 ? brut.slice(0, espace) : brut).replace(/[s,;:.-–—]+$/, "")}…`;
+  /* Le tiret est échappé : non échappé, « .-– » était une PLAGE de U+002E
+     à U+2013, qui contient toutes les lettres — la coupe mangeait le
+     dernier mot entier au lieu de la seule ponctuation finale. */
+  return `${(espace > max * 0.6 ? brut.slice(0, espace) : brut).replace(/[\s,;:.\-–—]+$/, "")}…`;
 }
 
 export interface SeoRoute {
