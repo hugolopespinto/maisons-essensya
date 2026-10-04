@@ -14,3 +14,13 @@
 .pc-commit__item p{color:var(--pierre);font-size:var(--fs-small);max-width:42em}
 @media (max-width:800px){.pc-commit__item{grid-template-columns:1fr}}
 
+
+/* ⚠ LES ANCRES SANS REMBOURRAGE ARRIVENT SOUS L'EN-TÊTE FIXE.
+   « Foire aux questions » (la barre) mène à #faq, « Ce que le prix
+   comprend » à #prix. Ces deux sections ouvrent sans rembourrage haut
+   (`paddingTop: 0`) : au saut, leur bord touchait le haut de l'écran, et
+   les 76 px de l'en-tête cachaient le surtitre et la première ligne du
+   titre. #etapes et #engagements, elles, ont leur rembourrage et
+   arrivent bien. Pas de `scroll-padding-top` global sur `html` : il
+   s'ajouterait aux ancres qui ont déjà le leur. */
+#faq,#prix{scroll-margin-top:calc(var(--header-h) + var(--s-3))}

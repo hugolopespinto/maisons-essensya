@@ -18,15 +18,17 @@ import { FicheAnnonce, metadataFiche } from "../fiche";
    ════════════════════════════════════════════════════════════════ */
 
 /* Pré-rendu des versions connues au build, les autres à la demande —
-   comme la fiche de la parcelle. Écrit pour les deux modes d'appel de
-   Next : une fois par parcelle (avec `params.ref`), ou une seule fois
-   pour tout le catalogue. */
-export async function generateStaticParams({ params }: { params?: { ref?: string } }) {
+   comme la fiche de la parcelle. Les deux segments sont produits ICI,
+   pour tout le catalogue : `[ref]` n'a pas de layout qui génère ses
+   paramètres, Next appelle donc cette fonction une seule fois, sans
+   paramètre parent.
+   ⚠ SANS ARGUMENT, et c'est voulu. La version précédente déclarait un
+   `params` optionnel pour un appel « par parcelle » qui n'arrivait
+   jamais — et le contrôle de types du build webpack (NextTypesPlugin)
+   exige un `params` obligatoire : `next build --webpack` échouait. */
+export async function generateStaticParams() {
   const annonces = await getAnnonces();
-  const cible = params?.ref
-    ? annonces.filter((a) => a.id.toLowerCase() === params.ref)
-    : annonces;
-  return cible.flatMap((a) =>
+  return annonces.flatMap((a) =>
     /* Les seules versions vers lesquelles le listing renvoie : les
        autres mènent à la fiche ordinaire (voir `urlVersion`). */
     versionsAvecFiche(a).map((n) => ({ ref: a.id.toLowerCase(), version: slugChambres(n) })),

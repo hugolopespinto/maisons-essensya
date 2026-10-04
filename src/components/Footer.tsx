@@ -1,5 +1,6 @@
 import Link from "next/link";
 import CookiePrefsLink from "@/components/CookiePrefsLink";
+import { colonnesPiedDefaut, type ColonnePied, type LienPied } from "@/data/pied-de-page";
 
 /* ⚠ CETTE LISTE ÉTAIT ÉCRITE EN DUR, et elle était déjà fausse : elle
    annonçait les Deux-Sèvres et le Maine-et-Loire, absents du flux, et
@@ -12,98 +13,15 @@ import CookiePrefsLink from "@/components/CookiePrefsLink";
    vide disparaît du pied de page au lieu d'y laisser un lien mort. */
 
 /** Un lien de zone : libellé prêt à afficher, chemin déjà calculé. */
-export interface LienZone {
-  href: string;
-  label: string;
-}
+export type LienZone = LienPied;
 
 /** Une colonne du pied de page, déjà nettoyée par le layout racine. */
-export interface ColonneChrome {
-  titre: string;
-  liens: { label: string; href: string }[];
-}
+export type ColonneChrome = ColonnePied;
 
-/* Colonnes d'origine. Comme pour l'en-tête, elles restent le REPLI des
-   colonnes éditables : rien de saisi dans /admin/menus, ou tout effacé,
-   et le pied de page garde exactement ces quatre colonnes. */
-/* ⚠ CE PIED DE PAGE SUIT LE BRIEF DU 22/09 AU MOT PRÈS, Y COMPRIS POUR
-   DES PAGES QUI N'ONT PAS ENCORE LEUR CONTENU. C'est une demande
-   explicite du client, et elle est tenable parce que ces pages EXISTENT :
-   elles répondent 200, expliquent qu'elles arrivent et renvoient vers
-   l'information équivalente (voir `EnPreparation.tsx`). Aucun de ces
-   liens ne mène à une 404.
-
-   Ce qu'il ne faut pas faire à la place, et qui a été écarté :
-     · pointer vers des URLs inexistantes — le pied de page est sur les
-       quarante-quatre pages du site, cela ferait autant de chemins vers
-       des 404, offerts à Google au passage ;
-     · afficher les libellés sans lien — le pied ne ressemblerait plus au
-       brief, et du texte gris non cliquable au milieu de liens est un
-       défaut d'interface.
-
-   Les pages en préparation sont en `noindex` et hors du sitemap : elles
-   sont atteignables par un visiteur, invisibles pour Google, et elles
-   basculeront sans changer d'URL le jour où leur contenu arrivera. */
-const colonnesDefaut = (agences: LienZone[]): ColonneChrome[] => [
-  {
-    /* « Nos Maisons », avec la majuscule du brief. */
-    titre: "Nos Maisons",
-    /* Le brief remplace les noms de modèles par un découpage selon le
-       nombre de chambres. Ces liens mènent, comme ceux du menu « Plans de
-       maisons », au listing des annonces filtré sur ce nombre de chambres
-       — la même destination, d'où qu'on clique.
-
-       ⚠ Les pages /plans-de-maison/N-chambres qu'ils visaient étaient
-       restées vides (sur les onze modèles de `gamme.ts`, seul Ankara a
-       son nombre de chambres). Elles redirigent désormais vers ce même
-       listing, en temporaire : elles pourront revenir quand les plans par
-       nombre de chambres seront livrés. */
-    liens: [
-      { href: "/annonces?chambres=1", label: "Maison 1 chambre" },
-      { href: "/annonces?chambres=2", label: "Maison 2 chambres" },
-      { href: "/annonces?chambres=3", label: "Maison 3 chambres" },
-      { href: "/annonces?chambres=4", label: "Maison 4 chambres" },
-    ],
-  },
-  {
-    titre: "Projets de construction",
-    /* Les six entrées géographiques du brief. ⚠ Le flux Vitahome ne sert
-       aujourd'hui ni les Landes, ni la Gironde, ni le Pays basque — il
-       rend la Charente-Maritime, la Vendée et l'Eure-et-Loir. Ces pages
-       annoncent donc un territoire, pas un stock, tant qu'un flux pour
-       ces départements n'est pas branché. */
-    liens: [
-      { href: "/construire/landes", label: "Construction de maisons dans les Landes" },
-      { href: "/construire/pays-basque", label: "Construction de maisons au Pays basque" },
-      { href: "/construire/gironde", label: "Construction de maisons en Gironde" },
-      { href: "/terrains-constructibles/landes", label: "Terrains constructibles dans les Landes" },
-      { href: "/terrains-constructibles/pays-basque", label: "Terrains constructibles au Pays basque" },
-      { href: "/terrains-constructibles/gironde", label: "Terrains constructibles en Gironde" },
-    ],
-  },
-  {
-    titre: "Nos agences",
-    /* ⚠ LES LIBELLÉS VIENNENT DE LA BASE, PAS DU BRIEF, et c'est
-       délibéré : le brief écrit « Agence à Tartas » quand le back-office
-       dit « Agence de Tartas ». Recopier le brief ici figerait cinq noms
-       que Julien peut changer lui-même en trente secondes — et la
-       prochaine agence ouverte n'apparaîtrait pas. La source reste
-       l'écran Agences ; le libellé s'y corrige. */
-    liens: agences.length ? agences : [{ href: "/agences", label: "Toutes nos agences" }],
-  },
-  {
-    titre: "L'expérience ESSENSYA",
-    liens: [
-      { href: "/qui-sommes-nous", label: "Qui sommes-nous" },
-      { href: "/concept", label: "Le concept ESSENSYA" },
-      { href: "/accompagnement", label: "L'accompagnement ESSENSYA" },
-      { href: "/concept#engagements", label: "Nos engagements" },
-      { href: "/guides/choisir-son-plan-de-maison", label: "Guide pour choisir votre plan de maison" },
-      { href: "/guides/choisir-son-terrain", label: "Guide pour choisir votre terrain" },
-      { href: "/contact", label: "Contact" },
-    ],
-  },
-];
+/* Colonnes d'origine : `colonnesPiedDefaut`, dans src/data/pied-de-page.ts,
+   que l'écran Menus lit aussi. Comme pour l'en-tête, elles restent le
+   REPLI des colonnes éditables : rien de saisi dans /admin/menus, ou tout
+   effacé, et le pied de page garde exactement ces quatre colonnes. */
 
 /* Mono pour la donnée, mais pas la classe .c-label : sur le fond noir du
    footer, le gris pierre tombe à 3,4:1 — un contact doit rester lisible. */
@@ -151,7 +69,7 @@ export default function Footer({
   colonnes,
   agences = [],
 }: FooterProps) {
-  const cols = colonnes ?? colonnesDefaut(agences);
+  const cols = colonnes ?? colonnesPiedDefaut(agences);
 
   return (
     <footer className="site-footer" id="siteFooter">

@@ -453,8 +453,20 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
        centraient quand les liens s'alignaient à gauche. Mesuré à 1366 px
        AVEC une barre de défilement classique, il reste 12 px de marge :
        un libellé allongé en back-office se paie donc vite, c'est l'écran
-       Menus qui le dit au client. */
-.site-header .container{align-self:stretch;max-width:1600px;gap:var(--s-2)}
+       Menus qui le dit au client.
+
+   ⚠ LES SEUILS SONT EN `em`, PAS EN `px` — et le conteneur en `rem`.
+   Les libellés, le logo et le bouton sont dimensionnés en `rem` : ils
+   grossissent quand le visiteur agrandit la taille de police de son
+   navigateur. Avec des seuils en `px`, la barre ne passait pas au menu
+   mobile pour autant : à 20 px de police, le bouton « Parler de mon
+   projet » sortait de l'écran de 206 px à 1366 px de large (RGAA 10.4).
+   Un `em` de media query vaut la police par défaut du navigateur : les
+   seuils grandissent avec le contenu. À 16 px, ils valent exactement
+   les anciens — 85em = 1360 px, 90em = 1440 px, 107,5em = 1720 px,
+   100rem = 1600 px. Le seuil de 85em est repris tel quel dans
+   Header.tsx (`DESKTOP`) : les deux doivent rester d'accord. */
+.site-header .container{align-self:stretch;max-width:100rem;gap:var(--s-2)}
 .site-header .logo,.header-cta{flex:none}
 .main-nav{display:flex;align-self:stretch}
 .main-nav__list{display:flex;align-items:stretch;gap:clamp(.8rem,1vw,1.75rem)}
@@ -462,7 +474,7 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
 .main-nav__link{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--f-mono);font-size:var(--fs-label);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;opacity:.85;transition:opacity var(--dur-fast);padding:.5rem 0}
 .main-nav__link:hover,.main-nav__item.is-open>.main-nav__link{opacity:1}
 .main-nav__item--tel{display:none}
-@media (min-width:1720px){.main-nav__item--tel{display:flex}}
+@media (min-width:107.5em){.main-nav__item--tel{display:flex}}
 /* 24 × 24 px : la cible minimale de la WCAG 2.2 (2.5.8) — le chevron
    seul en fait 10. `color:inherit` est indispensable : un <button> ne
    reçoit pas la couleur de son parent, et restait noir sur la photo de
@@ -504,7 +516,17 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
    Le rembourrage supérieur laisse la place à la barre, qui reste posée
    au-dessus du panneau (z-index 100 contre 99). */
 .mobile-nav{position:fixed;inset:0;z-index:99;background:var(--anthracite);color:var(--craie);display:flex;flex-direction:column;justify-content:flex-start;overflow-y:auto;overscroll-behavior:contain;padding:calc(var(--header-h) + var(--s-3)) var(--gutter) var(--s-5);opacity:0;visibility:hidden;transition:opacity var(--dur-fast),visibility var(--dur-fast)}
-.mobile-nav.is-open{opacity:1;visibility:visible}
+/* Ouvert, deux règles de plus :
+   · la visibilité bascule SANS délai (seul le fondu d'opacité joue).
+     Sinon le panneau est encore `hidden` au moment où Header.tsx y place
+     le focus, le navigateur refuse, et le focus restait sur le burger.
+     La fermeture garde son fondu : la règle de base retarde `visibility`.
+   · il passe au-dessus du bandeau cookies (z-index 120), qui en couvrait
+     la moitié basse sur téléphone : les rubriques du bas ne se
+     touchaient plus. L'en-tête le suit, pour garder le bouton Fermer
+     au-dessus. Tous deux restent sous la fenêtre de préférences (130). */
+.mobile-nav.is-open{opacity:1;visibility:visible;z-index:124;transition:opacity var(--dur-fast),visibility 0s}
+.site-header.is-menu-ouvert{z-index:125}
 .mobile-nav__list{display:flex;flex-direction:column}
 .mobile-nav__link{display:flex;align-items:center;gap:.5em;width:100%;text-align:left;color:inherit;font-family:var(--f-display);font-variation-settings:"wdth" 118;font-weight:600;text-transform:uppercase;font-size:clamp(1.2rem,5vw,2.2rem);line-height:1.25;padding:.35rem 0}
 /* Chevron calé à droite pour TOUTES les rubriques : collé au texte, il
@@ -526,8 +548,8 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
    menu mobile : c'est le seul chemin de l'en-tête vers /contact, et la
    place ne manque plus une fois les rubriques repliées. En deçà, le
    bouton collant du bas d'écran prend le relais. */
-@media (max-width:1439px){.header-cta{padding:.75rem 1rem;letter-spacing:.1em}}
-@media (max-width:1359px){.main-nav{display:none}.nav-toggle{display:flex}.header-cta{margin-left:auto}}
+@media (max-width:89.99em){.header-cta{padding:.75rem 1rem;letter-spacing:.1em}}
+@media (max-width:84.99em){.main-nav{display:none}.nav-toggle{display:flex}.header-cta{margin-left:auto}}
 @media (max-width:900px){.header-cta{display:none}}
 /* Mode landing : chrome réduit */
 body.lp-mode .main-nav, body.lp-mode .nav-toggle{display:none}

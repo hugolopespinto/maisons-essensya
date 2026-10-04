@@ -116,6 +116,12 @@ const TRANSPARENT = [
 /** Ce qui reste atteignable au clavier dans le panneau mobile. */
 const FOCUSABLE = "a[href], button:not([disabled])";
 
+/* Le seuil de la barre de bureau. C'est celui de base.css
+   (`@media (max-width:84.99em)` y fait passer au menu mobile) : en `em`,
+   pour suivre la taille de police choisie par le visiteur. Les deux
+   doivent rester d'accord. */
+const DESKTOP = "(min-width: 85em)";
+
 export interface HeaderProps {
   /** Le mot du bloc-marque. Réglages → « Nom du site ». */
   marque: string;
@@ -191,9 +197,18 @@ export default function Header({
     parSurvol.current = false;
     setOuvert(null);
   }, []);
+  /** Le focus clavier est-il dans le panneau de cette rubrique ? */
+  const focusDansPanneau = (i: number) =>
+    !!barreRef.current
+      ?.querySelector(`[data-rubrique="${i}"] .main-nav__sub`)
+      ?.contains(document.activeElement);
   const survoler = (i: number) => {
     annulerFermeture();
     if (ouvert === i) return;
+    /* Le clavier travaille dans une autre rubrique : la souris qui passe
+       ne la lui retire pas. Le panneau se fermerait sous le focus, qui
+       finirait sur la page, hors de vue. */
+    if (ouvert !== null && focusDansPanneau(ouvert)) return;
     parSurvol.current = true;
     setOuvert(i);
   };
@@ -222,6 +237,24 @@ export default function Header({
       if (m.current) clearTimeout(m.current);
     };
   }, []);
+
+  /* ⚠ LE PASSAGE DU SEUIL REFERME CE QUI N'A PLUS SA PLACE.
+     Un iPad Pro qui passe du portrait (1024 px) au paysage (1366 px), ou
+     une fenêtre qu'on agrandit, traversent ce seuil :
+       · vers le bureau, le panneau mobile restait ouvert par-dessus la
+         page, défilement bloqué, alors que son seul bouton de fermeture
+         — le burger — venait de disparaître ;
+       · vers le mobile, un sous-menu épinglé gardait l'en-tête opaque
+         sans plus avoir de barre où s'afficher. */
+  useEffect(() => {
+    const mq = window.matchMedia(DESKTOP);
+    const onChange = () => {
+      if (mq.matches) setOpen(false);
+      else fermerSousMenu();
+    };
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, [fermerSousMenu]);
 
   /* Échap et clic en dehors referment le sous-menu ouvert. Échap rend le
      focus au bouton de la rubrique s'il était dans son sous-menu — sans
@@ -273,14 +306,23 @@ export default function Header({
     const panel = navRef.current;
     if (!panel) return;
 
-    /* Seulement ce qui est affiché : les liens d'une rubrique repliée
-       sont dans le DOM mais `hidden`. Les compter ferait du dernier
-       d'entre eux la borne du piège, et la tabulation s'échapperait. */
-    const items = () =>
-      Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+    /* Le cycle du piège : le bouton « Fermer le menu » d'abord — il est
+       dans l'en-tête, hors du panneau, et sans lui le seul moyen de
+       sortir au clavier était Échap, que rien n'indique —, puis ce qui
+       est affiché dans le panneau. Seulement ce qui est affiché : les
+       liens d'une rubrique repliée sont dans le DOM mais `hidden`. Les
+       compter ferait du dernier d'entre eux la borne du piège, et la
+       tabulation s'échapperait. */
+    const items = () => [
+      ...(toggleRef.current ? [toggleRef.current] : []),
+      ...Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
         (el) => el.getClientRects().length > 0,
-      );
-    items()[0]?.focus();
+      ),
+    ];
+    /* Le focus entre dans le panneau, sur sa première rubrique. Il n'y
+       entrait pas : le panneau était encore `visibility:hidden` au début
+       de sa transition, et le navigateur refusait — voir base.css. */
+    items()[1]?.focus();
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -294,11 +336,12 @@ export default function Header({
       if (!f.length) return;
       const first = f[0];
       const last = f[f.length - 1];
-      const active = document.activeElement;
-      if (e.shiftKey && (active === first || !panel.contains(active))) {
+      const active = document.activeElement as HTMLElement | null;
+      const dedans = !!active && f.includes(active);
+      if (e.shiftKey && (active === first || !dedans)) {
         e.preventDefault();
         last.focus();
-      } else if (!e.shiftKey && active === last) {
+      } else if (!e.shiftKey && (active === last || !dedans)) {
         e.preventDefault();
         first.focus();
       }
@@ -353,7 +396,7 @@ export default function Header({
   return (
     <>
       <header
-        className={`site-header${solide ? " is-solid" : ""}`}
+        className={`site-header${solide ? " is-solid" : ""}${open ? " is-menu-ouvert" : ""}`}
         id="siteHeader"
       >
         <div className="container">
@@ -392,6 +435,15 @@ export default function Header({
                        qui suit ne le referme. */
                     onPointerEnter={(ev) => ev.pointerType === "mouse" && survoler(i)}
                     onPointerLeave={(ev) => ev.pointerType === "mouse" && quitter()}
+                    /* Le focus clavier qui entre dans un menu ouvert au
+                       survol l'épingle : la souris qui s'en va ne le
+                       referme plus sous lui. Il se refermera quand le
+                       focus sortira (onBlur), à Échap ou au clic dehors. */
+                    onFocus={() => {
+                      if (ouvert !== i) return;
+                      annulerFermeture();
+                      parSurvol.current = false;
+                    }}
                     onBlur={(ev) => {
                       if (estOuvert && !ev.currentTarget.contains(ev.relatedTarget as Node | null)) {
                         fermerSousMenu();
@@ -429,7 +481,11 @@ export default function Header({
                         <Chevron />
                       </button>
                     )}
-                    <ul className="main-nav__sub" id={idSous}>
+                    {/* `inert` quand il est fermé : pendant son fondu de
+                        sortie, le panneau est encore visible, et ses liens
+                        restaient atteignables au Tab — le focus pouvait y
+                        entrer, puis tomber sur la page à la fin du fondu. */}
+                    <ul className="main-nav__sub" id={idSous} inert={!estOuvert}>
                       {enfants.map((c, k) => (
                         <li key={`${c.href}-${k}`}>
                           <Link href={c.href} onClick={fermerSousMenu}>

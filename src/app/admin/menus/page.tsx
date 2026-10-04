@@ -6,8 +6,10 @@ import { redirect } from "next/navigation";
 import { AGENCIES, ESSENSYA_DATA } from "@/data/essensya";
 import { MODELES } from "@/data/gamme";
 import { NAVIGATION } from "@/data/navigation";
+import { colonnesPiedDefaut } from "@/data/pied-de-page";
+import { agencesPubliees } from "@/lib/agences";
 import { articlesPublies } from "@/lib/blog";
-import { agencyUrl, deptUrl, houseUrl, landingUrl } from "@/lib/format";
+import { agencyUrl, deptUrl, landingUrl } from "@/lib/format";
 import { departementsPubliables } from "@/lib/geo";
 import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { ColonneFooter, LienMenu, Menus } from "@/lib/store/types";
@@ -147,7 +149,12 @@ function normaliseChemin(p: string): string {
 
    L'en-tête est LU dans `src/data/navigation.ts`, la source même du
    composant : recopié à la main, il avait déjà divergé (il ignorait
-   « Réalisations »). Le pied de page, lui, reste recopié ci-dessous.
+   « Réalisations »). Le pied de page l'est aussi, dans
+   `src/data/pied-de-page.ts`. ⚠ Sa copie à la main était restée à
+   l'ANCIEN pied de page quand celui-ci est passé au brief du 22/09 ; et
+   comme l'en-tête et le pied s'enregistrent d'un même formulaire, le
+   premier « Enregistrer » aurait remplacé sans prévenir le pied de page
+   du site par cette vieille copie.
 
    Le premier enregistrement fait basculer la donnée dans le stockage ;
    ces constantes ne sont alors plus consultées.
@@ -164,80 +171,18 @@ const HEADER_ACTUEL: LienMenu[] = NAVIGATION.map((e, i) => ({
   enfants: (e.enfants ?? []).map((c, k) => lien(`h-${i}-${k}`, c.label, c.href, k)),
 }));
 
-const colonne = (
-  id: string,
-  titre: string,
-  liens: [string, string][],
-  ordre: number,
-): ColonneFooter => ({
-  id,
-  titre,
-  liens: liens.map(([label, href], i) => lien(`${id}-${i}`, label, href, i)),
-  ordre,
-});
-
 /**
- * Les vraies zones, posées dans la colonne « Où nous construisons » du
- * pied de page par défaut. Elle est livrée VIDE dans `FOOTER_ACTUEL` :
- * son contenu dépend du stock, et le back-office doit montrer au client
- * ce que le site affiche réellement, pas une liste figée qui l'a déjà
- * trahi une fois.
+ * Le pied de page affiché aujourd'hui : les colonnes du code, avec les
+ * agences publiées — exactement ce que le layout racine passe au
+ * composant Footer. Le client remet en forme ce qu'il voit sur le site.
  */
-function avecZones(
-  colonnes: ColonneFooter[],
-  zones: { nom: string; code: string; slug: string }[],
-): ColonneFooter[] {
-  return colonnes.map((c) =>
-    c.id === "f-depts"
-      ? {
-          ...c,
-          liens: zones.map((z, i) =>
-            lien(`f-depts-${i}`, `${z.nom} (${z.code})`, deptUrl(z.slug), i),
-          ),
-        }
-      : c,
-  );
-}
-
-const FOOTER_ACTUEL: ColonneFooter[] = [
-  colonne(
-    "f-maison",
-    "La maison",
-    [
-      ["La maison", houseUrl()],
-      ...MODELES.slice(0, 3).map((m): [string, string] => [m.nom, `/maisons/${m.slug}`]),
-      ["Ce qui est compris", `${houseUrl()}#prix`],
-    ],
-    0,
-  ),
-  colonne(
-    "f-terrains",
-    "Terrains",
-    [
-      ["Tous nos terrains", "/annonces"],
-      ["Terrain seul", "/annonces?type=terrain"],
-      ["Terrain + maison", "/annonces?type=terrain-maison"],
-      ["Demander un rappel", "/contact"],
-    ],
-    1,
-  ),
-  /* Les zones réelles sont injectées à l'affichage : voir `avecZones()`.
-     Écrites en dur ici, elles annonçaient deux départements absents du
-     flux et pointaient vers /annonces?dept=NN, qui est /annonces. */
-  colonne("f-depts", "Où nous construisons", [], 2),
-  colonne(
-    "f-essensya",
-    "Essensya",
-    [
-      ["Notre concept", "/concept"],
-      ["Nos engagements", "/concept#engagements"],
-      ["Nos réalisations", "/realisations"],
-      ["Nos agences", "/agences"],
-      ["Contact", "/contact"],
-    ],
-    3,
-  ),
-];
+const footerActuel = (agences: { href: string; label: string }[]): ColonneFooter[] =>
+  colonnesPiedDefaut(agences).map((c, i) => ({
+    id: `f-${i}`,
+    titre: c.titre,
+    liens: c.liens.map((l, k) => lien(`f-${i}-${k}`, l.label, l.href, k)),
+    ordre: i,
+  }));
 
 /* ──────────────────────────────────────────────────────────────────
    DIAGNOSTIC D'UNE ADRESSE
@@ -373,7 +318,11 @@ export default async function MenusPage({
   const heritePied = content.menus.footer.length === 0;
   const header = heriteEntete ? HEADER_ACTUEL : content.menus.header;
   const zones = await departementsPubliables();
-  const footer = heritePied ? avecZones(FOOTER_ACTUEL, zones) : content.menus.footer;
+  /* Les agences comme le layout les lit : la colonne « Nos agences » de
+     l'écran est celle du site, à la lettre près. */
+  const footer = heritePied
+    ? footerActuel((await agencesPubliees()).map((g) => ({ href: agencyUrl(g), label: g.name })))
+    : content.menus.footer;
 
   /* ════ Routes connues et suggestions ════ */
   /* Le filtre partagé, pas une quatrième copie approximative : celle-ci
@@ -824,6 +773,14 @@ export default async function MenusPage({
           affichées tout en bas : elles sont obligatoires et ne dépendent pas de ces
           colonnes.
         </p>
+        {heritePied ? (
+          <p className="adm-field__aide">
+            Tant que rien n&apos;est enregistré ici, la colonne « Nos agences » suit
+            d&apos;elle-même l&apos;écran Agences. Une fois le pied de page enregistré,
+            c&apos;est une liste comme les autres : une agence ouverte ensuite
+            s&apos;y ajoute à la main.
+          </p>
+        ) : null}
       </section>
 
       {footer.length === 0 ? (
