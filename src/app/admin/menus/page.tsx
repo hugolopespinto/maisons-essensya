@@ -81,10 +81,10 @@ type Suggestion = { href: string; label: string };
 const PAGES_FIXES: Suggestion[] = [
   { href: "/", label: "Accueil" },
   { href: "/maisons", label: "La maison" },
-  { href: "/annonces?chambres=1", label: "Plans maison 1 chambre" },
-  { href: "/annonces?chambres=2", label: "Plans maison 2 chambres" },
-  { href: "/annonces?chambres=3", label: "Plans maison 3 chambres" },
-  { href: "/annonces?chambres=4", label: "Plans maison 4 chambres" },
+  { href: "/plans-de-maison/1-chambre", label: "Plans maison 1 chambre" },
+  { href: "/plans-de-maison/2-chambres", label: "Plans maison 2 chambres" },
+  { href: "/plans-de-maison/3-chambres", label: "Plans maison 3 chambres" },
+  { href: "/plans-de-maison/4-chambres", label: "Plans maison 4 chambres" },
   { href: "/concept", label: "Notre concept" },
   { href: "/annonces", label: "Terrains & opportunités" },
   { href: "/terrains", label: "Où nous construisons" },
@@ -126,10 +126,6 @@ const ROUTES_REDIRIGEES = [
   "/maisons/2-chambres",
   "/maisons/3-chambres",
   "/plans-de-maison",
-  "/plans-de-maison/1-chambre",
-  "/plans-de-maison/2-chambres",
-  "/plans-de-maison/3-chambres",
-  "/plans-de-maison/4-chambres",
 ];
 
 /** "/maisons/" et "/maisons" désignent la même route. */

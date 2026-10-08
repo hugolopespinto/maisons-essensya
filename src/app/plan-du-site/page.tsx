@@ -6,6 +6,7 @@ import { agencesPubliees } from "@/lib/agences";
 import { articlesPublies } from "@/lib/blog";
 import { agencyUrl, communeUrl, deptUrl } from "@/lib/format";
 import { communesPubliables, departementsPubliables } from "@/lib/geo";
+import { CHAMBRES_PLANS, libelleChambres, modelesAChambres, urlPlans } from "@/lib/plans";
 import { resolveMetadata } from "@/lib/seo";
 import { getContent } from "@/lib/store";
 import "@/styles/pages/plan.css";
@@ -71,10 +72,13 @@ export default async function PlanDuSitePage() {
       titre: "Nos Maisons",
       entrees: [
         { href: "/maisons", label: "Toute la gamme" },
-        { href: "/annonces?chambres=1", label: "Maison 1 chambre" },
-        { href: "/annonces?chambres=2", label: "Maison 2 chambres" },
-        { href: "/annonces?chambres=3", label: "Maison 3 chambres" },
-        { href: "/annonces?chambres=4", label: "Maison 4 chambres" },
+        /* Une page sans aucun modèle à ce nombre de chambres dit ce qui
+           manque : elle est signalée « en préparation ». */
+        ...CHAMBRES_PLANS.map((n) => ({
+          href: urlPlans(n),
+          label: `Maison ${libelleChambres(n)}`,
+          prep: modelesAChambres(n).length === 0,
+        })),
         ...publiables.map((m) => ({ href: `/maisons/${m.slug}`, label: m.nom })),
         ...autres.map((m) => ({ href: `/maisons/${m.slug}`, label: m.nom })),
       ],

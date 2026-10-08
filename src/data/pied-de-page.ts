@@ -53,19 +53,16 @@ export const colonnesPiedDefaut = (agences: LienPied[]): ColonnePied[] => [
     titre: "Nos Maisons",
     /* Le brief remplace les noms de modèles par un découpage selon le
        nombre de chambres. Ces liens mènent, comme ceux du menu « Plans de
-       maisons », au listing des annonces filtré sur ce nombre de chambres
-       — la même destination, d'où qu'on clique.
+       maisons », aux modèles de la gamme qui ont ce nombre de chambres —
+       la même destination, d'où qu'on clique (voir src/lib/plans.ts).
 
-       ⚠ Les pages /plans-de-maison/N-chambres qu'ils visaient étaient
-       restées vides (sur les onze modèles de `gamme.ts`, seul Ankara a
-       son nombre de chambres). Elles redirigent désormais vers ce même
-       listing, en temporaire : elles pourront revenir quand les plans par
-       nombre de chambres seront livrés. */
+       Une page sans aucun modèle à ce nombre de chambres reste en ligne,
+       hors index, et dit ce qui manque. */
     liens: [
-      { href: "/annonces?chambres=1", label: "Maison 1 chambre" },
-      { href: "/annonces?chambres=2", label: "Maison 2 chambres" },
-      { href: "/annonces?chambres=3", label: "Maison 3 chambres" },
-      { href: "/annonces?chambres=4", label: "Maison 4 chambres" },
+      { href: "/plans-de-maison/1-chambre", label: "Maison 1 chambre" },
+      { href: "/plans-de-maison/2-chambres", label: "Maison 2 chambres" },
+      { href: "/plans-de-maison/3-chambres", label: "Maison 3 chambres" },
+      { href: "/plans-de-maison/4-chambres", label: "Maison 4 chambres" },
     ],
   },
   {

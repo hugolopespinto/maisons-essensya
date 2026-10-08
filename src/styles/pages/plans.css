@@ -1,0 +1,22 @@
+/* ════ LES PLANS PAR NOMBRE DE CHAMBRES (.pm-*) ════
+   /plans-de-maison/N-chambres : la grille des modèles reprend celle de
+   la gamme (gamme.css) ; ce fichier n'ajoute que le sélecteur du nombre
+   de chambres et la liste des modèles à confirmer. */
+
+/* Le sélecteur : les quatre pages du menu, la courante pleine. */
+.pm-chambres{display:flex;flex-wrap:wrap;gap:var(--s-1);margin-top:var(--s-3)}
+.pm-chambres__lien{display:inline-block;font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.16em;text-transform:uppercase;padding:.7rem 1.1rem;border:var(--line);border-radius:var(--radius);color:var(--anthracite);transition:border-color var(--dur-fast),color var(--dur-fast)}
+.pm-chambres__lien:hover{border-color:var(--framboise);color:var(--framboise)}
+.pm-chambres__lien[aria-current]{background:var(--anthracite);border-color:var(--anthracite);color:var(--craie)}
+
+.pm-gamme{padding-top:var(--s-4)}
+.pm-gamme .g-gamme__grid,.pm-gamme .g-attente{margin-top:0}
+
+/* Les modèles sans nombre de chambres : des noms, pas des cartes — ils
+   ne sont pas le sujet de la page, mais on ne les cache pas. */
+.pm-inconnus{margin-top:var(--s-4);padding-top:var(--s-3);border-top:var(--line)}
+.pm-inconnus ul{display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;list-style:none;margin-top:var(--s-2)}
+.pm-inconnus a{color:var(--pierre);border-bottom:1px solid var(--beton);transition:color var(--dur-fast),border-color var(--dur-fast)}
+.pm-inconnus a:hover{color:var(--framboise);border-color:var(--framboise)}
+
+.pm-gamme__suite{margin-top:var(--s-4)}

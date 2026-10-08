@@ -46,14 +46,16 @@ export const NAVIGATION: EntreeNav[] = [
     /* /plans-de-maison redirige lui-même vers la gamme (next.config.ts) :
        on vise directement la destination, sans détour par un 308. */
     href: "/maisons",
-    /* Le listing des annonces, filtré sur le nombre EXACT de chambres :
-       c'est la page où l'on filtre les maisons. Les anciennes adresses
-       /plans-de-maison/N-chambres y redirigent (next.config.ts). */
+    /* Les MODÈLES de la gamme qui ont exactement ce nombre de chambres —
+       pas les annonces terrain + maison, où ces liens menaient avant que
+       le client ne corrige. Voir src/lib/plans.ts, dont les adresses sont
+       recopiées ici : l'en-tête est un composant client, il n'a pas à
+       charger la gamme pour quatre liens. */
     enfants: [
-      { label: "Plans maison 1 chambre", href: "/annonces?chambres=1" },
-      { label: "Plans maison 2 chambres", href: "/annonces?chambres=2" },
-      { label: "Plans maison 3 chambres", href: "/annonces?chambres=3" },
-      { label: "Plans maison 4 chambres", href: "/annonces?chambres=4" },
+      { label: "Plans maison 1 chambre", href: "/plans-de-maison/1-chambre" },
+      { label: "Plans maison 2 chambres", href: "/plans-de-maison/2-chambres" },
+      { label: "Plans maison 3 chambres", href: "/plans-de-maison/3-chambres" },
+      { label: "Plans maison 4 chambres", href: "/plans-de-maison/4-chambres" },
     ],
   },
   {

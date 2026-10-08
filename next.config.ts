@@ -26,16 +26,6 @@ import type { NextConfig } from "next";
    ════════════════════════════════════════════════════════════════ */
 const ANCIENNES_DECLINAISONS = ["2-chambres", "3-chambres"];
 
-/* Les quatre pages « plans de maison » par nombre de chambres. Elles
-   étaient en préparation ; la navigation mène désormais au listing des
-   annonces, filtré sur ce nombre de chambres (`?chambres=N`). */
-const PLANS_PAR_CHAMBRES: [string, number][] = [
-  ["1-chambre", 1],
-  ["2-chambres", 2],
-  ["3-chambres", 3],
-  ["4-chambres", 4],
-];
-
 const nextConfig: NextConfig = {
   images: {
     /* ⚠ Unsplash a été retiré : les douze photos de calage ont disparu
@@ -52,21 +42,15 @@ const nextConfig: NextConfig = {
         destination: "/maisons",
         permanent: true,
       })),
-      /* /plans-de-maison n est pas une page : c était le dossier des
+      /* /plans-de-maison n est pas une page : c est le dossier des
          quatre pages par nombre de chambres. Un visiteur qui raccourcit
-         l URL doit arriver sur la gamme, pas sur une 404. */
+         l URL doit arriver sur la gamme, pas sur une 404.
+
+         Ces quatre pages ont redirigé un temps vers /annonces?chambres=N,
+         en 307 justement pour pouvoir revenir : elles sont revenues
+         (src/app/plans-de-maison/[chambres]), aucun navigateur n a
+         retenu l ancienne destination. */
       { source: "/plans-de-maison", destination: "/maisons", permanent: true },
-      /* ⚠ TEMPORAIRES (307), À LA DIFFÉRENCE DES PRÉCÉDENTES. Ces adresses
-         n ont jamais été indexées (noindex, hors sitemap) et elles
-         pourront redevenir de vraies pages quand les plans par nombre de
-         chambres seront livrés : une 308 serait retenue par les
-         navigateurs, et la page revenue resterait invisible à ceux qui
-         l ont déjà visitée. */
-      ...PLANS_PAR_CHAMBRES.map(([slug, n]) => ({
-        source: `/plans-de-maison/${slug}`,
-        destination: `/annonces?chambres=${n}`,
-        permanent: false,
-      })),
     ];
   },
 };

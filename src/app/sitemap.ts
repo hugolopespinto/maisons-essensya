@@ -4,6 +4,7 @@ import { agencesPubliees } from "@/lib/agences";
 import { articlesPublies } from "@/lib/blog";
 import { communeUrl, deptUrl } from "@/lib/format";
 import { communesPubliables, departementsPubliables } from "@/lib/geo";
+import { CHAMBRES_PLANS, plansPubliables, urlPlans } from "@/lib/plans";
 import { getContent } from "@/lib/store";
 import { getAnnonces } from "@/lib/vitahome/annonces";
 import { SITE_URL } from "@/lib/site-url";
@@ -13,11 +14,10 @@ const BASE = SITE_URL;
 /* Priorités : /maisons vaut l'accueil. C'est la page qui porte le prix
    et la gamme entière, et c'est elle que les requêtes de marque doivent
    atteindre — pas une page d'accueil de marque.
-   Les fiches de modèle restent en 0.6. L'argument d'origine — onze pages
-   bâties sur le même gabarit cannibaliseraient /maisons — ne vaut plus
-   tel quel, puisqu'une seule est indexée. Il redeviendra vrai à mesure
-   que les caractéristiques arriveront, et d'ici là /maisons reste la
-   page qui doit capter les requêtes de gamme. */
+   Les fiches de modèle restent en 0.6 : onze pages bâties sur le même
+   gabarit — toutes indexées depuis le tableau du 08/10 — ne doivent pas
+   cannibaliser /maisons, la page qui doit capter les requêtes de
+   gamme. */
 const STATICS: [string, number][] = [
   ["", 1],
   ["/maisons", 1],
@@ -85,8 +85,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
        promesse : une fiche sans surface ni prix n'est qu'une galerie, et
        en annoncer dix d'un coup fait exactement ce que Google sanctionne.
        Elles portent d'ailleurs `noindex` — les lister ici serait se
-       contredire. La liste contient Ankara depuis le 17/09, et se
-       remplira toute seule à mesure que les caractéristiques arriveront.
+       contredire. La liste contient les onze depuis le tableau du 08/10,
+       et suit seule tout modèle ajouté.
 
        ⚠ L'`ItemList` DE /maisons, LUI, ANNONCE LES ONZE, et c'est
        délibéré : un ItemList décrit ce que la page REND, il ne demande
@@ -95,6 +95,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
        longtemps ; la règle est écrite des deux côtés. */
     ...modelesPubliables().map((m) => ({
       url: `${BASE}/maisons/${m.slug}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
+    /* Les plans par nombre de chambres : seulement ceux qui listent un
+       modèle publiable — les autres sont en `noindex` (src/lib/plans.ts). */
+    ...CHAMBRES_PLANS.filter(plansPubliables).map((n) => ({
+      url: `${BASE}${urlPlans(n)}`,
       changeFrequency: "monthly" as const,
       priority: 0.6,
     })),

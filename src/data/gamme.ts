@@ -15,30 +15,19 @@ import { fmtSurface } from "@/lib/format";
    d'après des capitales.
 
    ⚠ CE QU'ON N'A PAS, ET QU'ON N'INVENTERA PAS.
-   Un seul modèle est renseigné — Ankara, reçu le 17/09 — et il n'a même
-   pas de prix. Les dix autres n'ont ni surface, ni nombre de chambres,
-   ni prix. Un site de constructeur qui annonce
-   « 92 m² » sur une maison dont personne ne connaît la surface expose
-   son client bien au-delà du désagrément d'un chiffre faux — c'est un
-   engagement commercial. Les champs sont donc OPTIONNELS, et le code
-   doit savoir se taire quand ils manquent plutôt que d'afficher un
-   tiret ou un zéro.
+   Le tableau du client (08/10) donne, pour chaque modèle, le nombre de
+   chambres, la surface et la présence d'un garage. Ni prix par modèle,
+   ni nombre de pièces (sauf Ankara, reçu le 17/09). Un site de constructeur qui annonce « 92 m² » sur une maison
+   dont personne ne connaît la surface expose son client bien au-delà
+   du désagrément d'un chiffre faux — c'est un engagement commercial.
+   Les champs sont donc OPTIONNELS, et le code doit savoir se taire
+   quand ils manquent plutôt que d'afficher un tiret ou un zéro.
 
-   Le seul chiffre réel est le prix d'appel : 78 000 € pour Pékin,
+   Le seul prix réel est le prix d'appel : 78 000 € pour Pékin,
    maison seule, hors terrain, hors adaptation (voir `REEL` dans
-   ./essensya.ts).
-
-   Pékin a reçu ses visuels le 17/09 : quatre vues extérieures, dont une
-   retouchée à l'IA. Le modèle qui portait le prix d'appel sans avoir
-   une seule image entre donc dans les grilles, et `/maisons/pekin`
-   cesse de rendre 404.
-
-   ⚠ IL RESTE HORS DE L'INDEX pour autant. `estPubliable()` exige une
-   image ET un chiffre ; Pékin a les images, mais son `prixDepart` est
-   vide. Les 78 000 € vivent dans `REEL` — le discours de l'accueil —
-   pas dans la fiche du modèle. Les y recopier publierait la page :
-   c'est un arbitrage éditorial, pas un détail technique, car elle
-   n'aurait toujours ni surface, ni nombre de chambres, ni plan.
+   ./essensya.ts). Il vit dans `REEL` — le discours de l'accueil —
+   pas dans la fiche du modèle : l'y recopier est un arbitrage
+   éditorial, pas un détail technique.
 
    ── LE SEUIL DE PUBLICATION ──
    Même discipline que les pages de zone (src/lib/geo.ts) : on ne
@@ -86,34 +75,40 @@ export interface Modele {
 }
 
 /* ════ LE CATALOGUE ════
-   Les onze modèles livrés avec leurs rendus.
+   Les onze modèles livrés avec leurs rendus, et leurs chiffres tels que
+   le tableau du client du 08/10 les donne : chambres, surface habitable,
+   garage. Sa colonne « Garage » porte « Oui » ou « - » : le tiret est lu
+   comme « pas de garage » (`false`), qui s'affiche.
 
-   L'ordre est alphabétique et volontairement neutre : nous n'avons
-   aucune donnée pour décider lequel mettre en avant. Le jour où les
-   prix arriveront, l'entrée de gamme devrait ouvrir la liste — c'est
-   l'argument du site.
+   ⚠ LE TABLEAU COMPTE VINGT ET UN MODÈLES ; SEULS ONZE SONT ICI. Les
+   dix autres (Monaco, Oslo, Panama, Paris, Prague, Quito, Rome,
+   Stockholm, Tokyo, Vienne) n'ont pas encore de photos, et le client a
+   demandé de ne publier que les modèles illustrés. Chacun entre ici,
+   avec sa ligne du tableau, le jour où ses rendus arrivent.
 
-   ⚠ NE PAS COMPLÉTER CES FICHES AU JUGÉ. Les champs vides attendent un
-   tableau du client. Les remplir « en attendant » ferait disparaître le
-   seul signal qui dit qu'ils manquent. */
+   L'ordre est alphabétique et volontairement neutre, comme le tableau.
+   Le jour où les prix arriveront, l'entrée de gamme devrait ouvrir la
+   liste — c'est l'argument du site.
+
+   ⚠ NE PAS COMPLÉTER CES FICHES AU JUGÉ. Les champs absents (prix,
+   pièces) attendent le client. Les remplir « en attendant » ferait
+   disparaître le seul signal qui dit qu'ils manquent. */
 const CATALOGUE: Modele[] = [
-  /* Ankara : le SEUL modèle renseigné à ce jour, reçu le 17/09. Il n'a
-     pas de prix — le client ne l'a pas communiqué — mais sa surface
-     suffit à `estPubliable()`, ce qui en fait la première fiche
-     indexable du site. Les dix autres attendent leur tableau. */
+  /* Ankara : ses trois pièces viennent de sa fiche du 17/09 ; le tableau
+     du 08/10 ne compte pas les pièces. */
   { slug: "ankara", nom: "Ankara", surface: 75, chambres: 2, pieces: 3, garage: true },
-  { slug: "athenes", nom: "Athènes" },
-  { slug: "berlin", nom: "Berlin" },
-  { slug: "dakar", nom: "Dakar" },
-  { slug: "dublin", nom: "Dublin" },
-  { slug: "hanoi", nom: "Hanoi" },
-  { slug: "jakarta", nom: "Jakarta" },
-  { slug: "lima", nom: "Lima" },
-  { slug: "lisbonne", nom: "Lisbonne" },
-  { slug: "londres", nom: "Londres" },
+  { slug: "athenes", nom: "Athènes", surface: 103, chambres: 4, garage: false },
+  { slug: "berlin", nom: "Berlin", surface: 80, chambres: 3, garage: true },
+  { slug: "dakar", nom: "Dakar", surface: 94, chambres: 3, garage: false },
+  { slug: "dublin", nom: "Dublin", surface: 95, chambres: 3, garage: true },
+  { slug: "hanoi", nom: "Hanoi", surface: 84, chambres: 3, garage: false },
+  { slug: "jakarta", nom: "Jakarta", surface: 90, chambres: 3, garage: false },
+  { slug: "lima", nom: "Lima", surface: 75, chambres: 3, garage: false },
+  { slug: "lisbonne", nom: "Lisbonne", surface: 94, chambres: 3, garage: true },
+  { slug: "londres", nom: "Londres", surface: 75, chambres: 2, garage: false },
   /* Pékin : le modèle du prix d'appel. Quatre vues extérieures, aucune
      intérieure — le seul du catalogue dans ce cas. */
-  { slug: "pekin", nom: "Pékin" },
+  { slug: "pekin", nom: "Pékin", surface: 50, chambres: 1, garage: false },
 ];
 
 /** Tous les modèles de la gamme, y compris ceux sans visuel. */
@@ -174,7 +169,8 @@ export const modelesAvecVisuels = (): Modele[] =>
 export const estPubliable = (m: Modele): boolean =>
   facade(m.slug) !== null && (m.surface !== undefined || m.prixDepart !== undefined);
 
-/** Les modèles réellement indexables. Ankara est le premier, depuis le 17/09. */
+/** Les modèles réellement indexables : Ankara depuis le 17/09, les onze
+ *  depuis le tableau du 08/10. */
 export const modelesPubliables = (): Modele[] => CATALOGUE.filter(estPubliable);
 
 /**
@@ -189,7 +185,8 @@ export const modelesPubliables = (): Modele[] => CATALOGUE.filter(estPubliable);
  * cartes dont une seule porte des chiffres, sans rien pour l'expliquer,
  * c'est l'effet « site inachevé » que cette phrase existe pour éviter.
  *
- * Elle s'éteindra d'elle-même le jour où les onze seront documentés.
+ * Elle s'est éteinte d'elle-même avec le tableau du 08/10, qui documente
+ * les onze ; elle se rallumera pour un modèle ajouté sans ses chiffres.
  */
 export const gammeIncomplete = (): boolean =>
   modelesPubliables().length < modelesAvecVisuels().length;
