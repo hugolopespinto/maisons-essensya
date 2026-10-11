@@ -345,14 +345,17 @@ function safeError(reason: unknown): string {
 export async function getAnnoncesFlux(): Promise<Annonce[]> {
   if (!hasLiveFeed()) return mapAnnonces(LOCAL_ANNONCES_RAW);
 
-  const urls = [VITAHOME.feeds.terrain, VITAHOME.feeds.tm].map(
-    (pack) =>
-      `${VITAHOME.base}/${pack}/annonces.json?token=${encodeURIComponent(VITAHOME.token)}`,
-  );
+  /* Deux packs par agence. Le nom sert au log : « pack 5 indisponible »
+     ne disait pas QUELLE agence manquait au catalogue. */
+  const sources = VITAHOME.packs.flatMap((a) => [
+    { nom: `${a.agence}, terrain + maison`, pack: a.tm },
+    { nom: `${a.agence}, terrains`, pack: a.terrain },
+  ]);
 
-  /* allSettled : un pack en échec ne doit pas emporter l'autre. */
+  /* allSettled : un pack en échec ne doit pas emporter les autres. */
   const settled = await Promise.allSettled(
-    urls.map(async (url) => {
+    sources.map(async ({ pack }) => {
+      const url = `${VITAHOME.base}/${pack}/annonces.json?token=${encodeURIComponent(VITAHOME.token)}`;
       const r = await fetch(url, {
         next: { revalidate: FEED_REVALIDATE, tags: ["annonces"] },
       });
@@ -361,11 +364,16 @@ export async function getAnnoncesFlux(): Promise<Annonce[]> {
     }),
   );
 
-  const items = settled.flatMap((s) => (s.status === "fulfilled" ? s.value : []));
+  /* `Array.isArray` : un pack vide répond `[]`, mais une réponse
+     inattendue (objet d'erreur servi en 200) ne doit pas faire échouer
+     le `flatMap` et emporter les autres agences. */
+  const items = settled.flatMap((s) =>
+    s.status === "fulfilled" && Array.isArray(s.value) ? s.value : [],
+  );
   settled.forEach((s, i) => {
     /* Jamais `s.reason` : l'objet d'erreur porte l'URL, donc le token. */
     if (s.status === "rejected")
-      console.error(`[vitahome] pack ${i} indisponible — ${safeError(s.reason)}`);
+      console.error(`[vitahome] pack ${sources[i].nom} (${sources[i].pack}) indisponible — ${safeError(s.reason)}`);
   });
 
   /* ⚠ Ne JAMAIS publier le jeu de démo quand le token est configuré :

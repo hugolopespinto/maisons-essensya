@@ -15,7 +15,26 @@ export const VITAHOME = {
     return process.env.VITAHOME_TOKEN ?? "";
   },
   entityId: Number(process.env.VITAHOME_ENTITY_ID ?? 11), // 11 = MAISONS DEMO
-  feeds: { terrain: "pack-26", tm: "pack-1860", maison: "pack-3402" },
+  /* LES PACKS D'ANNONCES DU COMPTE RÉEL, un couple par agence : « tm »
+     (terrain + maison) et « terrain » (terrain seul). Transmis par le
+     client le 11/10/2026 ; ils remplacent pack-26 et pack-1860, ceux du
+     compte de démonstration.
+
+     ⚠ HAGETMAU RÉPOND 404 (« Impossible de trouver le pack ») : ses deux
+     packs ne sont pas encore ouverts côté Vitahome. Ils restent listés
+     exprès — un pack en échec n'emporte pas les autres (voir
+     getAnnoncesFlux), et ses annonces apparaîtront d'elles-mêmes le jour
+     où il répondra. En attendant, le log le signale à chaque relecture.
+
+     Les packs « terrain » de Tyrosse et de Labouheyre répondent, mais
+     vides : ce n'est pas une panne, ces agences n'ont publié aucun
+     terrain seul ce jour-là. */
+  packs: [
+    { agence: "Saint-Vincent-de-Tyrosse", tm: "pack-7619", terrain: "pack-7618" },
+    { agence: "Labouheyre", tm: "pack-7639", terrain: "pack-7638" },
+    { agence: "Canéjan", tm: "pack-7659", terrain: "pack-7658" },
+    { agence: "Hagetmau", tm: "pack-8500", terrain: "pack-8499" },
+  ],
   prospectEndpoint: "/ajout-contact.json",
   citiesEndpoint: "/villes.json", // → construction-location-id
   /* ORIGIN-ID par type de formulaire (onglet ENVOI PROSPECT) */
@@ -77,7 +96,13 @@ export const SANITY = {
   minHouseSurface: 40,
   maxHouseSurface: 400,
   maxBedrooms: 8,
-  /** `type: "M"` = annonce saisie à la main. Les 3 du flux sont les
-      3 annonces douteuses — on ne publie que les annonces générées. */
-  rejectManualAds: true,
+  /** `type: "M"` = annonce saisie à la main dans Vitahome.
+      ⚠ PLUS REJETÉES, ET C'EST UNE CORRECTION. Sur le flux de démonstration,
+      les trois annonces « M » étaient les trois annonces douteuses : on
+      les écartait. Sur le compte réel, c'est la NORME — 117 annonces sur
+      118 au relevé du 11/10/2026, les agences saisissant leurs offres à la
+      main. Garder la règle aurait publié UNE annonce. Les autres seuils
+      (prix, surfaces, chambres) continuent d'écarter les saisies
+      aberrantes, quelle que soit leur origine. */
+  rejectManualAds: false,
 } as const;
