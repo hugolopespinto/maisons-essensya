@@ -132,6 +132,9 @@ export interface HeaderProps {
   logo: string | null;
   /** Version claire du logo, pour l'en-tête transparent. Voir plus bas. */
   logoClair?: string | null;
+  /** Vrai pour la déclinaison « en-tête » embarquée, faux pour un logo
+   *  téléversé : leurs proportions diffèrent, leurs hauteurs aussi. */
+  logoCompact?: boolean;
   /** Numéro affiché, déjà arbitré entre Réglages, Contenu et le code. */
   telephone: string;
   /** Le `tel:` correspondant — calculé une fois dans le layout racine. */
@@ -151,6 +154,7 @@ export default function Header({
   baseline,
   logo,
   logoClair,
+  logoCompact = false,
   telephone,
   telHref,
   liens,
@@ -378,13 +382,9 @@ export default function Header({
     <img
       src={logoAffiche}
       alt=""
-      /* ⚠ 2,6 rem, PAS 2,1. Le logo de la charte est HORIZONTAL : la
-         maison, puis « Maisons », puis « ESSENSYA » sur une seule ligne.
-         À 2,1 rem, cette composition rend le nom illisible — le raster
-         précédent tenait à cette hauteur parce qu'il était empilé et
-         recadré. La barre fait 76 px : 42 px de logo y laissent encore
-         17 px de respiration de chaque côté. */
-      style={{ display: "block", height: "2.6rem", width: "auto" }}
+      /* Hauteurs dans base.css (`.logo__img`) : la déclinaison embarquée
+         change de taille avec la place que lui laisse la barre. */
+      className={`logo__img${logoCompact ? " logo__img--entete" : ""}`}
     />
   ) : (
     <>

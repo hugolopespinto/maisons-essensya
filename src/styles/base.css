@@ -468,6 +468,21 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
    Header.tsx (`DESKTOP`) : les deux doivent rester d'accord. */
 .site-header .container{align-self:stretch;max-width:100rem;gap:var(--s-2)}
 .site-header .logo,.header-cta{flex:none}
+/* ⚠ LA HAUTEUR DU LOGO SUIT LA PLACE QUE LUI LAISSE LA BARRE.
+     · Logo téléversé : 2,6 rem, la hauteur réglée pour le logo
+       horizontal livré. En dessous, son nom devient illisible.
+     · Déclinaison « en-tête » embarquée, maison réduite : 1,85 rem, soit
+       150 px de large et des capitales ESSENSYA de 11,9 px — une fois et
+       demie les libellés du menu. Le logo horizontal, à 2,6 rem, ne leur
+       en donnait que 7,8 : moins que le menu.
+     · Sauf entre 85 et 90 em (1360 à 1440 px), là où la barre est la
+       plus serrée : le logo y descend à 1,5 rem, 121 px de large, 8 de
+       plus que l'ancien. Mesuré le 13/10 sous Chrome, de 360 à 1920 px
+       et à 16 comme à 20 px de police : rien ne déborde, aucun libellé
+       ne passe sur deux lignes. */
+.logo__img{display:block;width:auto;height:2.6rem}
+.logo__img--entete{height:1.85rem}
+@media (min-width:85em) and (max-width:89.99em){.logo__img--entete{height:1.5rem}}
 .main-nav{display:flex;align-self:stretch}
 .main-nav__list{display:flex;align-items:stretch;gap:clamp(.8rem,1vw,1.75rem)}
 .main-nav__item{position:relative;display:flex;align-items:center}

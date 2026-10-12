@@ -251,6 +251,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const logoTeleverse = await resoudreMedia(reglages.logo);
   const logo = logoTeleverse ?? "/marque/logo.svg";
   const logoPied = logoTeleverse ?? "/marque/logo-blanc.svg";
+  /* ⚠ L'EN-TÊTE A SA PROPRE DÉCLINAISON, maison réduite. Dans le logo
+     horizontal, la maison prend toute la hauteur du bandeau et le nom
+     n'en a que le tiers : ESSENSYA y sortait plus petit que les libellés
+     du menu. Le pied de page, qui a la place, et le JSON-LD gardent le
+     logo livré. Provisoire, en attendant l'avis du client. */
+  const logoEntete = logoTeleverse ?? "/marque/logo-entete.svg";
+  const logoEnteteClair = logoTeleverse ?? "/marque/logo-entete-blanc.svg";
 
   const reseaux = RESEAUX.map(([cle, label]) => ({
     label,
@@ -350,8 +357,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Header
             marque={marque}
             baseline={baseline}
-            logo={logo}
-            logoClair={logoPied}
+            logo={logoEntete}
+            logoClair={logoEnteteClair}
+            logoCompact={!logoTeleverse}
             telephone={telephone}
             telHref={telHref(telephone)}
             liens={entreesMenu(menus.header)}
