@@ -108,6 +108,11 @@ export default async function PlansParChambresPage({
           </p>
 
           <nav className="pm-chambres" aria-label="Nombre de chambres">
+            {/* Sans filtre, c'est la gamme entière : /plans-de-maison y
+                redirige déjà (next.config.ts). */}
+            <Link href="/maisons#gamme" className="pm-chambres__lien">
+              Tous les modèles
+            </Link>
             {CHAMBRES_PLANS.map((k) => (
               <Link
                 key={k}
