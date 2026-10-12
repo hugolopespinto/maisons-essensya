@@ -10,7 +10,8 @@ import { Icon } from "@/components/icons";
 import { ESSENSYA_DATA, REEL } from "@/data/essensya";
 import { FILM_ACCUEIL } from "@/data/film-accueil";
 import { facade } from "@/data/visuels";
-import { srcSet, vue } from "@/data/visuels";
+import { srcSet, vue, type Visuel } from "@/data/visuels";
+import visuelEngagements from "@/data/visuel-engagements.json";
 import "@/styles/accueil.css";
 import { lecteurBlocs } from "@/lib/blocs";
 import { annonceUrl, fmtPrice, fmtSurface } from "@/lib/format";
@@ -41,6 +42,17 @@ const PHOTOS_JUSTE = [
   { visuel: vue("berlin", "vue-3-interieur"), alt: "Séjour d'une maison Essensya modèle Berlin" },
   { visuel: vue("dublin", "vue-2-exterieur"), alt: "Maison Essensya modèle Dublin, côté jardin" },
 ];
+
+/* Le visuel pleine largeur sous « Nos engagements » : le séjour de la
+   maquette du client, livré le 13/10. Il remplace le rendu d'Ankara qui
+   tenait sa place.
+
+   ⚠ HORS DU CATALOGUE DES MODÈLES, ET C'EST VOULU. Le client ne l'a
+   rattaché à aucun modèle : le ranger dans src/data/visuels.json en
+   ferait un « modèle » de plus pour tout ce qui parcourt la gamme. Ses
+   paliers et son empreinte suivent pourtant les mêmes règles que
+   scripts/images.mjs — mêmes largeurs, mêmes qualités AVIF et WebP. */
+const VISUEL_ENGAGEMENTS = visuelEngagements as Visuel;
 
 /* ⚠ VISUEL DE SECOURS DU BLOC « OPPORTUNITÉ ».
    Le client demande d'afficher la première image de l'annonce ; 90 % du
@@ -283,7 +295,7 @@ export default async function HomePage() {
           carte et leurs filtres sur /annonces, désormais atteignable
           depuis le bloc « opportunité » qui la précède. */}
 
-      <section className="s-trust" id="agences">
+      <section className="s-trust s-trust--visuel" id="agences">
         <div className="container">
           <div className="c-section-head" data-reveal>
             <span className="c-label c-label--accent">
@@ -300,6 +312,27 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Le visuel demandé sous les quatre textes, d'un bord à l'autre
+            de l'écran : il sort du conteneur, comme la photo du bandeau
+            des points forts. */}
+        <div
+          className="s-trust__visuel c-reveal-img"
+          style={{ backgroundImage: `url(${VISUEL_ENGAGEMENTS.empreinte})` }}
+        >
+          <picture>
+            <source type="image/avif" srcSet={srcSet(VISUEL_ENGAGEMENTS, "avif")} sizes="100vw" />
+            <source type="image/webp" srcSet={srcSet(VISUEL_ENGAGEMENTS, "webp")} sizes="100vw" />
+            <img
+              src={VISUEL_ENGAGEMENTS.src}
+              width={VISUEL_ENGAGEMENTS.largeur}
+              height={VISUEL_ENGAGEMENTS.hauteur}
+              alt="Séjour et cuisine ouverte d'une maison Essensya"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
         </div>
       </section>
 

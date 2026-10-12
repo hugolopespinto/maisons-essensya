@@ -1,0 +1,45 @@
+{
+  "cle": "sejour-cuisine",
+  "src": "/visuels/engagements/sejour-cuisine.webp",
+  "largeur": 2752,
+  "hauteur": 1536,
+  "empreinte": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAACwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JZQCsAB3ATwszXooQAAD+34WkGqovWdFhZvOhfYRcsuXQJr0VEfnme1sQt96PScLCUD4nZEXY/lvoB49XAO1aSsticzR/z6+vYgHd6gH7wgAA",
+  "variantes": [
+    {
+      "largeur": 480,
+      "avif": "/visuels/engagements/sejour-cuisine-480.avif",
+      "webp": "/visuels/engagements/sejour-cuisine-480.webp"
+    },
+    {
+      "largeur": 720,
+      "avif": "/visuels/engagements/sejour-cuisine-720.avif",
+      "webp": "/visuels/engagements/sejour-cuisine-720.webp"
+    },
+    {
+      "largeur": 1024,
+      "avif": "/visuels/engagements/sejour-cuisine-1024.avif",
+      "webp": "/visuels/engagements/sejour-cuisine-1024.webp"
+    },
+    {
+      "largeur": 1440,
+      "avif": "/visuels/engagements/sejour-cuisine-1440.avif",
+      "webp": "/visuels/engagements/sejour-cuisine-1440.webp"
+    },
+    {
+      "largeur": 1920,
+      "avif": "/visuels/engagements/sejour-cuisine-1920.avif",
+      "webp": "/visuels/engagements/sejour-cuisine-1920.webp"
+    },
+    {
+      "largeur": 2560,
+      "avif": "/visuels/engagements/sejour-cuisine-2560.avif",
+      "webp": "/visuels/engagements/sejour-cuisine-2560.webp"
+    },
+    {
+      "largeur": 2752,
+      "avif": "/visuels/engagements/sejour-cuisine.avif",
+      "webp": "/visuels/engagements/sejour-cuisine.webp"
+    }
+  ],
+  "type": "interieur"
+}

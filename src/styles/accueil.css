@@ -441,6 +441,29 @@ a.s-bande__carte:hover .s-bande__fleche{transform:translateX(4px)}
 }
 
 /* ──────────────────────────────────────────────────────────────────
+   NOS ENGAGEMENTS — un visuel pleine largeur sous les quatre textes
+
+   Demandé par le client, maquette à l'appui. La photo sort du
+   conteneur et ferme la section : plus de marge dessous, le bloc sombre
+   du formulaire commence au ras de l'image.
+
+   ⚠ DEUX CLASSES DANS CHAQUE SÉLECTEUR QUI CORRIGE UNE RÈGLE PARTAGÉE.
+   `.s-trust` vit dans sections.css et `.c-reveal-img` dans base.css, à
+   une classe chacune : à poids égal, c'est l'ordre de chargement des
+   feuilles qui trancherait, et il n'est pas garanti.
+   ────────────────────────────────────────────────────────────────── */
+.s-trust.s-trust--visuel{padding-bottom:0}
+.s-trust__visuel{margin-top:var(--s-5);background-size:cover;background-position:center}
+/* Pas d'arrondi : le bas de l'image touche le bloc sombre, et les coins
+   de 2 px y laisseraient passer le fond clair. */
+.s-trust__visuel.c-reveal-img{border-radius:0}
+/* Le bandeau de la maquette : à peu près cinq fois plus large que
+   haut. Cadré à 72 % de la hauteur, il garde la cuisine, la table avec
+   ses chaises entières et le canapé, plutôt que le plafond — mesuré sur
+   le séjour livré le 13/10 ; à revoir si l'image change. */
+.s-trust__visuel img{display:block;width:100%;height:clamp(240px,20vw,420px);object-fit:cover;object-position:50% 72%}
+
+/* ──────────────────────────────────────────────────────────────────
    HERO — LE TEXTE NE MANGE PLUS LA MAISON
 
    ⚠ Le titre occupait toute la largeur, sur un dégradé dense remontant
