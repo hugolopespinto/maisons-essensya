@@ -6,9 +6,10 @@ import type { Annonce, Offre } from "@/types";
 
    ⚠ UNE ANNONCE PORTE PLUSIEURS MAISONS. Le flux publie une annonce par
    couple terrain × maison, et `groupByParcel` (src/lib/vitahome/
-   annonces.ts) les réunit sous une seule : le terrain nu, la maison
-   2 chambres, la maison 3 chambres. L'annonce regroupée porte les
-   chiffres de la MOINS CHÈRE — c'est son « à partir de ».
+   annonces.ts) les réunit sous une seule : la maison 2 chambres, la
+   maison 3 chambres. Le terrain nu, lui, garde sa propre annonce.
+   L'annonce regroupée porte les chiffres de la MOINS CHÈRE — c'est
+   son « à partir de ».
 
    Dès qu'on cherche une maison à N chambres, ces chiffres-là sont faux
    pour toute parcelle dont la version à N chambres n'est pas la moins

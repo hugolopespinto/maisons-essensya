@@ -226,15 +226,21 @@ export function mapAnnonce(raw: VitahomeAnnonce): Annonce | null {
 }
 
 /* ════ REGROUPEMENT PAR PARCELLE ════
-   Le flux publie une annonce par COUPLE terrain × maison. La parcelle 68040
-   de La Rochelle apparaît ainsi trois fois : en terrain nu (pack-26), avec
-   la maison 2 chambres et avec la maison 3 chambres (pack-1860). Ce ne sont
-   pas trois biens — c'est une parcelle et trois façons de l'acheter.
+   Le flux publie une annonce par COUPLE terrain × maison. La parcelle
+   546233 de Labouheyre apparaît ainsi trois fois : avec la maison 1, 2 et
+   3 chambres. Ce ne sont pas trois biens — c'est une parcelle et trois
+   maisons à poser dessus.
 
-   ⚠ Dédupliquer sur `land.id` seul PERDRAIT une déclinaison au passage
-   (les 6 offres 2 chambres partagent toutes leur parcelle avec une offre
-   3 chambres). On regroupe donc, et on porte les offres dans `offres[]`.  */
-function groupByParcel(list: Annonce[], keys: (number | null)[]): Annonce[] {
+   ⚠ Dédupliquer sur `land.id` seul PERDRAIT une déclinaison au passage.
+   On regroupe donc, et on porte les offres dans `offres[]`.
+
+   ⚠ LE TERRAIN SEUL N'ENTRE PAS DANS LE GROUPE. Fondu avec les maisons
+   de sa parcelle, il perdait sa carte : le filtre « Terrain seul » ne le
+   trouvait plus, et la fiche ne gardait que son prix en « Dont terrain ».
+   Relevé du 12/10/2026 : le seul terrain du flux (Mios, TEVM0518608152A4BD)
+   partageait sa parcelle avec une maison 3 chambres, et le listing
+   annonçait 0 terrain. La clé de regroupement porte donc le type.     */
+function groupByParcel(list: Annonce[], keys: (string | null)[]): Annonce[] {
   const byParcel = new Map<string, Annonce[]>();
   list.forEach((a, i) => {
     const key = keys[i] !== null ? `land:${keys[i]}` : `ref:${a.id}`;
@@ -251,7 +257,6 @@ function groupByParcel(list: Annonce[], keys: (number | null)[]): Annonce[] {
        porte le « à partir de » et le visuel de la carte. */
     const maison = offres.filter((o) => o.versionSlug !== null || o.houseSurface !== null);
     const primaire = maison[0] ?? offres[0];
-    const terrainNu = offres.find((o) => o.houseSurface === null);
 
     /* Représentant : celui qui a un visuel, sinon la première offre maison. */
     const base =
@@ -265,7 +270,6 @@ function groupByParcel(list: Annonce[], keys: (number | null)[]): Annonce[] {
       offres,
       type: maison.length ? ("terrain-maison" as const) : ("terrain" as const),
       price: primaire?.price ?? base.price,
-      landPrice: terrainNu?.price ?? base.landPrice,
       houseSurface: primaire?.houseSurface ?? null,
       bedrooms: primaire?.bedrooms ?? null,
       rooms: primaire?.rooms ?? null,
@@ -284,7 +288,7 @@ function groupByParcel(list: Annonce[], keys: (number | null)[]): Annonce[] {
 export function mapAnnonces(list: VitahomeAnnonce[]): Annonce[] {
   const raws = (list ?? []).filter(Boolean);
   const mapped: Annonce[] = [];
-  const keys: (number | null)[] = [];
+  const keys: (string | null)[] = [];
   let rejected = 0;
 
   for (const raw of raws) {
@@ -294,7 +298,8 @@ export function mapAnnonces(list: VitahomeAnnonce[]): Annonce[] {
       continue;
     }
     mapped.push(a);
-    keys.push(num(raw.land?.id));
+    const land = num(raw.land?.id);
+    keys.push(land === null ? null : `${a.type}:${land}`);
   }
 
   const deduped = groupByParcel(mapped, keys);
