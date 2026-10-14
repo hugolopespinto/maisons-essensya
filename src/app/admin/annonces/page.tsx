@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Fragment } from "react";
 import { annonceTitle, annonceUrl, dept, fmtPrice, fmtSurface } from "@/lib/format";
 import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { AnnonceOverride } from "@/lib/store/types";
-import { findOverride, getAnnoncesFlux, overrideIndex } from "@/lib/vitahome/annonces";
+import {
+  TAG_ANNONCES,
+  findOverride,
+  getAnnoncesFlux,
+  overrideIndex,
+} from "@/lib/vitahome/annonces";
 import type { Annonce } from "@/types";
 import { assertAdmin, requireAdmin } from "../actions";
 
@@ -168,6 +173,32 @@ async function reinitialiser(formData: FormData) {
   redirect(retour(formData));
 }
 
+/**
+ * Relit Vitahome sans attendre la fin du cycle d'une heure
+ * (`FEED_REVALIDATE`) : une annonce ajoutée ou corrigée dans le CRM doit
+ * pouvoir passer en ligne tout de suite.
+ *
+ * `updateTag` et non `revalidateTag` : ce dernier sert encore la copie
+ * périmée au chargement suivant et ne relit qu'en arrière-plan — on
+ * cliquerait, on rouvrirait le site, et rien n'aurait changé.
+ * `updateTag` fait ATTENDRE la requête suivante sur la donnée fraîche.
+ * L'étiquette couvre toutes les pages qui lisent le flux (listing,
+ * fiches, agences, home, sitemap), et le cycle d'une heure repart de là.
+ *
+ * Rien n'est écrit dans le contenu : le bouton reste actif en lecture
+ * seule. Cet écran lit la MÊME copie en cache que le site public :
+ * `force-dynamic` n'y change rien, l'option `revalidate` du fetch
+ * l'emporte (vérifié sur un build de production le 14/10/2026). Son
+ * compteur, après le clic, est donc celui que voient les visiteurs.
+ */
+async function actualiser(formData: FormData) {
+  "use server";
+  await assertAdmin();
+  updateTag(TAG_ANNONCES);
+  const url = retour(formData);
+  redirect(`${url}${url.includes("?") ? "&" : "?"}actualise=1`);
+}
+
 /* ════ ÉCRAN ════ */
 
 /** Ce qui a été surchargé, en trois mots, pour la colonne d'état. */
@@ -199,6 +230,7 @@ export default async function AdminAnnoncesPage({
   const q = first(sp.q).trim();
   const enrichies = first(sp.enrichies) === "1";
   const edit = first(sp.edit).trim().toLowerCase();
+  const actualise = first(sp.actualise) === "1";
 
   /* Un seul index pour les ~100 lignes, et le MÊME rapprochement que
      celui des pages publiques : le back-office ne doit pas afficher un
@@ -244,12 +276,34 @@ export default async function AdminAnnoncesPage({
           <span className="c-label c-label--accent">Flux Vitahome</span>
           <h1>Annonces</h1>
         </div>
+        <form action={actualiser}>
+          <input type="hidden" name="q" value={q} />
+          {enrichies && <input type="hidden" name="enrichies" value="1" />}
+          <button type="submit" className="c-btn">
+            Actualiser les annonces
+          </button>
+        </form>
         <p>
           {flux.length} parcelle{flux.length > 1 ? "s" : ""} au flux · {nbEnrichies}{" "}
           enrichie{nbEnrichies > 1 ? "s" : ""} · {nbMasquees} masquée
-          {nbMasquees > 1 ? "s" : ""}
+          {nbMasquees > 1 ? "s" : ""}. Le site relit Vitahome toutes les heures ;
+          après une modification dans Vitahome, « Actualiser les annonces » la met en
+          ligne dès le chargement suivant.
         </p>
       </div>
+
+      {actualise &&
+        (flux.length > 0 ? (
+          <p className="adm-note" role="status">
+            Vitahome relu à l&apos;instant : {flux.length} parcelle
+            {flux.length > 1 ? "s" : ""}. Les pages publiques affichent cette version dès
+            leur prochain chargement.
+          </p>
+        ) : (
+          <p className="adm-note adm-note--alerte" role="status">
+            Vitahome n&apos;a rien renvoyé. Réessayez dans quelques minutes.
+          </p>
+        ))}
 
       {/* Le message central de cet écran : il doit être lu avant le tableau. */}
       <p className="adm-note">

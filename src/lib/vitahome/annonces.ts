@@ -341,6 +341,10 @@ function safeError(reason: unknown): string {
   return msg;
 }
 
+/** L'étiquette de cache du flux. Le back-office l'invalide pour forcer
+ *  une relecture de Vitahome sans attendre `FEED_REVALIDATE`. */
+export const TAG_ANNONCES = "annonces";
+
 /**
  * Le flux seul, SANS les surcharges éditoriales : c'est la donnée
  * Vitahome telle qu'elle arrive, annonces masquées comprises.
@@ -362,7 +366,7 @@ export async function getAnnoncesFlux(): Promise<Annonce[]> {
     sources.map(async ({ pack }) => {
       const url = `${VITAHOME.base}/${pack}/annonces.json?token=${encodeURIComponent(VITAHOME.token)}`;
       const r = await fetch(url, {
-        next: { revalidate: FEED_REVALIDATE, tags: ["annonces"] },
+        next: { revalidate: FEED_REVALIDATE, tags: [TAG_ANNONCES] },
       });
       if (!r.ok) throw new Error(`Vitahome ${r.status}`);
       return (await r.json()) as VitahomeAnnonce[];
