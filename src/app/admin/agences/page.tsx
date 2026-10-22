@@ -556,7 +556,7 @@ export default async function AdminAgencesPage({
             name="image"
             value={agence.image}
             label={"Photo de l'agence"}
-            aide="Format paysage. Elle occupe toute la largeur en haut de la fiche et illustre la carte dans la liste des agences. Sans photo, la fiche reste en ligne : elle s'affiche simplement sans bandeau."
+            aide="Format paysage. Elle occupe toute la largeur en haut de la fiche et illustre la carte dans la liste des agences. Laissée vide, les cinq agences d'origine montrent la maquette de leur vitrine ; une agence ajoutée depuis s'affiche sans bandeau."
           />
         </section>
 

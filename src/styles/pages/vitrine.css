@@ -1,0 +1,348 @@
+/* ════ 5 ter. LA VITRINE DE LA GAMME — /maisons (.gm-) ════
+   Le héros à façades (HeroGamme), la vitrine des vues (VitrineGamme) et
+   la mise en page du bloc prix. Complète modele.css, maison.css et
+   gamme.css, chargées sur la même page, sans en redéfinir les règles.
+
+   ⚠ PRÉFIXE `gm-` (pour « gamme »), PAS `vt-` : `vt-flou` est déjà une
+   image-clé des transitions de vue (base.css). Les feuilles globales ne
+   se déchargent pas d'une page à l'autre — un nom partagé y est un
+   conflit qui attend son heure. */
+
+/* ──────────────────────────────────────────────────────────────────
+   1. LE HÉROS — les onze façades en fondu
+   ────────────────────────────────────────────────────────────────── */
+/* La marge de l'en-tête est portée par la section, pas par le bloc de
+   texte : posée sur le bloc, elle entrait dans la hauteur que le voile
+   recouvre, et assombrissait 76 px de façade pour rien. */
+.gm-hero{--duree:6.5s;position:relative;isolation:isolate;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding-top:calc(var(--header-h) + var(--s-3));background:var(--noir);color:var(--craie);overflow:hidden}
+.gm-hero__media{position:absolute;inset:0;z-index:0;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+/* Le voile du haut porte l'en-tête transparent : sans lui, les liens de
+   navigation en craie se posent sur le ciel des rendus. */
+.gm-hero__media::after{content:"";position:absolute;inset:0 0 auto;height:min(34%,280px);z-index:3;pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,19,33,.66) 0%,rgba(0,19,33,.3) 55%,rgba(0,19,33,0) 100%)}
+
+/* ⚠ TROIS ÉTATS, ET LA SORTANTE RESTE OPAQUE. La façade qui arrive se
+   fond AU-DESSUS de celle qui part, qui ne bouge pas : un fondu croisé
+   des deux ferait passer l'écran par un gris à mi-course. La sortante
+   ne disparaît qu'une fois recouverte — le délai de la transition de
+   repos le garantit. */
+.gm-hero__diapo{position:absolute;inset:0;z-index:0;opacity:0;background-color:var(--noir);background-size:cover;background-position:center;transition:opacity 0s linear 1.6s}
+.gm-hero__diapo[data-etat="sortant"]{z-index:1;opacity:1;transition:none}
+.gm-hero__diapo[data-etat="actif"]{z-index:2;opacity:1;transition:opacity 1.4s var(--ease)}
+.gm-hero__diapo picture,.gm-hero__diapo img{display:block;width:100%;height:100%}
+.gm-hero__diapo img{object-fit:cover;transform-origin:var(--origine,50% 60%)}
+/* Le travelling lent. Même image-clé pour l'active et la sortante : le
+   navigateur ne relance pas une animation dont le nom ne change pas, la
+   façade qui s'efface continue donc son mouvement au lieu de sauter. */
+.gm-hero__diapo:is([data-etat="actif"],[data-etat="sortant"]) img{animation:gm-zoom calc(var(--duree) + 3s) linear both}
+.gm-hero[data-lecture="false"] .gm-hero__diapo img{animation-play-state:paused}
+@keyframes gm-zoom{from{transform:scale(1.03)}to{transform:scale(1.13)}}
+
+.gm-hero__contenu{position:relative;z-index:2;padding-bottom:var(--s-2)}
+/* ⚠ VOILE ANCRÉ AU BLOC DE TEXTE, PAS À LA HAUTEUR DU HÉROS — la leçon
+   de `.m-hero` (modele.css) : un dégradé calé en pourcentage de la
+   section passait sous le texte aux tailles d'écran où on ne l'avait
+   pas mesuré. Ici il suit le bloc, quelle que soit sa hauteur, et laisse
+   le haut de l'image — le toit, le ciel — sans rien dessus. C'est la
+   consigne du client sur l'accueil : « ça mange trop le visuel ». */
+.gm-hero__contenu::before{content:"";position:absolute;inset:auto 0 0;height:calc(100% + var(--s-5));z-index:-1;pointer-events:none;
+  background:linear-gradient(to top,rgba(0,19,33,.92) 0%,rgba(0,19,33,.8) 45%,rgba(0,19,33,.4) 76%,rgba(0,19,33,0) 100%)}
+
+/* ⚠ LE BLOC DE TEXTE EST TENU SOUS LA MOITIÉ DU HÉROS. Sa première
+   version en occupait 78 % à 1440×900 et la quasi-totalité à 1366×768 :
+   un titre sur deux lignes, un prix de 5,4 rem, des marges de section.
+   Le titre tient désormais sur une ligne — le prix et lui se partagent
+   la largeur, d'où des tailles en `vw` calées l'une sur l'autre. */
+.gm-hero__grille{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,auto);align-items:end;gap:var(--s-3) var(--s-5)}
+.gm-hero .c-breadcrumb{margin-bottom:var(--s-2);color:var(--craie);text-shadow:0 1px 2px rgba(0,19,33,.92),0 0 8px rgba(0,19,33,.82)}
+.gm-hero .c-label{display:block}
+.gm-hero .c-label--accent{text-shadow:0 1px 2px rgba(0,19,33,.96),0 0 7px rgba(0,19,33,.94)}
+.gm-hero h1{font-size:clamp(2.4rem,4.6vw,4.4rem);font-variation-settings:"wdth" 125;margin-top:var(--s-1)}
+.gm-hero__accroche{margin-top:var(--s-2);max-width:36em;color:var(--sable)}
+.gm-hero__actions{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-2) var(--s-4);margin-top:var(--s-3)}
+/* Sur un portable bas (768 ou 720 px), le bloc de texte passait encore
+   55 % du héros. L'accroche s'efface : la vitrine, juste dessous, dit la
+   même chose dans son paragraphe d'ouverture. */
+@media (min-width:901px) and (max-height:800px){.gm-hero__accroche{display:none}}
+/* Le prix dans sa colonne, séparé du titre par un filet : le plus gros
+   chiffre de la page reste le prix, comme avant la refonte. */
+.gm-hero__prix.c-price-xl{font-size:clamp(2.4rem,4.4vw,4.2rem);color:var(--craie);padding-left:var(--s-4);border-left:1px solid rgba(242,243,243,.22)}
+.gm-hero__prix .from,.gm-hero__prix small{color:var(--sable)}
+.gm-hero__prix small{max-width:31ch;line-height:1.7}
+
+/* L'entrée du texte : courte, et dès le premier affichage. Rien n'y
+   attend le défilement ni le chargement d'une image. */
+@media (prefers-reduced-motion:no-preference){
+  .gm-hero__texte > *,.gm-hero__prix{animation:gm-leve .8s var(--ease) both}
+  .gm-hero__texte > :nth-child(3){animation-delay:.04s}
+  .gm-hero__texte > :nth-child(4){animation-delay:.08s}
+  .gm-hero__texte > :nth-child(5){animation-delay:.14s}
+  .gm-hero__texte > :nth-child(6){animation-delay:.2s}
+  .gm-hero__prix{animation-delay:.12s}
+}
+@keyframes gm-leve{from{opacity:0;transform:translateY(20px)}}
+
+/* ── La barre de commande ── */
+.gm-hero__commande{margin-top:var(--s-4)}
+.gm-hero__barre{display:flex;align-items:center;gap:var(--s-3);padding-top:var(--s-2);border-top:1px solid rgba(242,243,243,.2)}
+.gm-hero__boutons{display:flex;gap:.5rem;flex:none}
+.gm-hero__legende{flex:1;min-width:0;display:flex;align-items:baseline;gap:var(--s-2)}
+.gm-hero__compteur{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.16em;color:var(--sable);font-variant-numeric:tabular-nums}
+.gm-hero__nom{font-family:var(--f-display);font-variation-settings:"wdth" 118;font-weight:600;font-size:1.3rem;line-height:1;text-transform:uppercase;letter-spacing:.01em;animation:gm-nom .6s var(--ease)}
+@keyframes gm-nom{from{opacity:0;transform:translateY(.45em)}}
+.gm-hero__fiche{flex:none}
+
+/* ── Les segments : un par façade, l'actif se remplit ──
+   ⚠ C'EST L'HORLOGE DU DIAPORAMA. La fin de `gm-remplir` sur le segment
+   actif fait passer à la façade suivante (voir HeroGamme) : ne pas
+   renommer cette image-clé sans renommer le test qui la guette. */
+.gm-segments{display:flex;gap:6px;margin-top:var(--s-1)}
+.gm-seg{position:relative;flex:1;min-width:0;height:26px;display:flex;align-items:center}
+.gm-seg__piste{position:relative;display:block;width:100%;height:2px;overflow:hidden;background:rgba(242,243,243,.26);transition:height .2s var(--ease),background .2s var(--ease)}
+.gm-seg[data-etat="actif"] .gm-seg__piste{background:rgba(242,243,243,.42)}
+.gm-seg:hover .gm-seg__piste,.gm-seg:focus-visible .gm-seg__piste{height:4px}
+.gm-seg__plein{position:absolute;inset:0;background:var(--craie);transform:scaleX(0);transform-origin:left center}
+.gm-seg[data-etat="fait"] .gm-seg__plein{transform:scaleX(1);opacity:.5}
+.gm-seg[data-etat="actif"] .gm-seg__plein{animation:gm-remplir var(--duree) linear forwards}
+.gm-hero[data-lecture="false"] .gm-seg[data-etat="actif"] .gm-seg__plein{animation-play-state:paused}
+@keyframes gm-remplir{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+/* Le nom du modèle au survol d'un segment : sans lui, onze traits
+   identiques ne disent pas où ils mènent. */
+.gm-seg::after{content:attr(data-nom);position:absolute;left:0;bottom:calc(100% - 2px);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;color:var(--craie);opacity:0;transform:translateY(4px);transition:opacity .25s var(--ease),transform .25s var(--ease);pointer-events:none}
+.gm-seg:hover::after,.gm-seg:focus-visible::after{opacity:1;transform:none}
+
+/* ── Les boutons ronds, partagés par le héros et la vitrine ──
+   Le filet à .42 tient 3:1 sur le noir (WCAG 1.4.11, composant
+   d'interface) ; le fond voilé le garde lisible sur une photo claire. */
+.gm-rond{display:inline-grid;place-items:center;flex:none;width:44px;height:44px;border-radius:50%;border:1px solid rgba(242,243,243,.42);background:rgba(0,19,33,.3);color:var(--craie);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  transition:background var(--dur-fast) var(--ease),color var(--dur-fast) var(--ease),border-color var(--dur-fast) var(--ease),opacity var(--dur-fast) var(--ease)}
+.gm-rond:hover:not(:disabled){background:var(--craie);border-color:var(--craie);color:var(--noir)}
+.gm-rond:disabled{opacity:.32;cursor:default}
+.gm-rond--grand{width:56px;height:56px}
+
+/* ── Téléphone et tablette en portrait : l'image en haut, le texte
+   dessous ──
+   Superposé, le bloc de texte couvrait les deux tiers d'un écran de
+   844 px, et encore 68 % d'une tablette de 1024 px — il ne restait de la
+   maison qu'un bandeau de toit. Le client a écarté ce compromis ailleurs
+   (« le texte sera peu lisible et l'image également ») : les deux se
+   séparent. Le seuil est repris dans les `sizes` de HeroGamme. */
+@media (max-width:900px){
+  .gm-hero{display:block;min-height:0;padding-top:0}
+  .gm-hero__media{position:relative;inset:auto;height:min(60svh,540px)}
+  .gm-hero__media::before{content:"";position:absolute;inset:auto 0 0;height:28%;z-index:3;pointer-events:none;background:linear-gradient(to top,var(--noir),rgba(0,19,33,0))}
+  .gm-hero__contenu{padding:0 0 var(--s-5)}
+  .gm-hero__contenu::before{display:none}
+  .gm-hero__container{display:flex;flex-direction:column}
+  /* La commande remonte sous l'image qu'elle pilote. */
+  .gm-hero__commande{order:-1;margin:0 0 var(--s-4);display:flex;flex-direction:column}
+  .gm-segments{order:-1;margin:0 0 var(--s-1)}
+  .gm-seg::after{display:none}
+  .gm-hero__barre{flex-wrap:wrap;padding-top:0;border-top:0;gap:var(--s-2)}
+  .gm-hero__legende{order:-1;flex-basis:100%}
+  .gm-hero__fiche{margin-left:auto}
+  /* Le prix remonte avant les boutons : en colonne, il tombait sous la
+     ligne de flottaison, après deux appels à l'action. Le bloc de texte
+     s'efface (`contents`) pour que le prix s'intercale entre ses enfants ;
+     il n'est pas focalisable, l'ordre de tabulation ne change pas. */
+  .gm-hero__grille{display:flex;flex-direction:column;align-items:stretch;gap:0}
+  .gm-hero__texte{display:contents}
+  .gm-hero__prix.c-price-xl{order:1;margin-top:var(--s-4);padding-left:0;border-left:0;font-size:clamp(2.6rem,11vw,4rem)}
+  .gm-hero__prix small{max-width:none}
+  .gm-hero__actions{order:2}
+  /* Une chasse plus serrée pour que « Nos modèles » tienne sur une ligne
+     dès 360 px — à la largeur d'ordinateur (125), il en prenait deux. */
+  .gm-hero h1{font-size:clamp(2rem,9.6vw,3.6rem);font-variation-settings:"wdth" 108}
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   2. LA VITRINE — onglets, carrousel, visionneuse
+   ────────────────────────────────────────────────────────────────── */
+.gm-gamme{background:var(--noir);color:var(--craie);padding:var(--s-7) 0 var(--s-6)}
+.gm-gamme__tete{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:var(--s-3) var(--s-6);align-items:end;margin-bottom:var(--s-5)}
+.gm-gamme__tete .c-label{display:block;margin-bottom:var(--s-2)}
+.gm-gamme__tete h2{max-width:15ch}
+.gm-gamme__tete p{color:var(--beton);max-width:34em}
+@media (max-width:900px){.gm-gamme__tete{grid-template-columns:1fr}}
+
+/* ── Les onglets ──
+   Le numéro AU-DESSUS du nom, pas devant : en ligne, les onze ne
+   tenaient pas dans 1 184 px et la rangée défilait même sur grand écran,
+   cachant Londres et Pékin. Empilés, ils tiennent, répartis sur toute la
+   largeur. */
+.gm-onglets{display:flex;justify-content:space-between;gap:var(--s-3);border-bottom:1px solid rgba(242,243,243,.16)}
+.gm-onglet{position:relative;flex:none;display:flex;flex-direction:column;align-items:flex-start;gap:.3rem;padding:0 0 1rem;color:var(--pierre-clair);transition:color var(--dur-fast) var(--ease)}
+.gm-onglet__num{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.12em}
+/* ⚠ LA TAILLE PLAFONNE AVEC LE CONTENEUR, PAS AVEC L'ÉCRAN. Le conteneur
+   s'arrête à 1 184 px ; un corps en `vw` continuait de grandir, et au-delà
+   de 1 408 px Pékin débordait de 6 px. */
+.gm-onglet__nom{font-family:var(--f-display);font-variation-settings:"wdth" 118;font-weight:600;font-size:clamp(.9rem,1.15vw,1rem);line-height:1.1;text-transform:uppercase;letter-spacing:.03em}
+.gm-onglet::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--craie);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
+.gm-onglet:hover{color:var(--sable)}
+.gm-onglet[aria-selected="true"]{color:var(--craie)}
+.gm-onglet[aria-selected="true"]::after{transform:scaleX(1)}
+/* L'anneau de focus ne doit pas se confondre avec le trait de l'onglet
+   actif : on l'écarte du texte. */
+.gm-onglet:focus-visible{outline-offset:6px}
+@media (max-width:1180px){
+  .gm-onglets{justify-content:flex-start;gap:var(--s-4);overflow-x:auto;scrollbar-width:none;
+    margin-inline:calc(var(--gutter) * -1);padding:6px var(--gutter) 0}
+  .gm-onglets::-webkit-scrollbar{display:none}
+}
+
+/* ── Le carrousel ──
+   Une vue centrée, ses voisines qui dépassent. La largeur d'une vue est
+   bornée trois fois : 76 % de l'écran, 1 180 px, et ce qu'il faut pour
+   que sa hauteur tienne dans 62 % de la fenêtre — sans quoi l'image, ses
+   onglets et ses vignettes ne tiendraient pas ensemble à l'écran (à 72 %,
+   il manquait 90 px à 1440×900).
+
+   ⚠ EN `vw`, PAS EN `%`. Le même `--diapo` sert à la base flexible d'une
+   vue et au rembourrage de la piste ; un pourcentage n'y désigne pas la
+   même largeur (boîte de contenu d'un côté, boîte entière de l'autre),
+   et la première vue n'était plus centrée. */
+.gm-scene{margin-top:var(--s-4)}
+.gm-piste{--diapo:min(76vw,1180px,calc(62svh * 16 / 9));display:flex;gap:clamp(.6rem,1.4vw,1.25rem);
+  overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none;
+  padding-inline:calc((100% - var(--diapo)) / 2);cursor:grab;animation:gm-entree .8s var(--ease)}
+.gm-piste::-webkit-scrollbar{display:none}
+/* Pendant un glissé à la souris, l'aimantation est coupée — sinon le
+   navigateur ramène la piste sur une vue à chaque pixel. */
+.gm-piste.is-glisse{scroll-snap-type:none;cursor:grabbing}
+@keyframes gm-entree{from{opacity:0;transform:translateX(2.5%)}}
+
+/* ⚠ `overflow:clip`, PAS `hidden`. Un `hidden` fait de la vue un
+   conteneur de défilement, et la parallaxe ci-dessous, qui se cale sur
+   le plus proche, se calerait sur la vue elle-même — elle ne bougerait
+   jamais. `clip` découpe pareil sans créer de défilement. */
+.gm-diapo{position:relative;flex:0 0 var(--diapo);aspect-ratio:16/9;overflow:clip;border-radius:var(--radius);
+  scroll-snap-align:center;scroll-snap-stop:always;cursor:inherit;
+  background-color:#0A1B28;background-size:cover;background-position:center;
+  opacity:.36;transform:scale(.93);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.gm-diapo:hover{opacity:.6}
+.gm-diapo[data-courante="true"]{opacity:1;transform:none;cursor:zoom-in}
+.gm-piste.is-glisse .gm-diapo{cursor:grabbing}
+.gm-diapo picture,.gm-diapo img{display:block;width:100%;height:100%}
+.gm-diapo img{object-fit:cover;transition:transform 1.2s var(--ease)}
+.gm-diapo[data-courante="true"]:hover img{transform:scale(1.025)}
+.gm-diapo:focus-visible{outline-offset:-4px}
+
+/* La parallaxe : l'image glisse moins vite que son cadre. Pilotée par la
+   position de défilement de la piste (`view(inline)`), sans une ligne de
+   JavaScript. Amélioration progressive : un navigateur qui ne connaît pas
+   les timelines de défilement montre simplement l'image fixe. */
+@supports (animation-timeline:view()){
+  @media (prefers-reduced-motion:no-preference){
+    .gm-diapo picture{animation:gm-parallaxe linear both;animation-timeline:view(inline)}
+    @keyframes gm-parallaxe{from{transform:translateX(-7%) scale(1.16)}to{transform:translateX(7%) scale(1.16)}}
+  }
+}
+
+/* ── La bande sous l'image : vignettes, compteur, flèches ── */
+.gm-barre{display:flex;align-items:center;gap:var(--s-3);margin-top:var(--s-3)}
+/* Le rembourrage laisse la place à l'anneau de focus, que le
+   défilement horizontal de la bande couperait sinon. */
+.gm-vignettes{flex:1;min-width:0;display:flex;gap:.5rem;overflow-x:auto;scrollbar-width:none;padding:6px}
+.gm-vignettes::-webkit-scrollbar{display:none}
+.gm-vignette{flex:none;width:96px;aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;opacity:.42;transition:opacity var(--dur-fast) var(--ease),box-shadow var(--dur-fast) var(--ease)}
+.gm-vignette:hover{opacity:.8}
+.gm-vignette[aria-current="true"]{opacity:1;box-shadow:0 0 0 1px var(--noir),0 0 0 2px var(--craie)}
+.gm-vignette picture,.gm-vignette img{display:block;width:100%;height:100%}
+.gm-vignette img{object-fit:cover}
+.gm-barre__commandes{display:flex;align-items:center;gap:.5rem;flex:none}
+.gm-compteur{font-family:var(--f-mono);font-size:var(--fs-small);letter-spacing:.08em;color:var(--beton);font-variant-numeric:tabular-nums;margin-right:var(--s-2)}
+.gm-compteur strong{color:var(--craie);font-weight:500}
+
+/* ── Le modèle affiché ── */
+.gm-fiche{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) auto;gap:var(--s-4) var(--s-5);align-items:end;margin-top:var(--s-5);padding-top:var(--s-4);border-top:1px solid rgba(242,243,243,.16)}
+.gm-fiche__titre h3{font-size:clamp(2.4rem,5.4vw,4.6rem);font-variation-settings:"wdth" 125;margin-top:.6rem}
+.gm-fiche__titre h3 span{display:block;animation:gm-nom .7s var(--ease)}
+.gm-fiche__vue{margin-top:var(--s-2);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase;color:var(--beton)}
+/* `--pierre` est calibrée pour la craie : sur le noir, les libellés des
+   pictos tombaient à 3,3:1. */
+.gm-fiche .c-picto small{color:var(--beton)}
+.gm-fiche__attente{color:var(--beton);font-size:var(--fs-small);max-width:36ch}
+.gm-fiche__prix{margin-top:var(--s-3);color:var(--beton);font-size:var(--fs-small)}
+.gm-fiche__prix strong{display:block;font-family:var(--f-mono);font-weight:500;font-size:1.8rem;color:var(--craie)}
+.gm-fiche__prix small{display:block;font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase;margin-top:.3rem}
+.gm-fiche__actions{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s-2)}
+@media (max-width:1000px){
+  .gm-fiche{grid-template-columns:1fr 1fr;align-items:start}
+  .gm-fiche__titre{grid-column:1 / -1}
+}
+@media (max-width:640px){.gm-fiche{grid-template-columns:1fr}}
+
+/* « Caractéristiques à venir », version fond noir de `.g-attente`. */
+.gm-attente{margin-top:var(--s-5);border:1px dashed rgba(242,243,243,.28);border-radius:var(--radius);padding:var(--s-3) var(--s-4)}
+.gm-attente p{color:var(--beton);font-size:var(--fs-small);max-width:72ch}
+.gm-attente p + p{margin-top:.5rem}
+.gm-attente strong{color:var(--craie);font-weight:600}
+
+@media (max-width:700px){
+  .gm-piste{--diapo:86vw}
+  /* Un 16/9 sur 86 % d'un téléphone fait 190 px de haut : on recadre en
+     4/3. L'image entière reste à un tap, dans la visionneuse. */
+  .gm-diapo{aspect-ratio:4/3}
+  .gm-barre{flex-wrap:wrap;gap:var(--s-2)}
+  .gm-barre__commandes{width:100%}
+  .gm-compteur{margin-right:auto}
+  .gm-vignettes{order:2;flex-basis:100%;margin-inline:-6px}
+  .gm-vignette{width:76px}
+}
+
+/* ── La visionneuse ── */
+.gm-visionneuse{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;overflow:hidden;
+  background:#000C16;color:var(--craie)}
+.gm-visionneuse[open]{display:grid;grid-template-rows:auto minmax(0,1fr) auto;animation:gm-fondu .35s var(--ease)}
+.gm-visionneuse::backdrop{background:rgba(0,12,22,.85)}
+@keyframes gm-fondu{from{opacity:0}}
+/* Le défilement de la page est bloqué pendant que la visionneuse est
+   ouverte — par la page elle-même, sans écrire dans le style du <body>,
+   que le menu mobile manipule déjà. */
+html:has(.gm-visionneuse[open]){overflow:hidden}
+.gm-visionneuse__tete{display:flex;align-items:center;gap:var(--s-3);padding:var(--s-2) var(--gutter)}
+.gm-visionneuse__legende{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:.4rem var(--s-2)}
+.gm-visionneuse__legende strong{font-family:var(--f-display);font-variation-settings:"wdth" 118;font-weight:600;font-size:1.2rem;text-transform:uppercase}
+.gm-visionneuse__legende span{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase;color:var(--beton)}
+.gm-visionneuse .gm-compteur{margin-right:0}
+.gm-visionneuse__piste{display:flex;overflow-x:auto;overscroll-behavior:contain;scroll-snap-type:x mandatory;scrollbar-width:none;cursor:grab}
+.gm-visionneuse__piste::-webkit-scrollbar{display:none}
+.gm-visionneuse__piste.is-glisse{scroll-snap-type:none;cursor:grabbing}
+.gm-visionneuse__diapo{flex:0 0 100%;height:100%;padding:0 var(--gutter);scroll-snap-align:center;scroll-snap-stop:always}
+.gm-visionneuse__diapo picture,.gm-visionneuse__diapo img{display:block;width:100%;height:100%}
+/* `contain` : en plein écran, l'image se montre entière, jamais recadrée. */
+.gm-visionneuse__diapo img{object-fit:contain}
+.gm-visionneuse__pied{display:flex;justify-content:center;gap:var(--s-2);padding:var(--s-2) var(--gutter) var(--s-3)}
+
+/* ──────────────────────────────────────────────────────────────────
+   3. LE BLOC PRIX — le montant, puis ce qu'il comprend
+   ────────────────────────────────────────────────────────────────── */
+.gm-prix__grille{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:var(--s-5) var(--s-6);align-items:start}
+/* Le montant reste à l'écran pendant qu'on parcourt la planche. */
+.gm-prix__tete{position:sticky;top:calc(var(--header-h) + var(--s-4))}
+.gm-prix__tete .c-label{display:block;margin-bottom:var(--s-2)}
+.gm-prix__tete .c-price-xl{margin-top:var(--s-4);font-size:clamp(2.8rem,5.4vw,4.6rem)}
+.gm-prix__tete .c-price-xl small{max-width:40ch;line-height:1.7}
+.gm-prix__note{margin-top:var(--s-3);color:var(--pierre);font-size:var(--fs-small);max-width:34ch}
+.gm-prix__tete .c-btn{margin-top:var(--s-4)}
+.gm-prix .g-inclus{grid-template-columns:repeat(2,1fr)}
+@media (max-width:1000px){
+  .gm-prix__grille{grid-template-columns:1fr}
+  .gm-prix__tete{position:static}
+}
+@media (max-width:560px){.gm-prix .g-inclus{grid-template-columns:1fr}}
+
+/* ──────────────────────────────────────────────────────────────────
+   ANIMATIONS RÉDUITES
+   Le diaporama ne démarre pas (voir HeroGamme), les fondus deviennent
+   des coupes franches, le travelling et la parallaxe s'arrêtent. Le
+   remplissage des segments, lui, reste permis : c'est l'horloge du
+   diaporama, si le visiteur choisit de le lancer.
+   ────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion:reduce){
+  .gm-hero__diapo,.gm-hero__diapo[data-etat="actif"]{transition:none}
+  .gm-hero__diapo:is([data-etat="actif"],[data-etat="sortant"]) img{animation:none}
+  .gm-hero__nom,.gm-piste,.gm-fiche__titre h3 span,.gm-visionneuse[open]{animation:none}
+  .gm-diapo,.gm-diapo img,.gm-onglet::after{transition:none}
+}

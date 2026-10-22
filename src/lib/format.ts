@@ -68,8 +68,10 @@ export const telephonePublie = (
 export const emailPublie = (reglages: { email?: string }, defaut: string): string =>
   reglages.email?.trim() || defaut;
 
-/* ════ LIBELLÉS ANNONCE ════ */
-export const annonceTitle = (a: Annonce) => {
+/* ════ LIBELLÉS ANNONCE ════
+   Chaque fonction ne demande que les champs qu'elle lit : la carte du
+   listing ne reçoit qu'une `AnnonceVignette`, pas l'annonce entière. */
+export const annonceTitle = (a: Pick<Annonce, "type" | "landSurface" | "city">) => {
   const s = fmtSurface(a.landSurface);
   return a.type === "terrain"
     ? `Terrain${s ? ` de ${s}` : ""} à ${a.city}`
@@ -77,7 +79,9 @@ export const annonceTitle = (a: Annonce) => {
 };
 
 /** Specs courtes de carte — n'affiche que ce qui existe réellement. */
-export const annonceSpecs = (a: Annonce): string[] => {
+export const annonceSpecs = (
+  a: Pick<Annonce, "type" | "landSurface" | "houseSurface" | "bedrooms">,
+): string[] => {
   const out: string[] = [];
   if (a.landSurface) out.push(`Terrain ${fmtSurface(a.landSurface)}`);
   if (a.type === "terrain-maison") {
@@ -91,7 +95,7 @@ export const annonceSpecs = (a: Annonce): string[] => {
  * Code département. `zip.slice(0,2)` est faux pour la Corse (2A/2B) et
  * les DOM (971…) — on préfère le code INSEE fourni par le flux.
  */
-export const dept = (a: Annonce) => {
+export const dept = (a: Pick<Annonce, "deptCode" | "zip">) => {
   if (a.deptCode) return a.deptCode;
   const z = a.zip;
   if (/^9[78]/.test(z)) return z.slice(0, 3);
@@ -100,7 +104,8 @@ export const dept = (a: Annonce) => {
 };
 
 /** Localisation compacte : « La Rochelle (17) ». */
-export const locLabel = (a: Annonce) => `${a.city} (${dept(a)})`;
+export const locLabel = (a: Pick<Annonce, "city" | "deptCode" | "zip">) =>
+  `${a.city} (${dept(a)})`;
 
 /** Part maison d'une annonce T+M — elle se calcule, `house.price` est toujours null. */
 export const housePart = (a: Annonce): number | null =>

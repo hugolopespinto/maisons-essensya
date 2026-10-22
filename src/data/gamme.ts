@@ -6,6 +6,7 @@ import {
   type Visuel,
 } from "./visuels";
 import { fmtSurface } from "@/lib/format";
+import type { IconName } from "@/types";
 
 /* ════════════════════════════════════════════════════════════════
    LA GAMME — onze modèles, et ce qu'on en sait
@@ -17,7 +18,8 @@ import { fmtSurface } from "@/lib/format";
    ⚠ CE QU'ON N'A PAS, ET QU'ON N'INVENTERA PAS.
    Le tableau du client (08/10) donne, pour chaque modèle, le nombre de
    chambres, la surface et la présence d'un garage. Ni prix par modèle,
-   ni nombre de pièces (sauf Ankara, reçu le 17/09). Un site de constructeur qui annonce « 92 m² » sur une maison
+   ni nombre de pièces (sauf Ankara, reçu le 17/09, et Athènes, tiré de
+   son texte du 14/10). Un site de constructeur qui annonce « 92 m² » sur une maison
    dont personne ne connaît la surface expose son client bien au-delà
    du désagrément d'un chiffre faux — c'est un engagement commercial.
    Les champs sont donc OPTIONNELS, et le code doit savoir se taire
@@ -63,9 +65,10 @@ export interface Modele {
    * qu'il ne communiquera pas revenait à garantir que la ligne reste
    * vide sur les onze fiches.
    *
-   * `false` et `undefined` ne disent PAS la même chose : `false` =
-   * « pas de garage », information utile à afficher ; `undefined` =
-   * « on ne sait pas », et la ligne disparaît.
+   * `false` = « pas de garage », `undefined` = « on ne sait pas ». À
+   * l'écran, les deux font disparaître la ligne : à la demande du
+   * client (23/10), le garage ne se mentionne que quand il y en a un.
+   * `false` reste écrit pour garder le tableau du client lisible ici.
    */
   garage?: boolean;
   /** Prix maison seule, hors terrain et hors adaptation. */
@@ -78,7 +81,7 @@ export interface Modele {
    Les onze modèles livrés avec leurs rendus, et leurs chiffres tels que
    le tableau du client du 08/10 les donne : chambres, surface habitable,
    garage. Sa colonne « Garage » porte « Oui » ou « - » : le tiret est lu
-   comme « pas de garage » (`false`), qui s'affiche.
+   comme « pas de garage » (`false`), qui ne s'affiche pas.
 
    ⚠ LE TABLEAU COMPTE VINGT ET UN MODÈLES ; SEULS ONZE SONT ICI. Les
    dix autres (Monaco, Oslo, Panama, Paris, Prague, Quito, Rome,
@@ -97,7 +100,11 @@ const CATALOGUE: Modele[] = [
   /* Ankara : ses trois pièces viennent de sa fiche du 17/09 ; le tableau
      du 08/10 ne compte pas les pièces. */
   { slug: "ankara", nom: "Ankara", surface: 75, chambres: 2, pieces: 3, garage: true },
-  { slug: "athenes", nom: "Athènes", surface: 103, chambres: 4, garage: false },
+  /* Athènes : ses cinq pièces viennent de son texte du 14/10 (« ses 4
+     chambres, ses 5 pièces »). Berlin écrit « 4 pièces, dont 3 chambres
+     et un garage » — le garage compté comme une pièce rend le chiffre
+     ambigu : il attend le client. */
+  { slug: "athenes", nom: "Athènes", surface: 103, chambres: 4, pieces: 5, garage: false },
   { slug: "berlin", nom: "Berlin", surface: 80, chambres: 3, garage: true },
   { slug: "dakar", nom: "Dakar", surface: 94, chambres: 3, garage: false },
   { slug: "dublin", nom: "Dublin", surface: 95, chambres: 3, garage: true },
@@ -217,8 +224,30 @@ export const specsModele = (m: Modele): string[] =>
       ? `${m.chambres} chambre${m.chambres > 1 ? "s" : ""}`
       : null,
     m.pieces !== undefined ? `${m.pieces} pièces` : null,
-    m.garage === true ? "garage" : m.garage === false ? "sans garage" : null,
+    /* Pas de « sans garage » : on ne parle du garage que s'il existe. */
+    m.garage === true ? "garage" : null,
   ].filter(Boolean) as string[];
+
+/**
+ * Les mêmes caractéristiques, en pictos : le chiffre, puis ce qu'il
+ * compte — la lecture des fiches annonce. Partagé par la fiche du modèle
+ * et la vitrine de /maisons, qui l'écrivaient chacune de leur côté.
+ */
+export const pictosModele = (m: Modele): { icon: IconName; value: string; label: string }[] =>
+  [
+    m.surface !== undefined
+      ? { icon: "surface" as const, value: fmtSurface(m.surface), label: "Surface habitable" }
+      : null,
+    /* Pékin a une seule chambre : « 1 Chambres » s'affichait. */
+    m.chambres !== undefined
+      ? { icon: "bed" as const, value: String(m.chambres), label: m.chambres > 1 ? "Chambres" : "Chambre" }
+      : null,
+    m.pieces !== undefined ? { icon: "door" as const, value: String(m.pieces), label: "Pièces" } : null,
+    /* « Oui », et non une surface : le client a dit que la superficie du
+       garage n'avait pas d'importance. Sans garage, pas de picto du tout
+       — un « Garage : Non » à côté du prix se lit comme un manque. */
+    m.garage === true ? { icon: "garage" as const, value: "Oui", label: "Garage" } : null,
+  ].filter((p) => p !== null);
 
 /** Le titre de la fiche, avec ce qu'on sait — et rien de plus. */
 export const titreModele = (m: Modele): string => {

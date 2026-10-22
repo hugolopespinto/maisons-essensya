@@ -164,10 +164,11 @@ export function produitModele(
       name: "Pièces",
       value: m.pieces,
     },
-    m.garage !== undefined && {
+    /* Comme les pictos : le garage n'est déclaré que s'il existe. */
+    m.garage === true && {
       "@type": "PropertyValue",
       name: "Garage",
-      value: m.garage ? "Oui" : "Non",
+      value: "Oui",
     },
   ].filter(Boolean);
 
@@ -248,15 +249,20 @@ export function listeSchema(
      Google des pages qui n'existent pas, et c'est lui qui viendrait les
      chercher. On omet la clé, ce qu'un ItemList accepte parfaitement. */
   liens: { nom: string; path?: string }[],
+  /* Une page de liste paginée : ses éléments gardent leur rang dans la
+     liste ENTIÈRE (la page 2 commence au 25ᵉ), et `numberOfItems` compte
+     la liste entière — c'est ce que demande schema.org quand une page ne
+     décrit qu'une partie de la liste. */
+  pagination?: { premier: number; total: number },
 ): Noeud {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: nom,
-    numberOfItems: liens.length,
+    numberOfItems: pagination?.total ?? liens.length,
     itemListElement: liens.map((l, i) => ({
       "@type": "ListItem",
-      position: i + 1,
+      position: (pagination?.premier ?? 1) + i,
       name: l.nom,
       ...(l.path ? { url: abs(l.path) } : {}),
     })),

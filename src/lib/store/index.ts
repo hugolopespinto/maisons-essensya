@@ -258,10 +258,10 @@ export const PAGES_DEFAUT: PageEditable[] = [
         valeur: "Le prix",
       },
       {
-        cle: "prix.titre",
+        cle: "prix.titreCompris",
         label: "Titre de la section prix",
-        aide: "Les listes « compris » et « non compris » se modifient dans l'écran Contenu.",
-        valeur: "Ce qu'il comprend, ce qu'il ne comprend pas",
+        aide: "La liste « compris » se modifie dans l'écran Contenu.",
+        valeur: "Ce que le prix comprend",
       },
       {
         cle: "faq.surtitre",

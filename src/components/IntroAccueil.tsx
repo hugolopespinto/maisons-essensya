@@ -67,9 +67,10 @@ export function IntroAccueilScript() {
  * si le script du <head> a posé son drapeau. Le compteur et la tache
  * d'encre sont pilotés par HeroFilm, qui retrouve cet écran par son id.
  *
- * ⚠ À RENDRE HORS DE `.hero-fixe` : le hero est une section sombre, qui
- * bascule l'anneau de focus en craie — invisible sur l'aplat craie de
- * cet écran, où le bouton « Passer l'intro » doit rester repérable.
+ * ⚠ À RENDRE HORS DE `.hero-fixe` : s'il redevenait une section sombre
+ * (il l'a été tant que le titre était posé sur la photo), le hero
+ * basculerait l'anneau de focus en craie — invisible sur l'aplat craie
+ * de cet écran, où le bouton « Passer l'intro » doit rester repérable.
  */
 export default function IntroAccueil() {
   return (

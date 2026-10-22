@@ -27,20 +27,25 @@ const delay = (s: string) => ({ "--reveal-delay": s }) as React.CSSProperties;
    `pre-line` le rend à l'écran au lieu d'afficher le caractère brut. */
 const PRE_LINE = { whiteSpace: "pre-line" } as const;
 
-/* Les trois photos sous le bloc « La maison juste, le prix juste ».
-   Trois MODÈLES différents, pas trois vues du même : la section parle
-   d'une gamme, les images doivent en montrer une. Extérieur, intérieur,
-   extérieur — pour que la rangée respire au lieu d'aligner trois
-   façades. `vue()` lève si une clé n'existe pas : une image manquante
-   casse le build plutôt que la page. */
+/* Les quatre photos sous le bloc « La maison juste, le prix juste »,
+   dans l'ordre de la maquette « maison 2 » du client : une grande en
+   bandeau, puis une façade à gauche et deux intérieurs empilés à
+   droite. Quatre MODÈLES différents, pas quatre vues du même : la
+   section parle d'une gamme, les images doivent en montrer une.
+   `vue()` lève si une clé n'existe pas : une image manquante casse le
+   build plutôt que la page. */
 const PHOTOS_JUSTE = [
   /* Pékin EN PREMIER, et ce n'est pas un choix esthétique : le prix
      affiché juste au-dessus annonce « modèle Pékin ». Tant qu'il n'avait
      pas de visuel, la rangée montrait trois AUTRES modèles sous ce
      prix — un visiteur pouvait croire que 78 000 € les concernait. */
   { visuel: vue("pekin", "vue-1-exterieur"), alt: "Maison Essensya modèle Pékin, le modèle à 78 000 €" },
-  { visuel: vue("berlin", "vue-3-interieur"), alt: "Séjour d'une maison Essensya modèle Berlin" },
   { visuel: vue("dublin", "vue-2-exterieur"), alt: "Maison Essensya modèle Dublin, côté jardin" },
+  { visuel: vue("berlin", "vue-3-interieur"), alt: "Séjour d'une maison Essensya modèle Berlin" },
+  /* La maquette répétait le séjour Berlin pour figurer cette case. Une
+     chambre Hanoi la remplit : son mur terracotta répond à celui du
+     séjour posé juste au-dessus. */
+  { visuel: vue("hanoi", "vue-7-interieur"), alt: "Chambre d'une maison Essensya modèle Hanoi" },
 ];
 
 /* Le visuel pleine largeur sous « Nos engagements » : le séjour de la
@@ -57,9 +62,12 @@ const VISUEL_ENGAGEMENTS = visuelEngagements as Visuel;
 /* ⚠ VISUEL DE SECOURS DU BLOC « OPPORTUNITÉ ».
    Le client demande d'afficher la première image de l'annonce ; 90 % du
    flux n'en a aucune. Plutôt qu'un cadre vide, on pose un rendu de
-   modèle — Dublin, comme il le suggère pour juger du résultat — et LA
-   CARTE LE DIT. Sans cette mention, un rendu posé sur une parcelle
-   laisse croire que c'est la maison qui y sera construite. */
+   modèle — Dublin, comme il le suggère pour juger du résultat.
+
+   ⚠ LA CARTE NE LE DIT PLUS, À LA DEMANDE DU CLIENT : la ligne
+   « Visuel d'illustration… » a été retirée, avec la mention légale du
+   flux qui la suivait. Seul le texte alternatif distingue encore le
+   rendu d'une photo de l'annonce. */
 const VISUEL_SECOURS = facade("dublin");
 
 /** Le lot dans lequel le composant tire au sort, à chaque visite. */
@@ -83,16 +91,19 @@ export default async function HomePage() {
         titre: `Maison à ${a.city}`,
         href: annonceUrl(a),
         image: a.image || VISUEL_SECOURS?.src || "",
-        imageIllustration: sansPhoto,
         imageAlt: sansPhoto
           ? "Vue d'architecte d'une maison Essensya"
           : `Maison et terrain à ${a.city}`,
         specs: [
           fmtSurface(a.landSurface) && { label: "Terrain", valeur: fmtSurface(a.landSurface) },
-          fmtSurface(a.houseSurface) && { label: "Maison", valeur: fmtSurface(a.houseSurface) },
+          /* Les chambres, pas la surface de la maison : demande du client
+             (23/10). « Maison 3 chambres » se lit d'une traite. */
+          a.bedrooms !== null && {
+            label: "Maison",
+            valeur: `${a.bedrooms} chambre${a.bedrooms > 1 ? "s" : ""}`,
+          },
           a.price !== null && { label: "Prix total", valeur: fmtPrice(a.price) },
         ].filter(Boolean) as { label: string; valeur: string }[],
-        mention: a.mention ?? "",
       };
     });
   /* Même source que le layout : le nom saisi en Réglages, sinon celui
@@ -176,38 +187,35 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* La rangée de photos demandée sous le bloc. Trois modèles
-              différents plutôt que trois vues du même : c'est une gamme
-              qu'on montre, pas un produit. */}
+          {/* Les photos demandées sous le bloc. La première prend toute
+              la largeur du conteneur, les trois autres une colonne sur
+              deux, à toutes les tailles d'écran : `sizes` le dit au
+              navigateur, qui choisit le fichier en conséquence. */}
           <div className="s-juste__photos">
-            {PHOTOS_JUSTE.map((ph) => (
-              <div
-                className="s-juste__photo"
-                key={ph.visuel.src}
-                style={{ backgroundImage: `url(${ph.visuel.empreinte})` }}
-                data-reveal
-              >
-                <picture>
-                  <source
-                    type="image/avif"
-                    srcSet={srcSet(ph.visuel, "avif")}
-                    sizes="(max-width:900px) 100vw, 33vw"
-                  />
-                  <source
-                    type="image/webp"
-                    srcSet={srcSet(ph.visuel, "webp")}
-                    sizes="(max-width:900px) 100vw, 33vw"
-                  />
-                  <img
-                    src={ph.visuel.src}
-                    width={ph.visuel.largeur}
-                    height={ph.visuel.hauteur}
-                    alt={ph.alt}
-                    loading="lazy"
-                  />
-                </picture>
-              </div>
-            ))}
+            {PHOTOS_JUSTE.map((ph, i) => {
+              const sizes =
+                i === 0 ? "(max-width:1280px) 100vw, 1280px" : "(max-width:1280px) 50vw, 640px";
+              return (
+                <div
+                  className="s-juste__photo"
+                  key={ph.visuel.src}
+                  style={{ backgroundImage: `url(${ph.visuel.empreinte})` }}
+                  data-reveal
+                >
+                  <picture>
+                    <source type="image/avif" srcSet={srcSet(ph.visuel, "avif")} sizes={sizes} />
+                    <source type="image/webp" srcSet={srcSet(ph.visuel, "webp")} sizes={sizes} />
+                    <img
+                      src={ph.visuel.src}
+                      width={ph.visuel.largeur}
+                      height={ph.visuel.hauteur}
+                      alt={ph.alt}
+                      loading="lazy"
+                    />
+                  </picture>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

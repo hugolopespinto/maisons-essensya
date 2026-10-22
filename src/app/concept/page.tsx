@@ -209,7 +209,7 @@ export default async function ConceptPage() {
         </div>
       </section>
 
-      <section className="pc-commit" id="engagements">
+      <section className="pc-commit pc-commit--zoom" id="engagements">
         <div className="container">
           <div className="c-section-head" data-reveal>
             <span className="c-label c-label--accent">
@@ -229,34 +229,22 @@ export default async function ConceptPage() {
         </div>
       </section>
 
-      {/* Le prix et ses exclusions côte à côte : c'est ce qui rend le
-          premier crédible. */}
+      {/* Ce que le prix comprend. La colonne « Non compris » est partie à
+          la demande du client, comme sur /maisons ; le périmètre reste dit
+          par `REEL.mentionPrix` sous le montant de l'en-tête.
+
+          ⚠ `prix.titreCompris`, PAS `prix.titre` : une page déjà
+          enregistrée dans le back-office garde « ce qu'il ne comprend
+          pas » en stock et l'aurait servie par-dessus le nouveau défaut
+          (voir `fusionnerPages`). */}
       <section className="pc-commit" style={{ paddingTop: 0 }} id="prix">
         <div className="container">
           <div className="c-section-head" data-reveal>
             <span className="c-label c-label--accent">{t("prix.surtitre", "Le prix")}</span>
-            <h2>{t("prix.titre", "Ce qu'il comprend, ce qu'il ne comprend pas")}</h2>
+            <h2>{t("prix.titreCompris", "Ce que le prix comprend")}</h2>
           </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))",
-              gap: "var(--s-5)",
-            }}
-            data-reveal
-          >
-            <div>
-              <span className="c-label" style={{ display: "block", marginBottom: "var(--s-2)" }}>
-                Compris dans le prix
-              </span>
-              <MarkedList items={HOUSE.included} variant="in" />
-            </div>
-            <div>
-              <span className="c-label" style={{ display: "block", marginBottom: "var(--s-2)" }}>
-                Non compris
-              </span>
-              <MarkedList items={HOUSE.excluded} variant="out" />
-            </div>
+          <div data-reveal>
+            <MarkedList items={HOUSE.included} variant="in" />
           </div>
         </div>
       </section>

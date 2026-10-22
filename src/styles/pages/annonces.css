@@ -23,7 +23,32 @@
 .l-view-toggle button.is-on{background:var(--anthracite);color:var(--craie)}
 .l-body{padding:var(--s-4) 0 var(--s-6)}
 .l-body .container{display:grid;grid-template-columns:7fr 5fr;gap:var(--s-4);align-items:start}
-.l-results{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-3)}
+.l-results{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-3);scroll-margin-top:calc(var(--header-h) + 92px)}
+/* Le temps que le serveur réponde, la liste affichée est celle d'avant :
+   on la grise pour le dire. Après un court délai seulement — une réponse
+   rapide ne doit pas faire clignoter la page. */
+.l-results .c-annonce{transition:border-color var(--dur-fast),opacity .2s var(--ease)}
+.l-results[aria-busy="true"] .c-annonce{opacity:.45;transition-delay:0s,.12s}
+
+/* ── Pagination ── */
+.l-pages{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--s-1);margin-top:var(--s-2);font-family:var(--f-mono);font-size:var(--fs-small)}
+.l-pages ol{display:flex;flex-wrap:wrap;justify-content:center;gap:.35rem;list-style:none;margin:0;padding:0}
+/* 44 px : la cible tactile que demandent les recommandations d'accessibilité. */
+.l-pages a,.l-pages [aria-current],.l-pages__pas{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-width:44px;height:44px;padding:0 .8rem;border:var(--line);border-radius:var(--radius);color:var(--anthracite)}
+.l-pages a:hover{border-color:var(--anthracite)}
+.l-pages [aria-current]{background:var(--anthracite);border-color:var(--anthracite);color:var(--craie)}
+.l-pages__pas.is-off{border-color:transparent;color:var(--pierre);opacity:.5}
+.l-pages__ellipse{min-width:1.5rem;text-align:center;color:var(--pierre)}
+@media (max-width:480px){
+  /* Sur un téléphone, « Précédente » et « Suivante » cèdent la place aux
+     numéros ; le nom accessible des liens, lui, ne change pas. Cases de
+     36 px (le minimum WCAG est 24) : le cas le plus large — « ← 1 … 5 6
+     7 … 12 → » — tient alors sur une ligne dès 360 px d'écran. */
+  .l-pages__mot{display:none}
+  .l-pages,.l-pages ol{gap:4px}
+  .l-pages a,.l-pages [aria-current],.l-pages__pas{min-width:36px;height:40px;padding:0 .4rem}
+  .l-pages__ellipse{min-width:20px}
+}
 .l-results__empty{grid-column:1/-1;font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre);border:1px dashed var(--beton);border-radius:var(--radius);padding:var(--s-4);text-align:center}
 /* Le seul lien du message vide est sa seule porte de sortie : `a` hérite
    la couleur du texte et perd son soulignement (base.css), il serait

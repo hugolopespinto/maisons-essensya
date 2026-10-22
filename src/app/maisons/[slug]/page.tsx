@@ -14,17 +14,22 @@ import {
   facadeDe,
   modeleParSlug,
   modelesAvecVisuels,
+  pictosModele,
   planDe,
   specsModele,
   titreModele,
   voisinsDe,
   vuesDe,
 } from "@/data/gamme";
+import { texteDe } from "@/data/textes-modeles";
 import { srcSet, type Visuel } from "@/data/visuels";
-import { fmtPrice, fmtSurface } from "@/lib/format";
+import { fmtPrice } from "@/lib/format";
+import { markdownToHtml } from "@/lib/markdown";
 import { jsonLd, produitModele } from "@/lib/schema";
 import { resolveMetadata } from "@/lib/seo";
-import type { IconName } from "@/types";
+/* La typographie du texte AVANT la feuille de la page : prose.css le
+   demande, pour que la page garde la main sur la place du bloc. */
+import "@/styles/prose.css";
 import "@/styles/pages/modele.css";
 import "@/styles/pages/maison.css";
 import "@/styles/pages/gamme.css";
@@ -128,22 +133,14 @@ export default async function ModelePage({
   const planVue = planDe(m);
   const facade = facadeDe(m);
   const autres = voisinsDe(m, 3);
+  /* Le texte rédigé du modèle — les onze fiches en ont un depuis le
+     14/10. Un modèle ajouté sans le sien garde le gabarit nu. */
+  const texte = texteDe(m.slug);
 
   /* Les pictos des fiches annonce : même jeu d'icônes, même lecture
-     — le chiffre, puis ce qu'il compte. */
-  const specs = [
-    m.surface !== undefined
-      ? { icon: "surface", value: fmtSurface(m.surface), label: "Surface habitable" }
-      : null,
-    m.chambres !== undefined ? { icon: "bed", value: m.chambres, label: "Chambres" } : null,
-    m.pieces !== undefined ? { icon: "door", value: m.pieces, label: "Pièces" } : null,
-    /* « Oui » / « Non », et non une surface : le client a dit que la
-       superficie du garage n'avait pas d'importance. `false` s'affiche
-       donc, `undefined` fait disparaître le picto. */
-    m.garage !== undefined
-      ? { icon: "garage", value: m.garage ? "Oui" : "Non", label: "Garage" }
-      : null,
-  ].filter(Boolean) as { icon: IconName; value: string | number; label: string }[];
+     — le chiffre, puis ce qu'il compte. La règle vit dans `gamme.ts`,
+     partagée avec la vitrine de /maisons. */
+  const specs = pictosModele(m);
 
   return (
     <main className="page">
@@ -170,7 +167,12 @@ export default async function ModelePage({
               { nom: m.nom },
             ]}
           />
-          <span className="c-label c-label--accent">Modèle</span>
+          {/* Le nom du modèle passe dans le sur-titre quand le H1 est celui
+              du rédacteur : « Maison 2 chambres : … » ne le nomme pas
+              toujours, et le visiteur doit savoir quelle maison il regarde. */}
+          <span className="c-label c-label--accent">
+            {texte ? `Modèle ${m.nom}` : "Modèle"}
+          </span>
           {/* Le H1 affichait « Ankara » : aucun terme de la requête visée.
               Il portait aussi, en sous-ligne, « 75 m² · 2 chambres · 3
               pièces · garage » — mot pour mot ce que les pictos disent
@@ -178,8 +180,17 @@ export default async function ModelePage({
               dans le <title> (`titreModele`) et dans les pictos. Le
               département n'y entre PAS : il ferait doublon avec l'accueil
               et /maisons, et la fiche concourt sur la typologie, pas sur la
-              géographie. */}
-          <h1>Maison {m.nom}</h1>
+              géographie.
+
+              Depuis les textes du 14/10, le H1 est celui du rédacteur — la
+              requête visée en tête (« Maison 2 chambres : … »). Il fait
+              jusqu'à cent vingt signes : `g-fiche__titre` le ramène à
+              l'échelle d'un titre d'article. */}
+          {texte ? (
+            <h1 className="g-fiche__titre">{texte.h1}</h1>
+          ) : (
+            <h1>Maison {m.nom}</h1>
+          )}
 
           {specs.length > 0 ? (
             <div className="c-pictos">
@@ -229,6 +240,11 @@ export default async function ModelePage({
             {planVue && (
               <a href="#plan" className="c-link">
                 Le plan ↓
+              </a>
+            )}
+            {texte && (
+              <a href="#detail" className="c-link">
+                Le modèle en détail ↓
               </a>
             )}
             <a href="#prix" className="c-link">
@@ -330,6 +346,47 @@ export default async function ModelePage({
                 </a>
               </figcaption>
             </figure>
+          </div>
+        </section>
+      )}
+
+      {/* Le texte du modèle, APRÈS les images et le plan : la façade vend,
+          le plan prouve, le texte détaille. Il vient juste avant le prix
+          et le dossier, où mènent ses dernières lignes (« Envie d'en
+          savoir plus ? Contactez nos conseillers… »).
+
+          Deux mille mots, c'est long : l'encart d'à côté garde le modèle
+          et le dossier à portée de main pendant la lecture. Il disparaît
+          sous 900 px, où il passerait sous le texte — le prix et le
+          dossier suivent de toute façon.
+
+          `dangerouslySetInnerHTML` sans risque : `markdownToHtml` échappe
+          toute la source AVANT d'émettre ses propres balises — voir la
+          note en tête de src/lib/markdown.ts. */}
+      {texte && (
+        <section className="g-texte mp-anchor" id="detail">
+          <div className="container">
+            <div className="g-texte__grille">
+              <div
+                className="c-prose"
+                dangerouslySetInnerHTML={{ __html: markdownToHtml(texte.corps) }}
+              />
+              <aside className="g-texte__encart" aria-label={`Le modèle ${m.nom} en bref`}>
+                <span className="c-label c-label--accent">Modèle {m.nom}</span>
+                {specs.length > 0 && (
+                  <p className="g-texte__specs">{specsModele(m).join(" · ")}</p>
+                )}
+                {/* Même promesse que le bloc « Le dossier », sans le mot
+                    « plan » : neuf modèles sur onze n'en montrent pas. */}
+                <p>Le descriptif détaillé et le chiffrage pour votre commune.</p>
+                <a href="#dossier" className="c-btn c-btn--solid">
+                  Recevoir le dossier <span className="arrow">→</span>
+                </a>
+                <a href="#prix" className="c-link">
+                  Ce que le prix comprend ↓
+                </a>
+              </aside>
+            </div>
           </div>
         </section>
       )}

@@ -112,10 +112,24 @@ export const REEL = {
      · `plan` — la livraison ne contient AUCUN plan de maison, alors que
        la section « Le plan » en demande un. On montre un intérieur, qui
        parle de volumes à défaut de les coter. À réclamer.
-     · `agence` — aucune photo d'agence non plus. On ne met pas un rendu
-       de maison à la place : une vignette d'agence qui montre une
-       maison ment sur ce qu'elle désigne. L'aplat neutre s'applique.  */
+     · `agence` — plus un trou : voir `VISUELS_AGENCES` juste dessous.  */
 const V = (modele: string, vue: string) => `/maisons/${modele}/${vue}.webp`;
+
+/* Les vitrines des cinq agences, d'après les maquettes transmises par le
+   client le 23/10/2026 (« Mockup <ville>.jpg »), réduites à 1 600 px en
+   WebP. La clé est l'identifiant de l'agence — c'est-à-dire son adresse
+   publique, celle que porte aussi la fiche enregistrée en base.
+
+   Elles servent de photo PAR DÉFAUT : une photo choisie dans le
+   back-office passe devant (src/lib/agences.ts). Saint-Vincent-de-Tyrosse
+   est livrée en diptyque, deux façades côte à côte : gardé tel quel. */
+export const VISUELS_AGENCES: Record<string, string> = {
+  "agence-de-canejan": "/visuels/agences/agence-de-canejan.webp",
+  "agence-de-parentis": "/visuels/agences/agence-de-parentis.webp",
+  "agence-de-saint-vincent-de-tyrosse": "/visuels/agences/agence-de-saint-vincent-de-tyrosse.webp",
+  "agence-de-tartas": "/visuels/agences/agence-de-tartas.webp",
+  "agence-de-hagetmau": "/visuels/agences/agence-de-hagetmau.webp",
+};
 
 const IMG = {
   facade: V("lisbonne", "vue-1-exterieur"),
@@ -581,7 +595,7 @@ export const ESSENSYA_DATA: EssensyaData = {
       hours: "Lundi au vendredi – 9h à 12h et 14h à 18h – Sur rdv le samedi",
       lat: 44.750411,
       lng: -0.641614,
-      image: SANS_PHOTO,
+      image: VISUELS_AGENCES["agence-de-canejan"],
       cities: ["Canéjan"],
       description: "",
     },
@@ -595,7 +609,7 @@ export const ESSENSYA_DATA: EssensyaData = {
       hours: "Lundi au vendredi – 9h à 12h et 14h à 18h – Sur rdv le samedi",
       lat: 44.348739,
       lng: -1.068182,
-      image: SANS_PHOTO,
+      image: VISUELS_AGENCES["agence-de-parentis"],
       cities: ["Parentis-en-Born"],
       description: "",
     },
@@ -609,7 +623,7 @@ export const ESSENSYA_DATA: EssensyaData = {
       hours: "Lundi au vendredi – 9h à 12h et 14h à 18h – Sur rdv le samedi",
       lat: 43.663271,
       lng: -1.292217,
-      image: SANS_PHOTO,
+      image: VISUELS_AGENCES["agence-de-saint-vincent-de-tyrosse"],
       cities: ["Saint-Vincent-de-Tyrosse"],
       description: "",
     },
@@ -623,7 +637,7 @@ export const ESSENSYA_DATA: EssensyaData = {
       hours: "Lundi au vendredi – 9h à 12h et 14h à 18h – Sur rdv le samedi",
       lat: 43.834425,
       lng: -0.812175,
-      image: SANS_PHOTO,
+      image: VISUELS_AGENCES["agence-de-tartas"],
       cities: ["Tartas"],
       description: "",
     },
@@ -637,7 +651,7 @@ export const ESSENSYA_DATA: EssensyaData = {
       hours: "Lundi au vendredi – 9h à 12h et 14h à 18h – Sur rdv le samedi",
       lat: 43.654943,
       lng: -0.592800,
-      image: SANS_PHOTO,
+      image: VISUELS_AGENCES["agence-de-hagetmau"],
       cities: ["Hagetmau"],
       description: "",
     },

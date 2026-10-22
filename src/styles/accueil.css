@@ -7,23 +7,36 @@
    existants sur des sections moins nombreuses. */
 
 /* ──────────────────────────────────────────────────────────────────
-   HERO FIXE
+   HERO FIXE — l'image en haut, le texte dessous
 
    Plus de `position:sticky`, plus de 320 svh de course. Une hauteur,
-   une image, le texte dessus. `svh` et non `vh` : sur iOS, `vh` compte
-   la barre d'adresse comme si elle n'existait pas, et le bas du bloc
-   passe sous le pouce.
+   une image, et SOUS l'image une bande au fond du site qui porte le
+   texte (piste F des maquettes). `svh` et non `vh` : sur iOS, `vh`
+   compte la barre d'adresse comme si elle n'existait pas, et le bas du
+   bloc passe sous le pouce.
 
-   ⚠ `padding-top` = la hauteur de l'en-tête, qui est FIXE et posé
-   dessus. Tant que le texte tient dans la hauteur minimale, il reste
-   calé en bas et ce rembourrage ne change rien. Mais sur un téléphone
-   un peu court, baseline + titre sur cinq lignes + deux boutons pleine
-   largeur dépassent 78 svh : le bloc grandit alors par le haut, et la
-   baseline remontait SOUS la barre transparente, mêlée au logo.
+   L'image prend toute la hauteur que la bande lui laisse (`flex:1`) :
+   la bande suit son texte, et c'est l'image qui cède. Le plafond passe
+   de 780 à 860 px pour lui rendre une partie de ce que la bande lui
+   prend — sur un écran de 1920, le cadre devient très large, et le
+   rendu Lisbonne y perdait son premier plan.
+
+   ⚠ PLUS DE `padding-top` : l'en-tête, fixe et transparent, se pose
+   sur le ciel de l'image, qui commence en haut de l'écran. Le texte,
+   lui, est en bas, loin de la barre.
    ────────────────────────────────────────────────────────────────── */
-.hero-fixe{position:relative;min-height:min(86svh,780px);display:flex;align-items:flex-end;overflow:hidden;background:var(--anthracite);padding-top:var(--header-h)}
-.hero-fixe__media{position:absolute;inset:0;background-size:cover;background-position:center}
-.hero-fixe__media img{width:100%;height:100%;object-fit:cover}
+.hero-fixe{position:relative;min-height:min(86svh,860px);display:flex;flex-direction:column;overflow:hidden;background:var(--craie)}
+/* Tous les calques du cadre sont en `position:absolute` : il n'a aucune
+   hauteur propre et prend celle que le flex lui donne — un `img` à
+   `height:100%` resté dans le flux n'y résoudrait pas la sienne. Le
+   plancher empêche un écran très court de réduire l'image à la seule
+   hauteur de l'en-tête. */
+.hero-fixe__media{position:relative;flex:1 1 auto;min-height:calc(var(--header-h) + 14rem);background-color:var(--anthracite);background-size:cover;background-position:center}
+.hero-fixe__media picture,.hero-fixe__media img{position:absolute;inset:0;width:100%;height:100%}
+/* 45 % plutôt que le centre : le cadre est plus large que le rendu, il
+   faut rogner en haut et en bas. Le ciel se rogne mieux que la pelouse,
+   où sont le vélo et le ballon. */
+.hero-fixe__media img{object-fit:cover;object-position:50% 45%}
 
 /* ⚠ LE FILM D'ARRIVÉE EST UN CALQUE, PAS UN REMPLACEMENT.
    Il se superpose au visuel sans jamais s'y substituer : si la lecture
@@ -41,82 +54,49 @@
 .hero-fixe__film video{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .65s ease}
 .hero-fixe__film video.is-visible{opacity:1}
 
-/* ⚠ LE VOILE REPREND LE TRAVAIL DU PANNEAU OPAQUE, QUI A DISPARU.
-   Il porte maintenant deux charges distinctes, à deux endroits, et c'est
-   pour cela qu'il a cinq arrêts plutôt que deux.
+/* ⚠ LE VOILE NE PORTE PLUS QUE L'EN-TÊTE.
+   Il portait aussi le titre, posé en bas de l'image. Le titre est passé
+   sous l'image : le bas du voile est retiré, et le premier plan — la
+   terrasse, le vélo, le ballon — est rendu intact.
 
-   EN BAS, un simple appui : le vrai travail de lisibilité est fait par
-   le socle du bloc de texte (`.hero-fixe__texte::before`), qui suit la
-   hauteur du texte au lieu de celle de l'écran.
+   EN HAUT, il reste, pour une raison mesurée. L'en-tête est transparent
+   au-dessus de ce visuel, son logo et ses liens sont clairs : mesuré sur
+   la bande des 76 premiers pixels du rendu Lisbonne — un ciel à
+   rgb(151, 186, 222) — le blanc n'y tenait que 2,03:1, sous le minimum
+   de 3:1 exigé d'un élément graphique. Le voile le fait remonter
+   au-dessus du seuil, et s'efface avant le tiers de la hauteur : la
+   toiture n'est pas assombrie, seule la barre l'est. */
+.hero-fixe__voile{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,19,33,.46) 0%,rgba(0,19,33,.04) 30%,rgba(0,19,33,0) 60%)}
 
-   AU MILIEU, il ne doit RIEN faire. La maison est rendue intacte : c'est
-   tout l'objet du changement, et quelques centièmes d'opacité de trop y
-   annuleraient le bénéfice.
+/* ── LA BANDE DE TEXTE ──
+   Au fond du site, en anthracite : le contraste ne dépend plus de
+   l'image. Il vaut 12,19:1 quel que soit le rendu, ou l'image du film à
+   l'instant où on le lit — c'était tout le problème du texte posé sur
+   la photo, dont aucun dégradé n'est venu à bout sans cacher quelque
+   chose. Titre et boutons sur une ligne quand la largeur le permet ;
+   sinon les boutons passent dessous, par le seul `flex-wrap`.
 
-   EN HAUT, il reste indispensable, pour une raison mesurée et sans
-   rapport avec le titre. L'en-tête est transparent au-dessus de ce
-   visuel, son logo et ses liens sont clairs : mesuré sur la bande des
-   76 premiers pixels du rendu Lisbonne — un ciel à rgb(151, 186, 222) —
-   le blanc n'y tenait que 2,03:1, sous le minimum de 3:1 exigé d'un
-   élément graphique. Le logo existait sans se voir. Le voile le fait
-   remonter au-dessus du seuil, et s'efface avant le tiers de la
-   hauteur : la toiture n'est pas assombrie, seule la barre l'est.
+   ⚠ `.hero-fixe` A QUITTÉ LA LISTE DES FONDS SOMBRES (base.css). Il y
+   était pour son titre clair sur la photo ; resté dedans, il aurait mis
+   l'anneau de focus en craie, invisible sur la craie de la bande. */
+.hero-fixe__texte{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s-3) var(--s-4);padding-block:var(--s-3);color:var(--anthracite)}
+.hero-fixe__titre{flex:1 1 28rem;min-width:0}
+/* En bloc, avec son propre interligne : sur un téléphone, la baseline
+   passe sur deux lignes, et l'interligne du corps (1,6) les écartait
+   comme deux lignes sans rapport. */
+.hero-fixe__titre .c-label{display:block;line-height:1.5}
+/* Le titre est une phrase de 71 signes, pas un slogan. Il ne cherche
+   plus à « tenir » sur la photo : l'image fait le premier écran, le
+   titre la légende. À cette échelle, il tient sur deux lignes à côté
+   des boutons sur un écran large.
 
-   ⚠ CONSÉQUENCE ASSUMÉE : le contraste du titre dépend désormais du bas
-   de l'image. Un premier plan très clair — une terrasse en plein soleil,
-   une allée de gravier blanc — l'affaiblirait. À revérifier à chaque
-   changement de visuel d'accueil. */
-.hero-fixe__voile{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,19,33,.10) 0%,rgba(0,19,33,.05) 30%,rgba(0,19,33,.04) 70%,rgba(0,19,33,.46) 100%)}
-
-/* ⚠ LE DÉGRADÉ EST CALÉ SUR LE TEXTE, PAS SUR L'ÉCRAN, et c'est tout
-   l'enjeu. Un voile mesuré en pourcentage de la hauteur du hero ne peut
-   pas suivre un titre dont le nombre de lignes change : celui du client
-   fait 71 signes, soit trois lignes sur un écran large et SIX sur un
-   téléphone. Mesuré sur le rendu servi, sa première ligne tombait à
-   3,93:1 sur ordinateur et 1,79:1 sur téléphone — très en dessous des
-   4,5:1 exigés, parce qu'elle remontait sur la façade crème.
-
-   Le socle est donc porté par le bloc de texte lui-même : il fait sa
-   hauteur, quelle qu'elle soit, et s'éteint juste au-dessus. La maison
-   reste entière au-dessus de cette limite, et le contraste ne dépend
-   plus du format de l'écran.
-
-   `100vw` centré plutôt que `inset:0` : `.hero-fixe__texte` est un
-   `.container`, donc borné à 1280 px. Sans cela le dégradé s'arrêterait
-   net aux bords du conteneur sur un grand écran. */
-.hero-fixe__texte{position:relative;padding-block:var(--s-3) var(--s-6);color:var(--craie)}
-/* La transition tient dans le rembourrage HAUT du bloc, pas en travers du
-   texte : au-delà de 82 % le dégradé s'éteint, en deçà il est franc et
-   constant. Étalée sur toute la hauteur, elle laissait la première ligne
-   à 2,5:1.
-
-   ⚠ L'OPACITÉ EST RÉGLÉE SUR LE SEUIL, PAS AU JUGÉ. À .93 le titre
-   ressortait à 14:1 — très au-delà des 4,5:1 exigés — et la terrasse
-   disparaissait pour rien. À .76 il tient 9,5:1 sur écran large et 7,2:1
-   sur téléphone, et le mobilier de jardin reste lisible sous le texte.
-   La marge restante couvre un rendu plus clair que celui-ci. */
-.hero-fixe__texte::before{content:"";position:absolute;left:50%;transform:translateX(-50%);width:100vw;top:calc(var(--s-3) * -1);bottom:0;z-index:0;background:linear-gradient(to top,rgba(0,19,33,.76) 0%,rgba(0,19,33,.72) 66%,rgba(0,19,33,.66) 82%,rgba(0,19,33,.32) 93%,rgba(0,19,33,0) 100%);pointer-events:none}
-/* ⚠ `z-index:0` SUR LE SOCLE, ET LES ENFANTS AU-DESSUS. Avec `-1`, le
-   pseudo-élément passait DERRIÈRE la photo — un enfant à z-index négatif
-   descend sous les frères absolus de son parent. Résultat : le dégradé
-   n'apparaissait nulle part, et le titre restait posé sur la façade nue.
-   Le défaut est invisible à la lecture du CSS ; il se voit à l'écran. */
-.hero-fixe__texte > *{position:relative;z-index:1}
-.hero-fixe__texte .c-label{color:var(--sable)}
-/* Le titre est une phrase, pas un slogan de trois mots : il lui faut
-   une échelle plus basse que `--fs-hero`, sinon il occupe l'écran
-   entier sur mobile et ne se lit plus. */
-/* ⚠ LA MESURE EST PASSÉE DE 24 À 38 SIGNES, ET CE N'EST PAS UN DÉTAIL
-   DE COMPOSITION. Le titre du client fait 71 signes : à 24 signes de
-   mesure il tombe sur QUATRE lignes, et sa première ligne remonte au
-   milieu de l'image, là où le dégradé s'est déjà éteint pour ne pas
-   ternir la maison. Mesuré sur le rendu servi : le blanc y passait sur
-   une façade crème, illisible.
-
-   À 38 signes il tient sur deux lignes et reste dans le tiers bas, celui
-   que le voile couvre franchement. L'échelle baisse légèrement pour que
-   deux lignes de 38 signes tiennent sans déborder sur un écran moyen. */
-.hero-fixe h1{font-size:clamp(1.8rem,3.6vw,3.15rem);line-height:1.06;max-width:38ch;margin-top:var(--s-2)}
+   ⚠ 24 PX, PAS 26. À 26 px, le titre passait sur trois lignes : à côté
+   des boutons (480 px), la colonne plafonne à 664 px dans le conteneur
+   de 1 280, et la plus longue des deux lignes en demandait près de 690.
+   Mesuré à 1 280, 1 366 et 1 920 px : deux lignes partout à 24 px. Le
+   client veut deux lignes (23/10) ; empiler les boutons y arrivait aussi,
+   en gardant 26 px, mais en épaississant la bande. */
+.hero-fixe h1{font-size:1.5rem;line-height:1.08;max-width:32em;margin-top:.6rem;text-wrap:balance}
 /* Chaque mot du titre dans son cache, pour la montée mot par mot de
    l'écran de chargement. ⚠ LE CACHE EST PERMANENT, PAS SEULEMENT PENDANT
    L'ANIMATION : un bloc en ligne à `overflow:hidden` change de ligne de
@@ -126,9 +106,19 @@
    négatives : l'interligne ne bouge pas. */
 .hero-fixe h1 .mot{display:inline-block;overflow:hidden;vertical-align:top;padding-block:.15em .1em;margin-block:-.15em -.1em}
 .hero-fixe h1 .mot > span{display:inline-block}
-.hero-fixe__actions{display:flex;flex-wrap:wrap;gap:var(--s-2);margin-top:var(--s-4)}
+.hero-fixe__actions{display:flex;flex-wrap:wrap;gap:var(--s-2)}
+/* Sous 768 px, plus de film (voir LARGEUR_MINI_FILM), et l'image n'a
+   plus à remplir l'écran : elle prend sa propre hauteur, et la bande —
+   bien plus haute, titre et boutons empilés — ne l'écrase plus. Le
+   cadre est presque carré : cadré à 35 %, il garde la terrasse, le vélo
+   et le ballon plutôt que les deux pignons. */
+@media (max-width:767px){
+  .hero-fixe{min-height:0}
+  .hero-fixe__media{flex:none;height:min(56svh,440px);min-height:0}
+  .hero-fixe__media img{object-position:35% 50%}
+  .hero-fixe__texte{padding-block:var(--s-3) var(--s-4)}
+}
 @media (max-width:560px){
-  .hero-fixe{min-height:min(78svh,640px)}
   .hero-fixe__actions{gap:.75rem}
   .hero-fixe__actions .c-btn{flex:1 1 100%;justify-content:center}
 }
@@ -186,22 +176,37 @@ html[data-intro-accueil]:has(#intro-accueil) .hero-fixe h1 .mot > span{transform
 .s-juste{padding:var(--s-7) 0;background:var(--vert-fond)}
 .s-juste__grid{display:grid;grid-template-columns:5fr 7fr;gap:var(--s-5)}
 .s-juste__note{margin-top:var(--s-3);color:var(--pierre);font-size:var(--fs-small);max-width:52ch}
-/* UNE GRANDE PUIS DEUX, et non trois à égalité : c'est la disposition
-   de la référence envoyée par le client. Trois vignettes de même taille
-   ne hiérarchisent rien ; la première image porte le modèle dont le
-   prix est annoncé juste au-dessus, elle doit dominer.
+/* UNE GRANDE, PUIS UNE ET DEUX EMPILÉES : la maquette « maison 2 » du
+   client. La première image porte le modèle dont le prix est annoncé
+   juste au-dessus, elle doit dominer. Dessous, la façade de gauche fait
+   la hauteur des deux intérieurs empilés à droite.
+
+   ⚠ LES IMAGES SONT EN `position:absolute`. Ce sont les cadres qui
+   fixent les hauteurs : la façade par son `aspect-ratio`, les deux
+   intérieurs en se partageant les deux rangées qu'elle couvre. Une
+   image restée dans le flux apporterait sa propre hauteur à sa rangée,
+   et la pile de droite dépasserait la façade.
 
    Les légendes sous les images sont biffées en rouge sur la référence :
    il n'y en a pas, et il ne faut pas en remettre. */
 .s-juste__photos{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-3);margin-top:var(--s-5)}
-.s-juste__photo{aspect-ratio:4/3;overflow:hidden;border-radius:var(--radius);background-size:cover;background-position:center}
-.s-juste__photo:first-child{grid-column:1/-1;aspect-ratio:21/9}
-.s-juste__photo img{width:100%;height:100%;object-fit:cover}
+.s-juste__photo{position:relative;overflow:hidden;border-radius:var(--radius);background-size:cover;background-position:center}
+.s-juste__photo:nth-child(1){grid-column:1/-1;aspect-ratio:21/9}
+.s-juste__photo:nth-child(2){grid-row:span 2;aspect-ratio:4/3}
+.s-juste__photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 @media (max-width:900px){
   .s-juste__grid{grid-template-columns:1fr;gap:var(--s-4)}
-  /* En colonne unique, un cadre 21/9 devient une bande trop basse pour
-     qu'on y lise une maison : la grande reprend le format des autres. */
-  .s-juste__photo:first-child{aspect-ratio:16/9}
+  .s-juste__photos{gap:var(--s-2)}
+  /* Sur un écran étroit, un cadre 21/9 devient une bande trop basse
+     pour qu'on y lise une maison. */
+  .s-juste__photo:nth-child(1){aspect-ratio:16/9}
+  /* La façade se redresse à mesure que l'écran rétrécit : restée en
+     4/3, elle laisserait aux deux intérieurs des bandes de 50 px de
+     haut sur un téléphone. */
+  .s-juste__photo:nth-child(2){aspect-ratio:1/1}
+}
+@media (max-width:560px){
+  .s-juste__photo:nth-child(2){aspect-ratio:4/5}
 }
 
 /* ──────────────────────────────────────────────────────────────────
@@ -434,7 +439,6 @@ a.s-bande__carte:hover .s-bande__fleche{transform:translateX(4px)}
    défaut y serait invisible. */
 .s-opp__actions .c-btn:not(.c-btn--solid){border-color:var(--craie);color:var(--craie)}
 .s-opp__actions .c-btn:not(.c-btn--solid):hover{background:var(--craie);color:var(--anthracite)}
-.s-opp__note,.s-opp__mention{margin-top:var(--s-3);font-size:var(--fs-small);color:var(--sable);opacity:.72;max-width:46ch}
 @media (max-width:900px){
   .s-opp__grid{grid-template-columns:1fr;gap:var(--s-4)}
   .s-opp__actions .c-btn{flex:1 1 100%;justify-content:center}

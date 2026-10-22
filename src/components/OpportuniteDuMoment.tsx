@@ -60,11 +60,8 @@ export interface OpportuniteItem {
   titre: string;
   href: string;
   image: string;
-  /** Vrai quand l'image n'est PAS celle de l'annonce : on le dit. */
-  imageIllustration: boolean;
   imageAlt: string;
   specs: { label: string; valeur: string }[];
-  mention: string;
 }
 
 export default function OpportuniteDuMoment({
@@ -119,19 +116,10 @@ export default function OpportuniteDuMoment({
             </Link>
           </div>
 
-          {/* Une image qui ne montre pas le bien doit le dire. Sans cette
-              ligne, un rendu de modèle posé sur une annonce laisse croire
-              que c'est la maison de cette parcelle. */}
-          {a.imageIllustration && (
-            <p className="s-opp__note">
-              Visuel d&apos;illustration : la photo de cette annonce n&apos;est pas
-              encore disponible.
-            </p>
-          )}
-
-          {/* La mention du flux engage le constructeur : elle suit le prix
-              partout où il est affiché. */}
-          {a.mention && <p className="s-opp__mention">{a.mention}</p>}
+          {/* ⚠ PLUS DE TEXTE SOUS LES BOUTONS, SUR DEMANDE DU CLIENT : ni
+              la ligne « Visuel d'illustration… » des annonces sans photo,
+              ni la mention légale du flux. La mention reste sur la fiche
+              de l'annonce, où mène le premier bouton. */}
         </div>
       </div>
     </section>

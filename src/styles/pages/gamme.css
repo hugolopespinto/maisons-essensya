@@ -53,6 +53,13 @@
   .g-fiche__galerie > .g-fiche__vue:first-child{aspect-ratio:16/10}
 }
 
+/* ── LE TITRE ──
+   Le H1 du rédacteur (textes du 14/10) fait jusqu'à cent vingt signes,
+   en capitales larges : à l'échelle de `.p-head h1`, il occupait cinq
+   lignes et repoussait la façade sous le premier écran. Ramené à
+   l'échelle d'un titre d'article. */
+.p-head h1.g-fiche__titre{font-size:clamp(1.6rem,3vw,2.4rem);line-height:1.05;max-width:32em;text-wrap:balance}
+
 /* ── LES CARACTÉRISTIQUES ──
    Les pictos sous le H1, posés comme sur une fiche annonce. */
 .p-head .c-pictos{margin-top:var(--s-4);border-top:var(--line);padding-top:var(--s-3)}
@@ -60,6 +67,27 @@
 /* Les ancres du premier écran. `#prix` et `#dossier` existaient sans
    qu'aucun lien n'y mène. */
 .p-head__ancres{display:flex;flex-wrap:wrap;gap:var(--s-3) var(--s-4);margin-top:var(--s-4)}
+
+/* ── LE TEXTE DU MODÈLE ──
+   La colonne de lecture garde la mesure de .c-prose ; l'encart, à
+   droite, colle sous l'en-tête pendant les deux mille mots. Sous
+   900 px il disparaît plutôt que de tomber sous le texte : le prix et
+   le dossier suivent immédiatement. */
+.g-texte{padding:var(--s-6) 0;border-top:var(--line)}
+.g-texte__grille{display:grid;grid-template-columns:minmax(0,1fr) 21rem;gap:var(--s-6);align-items:start}
+/* Un texte qui s'ouvre sur un H2 (Ankara) n'a pas à commencer par le
+   filet qui sépare ses parties. */
+.g-texte .c-prose > h2:first-child{border-top:0;padding-top:0}
+.g-texte__encart{position:sticky;top:calc(var(--header-h) + var(--s-3));display:flex;flex-direction:column;align-items:flex-start;gap:var(--s-3);padding:var(--s-4);border:var(--line);border-radius:var(--radius);background:var(--blanc)}
+.g-texte__specs{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.1em;text-transform:uppercase;color:var(--pierre)}
+.g-texte__encart p:not(.g-texte__specs){font-size:var(--fs-small);color:var(--pierre)}
+/* Pleine largeur, marges resserrées : à 21 rem, « Recevoir le dossier »
+   passait sur deux lignes avec les marges d'un bouton de section. */
+.g-texte__encart .c-btn{align-self:stretch;justify-content:space-between;padding-inline:var(--s-3)}
+@media (max-width:900px){
+  .g-texte__grille{grid-template-columns:1fr}
+  .g-texte__encart{display:none}
+}
 
 /* ── CE QUE LE PRIX COMPREND ──
    Une planche de cases bordées de filets, comme le cartouche d'un plan :

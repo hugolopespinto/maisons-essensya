@@ -137,7 +137,11 @@ function businessJsonLd(g: AgenceAffichee) {
     name: `Maisons Essensya — ${g.name}`,
     description: g.description,
     url: `${SITE}${agencyUrl(g)}`,
-    ...(g.image && g.image !== SANS_PHOTO ? { image: g.image } : {}),
+    /* Les vitrines par défaut sont des chemins du site : un moteur attend
+       une URL absolue. */
+    ...(g.image && g.image !== SANS_PHOTO
+      ? { image: g.image.startsWith("/") ? `${SITE}${g.image}` : g.image }
+      : {}),
     ...(g.phone ? { telephone: g.phone } : {}),
     ...(g.email ? { email: g.email } : {}),
     ...(g.address ? { address: postalAddress(g.address) } : {}),
@@ -197,7 +201,7 @@ export default async function AgencyPage({
      couleur n'apporte rien à un lecteur d'écran, et l'annoncer comme
      « l'agence de … » serait faux. */
   const altPhoto =
-    g.image === SANS_PHOTO ? "" : `L'agence Essensya de ${g.zone || g.name}`;
+    g.image === SANS_PHOTO ? "" : `Vitrine Maisons Essensya — ${g.name}`;
 
   return (
     <main className="page">

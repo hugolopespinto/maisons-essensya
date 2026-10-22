@@ -1,13 +1,34 @@
 "use client";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  useCallback,
+  useEffect,
+  useOptimistic,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import AnnonceCard from "@/components/AnnonceCard";
-import type { Bounds } from "@/components/AnnoncesMap";
-import { annonceUrl } from "@/lib/format";
-import { urlVersion, versionAChambres } from "@/lib/offres";
-import type { Annonce } from "@/types";
+import {
+  CHAMBRES,
+  CRITERES_VIDES,
+  TRIS,
+  TYPES,
+  estFiltre,
+  memeZone,
+  normaliserRecherche,
+  requeteDe,
+  urlAnnonces,
+  zoneUtile,
+  type Criteres,
+  type ResultatRecherche,
+  type Tri,
+  type TypeAnnonce,
+  type Zone,
+} from "@/lib/annonces/criteres";
+import type { PointCarte } from "@/types";
 
 /* Leaflet touche à `window` dès son import : la carte ne peut pas être
    rendue côté serveur. Le reste de la page, lui, reste pré-rendu. */
@@ -16,62 +37,35 @@ const AnnoncesMap = dynamic(() => import("@/components/AnnoncesMap"), {
   loading: () => <div className="c-map__frame l-map__frame--loading" />,
 });
 
-interface Filters {
-  /** Commune ou code postal, saisie libre. */
-  q: string;
-  type: string;
-  dept: string;
-  bedrooms: string;
-  sort: string;
-}
+/* ════════════════════════════════════════════════════════════════
+   LE LISTING NE FILTRE PLUS RIEN LUI-MÊME
 
-/* Pas de budget maximum : le filtre a été retiré à la demande du client.
-   Une ancienne URL en `?max=` reste valide, le paramètre est ignoré. */
-const INITIAL: Filters = {
-  q: "",
-  type: "all",
-  dept: "all",
-  bedrooms: "all",
-  sort: "recent",
-};
+   Il écrit les critères dans l'URL ; le serveur cherche
+   (src/lib/annonces/recherche.ts) et renvoie la page de résultats, les
+   points de la carte et le compte. Tout passe par `naviguer()`.
 
-const TYPES = ["terrain", "terrain-maison"];
+   · Les menus montrent le choix tout de suite (`useOptimistic`) ; la
+     liste, elle, attend la réponse, grisée le temps du trajet.
+   · La recherche libre attend la fin d'un mot (`ATTENTE_SAISIE`), un
+     déplacement de carte la fin du geste (`ATTENTE_CARTE`) : une
+     requête par intention, pas par lettre ni par cran de molette.
+   · Les pages sont de vrais liens : Google les suit, et un clic du
+     milieu les ouvre dans un onglet comme n'importe quel lien.
 
-/* ⚠ LE NOMBRE EXACT DE CHAMBRES, PLUS UN PLANCHER. Ce filtre est la
-   destination des liens « Plans maison N chambres » de la navigation
-   (`?chambres=N`) : « 2 chambres » doit montrer des maisons à deux
-   chambres, pas aussi celles à trois, comme le faisait « 2 et plus ».
-   De 1 à 4, comme le menu. Le flux ne compte aujourd'hui que des 2 et
-   des 3 chambres : 1 et 4 rendent une liste vide, que la page explique
-   au lieu de laisser croire à une zone trop étroite. */
-const CHAMBRES = ["1", "2", "3", "4"];
+   Pas de budget maximum : le filtre a été retiré à la demande du
+   client. Une ancienne URL en `?max=` reste valide, le paramètre est
+   ignoré (voir `lireCriteres`).
+   ════════════════════════════════════════════════════════════════ */
 
-const libelleChambres = (n: string) => `${n} chambre${n === "1" ? "" : "s"}`;
+const ATTENTE_SAISIE = 300;
+const ATTENTE_CARTE = 300;
 
-type Initial = Partial<Record<"q" | "type" | "dept" | "bedrooms", string>>;
+const libelleChambres = (n: number) => `${n} chambre${n === 1 ? "" : "s"}`;
+const libelleTotal = (n: number) => `${n} opportunité${n > 1 ? "s" : ""}`;
 
-/** La query qui décrit ces filtres — celle que l'URL porte. Le tri n'y
- *  figure pas : il ne se partage pas. */
-function requeteDe(f: Filters): string {
-  const p = new URLSearchParams();
-  if (f.q.trim()) p.set("q", f.q.trim());
-  if (f.type !== "all") p.set("type", f.type);
-  if (f.dept !== "all") p.set("dept", f.dept);
-  if (f.bedrooms !== "all") p.set("chambres", f.bedrooms);
-  return p.toString();
-}
-
-/** Les filtres que l'URL demande, re-validés : une URL forgée à la main
- *  ne doit pas produire un filtre inconnu. */
-function lireInitial(initial: Initial | undefined, depts: [string, string][]): Filters {
-  return {
-    ...INITIAL,
-    q: initial?.q ?? "",
-    type: TYPES.includes(initial?.type ?? "") ? initial!.type! : "all",
-    dept: depts.some(([code]) => code === initial?.dept) ? initial!.dept! : "all",
-    bedrooms: CHAMBRES.includes(initial?.bedrooms ?? "") ? initial!.bedrooms! : "all",
-  };
-}
+/** La valeur d'un menu, si elle est l'une des valeurs prévues ; « all » → aucune. */
+const parmi = <T extends string>(v: string, valides: readonly T[]): T | null =>
+  (valides as readonly string[]).includes(v) ? (v as T) : null;
 
 /* ── ACCROCHES DE LA FEUILLE DE RÉSULTATS (mobile, en vue carte) ──
    Trois positions plutôt qu'un glissé libre : on se cale toujours sur
@@ -81,97 +75,261 @@ function lireInitial(initial: Initial | undefined, depts: [string, string][]): F
    chaque rendu fausse les dépendances des hooks. */
 const ACCROCHES = [0, 45, 78] as const;
 
-/** Comparaison insensible aux accents et à la casse : « la rochelle » = « La Rochelle ». */
-const norm = (s: string) =>
-  s
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim();
+/**
+ * Les numéros à afficher : la première page, la dernière, la courante
+ * et ses voisines — `null` pour une ellipse. Un seul numéro sauté est
+ * affiché plutôt que remplacé par « … », qui prendrait autant de place.
+ *   1 2 3 4 … 12   ·   1 … 5 6 7 … 12   ·   1 … 9 10 11 12
+ */
+function fenetre(page: number, pages: number): (number | null)[] {
+  const garder = new Set([1, pages]);
+  const debut = Math.max(2, Math.min(page - 1, pages - 3));
+  const fin = Math.min(pages - 1, Math.max(page + 1, 4));
+  for (let n = debut; n <= fin; n++) garder.add(n);
+  const out: (number | null)[] = [];
+  let avant = 0;
+  for (const n of [...garder].sort((x, y) => x - y)) {
+    if (n - avant === 2) out.push(n - 1);
+    else if (n - avant > 2) out.push(null);
+    out.push(n);
+    avant = n;
+  }
+  return out;
+}
 
-/** Les prix inconnus partent en fin de liste, quel que soit le sens du tri. */
-const byPrice = (dir: 1 | -1) => (x: Annonce, y: Annonce) => {
-  if (x.price === null) return y.price === null ? 0 : 1;
-  if (y.price === null) return -1;
-  return (x.price - y.price) * dir;
-};
-
-/** Tri « plus récentes » : sur updatedAt (ISO), annonces sans date en dernier. */
-const byRecent = (x: Annonce, y: Annonce) => {
-  if (!x.updatedAt) return y.updatedAt ? 1 : 0;
-  if (!y.updatedAt) return -1;
-  return y.updatedAt.localeCompare(x.updatedAt);
-};
-
-export default function AnnoncesBrowser({
-  annonces,
-  initial,
+/**
+ * La pagination du listing. De vrais liens `<a href>`, que Google suit
+ * et qui marchent sans JavaScript ; un clic ordinaire passe par
+ * `onPage`, pour que la liste se grise et remonte pendant le trajet.
+ */
+function Pagination({
+  criteres,
+  pages,
+  onPage,
 }: {
-  annonces: Annonce[];
-  /** Filtres lus dans l'URL CÔTÉ SERVEUR — voir le commentaire de page.tsx. */
-  initial?: Initial;
+  criteres: Criteres;
+  pages: number;
+  onPage: (n: number) => void;
 }) {
+  if (pages <= 1) return null;
+  const page = criteres.page;
+  const href = (n: number) => urlAnnonces({ ...criteres, page: n });
+  /* `onNavigate` ne se déclenche que pour une navigation dans la page :
+     Ctrl+clic et clic du milieu gardent leur comportement d'onglet. */
+  const aller = (n: number) => (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    onPage(n);
+  };
+
+  return (
+    <nav className="l-pages" aria-label="Pages de résultats">
+      {page > 1 ? (
+        <Link
+          href={href(page - 1)}
+          rel="prev"
+          className="l-pages__pas"
+          aria-label="Page précédente"
+          onNavigate={aller(page - 1)}
+        >
+          <span aria-hidden="true">←</span> <span className="l-pages__mot">Précédente</span>
+        </Link>
+      ) : (
+        <span className="l-pages__pas is-off" aria-hidden="true">
+          ← <span className="l-pages__mot">Précédente</span>
+        </span>
+      )}
+      <ol>
+        {fenetre(page, pages).map((n, i) =>
+          n === null ? (
+            <li key={`ellipse-${i}`} className="l-pages__ellipse" aria-hidden="true">
+              …
+            </li>
+          ) : (
+            <li key={n}>
+              {n === page ? (
+                <span aria-current="page">
+                  <span className="u-sr-only">Page </span>
+                  {n}
+                </span>
+              ) : (
+                <Link href={href(n)} onNavigate={aller(n)}>
+                  <span className="u-sr-only">Page </span>
+                  {n}
+                </Link>
+              )}
+            </li>
+          ),
+        )}
+      </ol>
+      {page < pages ? (
+        <Link
+          href={href(page + 1)}
+          rel="next"
+          className="l-pages__pas"
+          aria-label="Page suivante"
+          onNavigate={aller(page + 1)}
+        >
+          <span className="l-pages__mot">Suivante</span> <span aria-hidden="true">→</span>
+        </Link>
+      ) : (
+        <span className="l-pages__pas is-off" aria-hidden="true">
+          <span className="l-pages__mot">Suivante</span> →
+        </span>
+      )}
+    </nav>
+  );
+}
+
+export default function AnnoncesBrowser({ resultat }: { resultat: ResultatRecherche }) {
   const router = useRouter();
-  const pathname = usePathname();
+  const [enCours, demarrer] = useTransition();
+  const [criteres, poserCriteres] = useOptimistic(resultat.criteres);
 
-  /* Le département est la vraie maille du flux (17, 79, 85, 28, 49…) :
-     la liste des communes se compte en centaines, elle ne fait pas un
-     menu déroulant utilisable. */
-  const depts = useMemo(() => {
-    const m = new Map<string, string>();
-    for (const a of annonces) if (a.deptCode) m.set(a.deptCode, a.dept || a.deptCode);
-    return [...m.entries()].sort((x, y) => x[0].localeCompare(y[0], "fr"));
-  }, [annonces]);
+  /* La recherche libre a son propre état : la frappe ne doit jamais
+     attendre le serveur, ni être réécrite par sa réponse. */
+  const [saisie, setSaisie] = useState(resultat.criteres.q);
 
-  /* La home et le pied de page produisent déjà des liens filtrés
-     (/annonces?type=terrain) : l'état part de l'URL, jamais de zéro.
-     Les valeurs arrivent du serveur, et elles sont re-validées ici —
-     une URL forgée à la main ne doit pas produire un filtre inconnu. */
-  const [filters, setFilters] = useState<Filters>(() => lireInitial(initial, depts));
-
-  const [view, setView] = useState<Bounds | null>(null);
-  /* Incrémenté par « Réinitialiser » : la carte se recadre sur tout. */
-  const [fitToken, setFitToken] = useState(0);
-
-  /* ⚠ UN LIEN VERS /annonces?… DEPUIS /annonces NE REMONTE PAS CE
-     COMPOSANT. Next garde l'état d'une page quand seule la query change :
-     « Plans maison 3 chambres », cliqué dans le menu alors qu'on est déjà
-     sur le listing, changeait l'URL et laissait la liste telle quelle.
-     Le serveur, lui, renvoie bien le nouveau `initial` : on le reprend.
-
-     COMMENT ON RECONNAÎT UNE NAVIGATION. `initial` est un objet sérialisé
-     par le serveur : chaque rendu serveur en livre un NOUVEAU, alors
-     qu'un re-rendu local garde le même. Mais chaque filtre choisi ici
-     repasse aussi par le serveur (`router.replace` plus bas) et revient
-     en `initial` : c'est un écho, et il porte exactement les filtres
-     courants. D'où la règle : nouvel objet ET autre chose que les
-     filtres courants = une navigation, appliquée en entier — recherche
-     libre comprise, sans quoi un lien vers /annonces laisserait la liste
-     filtrée sur la commune tapée avant.
+  /* ── ÉCHO OU NAVIGATION ? ──
+     Chaque réponse du serveur arrive en nouveau `resultat`. Soit c'est
+     l'écho de ce que la page vient de demander (`demande`) — rien à
+     faire ; soit c'est une vraie navigation : un lien du menu vers
+     /annonces?chambres=3 depuis le listing (Next garde alors ce
+     composant monté), un retour arrière. Elle s'applique en entier :
+     recherche libre comprise, et la carte se recadre.
      Un écho en retard ne peut pas défaire un choix plus récent : Next
-     abandonne un `replace` dès qu'un autre part, seul le dernier est
-     rendu. Et l'écho d'une frappe ne mange pas l'espace en cours de
-     saisie : la comparaison se fait sur la query, qui l'ignore aussi.
-     Pas de `key` sur le composant à la place : chaque `router.replace`
-     le remonterait, carte comprise, et le champ de recherche perdrait le
-     focus à chaque lettre. */
-  const [initialVu, setInitialVu] = useState(initial);
-  if (initial !== initialVu) {
-    setInitialVu(initial);
-    const lu = lireInitial(initial, depts);
-    if (requeteDe(lu) !== requeteDe(filters)) {
-      setFilters((f) => ({ ...lu, sort: f.sort }));
-      /* La carte se recadre sur les nouveaux résultats. Et tant qu'elle
-         ne l'a pas fait — masquée en vue Liste sur mobile, elle ne le
-         fera qu'une fois rouverte —, la liste n'est plus filtrée par la
-         zone de l'ANCIENNE recherche : elle paraîtrait vide. */
-      setView(null);
-      setFitToken((n) => n + 1);
+     abandonne une navigation dès qu'une autre part, seule la dernière
+     est rendue. */
+  const [demande, setDemande] = useState(() => requeteDe(resultat.criteres));
+  const [rupture, setRupture] = useState(0);
+  const [resultatVu, setResultatVu] = useState(resultat);
+  if (resultat !== resultatVu) {
+    setResultatVu(resultat);
+    const recue = requeteDe(resultat.criteres);
+    if (recue !== demande) {
+      setDemande(recue);
+      setSaisie(resultat.criteres.q);
+      setRupture((n) => n + 1);
     }
   }
+
+  /* Les points ne changent qu'avec les critères : tourner les pages ou
+     déplacer la carte renvoie les mêmes. On garde alors le même tableau,
+     pour que la carte ne repose pas ses marqueurs à chaque réponse. */
+  const [carte, setCarte] = useState({ cle: resultat.pointsCle, points: resultat.points });
+  if (resultat.pointsCle !== carte.cle) setCarte({ cle: resultat.pointsCle, points: resultat.points });
+
+  /* Les critères DEMANDÉS en dernier, en avance sur `resultat` tant que
+     le serveur n'a pas répondu : deux menus changés coup sur coup
+     s'additionnent au lieu de s'écraser. Le serveur reprend la main à
+     chaque réponse — ce sont ses critères, validés, qui font foi. */
+  const voulu = useRef(resultat.criteres);
+  useEffect(() => {
+    voulu.current = resultat.criteres;
+  }, [resultat]);
+
+  /** La frappe pas encore envoyée — `null` quand il n'y en a pas. */
+  const qEnAttente = useRef<string | null>(null);
+  const minuterieSaisie = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const minuterieCarte = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  /**
+   * Écrit des critères dans l'URL ; le serveur cherche et renvoie la page.
+   * `replace` pour un filtre — filtrer n'est pas naviguer, le retour
+   * arrière doit ramener à la page précédente, pas au filtre précédent ;
+   * `push` pour tourner une page, comme un lien.
+   */
+  const naviguer = useCallback(
+    (maj: (c: Criteres) => Criteres, mode: "replace" | "push" = "replace") => {
+      /* Une frappe en attente part avec : changer un menu en cours de
+         saisie ne doit pas perdre la commune tapée. */
+      clearTimeout(minuterieSaisie.current);
+      let base = voulu.current;
+      if (qEnAttente.current !== null) {
+        const q = normaliserRecherche(qEnAttente.current);
+        qEnAttente.current = null;
+        if (q !== base.q) base = { ...base, q, page: 1 };
+      }
+      const suivants = maj(base);
+      const qs = requeteDe(suivants);
+      if (qs === requeteDe(voulu.current)) return;
+      voulu.current = suivants;
+      setDemande(qs);
+      demarrer(() => {
+        poserCriteres(suivants);
+        const url = urlAnnonces(suivants);
+        if (mode === "push") router.push(url, { scroll: false });
+        else router.replace(url, { scroll: false });
+      });
+    },
+    [router, poserCriteres],
+  );
+
+  /** Un filtre change : on repart de la première page. */
+  const filtrer = (maj: (c: Criteres) => Criteres) => naviguer((c) => ({ ...maj(c), page: 1 }));
+
+  const onSaisie = (v: string) => {
+    setSaisie(v);
+    qEnAttente.current = v;
+    clearTimeout(minuterieSaisie.current);
+    minuterieSaisie.current = setTimeout(() => naviguer((c) => c), ATTENTE_SAISIE);
+  };
+
+  /* Une navigation venue d'ailleurs, ou « Réinitialiser » : ce qui était
+     en attente ne vaut plus. */
+  useEffect(() => {
+    clearTimeout(minuterieSaisie.current);
+    clearTimeout(minuterieCarte.current);
+    qEnAttente.current = null;
+  }, [rupture]);
+
+  useEffect(() => {
+    const saisieT = minuterieSaisie;
+    const carteT = minuterieCarte;
+    return () => {
+      clearTimeout(saisieT.current);
+      clearTimeout(carteT.current);
+    };
+  }, []);
+
+  const reset = () => {
+    qEnAttente.current = null;
+    setSaisie("");
+    naviguer(() => CRITERES_VIDES);
+    /* La carte se recadre sur tout — même si aucun filtre n'était posé. */
+    setRupture((n) => n + 1);
+  };
+
+  /* ── LA CARTE ── */
   const [syncMap, setSyncMap] = useState(true);
   const [mapMode, setMapMode] = useState(false);
+  /** La dernière vue de la carte, cadrage compris. */
+  const vue = useRef<Zone | null>(null);
 
+  const onBoundsChange = useCallback(
+    (z: Zone, auto: boolean) => {
+      vue.current = z;
+      clearTimeout(minuterieCarte.current);
+      /* Un cadrage de la carte n'est pas une recherche — voir AnnoncesMap. */
+      if (auto || !syncMap) return;
+      minuterieCarte.current = setTimeout(() => {
+        const zone = zoneUtile(z, carte.points);
+        naviguer((c) => (memeZone(c.zone, zone) ? c : { ...c, zone, page: 1 }));
+      }, ATTENTE_CARTE);
+    },
+    [syncMap, carte.points, naviguer],
+  );
+
+  const suivreCarte = (on: boolean) => {
+    setSyncMap(on);
+    clearTimeout(minuterieCarte.current);
+    const zone = on && vue.current ? zoneUtile(vue.current, carte.points) : null;
+    naviguer((c) => (memeZone(c.zone, zone) ? c : { ...c, zone, page: 1 }));
+  };
+
+  const onSelect = useCallback((p: PointCarte) => router.push(p.href), [router]);
+  const [highlight, setHighlight] = useState<string | null>(null);
+
+  /* ── LA FEUILLE DE RÉSULTATS (mobile) ── */
   const [accroche, setAccroche] = useState(2);
   const feuilleRef = useRef<HTMLDivElement>(null);
   const glisse = useRef<{ y0: number; depart: number } | null>(null);
@@ -228,111 +386,71 @@ export default function AnnoncesBrowser({
     });
     caler(proche);
   };
-  const [highlight, setHighlight] = useState<string | null>(null);
 
-  /* Une recherche doit se partager : les filtres se reflètent dans l'URL.
-     `replace` et non `push` — filtrer n'est pas naviguer, et le retour
-     arrière doit ramener à la page précédente, pas au filtre précédent. */
-  const mounted = useRef(false);
+  /* Le lien de page cliqué devient la page courante, qui n'est plus un
+     lien : le focus clavier tomberait sur <body>, et la lecture
+     reprendrait en haut du document. On le pose sur la liste, une fois
+     la nouvelle page arrivée. */
+  const focusApresPage = useRef(false);
   useEffect(() => {
-    if (!mounted.current) {
-      mounted.current = true;
+    if (!focusApresPage.current) return;
+    focusApresPage.current = false;
+    feuilleRef.current?.focus({ preventScroll: true });
+  }, [resultat]);
+
+  /** Tourner une page ramène en haut des résultats — de la feuille sur
+   *  mobile, de la liste sinon — sans attendre la réponse. */
+  const allerPage = (n: number) => {
+    focusApresPage.current = true;
+    naviguer((c) => ({ ...c, page: n }), "push");
+    const el = feuilleRef.current;
+    if (!el) return;
+    if (getComputedStyle(el).position === "fixed") {
+      el.scrollTo({ top: 0 });
       return;
     }
-    const qs = requeteDe(filters);
-    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-  }, [filters, pathname, router]);
-
-  /* `liens` : où mène chaque carte. Sous un filtre chambres, la carte
-     montre la version à N chambres (voir src/lib/offres.ts) ; sa fiche
-     doit montrer LA MÊME, sinon le visiteur voit la maison changer au
-     clic et sa demande part au commercial avec la mauvaise référence. */
-  const { items, liens } = useMemo(() => {
-    const f = filters;
-    const q = norm(f.q);
-    const chambres = f.bedrooms !== "all" ? +f.bedrooms : null;
-    const liens = new Map<string, string>();
-    let list = annonces.flatMap((a): Annonce[] => {
-      if (f.type !== "all" && a.type !== f.type) return [];
-      if (f.dept !== "all" && a.deptCode !== f.dept) return [];
-      if (q && !norm(`${a.city} ${a.zip} ${a.dept} ${a.deptCode}`).includes(q)) return [];
-      const v = chambres === null ? a : versionAChambres(a, chambres);
-      if (!v) return [];
-      liens.set(a.id, chambres === null ? annonceUrl(a) : urlVersion(a, chambres));
-      return [v];
-    });
-    list = [...list];
-    if (f.sort === "price-asc") list.sort(byPrice(1));
-    else if (f.sort === "price-desc") list.sort(byPrice(-1));
-    else list.sort(byRecent);
-    return { items: list, liens };
-  }, [annonces, filters]);
-
-  /* Jugé sur le flux ENTIER, pas sur la liste filtrée : « 2 chambres »
-     croisé avec « Terrain seul » ne rend rien, mais des maisons 2
-     chambres existent — leur nier l'existence serait faux. */
-  const chambresAbsentes = useMemo(
-    () =>
-      filters.bedrooms !== "all" &&
-      !annonces.some((a) => versionAChambres(a, +filters.bedrooms) !== null),
-    [annonces, filters.bedrooms],
-  );
-
-  /* Une annonce sans coordonnées n'est pas plaçable — mais elle reste
-     dans la liste : elle représente une vraie opportunité. */
-  const mapItems = useMemo(
-    () => items.filter((a) => a.lat !== null && a.lng !== null),
-    [items],
-  );
-
-  const inView = (a: Annonce) => {
-    if (!view || a.lat === null || a.lng === null) return true;
-    return (
-      a.lat >= view.south &&
-      a.lat <= view.north &&
-      a.lng >= view.west &&
-      a.lng <= view.east
-    );
+    const doux = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ block: "start", behavior: doux ? "smooth" : "auto" });
   };
 
-  const visible = syncMap ? items.filter(inView) : items;
-  /* Annonces retenues par les filtres mais impossibles à placer. */
-  const offMap = items.length - mapItems.length;
-
-  const set =
-    (key: keyof Filters) =>
-    (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) =>
-      setFilters((f) => ({ ...f, [key]: e.target.value }));
-
-  const reset = () => {
-    setFilters(INITIAL);
-    setFitToken((n) => n + 1);
-  };
-
-  const onBoundsChange = useCallback((b: Bounds) => setView(b), []);
-  const onSelect = useCallback(
-    (a: Annonce) => router.push(liens.get(a.id) ?? annonceUrl(a)),
-    [router, liens],
-  );
+  const { total, annonces } = resultat;
 
   return (
     <>
       <div className="l-filters">
-        <div className="container">
+        {/* Un vrai formulaire : Entrée lance la recherche tout de suite, et
+            sans JavaScript, il soumet les mêmes critères au serveur. */}
+        <form
+          className="container"
+          role="search"
+          action="/annonces"
+          onSubmit={(e) => {
+            e.preventDefault();
+            naviguer((c) => c);
+          }}
+        >
           <div className="l-filter l-filter--wide">
             <label htmlFor="fl-q">Commune ou code postal</label>
             <input
               id="fl-q"
+              name="q"
               type="search"
-              value={filters.q}
-              onChange={set("q")}
+              value={saisie}
+              onChange={(e) => onSaisie(e.target.value)}
               placeholder="Mont-de-Marsan, 40000…"
               autoComplete="off"
             />
           </div>
           <div className="l-filter">
             <label htmlFor="fl-type">Type</label>
-            <select id="fl-type" value={filters.type} onChange={set("type")}>
+            <select
+              id="fl-type"
+              name="type"
+              value={criteres.type ?? "all"}
+              onChange={(e) =>
+                filtrer((c) => ({ ...c, type: parmi<TypeAnnonce>(e.target.value, TYPES) }))
+              }
+            >
               <option value="all">Tout</option>
               <option value="terrain-maison">Terrain + maison</option>
               <option value="terrain">Terrain seul</option>
@@ -340,9 +458,16 @@ export default function AnnoncesBrowser({
           </div>
           <div className="l-filter">
             <label htmlFor="fl-dept">Département</label>
-            <select id="fl-dept" value={filters.dept} onChange={set("dept")}>
+            <select
+              id="fl-dept"
+              name="dept"
+              value={criteres.dept ?? "all"}
+              onChange={(e) =>
+                filtrer((c) => ({ ...c, dept: e.target.value === "all" ? null : e.target.value }))
+              }
+            >
               <option value="all">Tous</option>
-              {depts.map(([code, name]) => (
+              {resultat.departements.map(([code, name]) => (
                 <option key={code} value={code}>
                   {name === code ? code : `${name} (${code})`}
                 </option>
@@ -351,7 +476,17 @@ export default function AnnoncesBrowser({
           </div>
           <div className="l-filter">
             <label htmlFor="fl-bed">Chambres</label>
-            <select id="fl-bed" value={filters.bedrooms} onChange={set("bedrooms")}>
+            <select
+              id="fl-bed"
+              name="chambres"
+              value={criteres.chambres ?? "all"}
+              onChange={(e) =>
+                filtrer((c) => ({
+                  ...c,
+                  chambres: e.target.value === "all" ? null : Number(e.target.value),
+                }))
+              }
+            >
               <option value="all">Indifférent</option>
               {CHAMBRES.map((n) => (
                 <option key={n} value={n}>
@@ -362,32 +497,60 @@ export default function AnnoncesBrowser({
           </div>
           <div className="l-filter">
             <label htmlFor="fl-sort">Trier</label>
-            <select id="fl-sort" value={filters.sort} onChange={set("sort")}>
+            <select
+              id="fl-sort"
+              name="tri"
+              value={criteres.tri}
+              onChange={(e) =>
+                filtrer((c) => ({ ...c, tri: parmi<Tri>(e.target.value, TRIS) ?? "recent" }))
+              }
+            >
               <option value="recent">Plus récentes</option>
-              <option value="price-asc">Prix croissant</option>
-              <option value="price-desc">Prix décroissant</option>
+              <option value="prix-asc">Prix croissant</option>
+              <option value="prix-desc">Prix décroissant</option>
             </select>
           </div>
-          <button className="l-filters__reset" onClick={reset}>
+          <button type="button" className="l-filters__reset" onClick={reset}>
             Réinitialiser
           </button>
           <div className="l-view-toggle" role="group" aria-label="Affichage">
-            <button className={mapMode ? "" : "is-on"} onClick={() => { setMapMode(false); caler(0); }}>
+            <button
+              type="button"
+              className={mapMode ? "" : "is-on"}
+              onClick={() => {
+                setMapMode(false);
+                caler(0);
+              }}
+            >
               Liste
             </button>
-            <button className={mapMode ? "is-on" : ""} onClick={() => { setMapMode(true); caler(2); }}>
+            <button
+              type="button"
+              className={mapMode ? "is-on" : ""}
+              onClick={() => {
+                setMapMode(true);
+                caler(2);
+              }}
+            >
               Carte
             </button>
           </div>
           <span className="l-filters__count" role="status">
-            {visible.length} opportunité{visible.length > 1 ? "s" : ""}
+            {libelleTotal(total)}
           </span>
-        </div>
+        </form>
       </div>
 
       <div className={`l-body${mapMode ? " is-map-mode" : ""}`}>
         <div className="container">
-          <div className="l-results" ref={feuilleRef}>
+          <div
+            className="l-results"
+            ref={feuilleRef}
+            tabIndex={-1}
+            role="region"
+            aria-label="Résultats"
+            aria-busy={enCours || undefined}
+          >
             {/* Poignée : visible seulement en vue carte sur mobile. Un
                 appui simple bascule entre aperçu et plein écran — tout le
                 monde ne glisse pas. */}
@@ -411,69 +574,88 @@ export default function AnnoncesBrowser({
                 else if (e.key === "ArrowDown") caler(accroche + 1);
               }}
             >
-              <span>
-                {visible.length} opportunité{visible.length > 1 ? "s" : ""}
-              </span>
+              <span>{libelleTotal(total)}</span>
             </div>
-            {visible.length ? (
-              visible.map((a) => (
-                <AnnonceCard
-                  key={a.id}
-                  annonce={a}
-                  href={liens.get(a.id)}
-                  reveal={false}
-                  highlighted={highlight === a.id}
-                  onMouseEnter={() => setHighlight(a.id)}
-                  onMouseLeave={() => setHighlight(null)}
-                />
-              ))
-            ) : chambresAbsentes ? (
+            {annonces.length ? (
+              <>
+                {annonces.map(({ annonce: a, href }) => (
+                  <AnnonceCard
+                    key={a.id}
+                    annonce={a}
+                    href={href}
+                    reveal={false}
+                    highlighted={highlight === a.id}
+                    onMouseEnter={() => setHighlight(a.id)}
+                    onMouseLeave={() => setHighlight(null)}
+                  />
+                ))}
+                <Pagination criteres={resultat.criteres} pages={resultat.pages} onPage={allerPage} />
+              </>
+            ) : resultat.chambresAbsentes && resultat.criteres.chambres !== null ? (
               /* Rien à élargir : aucune annonce du flux n'a ce nombre de
                  chambres, où que soit la carte. Le dire, plutôt que de
                  renvoyer le visiteur déplacer une carte qui ne trouvera
                  rien — il arrive souvent ici depuis le menu. */
               <div className="l-results__empty">
-                Aucune maison {libelleChambres(filters.bedrooms)} parmi nos annonces en ce
-                moment.
+                Aucune maison {libelleChambres(resultat.criteres.chambres)} parmi nos annonces en
+                ce moment.
                 <br />
                 Choisissez un autre nombre de chambres, ou{" "}
                 <Link href="/contact">parlez-nous de votre projet</Link>.
               </div>
-            ) : (
+            ) : resultat.criteres.zone ? (
               <div className="l-results__empty">
                 Aucune opportunité dans cette zone avec ces critères.
                 <br />
                 Élargissez la carte ou réinitialisez les filtres.
+              </div>
+            ) : !estFiltre(resultat.criteres) ? (
+              /* Rien du tout, sans aucun filtre : le flux est vide — token
+                 expiré, maintenance Vitahome. Ce n'est pas « aucun
+                 résultat », et le visiteur n'a rien à réinitialiser. */
+              <div className="l-results__empty">
+                Nos annonces sont en cours de mise à jour.
+                <br />
+                <Link href="/contact">Dites-nous où vous construisez</Link>, nous vous
+                recontactons.
+              </div>
+            ) : (
+              <div className="l-results__empty">
+                Aucune opportunité avec ces critères.
+                <br />
+                Réinitialisez les filtres, ou{" "}
+                <Link href="/contact">dites-nous où vous cherchez</Link>.
               </div>
             )}
           </div>
 
           <div className="l-map">
             <AnnoncesMap
-              annonces={mapItems}
+              points={carte.points}
               highlight={highlight}
               onHighlight={setHighlight}
               onBoundsChange={onBoundsChange}
               onSelect={onSelect}
-              fitToken={fitToken}
+              fitToken={rupture}
+              cadre={criteres.zone}
             />
             <label className="l-map__sync">
               <input
                 type="checkbox"
                 checked={syncMap}
-                onChange={(e) => setSyncMap(e.target.checked)}
+                onChange={(e) => suivreCarte(e.target.checked)}
               />{" "}
               Rechercher quand je déplace la carte
             </label>
             <p className="l-map__hint">
               Les annonces proches sont regroupées en bulles : zoomez ou cliquez une
               bulle pour la scinder. Les résultats suivent la zone visible.
-              {offMap > 0 && (
+              {resultat.sansCoordonnees > 0 && (
                 <>
                   {" "}
-                  {offMap} annonce{offMap > 1 ? "s" : ""} sans coordonnées, absente
-                  {offMap > 1 ? "s" : ""} de la carte mais conservée
-                  {offMap > 1 ? "s" : ""} dans la liste.
+                  {resultat.sansCoordonnees} annonce{resultat.sansCoordonnees > 1 ? "s" : ""} sans
+                  coordonnées, absente{resultat.sansCoordonnees > 1 ? "s" : ""} de la carte mais
+                  conservée{resultat.sansCoordonnees > 1 ? "s" : ""} dans la liste.
                 </>
               )}
             </p>

@@ -2,93 +2,114 @@
 import L from "leaflet";
 import "leaflet.markercluster";
 import { useCallback, useEffect, useRef } from "react";
+import type { Zone } from "@/lib/annonces/criteres";
 import { FOND_DE_CARTE } from "@/lib/fond-de-carte";
-import { annonceTitle, fmtPrice } from "@/lib/format";
-import type { Annonce } from "@/types";
+import { fmtPrice } from "@/lib/format";
+import type { PointCarte } from "@/types";
 import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 
 /* ════ CARTE DES OPPORTUNITÉS ════
    Leaflet + markercluster. Les annonces proches sont agrégées en une
    bulle chiffrée ; zoomer (ou cliquer la bulle) la scinde jusqu'aux
-   points individuels. Chaque déplacement remonte les bornes visibles
-   au parent, qui filtre la liste — le contrat du prototype v7.
+   points individuels. Chaque déplacement remonte la zone visible au
+   parent, qui la confie au serveur : c'est lui qui filtre la liste.
+
+   ⚠ UN CADRAGE N'EST PAS UNE RECHERCHE. Quand la carte se cadre d'elle-
+   même — au chargement, sur de nouveaux résultats, à « Réinitialiser » —
+   ses `moveend` remontent marqués `auto`, et le parent les ignore. Seul
+   un geste du visiteur exprime une zone de recherche ; sans cette
+   distinction, chaque cadrage relancerait une recherche, dont la
+   réponse recadrerait la carte, et ainsi de suite.
 
    Fond de carte : src/lib/fond-de-carte.ts, commun à toutes les
    cartes du site.                                                  */
 
-export interface Bounds {
-  north: number;
-  south: number;
-  east: number;
-  west: number;
-}
-
 interface Props {
-  annonces: Annonce[];
+  /** Tous les points retenus — pas seulement ceux de la page affichée. */
+  points: PointCarte[];
   highlight: string | null;
   onHighlight: (id: string | null) => void;
-  onBoundsChange: (b: Bounds) => void;
-  onSelect: (a: Annonce) => void;
-  /** Change de valeur → la carte se recadre sur toutes les annonces. */
+  /** `auto` : le mouvement vient d'un cadrage de la carte, pas du visiteur. */
+  onBoundsChange: (zone: Zone, auto: boolean) => void;
+  onSelect: (p: PointCarte) => void;
+  /** Change de valeur → la carte se recadre. */
   fitToken: number;
+  /** La zone de recherche en cours. Quand il y en a une, c'est elle que la
+   *  carte cadre, et de nouveaux résultats ne la font pas bouger. */
+  cadre: Zone | null;
 }
 
 /* Taille de la bulle indexée sur le nombre d'annonces regroupées. */
 const clusterSize = (n: number) =>
   n < 10 ? 36 : n < 50 ? 44 : n < 200 ? 52 : 60;
 
-const bounds = (m: L.Map): Bounds => {
+const zoneDe = (m: L.Map): Zone => {
   const b = m.getBounds();
-  return {
-    north: b.getNorth(),
-    south: b.getSouth(),
-    east: b.getEast(),
-    west: b.getWest(),
-  };
+  return { nord: b.getNorth(), sud: b.getSouth(), est: b.getEast(), ouest: b.getWest() };
 };
 
+/* Un cadrage se termine par un `moveend`, parfois deux — une animation
+   interrompue par la suivante en émet un pour elle-même. Tout ce qui
+   arrive dans ce délai appartient au cadrage. */
+const DUREE_CADRAGE = 700;
+
 export default function AnnoncesMap({
-  annonces,
+  points,
   highlight,
   onHighlight,
   onBoundsChange,
   onSelect,
   fitToken,
+  cadre,
 }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const clusterRef = useRef<L.MarkerClusterGroup | null>(null);
   const markersRef = useRef<Map<string, L.Marker>>(new Map());
   const fittedRef = useRef(false);
+  /** Jusqu'à quand les déplacements sont ceux d'un cadrage. */
+  const autoJusqua = useRef(0);
 
   /* Les callbacks changent à chaque rendu du parent : on les garde dans
      des refs pour ne pas re-souscrire les événements Leaflet. */
   const cb = useRef({ onHighlight, onBoundsChange, onSelect });
-  const annoncesRef = useRef(annonces);
+  const pointsRef = useRef(points);
+  const cadreRef = useRef(cadre);
 
   /* Déclaré avant les autres effets : les refs sont donc à jour quand
      ceux-ci s'exécutent (React lance les effets dans l'ordre). */
   useEffect(() => {
     cb.current = { onHighlight, onBoundsChange, onSelect };
-    annoncesRef.current = annonces;
+    pointsRef.current = points;
+    cadreRef.current = cadre;
   });
 
   /* Sur mobile la carte n'est affichée qu'en vue Carte : tant qu'elle est
      masquée, Leaflet mesure 0×0 et ses bornes ne veulent rien dire. */
   const isSized = () => !!hostRef.current?.clientWidth;
 
-  /* Cadre la vue sur l'ensemble des annonces filtrées. Le moveend qui
-     s'ensuit remonte les nouvelles bornes au parent. Renvoie false si le
-     cadrage n'a pas pu se faire (carte masquée ou aucune annonce). */
+  /* Cadre la vue sur la zone de recherche s'il y en a une, sinon sur
+     l'ensemble des points. Renvoie false si le cadrage n'a pas pu se
+     faire (carte masquée, ou rien à cadrer). */
   const fitAll = useCallback(() => {
     const map = mapRef.current;
-    const list = annoncesRef.current;
-    if (!map || !list.length || !isSized()) return false;
-    map.fitBounds(
-      L.latLngBounds(list.map((a) => [a.lat, a.lng] as [number, number])),
-      { padding: [42, 42], maxZoom: 12 },
-    );
+    if (!map || !isSized()) return false;
+    const zone = cadreRef.current;
+    const list = pointsRef.current;
+    if (!zone && !list.length) return false;
+    autoJusqua.current = performance.now() + DUREE_CADRAGE;
+    if (zone) {
+      map.fitBounds([
+        [zone.sud, zone.ouest],
+        [zone.nord, zone.est],
+      ]);
+    } else {
+      map.fitBounds(
+        L.latLngBounds(list.map((p) => [p.lat, p.lng] as [number, number])),
+        { padding: [42, 42], maxZoom: 12 },
+      );
+    }
     return true;
   }, []);
 
@@ -127,20 +148,26 @@ export default function AnnoncesMap({
     });
     map.addLayer(cluster);
 
+    /* `moveend` seul : un zoom émet `zoomend` PUIS `moveend`, et les
+       écouter tous les deux remontait chaque zoom deux fois. */
     const push = () => {
-      if (isSized()) cb.current.onBoundsChange(bounds(map));
+      if (isSized()) cb.current.onBoundsChange(zoneDe(map), performance.now() < autoJusqua.current);
     };
-    map.on("moveend zoomend", push);
+    map.on("moveend", push);
 
     mapRef.current = map;
     clusterRef.current = cluster;
 
     /* Le conteneur est masqué tant qu'on est en vue Liste sur mobile :
        Leaflet mesurerait 0×0. On resynchronise — et on cadre enfin —
-       dès qu'il prend sa taille réelle. */
+       dès qu'il prend sa taille réelle. Ce redimensionnement-là, qui
+       précède le premier cadrage, est à la carte : il est marqué `auto`
+       comme le cadrage lui-même. */
     const ro = new ResizeObserver(() => {
+      const cadrer = !fittedRef.current;
+      if (cadrer) autoJusqua.current = performance.now() + DUREE_CADRAGE;
       map.invalidateSize();
-      if (!fittedRef.current) fittedRef.current = fitAll();
+      if (cadrer) fittedRef.current = fitAll();
     });
     ro.observe(host);
 
@@ -148,7 +175,7 @@ export default function AnnoncesMap({
     const cadree = fittedRef;
     return () => {
       ro.disconnect();
-      map.off("moveend zoomend", push);
+      map.off("moveend", push);
       map.remove();
       mapRef.current = null;
       clusterRef.current = null;
@@ -164,7 +191,10 @@ export default function AnnoncesMap({
     // donc créée qu'une fois.
   }, [fitAll]);
 
-  /* ── (Re)pose des marqueurs à chaque changement de filtres ── */
+  /* ── (Re)pose des marqueurs quand les points changent ──
+     Le parent ne transmet un nouveau tableau que si les points ont
+     changé (`pointsCle`) : tourner les pages ou déplacer la carte ne
+     repose rien. */
   useEffect(() => {
     const map = mapRef.current;
     const cluster = clusterRef.current;
@@ -173,50 +203,42 @@ export default function AnnoncesMap({
     cluster.clearLayers();
     markersRef.current.clear();
 
-    /* Le flux peut livrer une annonce sans coordonnées : un marqueur à
-       [0,0] la placerait dans le golfe de Guinée. On l'écarte de la carte,
-       elle reste dans la liste de résultats. */
-    const markers = annonces
-      .filter(
-        (a): a is Annonce & { lat: number; lng: number } =>
-          typeof a.lat === "number" && typeof a.lng === "number",
-      )
-      .map((a) => {
-      const label = annonceTitle(a);
-      const marker = L.marker([a.lat, a.lng], {
+    const markers = points.map((p) => {
+      const marker = L.marker([p.lat, p.lng], {
         icon: L.divIcon({
-          html: `<span>${a.type === "terrain" ? "T" : "M"}</span>`,
+          html: `<span>${p.type === "terrain" ? "T" : "M"}</span>`,
           className: "map-pin",
           iconSize: L.point(30, 30),
         }),
-        title: label,
-        alt: label,
+        title: p.titre,
+        alt: p.titre,
         keyboard: true,
       });
-      marker.bindTooltip(`${label} — ${fmtPrice(a.price)}`, {
+      /* Un nœud texte, pas une chaîne : Leaflet poserait une chaîne en
+         innerHTML, et le nom de commune vient du flux. */
+      const bulle = document.createElement("span");
+      bulle.textContent = `${p.titre} — ${fmtPrice(p.prix)}`;
+      marker.bindTooltip(bulle, {
         direction: "top",
         offset: L.point(0, -14),
         className: "map-tip",
       });
-      marker.on("click", () => cb.current.onSelect(a));
-      marker.on("mouseover", () => cb.current.onHighlight(a.id));
+      marker.on("click", () => cb.current.onSelect(p));
+      marker.on("mouseover", () => cb.current.onHighlight(p.id));
       marker.on("mouseout", () => cb.current.onHighlight(null));
-      markersRef.current.set(a.id, marker);
+      markersRef.current.set(p.id, marker);
       return marker;
     });
 
     cluster.addLayers(markers);
 
-    /* Cadrage initial seulement : recadrer à chaque filtre déclencherait
-       une boucle (bornes → filtre → recadrage → bornes…). */
-    if (!fittedRef.current) {
-      fittedRef.current = fitAll();
-    } else if (isSized()) {
-      cb.current.onBoundsChange(bounds(map));
-    }
-  }, [annonces, fitAll]);
+    /* Sans zone de recherche, la carte suit les résultats : un filtre
+       qui change le catalogue la recadre dessus. Avec une zone, elle
+       reste où le visiteur l'a mise — c'est sa recherche. */
+    if (!fittedRef.current || !cadreRef.current) fittedRef.current = fitAll();
+  }, [points, fitAll]);
 
-  /* ── « Réinitialiser » : retour au cadrage global ── */
+  /* ── « Réinitialiser », ou une navigation : retour au cadrage ── */
   useEffect(() => {
     if (fitToken === 0) return;
     /* Carte masquée (vue Liste sur mobile) : le cadrage échoue. On ne

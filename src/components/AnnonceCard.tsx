@@ -11,7 +11,7 @@ import {
   fmtSurface,
   locLabel,
 } from "@/lib/format";
-import type { Annonce } from "@/types";
+import type { Annonce, AnnonceVignette } from "@/types";
 
 /* Tout ce qui touche à UNE annonce côté client vit ici : la carte de
    listing, la carte formulaire de la fiche et son rappel mobile. Les deux
@@ -29,7 +29,8 @@ export default function AnnonceCard({
   onMouseEnter,
   onMouseLeave,
 }: {
-  annonce: Annonce;
+  /** Une vignette suffit — une `Annonce` entière aussi, puisqu'elle la contient. */
+  annonce: AnnonceVignette;
   /** La fiche à ouvrir, quand la carte montre une version précise de la
    *  parcelle (listing filtré par chambres). Absent : la fiche ordinaire. */
   href?: string;

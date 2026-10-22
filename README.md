@@ -85,6 +85,8 @@ src/
 │   └── annonces-demo.ts    jeu de démo AU FORMAT VITAHOME
 ├── lib/
 │   ├── format.ts           prix, titres, URLs
+│   ├── annonces/           recherche du listing : critères d'URL (partagé)
+│   │                       · filtre, tri, pagination (server-only)
 │   └── vitahome/           config · types bruts · adaptateurs (server-only)
 ├── styles/
 │   ├── base.css            tokens, base, composants, header, footer
@@ -115,20 +117,54 @@ change, un seul fichier bouge.
 
 ---
 
+## Recherche et pagination du listing
+
+Le flux Vitahome (`pack-XXX/annonces.json`) **ne pagine pas et ne filtre
+pas** : il rend le pack entier, et la documentation de l'API
+(`pro.vitahome.fr/doc/api`) ne décrit aucun paramètre pour ce point
+d'accès. Il est donc lu en entier, mis en cache (`VITAHOME_REVALIDATE`),
+et c'est **notre serveur** qui cherche : `src/lib/annonces/recherche.ts`.
+
+Le navigateur ne filtre plus rien. Il écrit les critères dans l'URL, le
+serveur rend la page de résultats :
+
+| Paramètre | Valeurs |
+| --- | --- |
+| `q` | commune, code postal, département (accents, casse et tirets ignorés) |
+| `type` | `terrain` · `terrain-maison` |
+| `dept` | code INSEE présent dans le flux |
+| `chambres` | `1` à `4`, nombre exact |
+| `tri` | `recent` (défaut) · `prix-asc` · `prix-desc` |
+| `zone` | `sud,ouest,nord,est` — posée quand on déplace la carte |
+| `page` | `2`, `3`… — 24 annonces par page |
+
+Une valeur invalide est ignorée, jamais une erreur. Le navigateur reçoit
+la page demandée (des vignettes, pas les annonces complètes) et les
+points de la carte — légers, mais tous : c'est la carte qui montre où
+chercher ailleurs. Mesuré sur un flux de 240 annonces (119 parcelles) :
+840 Ko de HTML et 507 Ko de données avant, à chaque filtre ; 159 Ko et
+59 Ko après.
+
+Les pages sont de vrais liens (`?page=N`), suivis par Google. Page N du
+catalogue entier : canonique propre et titre numéroté. Vue filtrée ou
+triée : canonique `/annonces`.
+
 ## La carte du listing
 
 `/annonces` affiche une vraie carte (Leaflet + `leaflet.markercluster`),
 pas un fond décoratif : les annonces proches sont **agrégées en bulles
 chiffrées**, qui se scindent au zoom jusqu'aux points individuels.
 
-- **Zoom / déplacement → résultats filtrés.** Chaque `moveend` remonte
-  les bornes visibles ; la liste ne garde que les annonces dans le cadre.
-  Décochable via « Rechercher quand je déplace la carte ».
+- **Zoom / déplacement → résultats filtrés.** Chaque `moveend` d'un
+  geste du visiteur devient le paramètre `zone`, que le serveur applique.
+  Un cadrage automatique (chargement, nouveaux résultats, « Réinitialiser »)
+  n'en pose pas. Décochable via « Rechercher quand je déplace la carte ».
 - **Clic sur une bulle** → la carte zoome sur son emprise. **Clic sur un
   point** → fiche annonce. **Survol** synchronisé dans les deux sens
   entre la carte de résultat et son point.
-- **Cadrage automatique** sur l'ensemble des annonces au chargement, et
-  au clic sur « Réinitialiser ».
+- **Cadrage automatique** sur l'ensemble des annonces au chargement, au
+  clic sur « Réinitialiser », et quand un filtre change les résultats
+  sans zone posée. Avec une zone, la carte reste où le visiteur l'a mise.
 - **Mobile** : la carte n'est montée qu'en vue Carte ; un `ResizeObserver`
   la mesure et la recadre quand elle devient visible (sinon Leaflet
   calculerait sur un conteneur de 0 px).

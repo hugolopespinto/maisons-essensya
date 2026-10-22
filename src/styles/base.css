@@ -136,7 +136,7 @@
    (voir `fonds-sombres.mjs` dans les scripts de qualification). C'est
    ce relevé-là qu'il faut rejouer après avoir ajouté une section. */
 .u-sombre,
-.hero-fixe,.s-forts,.s-opp,.s-cta,.s-proof,.s-philo,.site-footer,.mobile-nav,
+.s-forts,.s-opp,.s-cta,.s-proof,.s-philo,.site-footer,.mobile-nav,
 .c-cookies,.footer-legal,.g-hero,.a-aside__card,.pc-figures,
 .m-hero,.m-arch,.ct-form-card,.lp-hero,.skip-link{
   --accent:var(--terracotta-clair);
@@ -523,7 +523,11 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
 .header-cta{padding:.75rem 1.3rem}
 .site-header:not(.is-solid) .header-cta{border-color:var(--craie);color:var(--craie)}
 .site-header:not(.is-solid) .header-cta:hover{background:var(--craie);color:var(--anthracite)}
-.nav-toggle{display:none;flex-direction:column;gap:5px;padding:.5rem}
+/* `color:inherit` : un <button> n'hérite pas de la couleur de son parent.
+   Sans cela, `currentColor` des trois traits restait le noir du
+   navigateur — invisible sur le haut sombre de l'image d'accueil, où
+   l'en-tête transparent est en craie. */
+.nav-toggle{display:none;flex-direction:column;gap:5px;padding:.5rem;color:inherit}
 .nav-toggle span{display:block;width:24px;height:2px;background:currentColor;transition:transform var(--dur-fast),opacity var(--dur-fast)}
 /* ⚠ LE PANNEAU DÉFILE ET PART DU HAUT, IL N'EST PLUS CENTRÉ. Une
    rubrique dépliée y ajoute jusqu'à neuf liens : centré, le contenu qui

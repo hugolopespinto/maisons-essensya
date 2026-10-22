@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import FilAriane from "@/components/FilAriane";
 import AnnoncesBrowser from "@/components/AnnoncesBrowser";
+import { urlCanonique, type Params } from "@/lib/annonces/criteres";
+import { rechercherAnnonces } from "@/lib/annonces/recherche";
 import { lecteurBlocs } from "@/lib/blocs";
-import { annonceTitle } from "@/lib/format";
+import { annonceTitle, annonceUrl } from "@/lib/format";
 import { jsonLd, listeSchema } from "@/lib/schema";
 import { resolveMetadata } from "@/lib/seo";
 import { getContent } from "@/lib/store";
-import { getAnnonces } from "@/lib/vitahome/annonces";
 import "@/styles/carte.css";
 import "@/styles/pages/annonces.css";
 
@@ -19,46 +20,66 @@ const CHAPO =
 /* Le chapô est affiché ET servi à Google : sans cela, le client corrige
    l'accroche de la page et la description des résultats de recherche
    continue d'annoncer l'ancienne — c'est ce que promet l'aide du champ. */
-export async function generateMetadata(): Promise<Metadata> {
-  const { pages } = await getContent();
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<Params>;
+}): Promise<Metadata> {
+  const [{ pages }, sp] = await Promise.all([getContent(), searchParams]);
   const t = lecteurBlocs(pages, "annonces");
-  return resolveMetadata("/annonces", {
+  const meta = await resolveMetadata("/annonces", {
     title: "Terrains & maisons disponibles",
     description: t("hero.chapo", CHAPO),
     alternates: { canonical: "/annonces" },
   });
-}
 
-/** Un seul endroit lit l'URL, et c'est le serveur. */
-const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
+  /* ⚠ LA PAGE 2 N'EST PAS LA PAGE 1. Même titre et même canonique sur
+     toutes les pages, ce serait dire à Google qu'elles sont une seule et
+     même page — et les annonces des suivantes sortiraient de son index.
+     Chacune porte donc son numéro et, hors filtre, sa propre canonique
+     (`urlCanonique`). La page 1 garde intacte la surcharge éventuelle du
+     back-office. */
+  const { criteres } = await rechercherAnnonces(sp);
+  if (criteres.page === 1) return meta;
+  return {
+    ...meta,
+    title: typeof meta.title === "string" ? `${meta.title}, page ${criteres.page}` : meta.title,
+    alternates: { ...meta.alternates, canonical: urlCanonique(criteres) },
+  };
+}
 
 export default async function AnnoncesPage({
   searchParams,
 }: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  searchParams: Promise<Params>;
 }) {
-  const [content, annonces, sp] = await Promise.all([
-    getContent(),
-    getAnnonces(),
-    searchParams,
-  ]);
+  /* ⚠ L'URL est lue ICI, côté serveur, et la recherche s'y fait aussi —
+     surtout PAS avec `useSearchParams` dans le composant client.
+     `useSearchParams` fait basculer tout son sous-arbre en rendu client :
+     les annonces disparaîtraient du HTML servi, et le listing deviendrait
+     invisible pour Google. C'est incompatible avec l'engagement « SEO
+     nickel » du devis, sur la page qui porte justement toute la longue
+     traîne géographique. */
+  const sp = await searchParams;
+  const [content, resultat] = await Promise.all([getContent(), rechercherAnnonces(sp)]);
   const t = lecteurBlocs(content.pages, "annonces");
 
   return (
     <main className="page">
       {/* ItemList : dit à Google que la page est un index et dans quel
-          ordre. On ne balise que les 20 premières — ce qui est réellement
-          rendu au chargement, pas le catalogue entier. */}
+          ordre. On ne balise que ce que la page rend — sa page de
+          résultats, à son rang dans la liste entière. */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: jsonLd(
             listeSchema(
               "Terrains et maisons disponibles",
-              annonces.slice(0, 20).map((a) => ({
-                nom: annonceTitle(a),
-                path: `/annonces/${a.id.toLowerCase()}`,
+              resultat.annonces.map(({ annonce }) => ({
+                nom: annonceTitle(annonce),
+                path: annonceUrl(annonce),
               })),
+              { premier: resultat.debut + 1, total: resultat.total },
             ),
           ),
         }}
@@ -76,23 +97,7 @@ export default async function AnnoncesPage({
         </div>
       </section>
 
-      {/* ⚠ Les filtres initiaux sont lus ICI, côté serveur, et passés en
-          props — surtout PAS avec `useSearchParams` dans le composant
-          client. `useSearchParams` fait basculer tout son sous-arbre en
-          rendu client : les annonces disparaissent alors du HTML servi,
-          et le listing devient invisible pour Google. C'est incompatible
-          avec l'engagement « SEO nickel » du devis, sur la page qui porte
-          justement toute la longue traîne géographique. */}
-      <AnnoncesBrowser
-        annonces={annonces}
-        initial={{
-          q: first(sp.q),
-          type: first(sp.type),
-          dept: first(sp.dept),
-          /* Destination des liens « Plans maison N chambres » du menu. */
-          bedrooms: first(sp.chambres),
-        }}
-      />
+      <AnnoncesBrowser resultat={resultat} />
     </main>
   );
 }

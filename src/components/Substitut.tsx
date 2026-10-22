@@ -1,4 +1,4 @@
-import type { Annonce } from "@/types";
+import type { AnnonceVignette } from "@/types";
 
 /* ════════════════════════════════════════════════════════════════
    SUBSTITUT GRAPHIQUE — quand l'annonce n'a pas de photo
@@ -29,7 +29,8 @@ const W = 320;
 const H = 200;
 
 interface Props {
-  annonce: Annonce;
+  /* Une vignette suffit : le tracé ne lit que la parcelle et la maison. */
+  annonce: AnnonceVignette;
   /** Le ratio du conteneur — le tracé s'y adapte. */
   className?: string;
 }
@@ -189,7 +190,7 @@ export function AnnonceMedia({
   className = "",
   eager = false,
 }: {
-  annonce: Annonce;
+  annonce: AnnonceVignette;
   className?: string;
   eager?: boolean;
 }) {

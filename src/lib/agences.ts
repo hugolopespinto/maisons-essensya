@@ -1,5 +1,5 @@
 import "server-only";
-import { AGENCIES } from "@/data/essensya";
+import { AGENCIES, VISUELS_AGENCES } from "@/data/essensya";
 import { resoudreMedia } from "@/lib/medias";
 import { getContent } from "@/lib/store";
 import type { Agence } from "@/lib/store/types";
@@ -76,7 +76,11 @@ export async function versAgency(a: Agence): Promise<AgenceAffichee> {
     ...(a.lat !== undefined && a.lng !== undefined
       ? { geo: { lat: a.lat, lng: a.lng } }
       : {}),
-    image: (await resoudreMedia(a.image)) ?? SANS_PHOTO,
+    /* La photo choisie dans le back-office d'abord ; à défaut, la vitrine
+       livrée par le client pour cette agence. Les cinq fiches en base ont
+       le champ vide : sans ce repli, aucune ne montrerait sa vitrine. Une
+       agence ouverte plus tard, sans visuel connu, garde l'aplat. */
+    image: (await resoudreMedia(a.image)) ?? VISUELS_AGENCES[a.id] ?? SANS_PHOTO,
     cities: a.villes,
     description: a.description,
   };

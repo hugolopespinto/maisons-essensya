@@ -312,3 +312,42 @@ export interface Annonce {
   image: string | null;
   gallery: string[];
 }
+
+/**
+ * Ce qu'une carte de résultat affiche d'une annonce, et rien de plus.
+ *
+ * ⚠ C'EST TOUT CE QUE LE LISTING ENVOIE AU NAVIGATEUR. Une `Annonce`
+ * complète traîne ses descriptions, ses mentions, sa galerie et chacune
+ * de ses offres : plusieurs fois le poids d'une carte. Le listing les
+ * envoyait toutes, pour tout le catalogue, à chaque changement de filtre.
+ */
+export type AnnonceVignette = Pick<
+  Annonce,
+  | "id"
+  | "type"
+  | "title"
+  | "city"
+  | "zip"
+  | "deptCode"
+  | "price"
+  | "landSurface"
+  | "houseSurface"
+  | "bedrooms"
+  | "highlighted"
+  | "image"
+  | "landConfiguration"
+  | "landType"
+>;
+
+/** Un point de la carte du listing : de quoi le placer, le nommer et l'ouvrir. */
+export interface PointCarte {
+  id: string;
+  lat: number;
+  lng: number;
+  type: Annonce["type"];
+  prix: number | null;
+  /** Libellé de l'infobulle — `annonceTitle()`, calculé côté serveur. */
+  titre: string;
+  /** La fiche qu'ouvre un clic, version à N chambres comprise. */
+  href: string;
+}
