@@ -151,11 +151,15 @@ export default function HeroGamme({
           toucher.current = null;
         }}
       >
+        {/* Clé = modèle ET vue : sur une page filtrée à un seul modèle, ce
+            sont SES vues extérieures qui défilent (PageGamme), et `cle` ne
+            distingue les vues qu'au sein d'un modèle (« vue-1-exterieur »
+            existe chez tous). */}
         {diapos.map((d, i) => {
           const etat = i === actif ? "actif" : i === sortant ? "sortant" : "";
           return (
             <div
-              key={d.slug}
+              key={`${d.slug}-${d.vue.cle}`}
               className="gm-hero__diapo"
               data-etat={etat}
               aria-hidden={i !== actif}
@@ -195,41 +199,47 @@ export default function HeroGamme({
             }}
           >
             <div className="gm-hero__barre">
-              <div className="gm-hero__boutons">
-                <button
-                  type="button"
-                  className="gm-rond"
-                  onClick={() => setChoix(voulu ? "pause" : "lecture")}
-                  aria-label={voulu ? "Mettre le diaporama en pause" : "Lancer le diaporama"}
-                >
-                  {voulu ? <IconePause /> : <IconeLecture />}
-                </button>
-                <button
-                  type="button"
-                  className="gm-rond"
-                  onClick={() => aller(actif - 1)}
-                  aria-label="Façade précédente"
-                >
-                  <Fleche sens="gauche" />
-                </button>
-                <button
-                  type="button"
-                  className="gm-rond"
-                  onClick={() => aller(actif + 1)}
-                  aria-label="Façade suivante"
-                >
-                  <Fleche sens="droite" />
-                </button>
-              </div>
+              {/* Une seule image : ni lecture, ni flèches, ni compteur, ni
+                  segments — des commandes qui ne commandent rien. */}
+              {n > 1 && (
+                <div className="gm-hero__boutons">
+                  <button
+                    type="button"
+                    className="gm-rond"
+                    onClick={() => setChoix(voulu ? "pause" : "lecture")}
+                    aria-label={voulu ? "Mettre le diaporama en pause" : "Lancer le diaporama"}
+                  >
+                    {voulu ? <IconePause /> : <IconeLecture />}
+                  </button>
+                  <button
+                    type="button"
+                    className="gm-rond"
+                    onClick={() => aller(actif - 1)}
+                    aria-label="Façade précédente"
+                  >
+                    <Fleche sens="gauche" />
+                  </button>
+                  <button
+                    type="button"
+                    className="gm-rond"
+                    onClick={() => aller(actif + 1)}
+                    aria-label="Façade suivante"
+                  >
+                    <Fleche sens="droite" />
+                  </button>
+                </div>
+              )}
 
               <p className="gm-hero__legende" aria-live={parLeVisiteur && !enLecture ? "polite" : "off"}>
-                <span className="gm-hero__compteur">
-                  <span className="u-sr-only">Façade </span>
-                  {String(actif + 1).padStart(2, "0")}
-                  <span aria-hidden="true"> / </span>
-                  <span className="u-sr-only"> sur </span>
-                  {String(n).padStart(2, "0")}
-                </span>
+                {n > 1 && (
+                  <span className="gm-hero__compteur">
+                    <span className="u-sr-only">Façade </span>
+                    {String(actif + 1).padStart(2, "0")}
+                    <span aria-hidden="true"> / </span>
+                    <span className="u-sr-only"> sur </span>
+                    {String(n).padStart(2, "0")}
+                  </span>
+                )}
                 <span className="gm-hero__nom" key={courante.slug}>
                   <span className="u-sr-only">Modèle </span>
                   {courante.nom}
@@ -238,31 +248,33 @@ export default function HeroGamme({
 
               <Link href={`/maisons/${courante.slug}`} className="c-link gm-hero__fiche">
                 Voir le modèle<span className="u-sr-only"> {courante.nom}</span>{" "}
-                <span className="arrow">→</span>
+                <span className="arrow" aria-hidden="true">→</span>
               </Link>
             </div>
 
-            <div className="gm-segments">
-              {diapos.map((d, i) => (
-                <button
-                  type="button"
-                  key={d.slug}
-                  className="gm-seg"
-                  data-etat={i < actif ? "fait" : i === actif ? "actif" : ""}
-                  data-nom={d.nom}
-                  aria-label={`Afficher le modèle ${d.nom}`}
-                  aria-current={i === actif ? "true" : undefined}
-                  onClick={() => aller(i)}
-                  onAnimationEnd={(e) => {
-                    if (e.animationName === "gm-remplir" && i === actif) aller(actif + 1, false);
-                  }}
-                >
-                  <span className="gm-seg__piste">
-                    <span className="gm-seg__plein" />
-                  </span>
-                </button>
-              ))}
-            </div>
+            {n > 1 && (
+              <div className="gm-segments">
+                {diapos.map((d, i) => (
+                  <button
+                    type="button"
+                    key={`${d.slug}-${d.vue.cle}`}
+                    className="gm-seg"
+                    data-etat={i < actif ? "fait" : i === actif ? "actif" : ""}
+                    data-nom={d.nom}
+                    aria-label={`Afficher l'image ${i + 1} sur ${n}, modèle ${d.nom}`}
+                    aria-current={i === actif ? "true" : undefined}
+                    onClick={() => aller(i)}
+                    onAnimationEnd={(e) => {
+                      if (e.animationName === "gm-remplir" && i === actif) aller(actif + 1, false);
+                    }}
+                  >
+                    <span className="gm-seg__piste">
+                      <span className="gm-seg__plein" />
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

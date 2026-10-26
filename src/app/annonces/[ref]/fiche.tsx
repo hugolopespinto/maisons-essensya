@@ -3,6 +3,7 @@ import { ViewTransition } from "react";
 import Link from "next/link";
 import FilAriane from "@/components/FilAriane";
 import { AnnonceAside, AnnonceStickyForm } from "@/components/AnnonceCard";
+import BoutonSimulateur from "@/components/SimulateurModale";
 import { MarkedList, SpecList } from "@/components/SpecList";
 import { AnnonceMedia } from "@/components/Substitut";
 import { Picto } from "@/components/icons";
@@ -151,13 +152,21 @@ export async function FicheAnnonce({ a }: { a: Annonce }) {
             {/* Le prix est le plus gros chiffre de la page, devant le titre. */}
             <div className="a-head__price">
               {a.price !== null ? (
-                <span className="c-price-xl">
-                  <span className="from">À partir de</span>
-                  {fmtPrice(a.price)}
-                  <small>
-                    {isTM ? "terrain + maison" : "terrain seul"} · réf. {a.ref}
-                  </small>
-                </span>
+                <>
+                  <span className="c-price-xl">
+                    <span className="from">À partir de</span>
+                    {fmtPrice(a.price)}
+                    <small>
+                      {isTM ? "terrain + maison" : "terrain seul"} · réf. {a.ref}
+                    </small>
+                  </span>
+                  {/* Le simulateur en fenêtre, ce prix déjà saisi (client,
+                      24/10). Seulement quand il y a un prix : « sur
+                      demande » ne se simule pas. */}
+                  <div className="a-head__simuler">
+                    <BoutonSimulateur montant={a.price} className="c-link" />
+                  </div>
+                </>
               ) : (
                 <span className="a-head__ask">
                   Prix sur demande
@@ -286,7 +295,7 @@ export async function FicheAnnonce({ a }: { a: Annonce }) {
                       ? version.difference
                       : "Votre agence vous confirme le modèle retenu sur cette parcelle et le détail de ce que le prix comprend."}
                   </p>
-                  <span className="c-link">Voir nos modèles →</span>
+                  <span className="c-link">Voir nos modèles <span aria-hidden="true">→</span></span>
                 </div>
               </Link>
             ) : (
@@ -300,7 +309,7 @@ export async function FicheAnnonce({ a }: { a: Annonce }) {
                   vérifie gratuitement lesquels s&apos;implantent sur cette parcelle.
                 </p>
                 <Link href={houseUrl()} className="c-link">
-                  Voir nos modèles →
+                  Voir nos modèles <span aria-hidden="true">→</span>
                 </Link>
               </div>
             )}

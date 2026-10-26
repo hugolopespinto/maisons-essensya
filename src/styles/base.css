@@ -138,7 +138,10 @@
 .u-sombre,
 .s-forts,.s-opp,.s-cta,.s-proof,.s-philo,.site-footer,.mobile-nav,
 .c-cookies,.footer-legal,.g-hero,.a-aside__card,.pc-figures,
-.m-hero,.m-arch,.ct-form-card,.lp-hero,.skip-link{
+.m-hero,.m-arch,.ct-form-card,.lp-hero,.skip-link,
+/* Le héros et la vitrine de la gamme, tous deux sur `--noir` : « La
+   maison Essensya » y sortait en vert-texte sur la photo, à 1,2:1. */
+.gm-hero,.gm-gamme{
   --accent:var(--terracotta-clair);
   --accent-vert:var(--vert-clair);
   --muet:var(--beton);
@@ -170,6 +173,10 @@ h1,h2,h3{font-family:var(--f-display);font-variation-settings:"wdth" 118;font-we
 h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3)}
 .container{width:100%;max-width:var(--container);margin-inline:auto;padding-inline:var(--gutter)}
 .u-muted{color:var(--muet)} .u-measure{max-width:34em}
+/* Le nom de la marque dans un titre, au vert de la charte : vert-texte
+   sur fond clair, vert-clair sur fond sombre (6,89:1 sur anthracite) —
+   la bascule est celle de `--accent-vert`, plus bas. */
+.u-marque{color:var(--accent-vert)}
 .c-label{font-family:var(--f-mono);font-size:var(--fs-label);font-weight:500;text-transform:uppercase;letter-spacing:.18em;color:var(--muet)}
 .c-label--accent{color:var(--accent-vert)}
 :focus-visible{outline:2px solid var(--focus);outline-offset:3px}
@@ -285,6 +292,11 @@ h1{font-size:var(--fs-hero)} h2{font-size:var(--fs-h2)} h3{font-size:var(--fs-h3
 .c-form--dark .c-field input,.c-form--dark .c-field select,.c-form--dark .c-field textarea{border-color:rgba(242,243,243,.3);color:var(--craie)}
 .c-form--dark .c-field input:focus,.c-form--dark .c-field select:focus,.c-form--dark .c-field textarea:focus{border-color:var(--focus)}
 .c-form--dark .c-field label{color:var(--sable);opacity:.7}
+/* Le gris par défaut des navigateurs (#757575) tombait à 2,94:1 sur les
+   formulaires sombres et 4,14:1 sur la craie. `opacity:1` : Firefox
+   l'atténue encore de lui-même. */
+.c-field input::placeholder,.c-field textarea::placeholder{color:var(--pierre);opacity:1}
+.c-form--dark .c-field input::placeholder,.c-form--dark .c-field textarea::placeholder{color:rgba(229,231,232,.65)}
 .c-form--dark option{color:var(--anthracite)}
 /* Auto-complétion (ChampCommune) : la liste se pose PAR-DESSUS les champs
    suivants plutôt que de les repousser — le formulaire ne saute pas à

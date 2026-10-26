@@ -67,12 +67,11 @@ try{
   if(m){granted=JSON.parse(decodeURIComponent(m[1]))||{}}
 }catch(e){}
 var a=granted.mesure?'granted':'denied';
-var p=granted.marketing?'granted':'denied';
 gtag('consent','default',{
   'analytics_storage':a,
-  'ad_storage':p,
-  'ad_user_data':p,
-  'ad_personalization':p,
+  'ad_storage':'denied',
+  'ad_user_data':'denied',
+  'ad_personalization':'denied',
   'functionality_storage':'granted',
   'security_storage':'granted',
   'wait_for_update':500
@@ -112,7 +111,12 @@ function useMesureAutorisee() {
   return etat === "granted";
 }
 
-/** L'App Router ne pousse pas de page_view au changement de route. */
+/** L'App Router ne pousse pas de page_view au changement de route.
+ *
+ *  ⚠ C'EST CE `page_view` QUI COMPTE LES PAGES, Y COMPRIS LA PREMIÈRE.
+ *  Dans GTM, la balise Google doit donc partir avec `send_page_view` à
+ *  false, et GA4 avoir « Changements de page basés sur l'historique »
+ *  désactivé (mesure améliorée) : sinon chaque page est comptée deux fois. */
 function PageViews({ gtmId }: { gtmId: string }) {
   const pathname = usePathname();
   const params = useSearchParams();
@@ -155,6 +159,12 @@ export function ConsentDefaultScript() {
 export default function Analytics({ gtmId }: { gtmId?: string }) {
   const id = resoudreGtm(gtmId);
   const mesure = useMesureAutorisee();
+  /* Jamais sur le back-office : posé dans le layout racine, le conteneur
+     suivait aussi /admin dès que la personne connectée avait accepté la
+     mesure sur le site public — ses écrans et ses adresses partaient chez
+     Google, et gonflaient l'audience du site. */
+  const admin = usePathname()?.startsWith("/admin") ?? false;
+  if (admin) return null;
 
   /* Pas d'identifiant ou pas d'accord : aucune requête vers Google, pas
      même celle du conteneur.

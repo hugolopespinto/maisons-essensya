@@ -113,7 +113,7 @@ export default async function TerrainsPage() {
             <p style={{ maxWidth: "38em", marginTop: "var(--s-3)" }}>
               Nos terrains sont en cours de mise à jour.{" "}
               <Link href="/contact" className="c-link" style={{ display: "inline" }}>
-                Dites-nous où vous construisez →
+                Dites-nous où vous construisez <span aria-hidden="true">→</span>
               </Link>
             </p>
           )}

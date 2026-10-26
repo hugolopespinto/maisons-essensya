@@ -284,7 +284,7 @@ export const ESSENSYA_DATA: EssensyaData = {
       ["Réglementation", "RE 2020"],
       ["Chauffage", "Système de chauffage performant"],
       ["Salle de bain", "Équipée"],
-      ["Personnalisation", "Possible"],
+      ["Personnalisation", "Choisissez vos options"],
     ],
     /* ⚠ « Plain-pied », « traversant », « terrain dès 350 m² » ont été
        retirés : inventés pour la maquette, et invérifiables sur une
@@ -324,7 +324,7 @@ export const ESSENSYA_DATA: EssensyaData = {
       "Système de chauffage performant",
       "Conception conforme à la RE 2020",
       "Contrat CCMI et garantie de livraison à prix et délais convenus",
-      "Garanties décennale, biennale et de parfait achèvement",
+      "Garanties de parfait achèvement, biennale et décennale",
       "Assurance dommages-ouvrage",
     ],
     /* Le pendant obligatoire de la liste précédente. Taire les exclusions
@@ -461,7 +461,8 @@ export const ESSENSYA_DATA: EssensyaData = {
       text:
         "Chaque espace et chaque matériau est optimisé pour garantir un prix maîtrisé sans compromis sur la qualité. Le tout encadré par le CCMI et ses garanties, avec l'accompagnement Maisons Essensya à chaque étape de la construction.",
       image: IMG.chantier,
-      alt: "Maison Essensya achevée",
+      /* Un rendu, pas une photo : « achevée » promettait un chantier livré. */
+      alt: "Maison Essensya modèle Londres, vue extérieure",
       href: "/annonces",
       linkLabel: "Nos projets de construction",
     },

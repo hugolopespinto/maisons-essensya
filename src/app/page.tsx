@@ -27,6 +27,22 @@ const delay = (s: string) => ({ "--reveal-delay": s }) as React.CSSProperties;
    `pre-line` le rend à l'écran au lieu d'afficher le caractère brut. */
 const PRE_LINE = { whiteSpace: "pre-line" } as const;
 
+/* « Maisons Essensya » en vert dans le titre du formulaire de rappel,
+   le reste en blanc : demande du client (23/10). Le titre se modifie
+   dans le back-office, donc on colore le nom partout où il apparaît
+   plutôt que de figer la phrase. Le groupe capturant de `split` place
+   les occurrences aux rangs impairs. */
+const avecMarque = (texte: string) =>
+  texte.split(/(Maisons Essensya)/i).map((bout, i) =>
+    i % 2 === 1 ? (
+      <span className="u-marque" key={i}>
+        {bout}
+      </span>
+    ) : (
+      bout
+    ),
+  );
+
 /* Les quatre photos sous le bloc « La maison juste, le prix juste »,
    dans l'ordre de la maquette « maison 2 » du client : une grande en
    bandeau, puis une façade à gauche et deux intérieurs empilés à
@@ -39,7 +55,7 @@ const PHOTOS_JUSTE = [
      affiché juste au-dessus annonce « modèle Pékin ». Tant qu'il n'avait
      pas de visuel, la rangée montrait trois AUTRES modèles sous ce
      prix — un visiteur pouvait croire que 78 000 € les concernait. */
-  { visuel: vue("pekin", "vue-1-exterieur"), alt: "Maison Essensya modèle Pékin, le modèle à 78 000 €" },
+  { visuel: vue("pekin", "vue-1-exterieur"), alt: "Maison Essensya modèle Pékin, côté terrasse" },
   { visuel: vue("dublin", "vue-2-exterieur"), alt: "Maison Essensya modèle Dublin, côté jardin" },
   { visuel: vue("berlin", "vue-3-interieur"), alt: "Séjour d'une maison Essensya modèle Berlin" },
   /* La maquette répétait le séjour Berlin pour figurer cette case. Une
@@ -353,7 +369,7 @@ export default async function HomePage() {
             {/* Ici encore, les espaces insécables (U+00A0) des replis sont
                 celles du gabarit d'origine : devant « ? », et entre 48 et h. */}
             <h2 data-reveal style={{ ...PRE_LINE, ...delay(".1s") }}>
-              {t("cta.titre", "Et si votre maison était déjà dessinée ?")}
+              {avecMarque(t("cta.titre", "Et si votre maison était déjà dessinée ?"))}
             </h2>
             <p data-reveal style={{ ...PRE_LINE, ...delay(".2s") }}>
               {t(

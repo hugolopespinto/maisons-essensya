@@ -291,9 +291,10 @@ export default async function TrackingPage({
                 aria-describedby="pixel-aide"
               />
               <small id="pixel-aide" className="adm-field__aide">
-                Uniquement si des campagnes Facebook ou Instagram sont prévues. Le pixel est un
-                traceur publicitaire : il n&apos;est posé qu&apos;après acceptation de la
-                finalité « publicité ».
+                Noté pour mémoire. Le pixel est un traceur publicitaire, et le bandeau ne
+                propose pas de finalité « publicité » : ne l&apos;ajoutez pas dans GTM, il
+                s&apos;y déclencherait avec la seule mesure d&apos;audience. Une campagne
+                Facebook ou Instagram demande d&apos;abord de faire évoluer le bandeau.
               </small>
             </div>
 
@@ -311,9 +312,11 @@ export default async function TrackingPage({
                 aria-describedby="prop-aide"
               />
               <small id="prop-aide" className="adm-field__aide">
-                Le numéro de propriété — différent de l&apos;identifiant de mesure — qui permet
-                d&apos;afficher la fréquentation dans le tableau de bord de ce back-office. Le
-                préfixe <code>properties/</code> est ajouté tout seul.
+                Le numéro de propriété — différent de l&apos;identifiant de mesure. Il est
+                prévu pour afficher la fréquentation dans le tableau de bord de ce back-office,
+                mais cet affichage n&apos;est pas encore développé : pour l&apos;instant, la
+                fréquentation se consulte dans Google Analytics. Le préfixe{" "}
+                <code>properties/</code> est ajouté tout seul.
               </small>
             </div>
           </div>

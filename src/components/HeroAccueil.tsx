@@ -131,7 +131,7 @@ export default function HeroAccueil({
         </div>
         <div className="hero-fixe__actions">
           <Link href="/maisons" className="c-btn c-btn--solid">
-            Voir nos modèles <span className="arrow">→</span>
+            Voir nos modèles <span className="arrow" aria-hidden="true">→</span>
           </Link>
           {/* Contour anthracite : le contour craie d'avant, fait pour la
               photo, disparaissait sur le fond clair de la bande. */}

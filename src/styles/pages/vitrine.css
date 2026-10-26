@@ -45,8 +45,15 @@
    pas mesuré. Ici il suit le bloc, quelle que soit sa hauteur, et laisse
    le haut de l'image — le toit, le ciel — sans rien dessus. C'est la
    consigne du client sur l'accueil : « ça mange trop le visuel ». */
-.gm-hero__contenu::before{content:"";position:absolute;inset:auto 0 0;height:calc(100% + var(--s-5));z-index:-1;pointer-events:none;
-  background:linear-gradient(to top,rgba(0,19,33,.92) 0%,rgba(0,19,33,.8) 45%,rgba(0,19,33,.4) 76%,rgba(0,19,33,0) 100%)}
+/* ⚠ ENCORE À .74 EN HAUT DU BLOC, puis effacé AU-DESSUS de lui. Le
+   dégradé précédent (.4 à 76 %, 0 au sommet) laissait le fil d'Ariane,
+   le surtitre et « À partir de » sur la photo presque nue : 1,2 à 3,4:1
+   sur les façades claires, mesuré vue par vue sur les onze rendus. Le
+   seuil de 4,5:1 sur un mur blanc demande un voile d'au moins .7 sous le
+   texte. L'effacement se fait sur `--s-6` au-dessus du bloc, pour que
+   la limite ne se voie pas, et le haut de l'image reste dégagé. */
+.gm-hero__contenu::before{content:"";position:absolute;inset:auto 0 0;height:calc(100% + var(--s-6));z-index:-1;pointer-events:none;
+  background:linear-gradient(to top,rgba(0,19,33,.92) 0%,rgba(0,19,33,.82) 40%,rgba(0,19,33,.74) calc(100% - var(--s-6)),rgba(0,19,33,0) 100%)}
 
 /* ⚠ LE BLOC DE TEXTE EST TENU SOUS LA MOITIÉ DU HÉROS. Sa première
    version en occupait 78 % à 1440×900 et la quasi-totalité à 1366×768 :
@@ -346,3 +353,18 @@ html:has(.gm-visionneuse[open]){overflow:hidden}
   .gm-hero__nom,.gm-piste,.gm-fiche__titre h3 span,.gm-visionneuse[open]{animation:none}
   .gm-diapo,.gm-diapo img,.gm-onglet::after{transition:none}
 }
+
+/* ── Les onglets sur deux lignes ──
+   La gamme s'agrandit : au-delà de ce que la largeur permet, les noms
+   passent à la ligne au lieu de défiler (retour du client, 26/10). Chaque
+   onglet porte son propre filet, pour que la rangée du haut en ait un
+   aussi ; le soulignement de l'onglet actif se pose dessus. */
+@media (min-width:1181px){
+  .gm-onglets{flex-wrap:wrap;justify-content:flex-start;gap:var(--s-3) var(--s-5);border-bottom:0}
+  .gm-onglet{padding-bottom:.9rem;border-bottom:1px solid rgba(242,243,243,.16)}
+  .gm-onglet::after{bottom:-1px}
+}
+
+/* ── Le formulaire de fin de page : celui de /contact ── */
+.gm-contact{padding-block:var(--s-6)}
+.gm-contact .ct-form-card{max-width:46rem;margin-inline:auto}

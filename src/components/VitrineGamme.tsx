@@ -45,18 +45,6 @@ export interface ModeleVitrine {
 
 const deux = (n: number) => String(n).padStart(2, "0");
 
-const pluriel = (n: number, mot: string) => `${n} ${mot}${n > 1 ? "s" : ""}`;
-
-/** Le décompte des vues par type, sans jamais écrire « 0 vue intérieure » :
- *  Pékin n'a que des extérieurs. */
-function decompte(vues: VueVitrine[]): string {
-  const ext = vues.filter((v) => v.type === "exterieur").length;
-  const int = vues.length - ext;
-  if (!int) return `${pluriel(ext, "vue")} ${ext > 1 ? "extérieures" : "extérieure"}`;
-  if (!ext) return `${pluriel(int, "vue")} ${int > 1 ? "intérieures" : "intérieure"}`;
-  return `${pluriel(vues.length, "vue")} — ${pluriel(ext, "extérieure")}, ${pluriel(int, "intérieure")}`;
-}
-
 /* ──────────────────────────────────────────────────────────────────
    LA PISTE — ce que le carrousel et la visionneuse partagent
 
@@ -406,7 +394,6 @@ export default function VitrineGamme({ modeles }: { modeles: ModeleVitrine[] }) 
               <h3 key={m.slug}>
                 <span>{m.nom}</span>
               </h3>
-              <p className="gm-fiche__vue">{decompte(m.vues)}</p>
             </div>
 
             <div className="gm-fiche__infos">
@@ -432,10 +419,10 @@ export default function VitrineGamme({ modeles }: { modeles: ModeleVitrine[] }) 
 
             <div className="gm-fiche__actions">
               <Link href={`/maisons/${m.slug}`} className="c-btn c-btn--light">
-                Voir la fiche {m.nom} <span className="arrow">→</span>
+                Voir le plan de maison {m.nom} <span className="arrow" aria-hidden="true">→</span>
               </Link>
               <a href="#dossier" className="c-link" onClick={demanderDossier}>
-                Recevoir le dossier de ce modèle
+                Je veux des infos sur ce modèle
               </a>
               {m.aPlan ? (
                 <Link href={`/maisons/${m.slug}#plan`} className="c-link">

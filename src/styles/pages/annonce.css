@@ -12,7 +12,8 @@
 /* Sans prix exploitable dans le flux, on n'écrit pas « 0 € » en 4 rem. */
 .a-head__ask{font-family:var(--f-mono);font-weight:500;font-size:clamp(1.2rem,2.4vw,1.6rem);line-height:1.1;display:block;text-align:right;color:var(--pierre)}
 .a-head__ask small{display:block;font-size:var(--fs-label);letter-spacing:.16em;text-transform:uppercase;margin-top:.5rem}
-@media (max-width:640px){.a-head__price .c-price-xl,.a-head__ask{text-align:left}}
+.a-head__simuler{margin-top:var(--s-2);text-align:right}
+@media (max-width:640px){.a-head__price .c-price-xl,.a-head__ask,.a-head__simuler{text-align:left}}
 .a-head .c-pictos{margin-top:var(--s-4);border-top:var(--line);padding-top:var(--s-3)}
 
 .a-gallery{padding-bottom:var(--s-5)}
@@ -61,7 +62,10 @@
 .a-aside{position:sticky;top:calc(var(--header-h) + var(--s-3))}
 .a-aside__card{background:var(--anthracite);color:var(--craie);border-radius:var(--radius);padding:var(--s-4)}
 .a-aside__card h3{font-size:1.15rem;margin-bottom:.4rem}
-.a-aside__card > p{font-size:var(--fs-small);color:var(--sable);opacity:.75;margin-bottom:var(--s-3)}
+/* Le texte atténué par sa couleur, pas par `opacity` : celle-ci
+   éteignait aussi les liens du paragraphe — le téléphone de l'agence
+   tombait à 4,44:1. */
+.a-aside__card > p{font-size:var(--fs-small);color:color-mix(in srgb,var(--sable) 75%,transparent);margin-bottom:var(--s-3)}
 .a-aside__ref{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:var(--s-2)}
 .a-aside__agency{margin-top:var(--s-3);padding-top:var(--s-3);border-top:1px solid rgba(242,243,243,.16);font-family:var(--f-mono);font-size:var(--fs-small);color:var(--sable);opacity:.8}
 .a-aside__agency a{border-bottom:1px solid rgba(242,243,243,.35)}

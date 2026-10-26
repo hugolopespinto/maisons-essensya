@@ -1,0 +1,89 @@
+/* ════ SIMULATEUR DE FINANCEMENT (.sf-) ════
+   Les saisies à gauche, l'estimation à droite dans une carte sombre —
+   la même que celle des formulaires de contact. Sous 900 px, l'estimation
+   passe sous les champs.
+
+   ⚠ TOUT DOIT TENIR DANS LE PREMIER ÉCRAN (client, 24/10) : le titre,
+   les quatre champs ET l'estimation avec son bouton, sans défiler. D'où
+   le chapô dans la colonne des champs — la carte remonte à sa hauteur
+   au lieu de commencer sous lui —, les champs en 2 × 2 au lieu de trois
+   rangées, et un en-tête resserré. Relevé à 1 440 × 900 et 1 920 × 950. */
+.sf-tete{padding-bottom:var(--s-3)}
+/* Écrans d'ordinateur portable (moins de 880 px de haut) : la carte
+   dépassait encore d'une centaine de pixels. Le titre passe sur une
+   ligne et l'en-tête se resserre ; les grands écrans ne changent pas. */
+@media (min-width:901px) and (max-height:880px){
+  .sf-tete{padding-top:calc(var(--header-h) + var(--s-3))}
+  .sf-tete h1{font-size:clamp(2.2rem,3.4vw,3rem)}
+}
+.sf{padding:0 0 var(--s-7)}
+/* Trois zones : les champs et, dessous, la mention à gauche ; la carte
+   à droite sur les deux rangées. Sous 900 px, une colonne dans l'ordre
+   champs → estimation → mention. */
+.sf-grille{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);grid-template-rows:auto 1fr;grid-template-areas:"saisie carte" "pied carte";gap:var(--s-4) var(--s-5);align-items:start}
+.sf-saisie{grid-area:saisie}
+.sf-resultat{grid-area:carte}
+.sf-pied{grid-area:pied}
+@media (max-width:900px){.sf-grille{grid-template-columns:1fr;grid-template-rows:none;grid-template-areas:"saisie" "carte" "pied"}}
+.sf-chapo{color:var(--pierre);max-width:34em;margin-bottom:var(--s-4);text-wrap:pretty}
+
+.sf-form{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-3)}
+@media (max-width:560px){.sf-form{grid-template-columns:1fr}}
+/* L'unité dans le champ, à droite : « € », « % », « ans ». */
+.sf-unite{position:relative;display:flex}
+.sf-unite input{flex:1;min-width:0;padding-right:3.4rem;font-variant-numeric:tabular-nums}
+.sf-unite span{position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre);pointer-events:none}
+.sf-aide{font-size:var(--fs-small);color:var(--pierre)}
+
+/* Le taux : un curseur de 0 à 5 % (la « boule » à déplacer) et, à côté,
+   le champ qui en donne la valeur exacte. La piste se remplit jusqu'à la
+   boule grâce à `--p`, posé par le composant. Les règles de `.c-field
+   input` (bordure, marge intérieure) sont annulées pour le curseur. */
+.sf-taux{display:flex;align-items:center;gap:var(--s-2)}
+.sf-taux .sf-unite{flex:none;width:5.5rem}
+.sf-taux .sf-unite input{padding-right:2.2rem}
+.c-field .sf-taux input[type=range]{flex:1;min-width:0;height:4px;padding:0;border:0;border-radius:2px;cursor:pointer;-webkit-appearance:none;appearance:none;
+  background:linear-gradient(to right,var(--accent-vert) var(--p,50%),var(--beton) var(--p,50%))}
+.sf-taux input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:24px;height:24px;border-radius:50%;background:var(--anthracite);border:3px solid var(--craie);box-shadow:0 1px 5px rgba(0,19,33,.35);cursor:grab}
+.sf-taux input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--anthracite);border:3px solid var(--craie);box-shadow:0 1px 5px rgba(0,19,33,.35);cursor:grab}
+.sf-taux input[type=range]:active::-webkit-slider-thumb{cursor:grabbing}
+@media (pointer:coarse){
+  .sf-taux input[type=range]::-webkit-slider-thumb{width:30px;height:30px}
+  .sf-taux input[type=range]::-moz-range-thumb{width:30px;height:30px}
+}
+
+.sf-resultat{background:var(--anthracite);color:var(--craie);border-radius:var(--radius);padding:var(--s-4)}
+.sf-mensualite{font-size:clamp(2.6rem,5vw,4rem);margin-top:var(--s-3)}
+.sf-mensualite small{margin-top:var(--s-1)}
+.sf-resultat .c-specs li{padding-block:.8rem}
+/* Le gris des mentions du prix est fait pour la craie : sur l'anthracite,
+   il tombait sous 3:1. `--muet` bascule dans `.u-sombre`. */
+.sf-mensualite .from,.sf-mensualite small{color:var(--muet)}
+.sf-resultat .c-specs{margin-top:var(--s-3)}
+.sf-attente{margin-top:var(--s-3);color:var(--muet)}
+.sf-resultat .c-btn{margin-top:var(--s-4)}
+@media (max-width:560px){.sf-resultat{padding:var(--s-3)}.sf-resultat .c-btn{width:100%;justify-content:center}}
+
+.sf-mention{font-size:var(--fs-small);color:var(--pierre);max-width:46em}
+.sf-relais{margin-top:var(--s-3)}
+
+/* ── La fenêtre « Simuler mon financement » des fiches annonce ──
+   Un <dialog> natif (voir SimulateurModale.tsx) : centré par le
+   navigateur, au-dessus de l'en-tête. Sous 640 px, il prend l'écran. */
+.sf-modale{width:min(1120px,calc(100% - 2 * var(--gutter)));max-width:none;max-height:calc(100dvh - 2 * var(--s-3));margin:auto;padding:0;border:0;border-radius:var(--radius);
+  background:var(--craie);color:var(--anthracite);overflow:auto;overscroll-behavior:contain;box-shadow:0 30px 80px -30px rgba(0,19,33,.6)}
+.sf-modale[open]{animation:sf-entree .35s var(--ease)}
+.sf-modale::backdrop{background:rgba(0,12,22,.72)}
+@keyframes sf-entree{from{opacity:0;transform:translateY(14px)}}
+/* Même blocage du défilement que la visionneuse de /maisons. */
+html:has(.sf-modale[open]){overflow:hidden}
+.sf-modale__corps{padding:var(--s-4)}
+.sf-modale__tete{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--s-3);margin-bottom:var(--s-3)}
+.sf-modale__tete h2{font-size:clamp(1.6rem,3vw,2.4rem)}
+.sf-modale__fermer{display:inline-grid;place-items:center;flex:none;width:44px;height:44px;border-radius:50%;border:var(--line);color:var(--anthracite);transition:border-color var(--dur-fast) var(--ease)}
+.sf-modale__fermer:hover{border-color:var(--anthracite)}
+@media (max-width:640px){
+  .sf-modale{width:100%;height:100dvh;max-height:100dvh;border-radius:0}
+  .sf-modale__corps{padding:var(--s-3)}
+}
+@media (prefers-reduced-motion:reduce){.sf-modale[open]{animation:none}}

@@ -55,12 +55,18 @@ const MAX_FIELD_LEN = 2000;
    exports ne sont pas importables ici sans franchir la frontière RSC.
    TODO conformité : à la prochaine refonte, extraire ce texte dans un
    module neutre (src/lib/consent-form.ts) importable des deux côtés. */
-const CONSENT_TEXT_VERSION = 1;
+const CONSENT_TEXT_VERSION = 3;
 const CONSENT_TEXT =
   "J’accepte que les informations saisies soient transmises à l’agence " +
   "Maisons Essensya de mon secteur ainsi qu’à son outil de gestion " +
-  "commerciale (Vitahome, sous-traitant du constructeur), afin de traiter " +
+  "commerciale (sous-traitant du constructeur), afin de traiter " +
   "ma demande et d’être recontacté.";
+/* La case prospection a sa propre preuve : « acceptée » sans le texte ne
+   dit pas à quoi, ni par quel canal, la personne a dit oui. */
+const MARKETING_TEXT =
+  "J’accepte de recevoir les actualités, offres et invitations de Maisons " +
+  "Essensya par e-mail, SMS ou téléphone — facultatif, sans effet sur ma " +
+  "demande, désinscription à tout moment.";
 
 /** Nom du champ leurre — identique à HONEYPOT_FIELD côté LeadForm.
  *  LeadForm l'extrait et l'envoie sous `trap` ; on relit aussi `fields`
@@ -240,6 +246,7 @@ export async function POST(req: Request) {
       version: CONSENT_TEXT_VERSION,
       text: CONSENT_TEXT,
       marketing: marketing === true,
+      marketingText: MARKETING_TEXT,
     },
   );
 

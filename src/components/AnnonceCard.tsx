@@ -179,12 +179,37 @@ export function AnnonceStickyForm({
 }) {
   const [open, setOpen] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const ouvrirRef = useRef<HTMLButtonElement>(null);
+  const panneauRef = useRef<HTMLDivElement>(null);
 
+  /* Une boîte de dialogue au clavier, comme le panneau cookies : Tab
+     tourne DANS le tiroir — sans quoi il filait vers la page cachée
+     derrière le voile — et la fermeture rend le focus au bouton qui l'a
+     ouvert. Le tiroir est démonté à la fermeture : sans ce retour, le
+     focus tombait sur <body>. */
   useEffect(() => {
     if (!open) return;
     closeRef.current?.focus();
+    const ouvrir = ouvrirRef.current;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      const panneau = panneauRef.current;
+      if (e.key !== "Tab" || !panneau) return;
+      const f = panneau.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), select, textarea, a[href]',
+      );
+      if (!f.length) return;
+      const [premier, dernier] = [f[0], f[f.length - 1]];
+      if (e.shiftKey && document.activeElement === premier) {
+        e.preventDefault();
+        dernier.focus();
+      } else if (!e.shiftKey && document.activeElement === dernier) {
+        e.preventDefault();
+        premier.focus();
+      }
     };
     document.addEventListener("keydown", onKey);
     /* Le fond ne doit pas défiler sous le tiroir. */
@@ -193,6 +218,7 @@ export function AnnonceStickyForm({
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
+      ouvrir?.focus();
     };
   }, [open]);
 
@@ -207,6 +233,7 @@ export function AnnonceStickyForm({
           type="button"
           className="c-btn c-btn--solid"
           onClick={() => setOpen(true)}
+          ref={ouvrirRef}
           aria-expanded={open}
           aria-controls="a-cta-drawer"
         >
@@ -222,13 +249,16 @@ export function AnnonceStickyForm({
           aria-modal="true"
           aria-label={`Être recontacté au sujet de la réf. ${a.ref}`}
         >
+          {/* Hors tabulation : le voile se touche du doigt, le clavier a
+              « Fermer » et Échap. */}
           <button
             type="button"
             className="a-cta__scrim"
             onClick={() => setOpen(false)}
             aria-label="Fermer le formulaire"
+            tabIndex={-1}
           />
-          <div className="a-cta__panel">
+          <div className="a-cta__panel" ref={panneauRef}>
             <button
               type="button"
               className="a-cta__close"

@@ -291,7 +291,7 @@ export default async function ConceptPage() {
             data-reveal
           >
             <Link href="/maisons" className="c-btn c-btn--light">
-              Voir la maison <span className="arrow">→</span>
+              Voir la maison <span className="arrow" aria-hidden="true">→</span>
             </Link>
             <Link
               href="/contact"

@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ChampCommune from "@/components/ChampCommune";
+import CarrouselModeles from "@/components/CarrouselModeles";
 import FilAriane from "@/components/FilAriane";
-import LeadForm, { ContactFields } from "@/components/LeadForm";
+import LeadForm from "@/components/LeadForm";
 import ModeleCard from "@/components/ModeleCard";
-import PrixCompris from "@/components/PrixCompris";
 import { Picto } from "@/components/icons";
-import { PRICE_FROM, REEL } from "@/data/essensya";
+import { PRICE_FROM } from "@/data/essensya";
 import {
   descriptionModele,
   estPubliable,
   facadeDe,
   modeleParSlug,
+  MODELES,
   modelesAvecVisuels,
   pictosModele,
   planDe,
@@ -25,6 +25,7 @@ import { texteDe } from "@/data/textes-modeles";
 import { srcSet, type Visuel } from "@/data/visuels";
 import { fmtPrice } from "@/lib/format";
 import { markdownToHtml } from "@/lib/markdown";
+import { libelleChambres, modelesAChambres } from "@/lib/plans";
 import { jsonLd, produitModele } from "@/lib/schema";
 import { resolveMetadata } from "@/lib/seo";
 /* La typographie du texte AVANT la feuille de la page : prose.css le
@@ -132,7 +133,15 @@ export default async function ModelePage({
   const vues = vuesDe(m);
   const planVue = planDe(m);
   const facade = facadeDe(m);
-  const autres = voisinsDe(m, 3);
+  /* Les autres modèles de la MÊME typologie défilent en bas de page
+     (retour du 26/10) : tous, pas trois. Un modèle seul de sa typologie
+     (Pékin, Athènes) garde les trois suivants de la gamme. */
+  const pairs =
+    m.chambres !== undefined
+      ? modelesAChambres(m.chambres).filter((x) => x.slug !== m.slug)
+      : [];
+  const memeTypologie = pairs.length > 0;
+  const autres = memeTypologie ? pairs : voisinsDe(m, 3);
   /* Le texte rédigé du modèle — les onze fiches en ont un depuis le
      14/10. Un modèle ajouté sans le sien garde le gabarit nu. */
   const texte = texteDe(m.slug);
@@ -210,48 +219,29 @@ export default async function ModelePage({
             </p>
           )}
 
-          {m.prixDepart !== undefined ? (
-            <p className="c-price-xl" style={{ marginTop: "var(--s-4)" }}>
-              <span className="from">Modèle {m.nom}, à partir de</span>
-              {fmtPrice(m.prixDepart)}
-              <small>Maison seule, hors terrain, hors adaptation.</small>
-            </p>
-          ) : (
-            /* Le prix ne disparaît pas — un site dont l'argument est le
-               prix ne peut pas se taire dessus — il change de registre :
-               il cesse d'annoncer un montant pour dire où il commence et
-               à qui il appartient. `REEL.mentionPrix` nomme Pékin. */
-            <div style={{ marginTop: "var(--s-4)" }}>
-              <span className="c-label">Le prix</span>
-              <p className="u-muted u-measure" style={{ marginTop: "var(--s-2)" }}>
-                Le prix de ce modèle est en cours de publication. La gamme
-                commence à {fmtPrice(PRICE_FROM)} — {REEL.mentionPrix} Le
-                chiffrage de votre maison est établi selon le terrain et la
-                commune.
-              </p>
-            </div>
-          )}
+          {/* ⚠ LA RUBRIQUE « LE PRIX » A ÉTÉ RETIRÉE DE LA FICHE, sur demande
+              du client (retour du 26/10) — celle de l'en-tête comme le bloc
+              « Ce que le prix comprend ». Le prix d'entrée et son périmètre
+              restent sur /maisons. Un `prixDepart` propre au modèle ne
+              s'affichera donc plus ici : à rouvrir avec le client le jour
+              où il en publie un.
 
-          {/* `#prix` et `#dossier` existaient depuis toujours sans qu'un
-              seul lien de la page y mène. « Le plan ↓ » répond à la
-              remarque du client — c'est ce que les visiteurs regardent en
-              premier — sans ouvrir la fiche sur un dessin technique. */}
+              « Le plan ↓ » répond à la remarque du client — c'est ce que
+              les visiteurs regardent en premier — sans ouvrir la fiche sur
+              un dessin technique. */}
           <p className="p-head__ancres">
             {planVue && (
               <a href="#plan" className="c-link">
-                Le plan ↓
+                Le plan <span aria-hidden="true">↓</span>
               </a>
             )}
             {texte && (
               <a href="#detail" className="c-link">
-                Le modèle en détail ↓
+                Le modèle en détail <span aria-hidden="true">↓</span>
               </a>
             )}
-            <a href="#prix" className="c-link">
-              Ce que le prix comprend ↓
-            </a>
             <a href="#dossier" className="c-link">
-              Recevoir le dossier ↓
+              Être rappelé <span aria-hidden="true">↓</span>
             </a>
           </p>
         </div>
@@ -294,7 +284,7 @@ export default async function ModelePage({
             className="u-muted"
             style={{ marginTop: "var(--s-3)", fontSize: "var(--fs-small)" }}
           >
-            Vues d&apos;architecte non contractuelles.
+            Visuels d&apos;ambiance non contractuels.
           </p>
         </div>
       </section>
@@ -342,7 +332,7 @@ export default async function ModelePage({
                 Axonométrie non contractuelle : elle montre l&apos;organisation
                 des pièces, pas leurs cotes.{" "}
                 <a href="#dossier" className="c-link">
-                  Ce plan sur votre terrain ? Demandez l&apos;étude →
+                  Ce plan sur votre terrain ? Demandez l&apos;étude <span aria-hidden="true">→</span>
                 </a>
               </figcaption>
             </figure>
@@ -380,10 +370,7 @@ export default async function ModelePage({
                     « plan » : neuf modèles sur onze n'en montrent pas. */}
                 <p>Le descriptif détaillé et le chiffrage pour votre commune.</p>
                 <a href="#dossier" className="c-btn c-btn--solid">
-                  Recevoir le dossier <span className="arrow">→</span>
-                </a>
-                <a href="#prix" className="c-link">
-                  Ce que le prix comprend ↓
+                  Être rappelé <span className="arrow" aria-hidden="true">→</span>
                 </a>
               </aside>
             </div>
@@ -391,51 +378,59 @@ export default async function ModelePage({
         </section>
       )}
 
-      <section className="m-price mp-anchor" id="prix">
-        <div className="container">
-          <div className="c-section-head">
-            <span className="c-label">Le prix</span>
-            <h2>Ce que le prix comprend</h2>
-          </div>
-          <PrixCompris />
-          <p className="g-inclus__suite">
-            <a href="#dossier" className="c-link">
-              Le détail dans le dossier ↓
-            </a>
-          </p>
-        </div>
-      </section>
-
       <section className="s-cta mp-anchor" id="dossier">
         <div className="container">
           <div className="s-cta__grid">
             <div>
               <span className="c-label">Le dossier</span>
               <h2>Le détail du modèle {m.nom}</h2>
-              {/* Le mot « plan » est sorti d'ici : on ne promet que ce
-                  qu'on montre, et neuf modèles sur onze n'en ont pas. */}
+              {/* Le texte du client, mot pour mot (retour du 26/10). */}
               <p>
-                Le descriptif détaillé des prestations, la liste de ce qui est
-                compris et de ce qui ne l&apos;est pas, et le chiffrage pour
-                votre commune.
+                Les informations supplémentaires, la liste de ce qui est
+                compris, un chiffrage selon les terrains.
               </p>
             </div>
+            {/* Le formulaire de /maisons : mêmes champs, même bouton. Le
+                modèle consulté est présélectionné — c'est l'information la
+                plus utile à l'agence, et elle est vraie par construction. */}
             <LeadForm
               originKey="model"
               gtmEvent="lead_model_request"
               dark
-              submitLabel="Recevoir le dossier"
-              successMessage="Merci — le dossier et le chiffrage vous arrivent rapidement."
+              submitLabel="Être rappelé"
+              successMessage="Merci — nous revenons vers vous sous 48 h."
               ctx={{ adContent: `Modèle ${m.nom}` }}
             >
-              <ContactFields prefix={`md-${m.slug}`} />
-              {/* Le modèle consulté part avec la demande : c'est
-                  l'information la plus utile à l'agence, et elle est
-                  vraie par construction. */}
-              <input type="hidden" name="reason" value={`Modèle ${m.nom}`} />
+              <div className="c-form__row">
+                <div className="c-field">
+                  <label htmlFor={`md-${m.slug}-name`}>Prénom &amp; nom</label>
+                  <input type="text" id={`md-${m.slug}-name`} name="name" required />
+                </div>
+                <div className="c-field">
+                  <label htmlFor={`md-${m.slug}-phone`}>Téléphone</label>
+                  <input type="tel" id={`md-${m.slug}-phone`} name="phone" required />
+                </div>
+              </div>
+              <div className="c-form__row">
+                <div className="c-field">
+                  <label htmlFor={`md-${m.slug}-email`}>E-mail</label>
+                  <input type="email" id={`md-${m.slug}-email`} name="email" />
+                </div>
+                <div className="c-field">
+                  <label htmlFor={`md-${m.slug}-modele`}>Modèle qui vous intéresse</label>
+                  <select id={`md-${m.slug}-modele`} name="reason" defaultValue={m.nom}>
+                    {MODELES.map((x) => (
+                      <option key={x.slug} value={x.nom}>
+                        {x.nom}
+                      </option>
+                    ))}
+                    <option value="Je ne sais pas encore">Je ne sais pas encore</option>
+                  </select>
+                </div>
+              </div>
               <div className="c-field">
-                <label htmlFor={`md-${m.slug}-zone`}>Commune ou code postal</label>
-                <ChampCommune id={`md-${m.slug}-zone`} placeholder="Ex. 40000" />
+                <label htmlFor={`md-${m.slug}-msg`}>Votre message (facultatif)</label>
+                <textarea id={`md-${m.slug}-msg`} name="message" rows={4} />
               </div>
             </LeadForm>
           </div>
@@ -447,16 +442,26 @@ export default async function ModelePage({
           <div className="container">
             <div className="c-section-head">
               <span className="c-label">La gamme</span>
-              <h2>Les autres modèles</h2>
+              <h2>
+                {memeTypologie
+                  ? `Les autres modèles ${libelleChambres(m.chambres!)}`
+                  : "Les autres modèles"}
+              </h2>
             </div>
-            <div className="g-gamme__grid">
+            <CarrouselModeles
+              label={
+                memeTypologie
+                  ? `Les autres modèles ${libelleChambres(m.chambres!)}`
+                  : "Les autres modèles"
+              }
+            >
               {autres.map((x) => (
                 <ModeleCard modele={x} key={x.slug} />
               ))}
-            </div>
+            </CarrouselModeles>
             <p style={{ marginTop: "var(--s-4)" }}>
               <Link href="/maisons" className="c-link">
-                Voir toute la gamme →
+                Voir toute la gamme <span aria-hidden="true">→</span>
               </Link>
             </p>
           </div>

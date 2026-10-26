@@ -47,7 +47,7 @@ type Vue = "auto" | "prefs" | "ferme";
 
 export default function CookieBanner() {
   const [vue, setVue] = useState<Vue>("auto");
-  const [choix, setChoix] = useState({ mesure: false, marketing: false });
+  const [choix, setChoix] = useState({ mesure: false });
   const panelRef = useRef<HTMLDivElement>(null);
   const declencheur = useRef<HTMLElement | null>(null);
 
@@ -64,7 +64,7 @@ export default function CookieBanner() {
     const open = () => {
       declencheur.current = document.activeElement as HTMLElement;
       const c = readConsent();
-      if (c) setChoix({ mesure: c.mesure, marketing: c.marketing });
+      if (c) setChoix({ mesure: c.mesure });
       setVue("prefs");
     };
     window.addEventListener(OPEN_PREFS_EVENT, open);
@@ -73,7 +73,7 @@ export default function CookieBanner() {
 
   const fermer = useCallback((c?: Consent) => {
     setVue("ferme");
-    if (c) setChoix({ mesure: c.mesure, marketing: c.marketing });
+    if (c) setChoix({ mesure: c.mesure });
     declencheur.current?.focus();
     declencheur.current = null;
   }, []);
@@ -183,7 +183,7 @@ export default function CookieBanner() {
 
         <ul className="c-cookies__list">
           {FINALITES.map((f) => {
-            const actif = f.verrouille || choix[f.cle as "mesure" | "marketing"];
+            const actif = f.verrouille || choix[f.cle as "mesure"];
             return (
               <li key={f.cle}>
                 <div className="c-cookies__row">
@@ -222,7 +222,7 @@ export default function CookieBanner() {
             Tout accepter
           </button>
           <button type="button" className="c-btn c-btn--solid" onClick={enregistrer}>
-            Enregistrer mes choix <span className="arrow">→</span>
+            Enregistrer mes choix <span className="arrow" aria-hidden="true">→</span>
           </button>
         </div>
       </div>

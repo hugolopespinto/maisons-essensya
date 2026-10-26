@@ -179,10 +179,10 @@ export default async function ArticlePage({
 
           <footer className="bl-foot">
             <Link href="/blog" className="c-link">
-              ← Tous les articles
+              <span aria-hidden="true">←</span> Tous les articles
             </Link>
             <Link href="/contact" className="c-btn c-btn--solid">
-              Parler de mon projet <span className="arrow">→</span>
+              Parler de mon projet <span className="arrow" aria-hidden="true">→</span>
             </Link>
           </footer>
         </div>

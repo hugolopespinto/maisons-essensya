@@ -109,7 +109,7 @@ export default function OpportuniteDuMoment({
 
           <div className="s-opp__actions">
             <Link href={a.href} className="c-btn c-btn--solid">
-              Voir cette opportunité <span className="arrow">→</span>
+              Voir cette opportunité <span className="arrow" aria-hidden="true">→</span>
             </Link>
             <Link href="/annonces?type=terrain-maison" className="c-btn">
               Voir toutes nos opportunités

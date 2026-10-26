@@ -5,18 +5,23 @@ import FilAriane from "@/components/FilAriane";
 import AgencyCard, { telHref } from "@/components/AgencyCard";
 import AnnonceCard from "@/components/AnnonceCard";
 import LeadForm, { ContactFields } from "@/components/LeadForm";
+import AgencesMapLazy from "@/components/AgencesMapLazy";
+import CarrouselAnnonces from "@/components/CarrouselAnnonces";
 import SpecList from "@/components/SpecList";
-import { PRICE_FROM, REEL } from "@/data/essensya";
+import { PRICE_FROM } from "@/data/essensya";
 import {
   agencesPubliees,
   descriptionAgence,
   SANS_PHOTO,
   type AgenceAffichee,
 } from "@/lib/agences";
-import { agencyUrl, dept, fmtPrice } from "@/lib/format";
+import { agencyUrl, annonceTitle, annonceUrl, dept, fmtPrice } from "@/lib/format";
+import { markdownToHtml } from "@/lib/markdown";
 import { couper, titreCourt } from "@/lib/seo";
 import { getAnnonces } from "@/lib/vitahome/annonces";
 import { SITE_URL } from "@/lib/site-url";
+import "@/styles/carte.css";
+import "@/styles/prose.css";
 import "@/styles/pages/agences.css";
 import "@/styles/pages/annonce.css"; // .a-aside — carte formulaire partagée
 
@@ -167,6 +172,13 @@ function businessJsonLd(g: AgenceAffichee) {
 
 /** Comparaison de communes insensible aux accents, tirets et apostrophes.
     NFD sépare les diacritiques ; le filtre a-z les emporte avec le reste. */
+const DEPARTEMENTS: Record<string, string> = {
+  "33": "Gironde",
+  "40": "Landes",
+  "64": "Pyrénées-Atlantiques",
+  "47": "Lot-et-Garonne",
+};
+
 const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[^a-z]/g, "");
 
 export default async function AgencyPage({
@@ -193,7 +205,28 @@ export default async function AgencyPage({
   const local = all.filter(
     (a) => cities.has(norm(a.city)) || (!!agencyDept && dept(a) === agencyDept),
   );
-  const annonces = (exact.length ? exact : local).slice(0, 3);
+  const secteur = exact.length ? exact : local;
+  const annonces = secteur.slice(0, 9);
+  const pointsAnnonces = secteur.flatMap((a) =>
+    a.lat != null && a.lng != null
+      ? [{ id: a.id, nom: annonceTitle(a), adresse: a.city, href: annonceUrl(a), lat: a.lat, lng: a.lng }]
+      : [],
+  );
+
+  const ville = g.zone || postalAddress(g.address).addressLocality || g.name;
+  const nomDept = DEPARTEMENTS[agencyDept];
+  const titreLocal = `Constructeur de maisons à ${ville}${
+    agencyDept ? ` (${nomDept ? nomDept + " " : ""}${agencyDept})` : ""
+  }`;
+  const pointAgence = g.geo
+    ? [{ id: g.id, nom: g.name, adresse: g.address, href: agencyUrl(g), ...g.geo }]
+    : [];
+  const textePresentation = markdownToHtml(
+    g.description.trim() ||
+      `${g.name} accueille les projets de construction de ${ville} et des communes voisines${
+        nomDept ? ` en ${nomDept}` : ""
+      }. Un conseiller habitat Maisons ESSENSYA vous reçoit, étudie votre terrain et vous accompagne de la première visite jusqu'à la remise des clés.`,
+  );
 
   const other = publiees.filter((x) => x.id !== g.id);
 
@@ -238,34 +271,14 @@ export default async function AgencyPage({
         <div className="container">
           <div>
             <h2 style={{ fontSize: "clamp(1.4rem,2.6vw,2rem)" }} data-reveal>
-              Votre interlocuteur local
+              {titreLocal}
             </h2>
-            {g.description ? (
-              <p
-                className="u-muted"
-                style={{ marginTop: "var(--s-2)", maxWidth: "38em" }}
-                data-reveal
-              >
-                {g.description}
-              </p>
+            {g.image !== SANS_PHOTO ? (
+              <div className="g-visuel" data-reveal>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={g.image} alt={altPhoto} loading="lazy" />
+              </div>
             ) : null}
-
-            {/* Le prix est le même dans toutes les agences : autant le dire
-                ici plutôt que de renvoyer le visiteur le chercher. */}
-            <div
-              className="c-price-xl"
-              style={{ fontSize: "clamp(2.2rem,5.5vw,3.4rem)", marginTop: "var(--s-4)" }}
-              data-reveal
-            >
-              <span className="from">Nos maisons, à partir de</span>
-              {fmtPrice(PRICE_FROM)}
-              <small>
-                {REEL.mentionPrix}{" "}
-                <Link href="/maisons" style={{ color: "var(--accent)" }}>
-                  voir ce qui est compris
-                </Link>
-              </small>
-            </div>
 
             {/* Une ligne par information RENSEIGNÉE : un « Téléphone — »
                 suivi du vide ferait douter de tout le reste de la fiche.
@@ -286,21 +299,11 @@ export default async function AgencyPage({
               ]}
             />
 
-            {g.cities.length > 0 ? (
-              <div data-reveal>
-                <span
-                  className="c-label c-label--accent"
-                  style={{ display: "block", margin: "var(--s-4) 0 0" }}
-                >
-                  Communes couvertes
-                </span>
-                <div className="g-cities">
-                  {g.cities.map((c) => (
-                    <span key={c}>{c}</span>
-                  ))}
-                </div>
+            {pointAgence.length > 0 && (
+              <div className="g-loc" data-reveal>
+                <AgencesMapLazy agences={pointAgence} />
               </div>
-            ) : null}
+            )}
           </div>
 
           <aside className="a-aside">
@@ -328,6 +331,10 @@ export default async function AgencyPage({
                 ctx={{ adContent: `Contact agence — ${g.name}` }}
               >
                 <ContactFields prefix="gf" />
+                <div className="c-field">
+                  <label htmlFor="gf-message">Message</label>
+                  <textarea id="gf-message" name="message" rows={4} />
+                </div>
               </LeadForm>
             </div>
           </aside>
@@ -339,23 +346,36 @@ export default async function AgencyPage({
           <div className="container">
             <div className="c-section-head" data-reveal>
               <span className="c-label c-label--accent">
-                {exact.length ? "Suivis par cette agence" : "Dans le secteur"}
+                {exact.length
+                  ? "Consultez les terrains constructibles sélectionnés par cette agence"
+                  : "Consultez les terrains constructibles du secteur"}
               </span>
-              <h2>Des terrains pour y poser la maison</h2>
+              <h2>Des terrains pour construire votre maison</h2>
             </div>
-            <div className="m-opps__grid">
+            <CarrouselAnnonces>
               {annonces.map((a) => (
                 <AnnonceCard annonce={a} key={a.id} />
               ))}
-            </div>
+            </CarrouselAnnonces>
+            {pointsAnnonces.length > 0 && (
+              <div className="g-annonces-map" data-reveal>
+                <AgencesMapLazy agences={pointsAnnonces} />
+              </div>
+            )}
             <div style={{ marginTop: "var(--s-4)" }} data-reveal>
               <Link href="/annonces" className="c-link">
-                Voir tous les terrains →
+                Voir tous les terrains <span aria-hidden="true">→</span>
               </Link>
             </div>
           </div>
         </section>
       )}
+
+      <section className="g-presentation">
+        <div className="container">
+          <div className="c-prose" dangerouslySetInnerHTML={{ __html: textePresentation }} />
+        </div>
+      </section>
 
       {other.length > 0 && (
         <section style={{ padding: "var(--s-6) 0 var(--s-7)" }}>

@@ -134,7 +134,7 @@ Les plans et les caractéristiques de la maison présentés sur ce site sont don
 const ML_CREDITS = `
 ## Crédits et visuels
 
-Les photographies actuellement affichées sont des visuels de calage et ne représentent pas les réalisations du constructeur. Elles doivent être remplacées par des prises de vue des maisons réellement livrées avant la mise en ligne.
+Les vues des modèles sont des images de synthèse, non contractuelles${NBSP}: le mobilier, la décoration et les aménagements extérieurs qui y figurent ne sont montrés qu'à titre d'illustration et ne sont pas compris dans le prix.
 
 {{champ:credits}}
 `;
@@ -195,7 +195,7 @@ const C_FINALITES = `
 ## 3. Pourquoi, et sur quel fondement
 
 Vous recontacter :: Répondre à votre demande, vous rappeler, préparer un rendez-vous et vous adresser une proposition. Fondement : votre consentement, donné en cochant la case avant l'envoi du formulaire (art. 6.1.a du RGPD).
-Vous adresser nos offres :: Vous envoyer nos actualités et nos offres commerciales. C'est une case distincte, facultative, que vous cochez ou non : refuser n'empêche pas le traitement de votre demande. Fondement : votre consentement.
+Vous adresser nos offres :: Vous envoyer nos actualités et nos offres commerciales, par e-mail, SMS ou téléphone. C'est une case distincte, facultative, que vous cochez ou non : refuser n'empêche pas le traitement de votre demande. Fondement : votre consentement.
 Protéger nos formulaires :: Limiter le nombre d'envois par visiteur et écarter les robots. Fondement : notre intérêt légitime à ne pas laisser nos formulaires servir de relais au spam.
 Mesurer l'audience :: Savoir quelles pages sont consultées pour améliorer le site. Le dépôt des cookies de mesure repose sur votre consentement ; l'analyse des statistiques agrégées qui en découlent relève de notre intérêt légitime à faire fonctionner correctement notre site.
 Tenir nos obligations :: Si votre projet aboutit à un contrat de construction, la conservation des pièces contractuelles et comptables répond à une obligation légale (art. 6.1.c du RGPD).

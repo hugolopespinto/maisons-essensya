@@ -138,7 +138,7 @@ export default async function CommunePage({
               commune ne convient au visiteur. */}
           <p style={{ marginTop: "var(--s-4)" }}>
             <Link href={deptUrl(c.departement.slug)} className="c-link">
-              Tous nos terrains dans le département {c.departement.nom} →
+              Tous nos terrains dans le département {c.departement.nom} <span aria-hidden="true">→</span>
             </Link>
           </p>
         </div>

@@ -119,7 +119,7 @@ export default async function StyleguidePage() {
             <div className="sg-row">
               <span className="c-btn">Bouton défaut</span>
               <span className="c-btn c-btn--solid">
-                Bouton solide <span className="arrow">→</span>
+                Bouton solide <span className="arrow" aria-hidden="true">→</span>
               </span>
               <span className="c-link">Lien texte →</span>
             </div>

@@ -7,6 +7,9 @@
    lien de contact, au-dessus des cartes d'agence. */
 .g-head{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:var(--s-5);align-items:center}
 .g-map .c-map__frame{aspect-ratio:4/3}
+/* Ici le fond de carte garde ses couleurs d'origine (demande client) ;
+   les autres cartes du site restent désaturées (carte.css). */
+.g-map .map-fond--ign{filter:none}
 @media (max-width:900px){.g-head{grid-template-columns:1fr;gap:var(--s-4)}}
 /* Le texte de référencement, sous les fiches (« Pages → Nos agences »).
    Le filet de la section sépare déjà le texte des cartes : un intertitre
@@ -45,3 +48,21 @@
 .g-annonces{padding:var(--s-6) 0 var(--s-7);background:var(--sable)}
 .g-annonces .m-opps__grid{background:none}
 
+
+/* Fiche d'agence : visuel, carte de localisation, annonces défilantes. */
+.g-visuel{margin-top:var(--s-3);aspect-ratio:16/9;overflow:hidden;background:var(--beton)}
+.g-visuel img{width:100%;height:100%;object-fit:cover;display:block}
+.g-loc{margin-top:var(--s-4)}
+.g-loc .c-map__frame{aspect-ratio:16/9}
+.g-loc .map-fond--ign,.g-annonces-map .map-fond--ign{filter:none}
+.g-annonces-map{margin-top:var(--s-5)}
+.g-annonces-map .c-map__frame{aspect-ratio:16/8}
+.g-carrousel__piste{display:flex;gap:var(--s-3);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:2px}
+.g-carrousel__piste::-webkit-scrollbar{display:none}
+.g-carrousel__piste > *{flex:0 0 calc((100% - 2 * var(--s-3)) / 3);scroll-snap-align:start;min-width:0}
+@media (max-width:900px){.g-carrousel__piste > *{flex-basis:80%}}
+.g-carrousel__fleches{display:flex;justify-content:flex-end;gap:var(--s-1);margin-top:var(--s-3)}
+.g-carrousel__fleches button{width:44px;height:44px;border:1px solid var(--anthracite);background:none;color:var(--anthracite);font-size:1.2rem;cursor:pointer}
+.g-carrousel__fleches button:disabled{opacity:.3;cursor:default}
+.g-presentation{padding:var(--s-6) 0 0}
+.g-presentation .c-prose{max-width:42em}

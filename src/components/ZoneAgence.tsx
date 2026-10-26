@@ -26,7 +26,7 @@ export default function ZoneAgence({
           </p>
         </div>
         <Link href="/agences" className="c-btn">
-          Voir nos agences <span className="arrow">→</span>
+          Voir nos agences <span className="arrow" aria-hidden="true">→</span>
         </Link>
       </div>
     );
@@ -46,7 +46,7 @@ export default function ZoneAgence({
       </div>
       <div style={{ display: "grid", gap: ".6rem" }}>
         <Link href={agencyUrl(g)} className="c-btn">
-          La fiche agence <span className="arrow">→</span>
+          La fiche agence <span className="arrow" aria-hidden="true">→</span>
         </Link>
         {g.phone ? (
           <a href={telHref(g.phone)} className="c-btn c-btn--solid">

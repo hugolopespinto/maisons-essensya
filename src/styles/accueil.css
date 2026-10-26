@@ -268,7 +268,9 @@ html[data-intro-accueil]:has(#intro-accueil) .hero-fixe h1 .mot > span{transform
   background:rgba(0,19,33,.74);
   border:1px solid rgba(242,243,243,.26);border-radius:var(--radius);
   transition:border-color var(--dur-fast) var(--ease),background var(--dur-fast) var(--ease)}
-@supports (backdrop-filter:blur(10px)){.s-bande__carte{backdrop-filter:blur(10px);background:rgba(0,19,33,.56)}}
+/* .72 et pas .56 : la carte posée sur la partie claire de la photo
+   laissait son numéro à 2,83:1 et son texte à 4,22:1. */
+@supports (backdrop-filter:blur(10px)){.s-bande__carte{backdrop-filter:blur(10px);background:rgba(0,19,33,.72)}}
 
 /* Seules les cartes qui MÈNENT quelque part réagissent au survol :
    un bloc sans destination ne doit pas faire croire qu'il est cliquable. */

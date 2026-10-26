@@ -139,8 +139,11 @@ export default function AnnoncesMap({
       iconCreateFunction: (c) => {
         const n = c.getChildCount();
         const size = clusterSize(n);
+        /* Leaflet en fait un bouton : sans le texte masqué, son nom était
+           le seul chiffre — « 4 », « 5 » — lu sans dire ce qu'il compte
+           ni ce que fait le clic. `n` est un nombre : rien à échapper. */
         return L.divIcon({
-          html: `<span>${n}</span>`,
+          html: `<span aria-hidden="true">${n}</span><span class="u-sr-only">${n} annonces dans ce secteur, zoomer</span>`,
           className: "map-cluster",
           iconSize: L.point(size, size),
         });
@@ -206,7 +209,7 @@ export default function AnnoncesMap({
     const markers = points.map((p) => {
       const marker = L.marker([p.lat, p.lng], {
         icon: L.divIcon({
-          html: `<span>${p.type === "terrain" ? "T" : "M"}</span>`,
+          html: `<span aria-hidden="true">${p.type === "terrain" ? "T" : "M"}</span>`,
           className: "map-pin",
           iconSize: L.point(30, 30),
         }),
@@ -214,6 +217,13 @@ export default function AnnoncesMap({
         alt: p.titre,
         keyboard: true,
       });
+      /* `alt` ne nomme rien sur une divIcon : le point se lisait « M » ou
+         « T ». Le nom est posé à chaque ajout — le regroupement retire et
+         remet l'élément — et par `setAttribute`, car le titre vient du
+         flux et ne doit jamais passer par du HTML. */
+      marker.on("add", () =>
+        marker.getElement()?.setAttribute("aria-label", `${p.titre} — ${fmtPrice(p.prix)}`),
+      );
       /* Un nœud texte, pas une chaîne : Leaflet poserait une chaîne en
          innerHTML, et le nom de commune vient du flux. */
       const bulle = document.createElement("span");

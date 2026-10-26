@@ -30,7 +30,7 @@ export default function ArgumentRow({ item }: { item: Argument }) {
         </p>
         {item.href && (
           <Link href={item.href} className="c-link" data-reveal>
-            {item.linkLabel ?? "En savoir plus"} →
+            {item.linkLabel ?? "En savoir plus"} <span aria-hidden="true">→</span>
           </Link>
         )}
       </div>

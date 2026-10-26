@@ -1,12 +1,31 @@
 /* ════ 10. CONTACT (.ct-) — v5 ════ */
-.ct-body{padding-bottom:var(--s-7)}
+.ct-body{padding-bottom:var(--s-6)}
 .ct-body .container{display:grid;grid-template-columns:7fr 5fr;gap:var(--s-6);align-items:start}
 @media (max-width:900px){.ct-body .container{grid-template-columns:1fr}}
-.ct-form-card{background:var(--anthracite);color:var(--craie);border-radius:var(--radius);padding:var(--s-4)}
+.ct-form-card{background:var(--anthracite);color:var(--craie);border-radius:var(--radius);padding:var(--s-4);scroll-margin-top:calc(var(--header-h) + var(--s-3))}
 .ct-form-card h2{font-size:1.3rem;margin-bottom:var(--s-3)}
-.ct-aside .c-agency-card + .c-agency-card{margin-top:var(--s-3)}
+/* ⚠ LE GRAND NUMÉRO EST UN LIEN `tel:`, ET SOUS 900 PX base.css PASSE
+   TOUS CES LIENS EN `inline-flex` (cible tactile). Ici, cela rangeait
+   « Ou appelez-nous », le numéro et les horaires en trois colonnes
+   étroites, le numéro coupé chiffre par chiffre. Ce lien-là reste un
+   bloc : il fait déjà toute la largeur, la cible est assez grande. */
+.ct-aside a.c-price-xl{display:block}
 .ct-direct{margin-top:var(--s-4);border-top:var(--line);padding-top:var(--s-3);font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre)}
 .ct-direct a{color:var(--accent)}
+/* La carte des agences sous le numéro : au format 4/5 du cadre commun,
+   la colonne arrive à peu près à la hauteur du formulaire. */
+.ct-carte{margin-top:var(--s-4)}
+.ct-carte .c-label{display:block;margin-bottom:var(--s-2)}
+@media (max-width:900px){.ct-carte .c-map__frame{aspect-ratio:4/3}}
+
+/* Les agences en grille pleine largeur, trois par rangée. La dernière
+   case (« Ailleurs ? ») complète la rangée de cinq agences. */
+.ct-agences{background:var(--sable);padding:var(--s-6) 0 var(--s-7)}
+.ct-agences__grille{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-3)}
+@media (max-width:1000px){.ct-agences__grille{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.ct-agences__grille{grid-template-columns:1fr}}
+.ct-ailleurs{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:var(--s-2);border:1px dashed var(--beton-2);border-radius:var(--radius);padding:var(--s-4)}
+.ct-ailleurs p{font-family:var(--f-display);font-variation-settings:"wdth" 120;font-weight:700;text-transform:uppercase;font-size:1.2rem;line-height:1.15}
 
 
 /* ⚠ `min-width:0` — LE DÉFAUT LE PLUS SUBTIL DU RELEVÉ MOBILE.

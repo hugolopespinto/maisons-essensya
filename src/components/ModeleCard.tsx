@@ -63,7 +63,7 @@ export default function ModeleCard({ modele: m }: { modele: Modele }) {
           </p>
         )}
         <span className="g-modele__lien">
-          Voir le modèle <span className="arrow">→</span>
+          Voir le modèle <span className="arrow" aria-hidden="true">→</span>
         </span>
       </div>
     </Link>

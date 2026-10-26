@@ -123,3 +123,15 @@
   .g-next a, .m-next a { flex-wrap: wrap; min-width: 0; }
   .g-next__name, .m-next__name { overflow-wrap: break-word; min-width: 0; }
 }
+
+/* ── Les autres modèles de la typologie, en défilement (fiche d'un modèle) ── */
+.g-carrousel{margin-top:var(--s-4)}
+.g-carrousel__piste{display:flex;gap:var(--s-4);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:2px}
+.g-carrousel__piste::-webkit-scrollbar{display:none}
+.g-carrousel__piste > *{flex:0 0 calc((100% - 2 * var(--s-4)) / 3);scroll-snap-align:start;min-width:0}
+@media (max-width:1100px){.g-carrousel__piste > *{flex-basis:calc((100% - var(--s-4)) / 2)}}
+@media (max-width:700px){.g-carrousel__piste > *{flex-basis:84%}}
+.g-carrousel__fleches{display:flex;justify-content:flex-end;gap:var(--s-2);margin-top:var(--s-3)}
+.g-carrousel__fleche{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer;transition:background var(--dur-fast) var(--ease),color var(--dur-fast) var(--ease)}
+.g-carrousel__fleche:hover:not(:disabled){background:var(--noir);border-color:var(--noir);color:var(--craie)}
+.g-carrousel__fleche:disabled{opacity:.3;cursor:default}

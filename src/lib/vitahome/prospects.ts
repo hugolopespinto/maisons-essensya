@@ -12,6 +12,8 @@ export interface ConsentProof {
   text: string;
   /** Opt-in prospection commerciale : facultatif, distinct du consentement. */
   marketing: boolean;
+  /** Texte exact de la case prospection, canaux compris. */
+  marketingText: string;
 }
 
 /** Forme exacte envoyée à Vitahome. Typée explicitement pour qu'aucun
@@ -38,7 +40,9 @@ function consentTrace(proof: ConsentProof) {
   return [
     `[Consentement RGPD v${proof.version} — recueilli le ${proof.at}]`,
     `Texte accepté : « ${proof.text} »`,
-    `Prospection commerciale : ${proof.marketing ? "acceptée" : "refusée"}.`,
+    proof.marketing
+      ? `Prospection commerciale : acceptée — « ${proof.marketingText} »`
+      : "Prospection commerciale : refusée.",
   ].join("\n");
 }
 
@@ -55,7 +59,20 @@ export function buildPayload(
   ctx: ProspectContext = {},
   consent?: ConsentProof,
 ): ProspectPayload {
-  const history = [fields.message ?? null, consent ? consentTrace(consent) : null]
+  /* ⚠ LE MODÈLE CHOISI DOIT SE LIRE DANS LA DEMANDE REÇUE (retour du
+     client, 26/10). Le formulaire des modèles l'envoie dans `reason`, un
+     champ que le CRM n'affiche pas forcément ; `history-ad-content`, lui,
+     portait « Page gamme » sur /maisons. Le modèle est donc écrit aussi
+     dans ces deux champs, qui sont ceux que le client lit. */
+  const modele =
+    originKey === "model" && fields.reason && fields.reason !== "Je ne sais pas encore"
+      ? fields.reason
+      : null;
+  const history = [
+    modele ? `Modèle qui intéresse le prospect : ${modele}` : null,
+    fields.message ?? null,
+    consent ? consentTrace(consent) : null,
+  ]
     .filter(Boolean)
     .join("\n\n");
 
@@ -65,7 +82,7 @@ export function buildPayload(
     ...fields, // name, phone, email… — noms exacts : doc pro.vitahome.fr/doc/api
     "construction-location-id": ctx.cityId ?? null,
     "construction-location-insee": ctx.insee ?? null,
-    "history-ad-content": ctx.adContent ?? null,
+    "history-ad-content": modele ? `Modèle ${modele}` : (ctx.adContent ?? null),
     "history-link": ctx.link ?? null,
     "history-content": history || null,
   };

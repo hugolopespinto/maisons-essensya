@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useId, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { OriginKey, ProspectContext } from "@/lib/vitahome/types";
 
 /* ════════════════════════════════════════════════════════════════
@@ -21,23 +21,35 @@ import type { OriginKey, ProspectContext } from "@/lib/vitahome/types";
    la CNIL requalifie en consentement non libre.
    ════════════════════════════════════════════════════════════════ */
 
-/** Version du texte de consentement affiché ci-dessous.
- *  ⚠ À incrémenter à CHAQUE reformulation : la preuve archivée côté CRM
- *  ne vaut que si elle référence le texte réellement lu par le visiteur.
- *  ⚠ Miroir serveur (source de vérité de la preuve) :
- *  `CONSENT_TEXT` / `CONSENT_TEXT_VERSION` dans src/app/api/leads/route.ts. */
-export const CONSENT_TEXT_VERSION = 1;
+/** Version des DEUX textes de consentement affichés ci-dessous.
+ *  ⚠ À incrémenter à CHAQUE reformulation de l'un ou de l'autre : la
+ *  preuve archivée côté CRM ne vaut que si elle référence le texte
+ *  réellement lu par le visiteur.
+ *  ⚠ Miroir serveur (source de vérité de la preuve) : `CONSENT_TEXT`,
+ *  `MARKETING_TEXT` et `CONSENT_TEXT_VERSION` dans src/app/api/leads/route.ts.
+ *  v2 : la case prospection nomme ses canaux (voir MARKETING_TEXT).
+ *  v3 : le sous-traitant n'est plus nommé dans la case (il le reste dans la
+ *  politique de confidentialité). */
+export const CONSENT_TEXT_VERSION = 3;
 
 export const CONSENT_TEXT =
   "J’accepte que les informations saisies soient transmises à l’agence " +
   "Maisons Essensya de mon secteur ainsi qu’à son outil de gestion " +
-  "commerciale (Vitahome, sous-traitant du constructeur), afin de traiter " +
+  "commerciale (sous-traitant du constructeur), afin de traiter " +
   "ma demande et d’être recontacté.";
 
+/* ⚠ LES CANAUX SONT NOMMÉS, et ce n'est pas du remplissage. Un accord
+   doit être spécifique : « recevoir les offres » sans dire comment ne
+   couvre pas l'appel. Or le téléphone est obligatoire partout, et depuis
+   le 11 août 2026 (loi n° 2025-594 du 30 juin 2025) appeler un
+   particulier pour lui proposer une offre exige son accord préalable,
+   comme l'e-mail l'exigeait déjà (art. L.34-5 du CPCE). Rappeler la
+   personne au sujet de SA demande n'en relève pas : c'est la première
+   case qui le couvre. */
 export const MARKETING_TEXT =
   "J’accepte de recevoir les actualités, offres et invitations de Maisons " +
-  "Essensya — facultatif, sans effet sur ma demande, désinscription à tout " +
-  "moment.";
+  "Essensya par e-mail, SMS ou téléphone — facultatif, sans effet sur ma " +
+  "demande, désinscription à tout moment.";
 
 /** Nom du champ leurre. Doit rester identique côté API (route.ts). */
 export const HONEYPOT_FIELD = "company";
@@ -117,7 +129,9 @@ export default function LeadForm({
   dark = false,
   submitLabel = "Envoyer",
   submitClassName,
-  note = "Vos données ne servent qu'à traiter votre demande. Jamais revendues.",
+  /* « Ne servent qu'à traiter votre demande » était faux dès que la case
+     prospection était cochée. */
+  note = "Vos données servent à traiter votre demande — et à vous envoyer nos offres seulement si vous l'avez accepté. Jamais revendues.",
   successMessage = "Merci — une agence Essensya vous recontacte sous 48 h.",
   className = "",
   children,
@@ -128,6 +142,14 @@ export default function LeadForm({
      casseraient l'association label ↔ case à cocher. `useId` plutôt qu'un
      aléatoire : l'identifiant doit être stable entre serveur et client. */
   const uid = useId();
+
+  /* À l'envoi réussi, `.is-sent` masque les champs ET le bouton qui avait
+     le focus : il tombait sur <body>, et la navigation au clavier
+     repartait du haut de la page. On le pose sur le message de réussite. */
+  const succesRef = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    if (state === "sent") succesRef.current?.focus();
+  }, [state]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -241,10 +263,12 @@ export default function LeadForm({
           className={submitClassName ?? `c-btn${dark ? " c-btn--light" : " c-btn--solid"}`}
           disabled={state === "sending"}
         >
-          {state === "sending" ? "Envoi…" : submitLabel} <span className="arrow">→</span>
+          {state === "sending" ? "Envoi…" : submitLabel} <span className="arrow" aria-hidden="true">→</span>
         </button>
       </div>
-      <p className="c-form__note">
+      {/* Région annoncée : l'échec d'envoi remplace ce texte, et sans elle
+          un lecteur d'écran ne le signalait pas. */}
+      <p className="c-form__note" aria-live="polite">
         {state === "error"
           ? "L'envoi a échoué. Réessayez ou appelez votre agence."
           : note}
@@ -259,7 +283,7 @@ export default function LeadForm({
         </Link>
         .
       </p>
-      <p className="c-form__success" role="status">
+      <p className="c-form__success" role="status" ref={succesRef} tabIndex={-1}>
         {successMessage}
       </p>
     </form>

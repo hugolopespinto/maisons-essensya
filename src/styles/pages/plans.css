@@ -9,6 +9,17 @@
 .pm-chambres__lien:hover{border-color:var(--framboise);color:var(--framboise)}
 .pm-chambres__lien[aria-current]{background:var(--anthracite);border-color:var(--anthracite);color:var(--craie)}
 
+/* Le même sélecteur dans la vitrine de la gamme (PageGamme), sur fond
+   noir : contour clair, page courante en craie pleine. Il s'insère entre
+   l'en-tête de la vitrine et ses onglets de modèles. */
+.gm-chambres{margin:calc(var(--s-3) - var(--s-5)) 0 var(--s-5)}
+.gm-chambres .pm-chambres__lien{color:var(--craie);border-color:rgba(242,243,243,.28)}
+.gm-chambres .pm-chambres__lien:hover{border-color:var(--craie);color:var(--craie)}
+.gm-chambres .pm-chambres__lien[aria-current]{background:var(--craie);border-color:var(--craie);color:var(--noir)}
+.gm-gamme .pm-inconnus{border-top-color:rgba(242,243,243,.16)}
+.gm-gamme .pm-inconnus a{color:var(--beton);border-bottom-color:rgba(242,243,243,.28)}
+.gm-gamme .pm-inconnus a:hover{color:var(--craie);border-color:var(--craie)}
+
 .pm-gamme{padding-top:var(--s-4)}
 .pm-gamme .g-gamme__grid,.pm-gamme .g-attente{margin-top:0}
 

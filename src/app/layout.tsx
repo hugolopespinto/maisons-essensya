@@ -193,8 +193,9 @@ const DESCRIPTION_DEFAUT =
    la marche à suivre pour les brancher une à une est écrite en fin de
    `src/lib/seo.ts`. */
 export async function generateMetadata(): Promise<Metadata> {
-  const { reglages } = await getContent();
+  const { reglages, tracking } = await getContent();
   const nomSite = ou(reglages.nomSite, NOM_DEFAUT);
+  const verifGoogle = saisi(tracking.googleSiteVerification);
   const [favicon, ogImage] = await Promise.all([
     resoudreMedia(reglages.favicon),
     resoudreMedia(reglages.ogImage),
@@ -216,6 +217,11 @@ export async function generateMetadata(): Promise<Metadata> {
     /* Sans favicon téléversé, on ne pose rien : Next continue de servir
        l'icône du dossier `app`. Poser `icons: {}` la ferait disparaître. */
     ...(favicon ? { icons: { icon: favicon } } : {}),
+    /* ⚠ LE CODE SEARCH CONSOLE N'ÉTAIT ÉCRIT NULLE PART. L'écran Tracking
+       l'enregistrait et promettait la vérification, mais aucune balise
+       `google-site-verification` ne sortait : Google ne pouvait rien
+       trouver. Posée ici, elle est héritée par toutes les pages. */
+    ...(verifGoogle ? { verification: { google: verifGoogle } } : {}),
   };
 
   return resolveMetadata("/", defaut);

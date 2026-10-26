@@ -4,7 +4,7 @@
 .l-filter{display:flex;flex-direction:column;gap:.35rem}
 .l-filter label{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase;color:var(--pierre)}
 .l-filter select{font-family:var(--f-body);font-size:.92rem;padding:.6rem 2.2rem .6rem .8rem;background:transparent;border:1px solid var(--beton);border-radius:var(--radius);appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23867E70' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer}
-.l-filter select:focus{outline:none;border-color:var(--focus)}
+.l-filter select:focus{border-color:var(--focus)}
 /* Recherche texte : la commune est la première question que se pose un
    acheteur, et le flux couvre des centaines de communes — un menu
    déroulant de localités n'était pas tenable. */
@@ -14,7 +14,9 @@
    clair : 3,48:1 mesuré au pixel sur l'invite de recherche, sous le seuil.
    Une invite se lit, donc elle prend la couleur de texte secondaire. */
 .l-filter input[type="search"]::placeholder{color:var(--pierre)}
-.l-filter input[type="search"]:focus{outline:none;border-color:var(--focus)}
+/* Pas d'`outline:none` : la bordure seule ne suffit pas (RGAA 10.7), le
+   liseré de `:focus-visible` (base.css) s'applique. */
+.l-filter input[type="search"]:focus{border-color:var(--focus)}
 .l-filters__count{margin-left:auto;font-family:var(--f-mono);font-size:var(--fs-small);color:var(--pierre)}
 .l-filters__reset{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:.6rem 0;border-bottom:1px solid transparent}
 .l-filters__reset:hover{border-color:var(--accent)}

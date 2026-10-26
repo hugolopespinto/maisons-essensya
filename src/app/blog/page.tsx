@@ -109,7 +109,7 @@ export default async function BlogPage() {
                 détaillé sur la fiche produit.
               </p>
               <Link href="/maisons" className="c-btn">
-                Voir la maison <span className="arrow">→</span>
+                Voir la maison <span className="arrow" aria-hidden="true">→</span>
               </Link>
             </div>
           ) : (
@@ -135,7 +135,7 @@ export default async function BlogPage() {
                       {a.chapo || markdownToText(a.corps, 140)}
                     </p>
                     <span className="bl-card__more">
-                      Lire <span className="arrow">→</span>
+                      Lire <span className="arrow" aria-hidden="true">→</span>
                     </span>
                   </div>
                 </Link>

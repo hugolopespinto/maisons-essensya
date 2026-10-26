@@ -108,7 +108,7 @@ export default async function PlanDuSitePage() {
         { href: "/guides/choisir-son-plan-de-maison", label: "Guide pour choisir votre plan de maison", prep: true },
         { href: "/guides/choisir-son-terrain", label: "Guide pour choisir votre terrain", prep: true },
         { href: "/concept#faq", label: "Foire aux questions" },
-        { href: "/simulateur-de-financement", label: "Simulateur de financement", prep: true },
+        { href: "/simulateur-de-financement", label: "Simulateur de financement" },
       ],
     },
     {

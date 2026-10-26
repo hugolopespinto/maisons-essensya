@@ -3,6 +3,7 @@ import Link from "next/link";
 import FilAriane from "@/components/FilAriane";
 import CookiePrefsLink from "@/components/CookiePrefsLink";
 import { SpecList } from "@/components/SpecList";
+import { CLE_INTRO } from "@/data/film-accueil";
 import { CONSENT_COOKIE, FINALITES } from "@/lib/consent";
 import { resolveMetadata } from "@/lib/seo";
 
@@ -32,6 +33,13 @@ const COOKIES: { nom: string; emetteur: string; finalite: string; duree: string 
     emetteur: "Maisons Essensya",
     finalite: "Mémorise votre choix de cookies pour ne pas vous le redemander.",
     duree: "6 mois",
+  },
+  {
+    nom: CLE_INTRO,
+    emetteur: "Maisons Essensya",
+    finalite:
+      "Évite de rejouer l'écran d'introduction de l'accueil à chaque retour. Stocké dans l'onglet (sessionStorage), sans identifiant.",
+    duree: "Jusqu'à la fermeture de l'onglet",
   },
   {
     nom: "_ga",
@@ -65,14 +73,14 @@ export default function CookiesPage() {
         <div className="container" style={{ maxWidth: "58rem" }}>
           <div style={{ marginBottom: "var(--s-5)" }}>
             <CookiePrefsLink className="c-btn c-btn--solid">
-              Modifier mes préférences <span className="arrow">→</span>
+              Modifier mes préférences <span className="arrow" aria-hidden="true">→</span>
             </CookiePrefsLink>
           </div>
 
           <h2 style={{ fontSize: "var(--fs-h3)" }}>Le principe</h2>
           <p className="u-muted u-measure" style={{ marginTop: "var(--s-2)" }}>
-            Aucun cookie de mesure ou de publicité n&apos;est déposé avant que vous
-            n&apos;ayez donné votre accord. Tant que vous n&apos;avez pas choisi,
+            Le site ne dépose aucun cookie publicitaire, et aucun cookie de mesure
+            avant que vous n&apos;ayez donné votre accord. Tant que vous n&apos;avez pas choisi,
             rien ne part : l&apos;absence de choix vaut refus. Refuser est aussi
             simple qu&apos;accepter — un bouton, un clic, au même endroit.
           </p>
@@ -95,7 +103,7 @@ export default function CookiesPage() {
           </div>
 
           <h2 style={{ fontSize: "var(--fs-h3)", marginTop: "var(--s-5)" }}>
-            Les cookies déposés
+            Les cookies et traceurs déposés
           </h2>
           <div className="c-compare__wrap" style={{ marginTop: "var(--s-3)" }}>
             <table className="c-compare">

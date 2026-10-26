@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import FilAriane from "@/components/FilAriane";
 import AgencyCard, { telHref } from "@/components/AgencyCard";
+import AgencesMapLazy from "@/components/AgencesMapLazy";
 import LeadForm from "@/components/LeadForm";
 import { PLACEHOLDER, PRICE_FROM } from "@/data/essensya";
 import { lecteurBlocs } from "@/lib/blocs";
 import { agencesPubliees } from "@/lib/agences";
-import { fmtPrice, telephonePublie } from "@/lib/format";
+import { agencyUrl, fmtPrice, telephonePublie } from "@/lib/format";
 import { getContent } from "@/lib/store";
+import "@/styles/carte.css"; // avant la feuille de page : voir carte.css
 import "@/styles/pages/contact.css";
 import { resolveMetadata } from "@/lib/seo";
-import "@/styles/pages/agences.css"; // .c-agency-card en colonne latérale
 
 /* Le back-office peut surcharger le titre, la description, l'image de
    partage, le canonical et le noindex de cette page — écran
@@ -41,6 +42,13 @@ export default async function ContactPage() {
   const telephone = telephonePublie(reglages, textes, PLACEHOLDER.phone);
   const bloc = lecteurBlocs(pages, "contact");
   const chapo = bloc("hero.chapo");
+  /* Même règle que /agences : seules les agences aux coordonnées
+     saisies vont sur la carte (`geo` n'existe que si elles sont vraies). */
+  const points = agences.flatMap((g) =>
+    g.geo
+      ? [{ id: g.id, nom: g.name, adresse: g.address, href: agencyUrl(g), ...g.geo }]
+      : [],
+  );
 
   return (
     <main className="page">
@@ -63,15 +71,22 @@ export default async function ContactPage() {
         </div>
       </section>
 
+      {/* ⚠ LES AGENCES NE SONT PLUS DANS LA COLONNE DE DROITE. Empilées
+          à côté du formulaire, leurs cinq cartes faisaient 2 780 px de
+          haut contre 820 pour le formulaire : sous lui, la moitié gauche
+          de la page restait vide sur près de 2 000 px (relevé du client,
+          24/10). La colonne garde ce qui se lit d'un coup d'œil — le
+          numéro, l'adresse e-mail, la carte — et les agences passent en
+          grille pleine largeur, juste en dessous. */}
       <section className="ct-body" style={{ paddingTop: "var(--s-4)" }}>
         <div className="container">
-          <div className="ct-form-card" data-reveal>
+          <div className="ct-form-card" id="formulaire" data-reveal>
             <h2>{bloc("formulaire.titre") || "Être recontacté"}</h2>
             <LeadForm
               originKey="contact"
               gtmEvent="lead_contact_request"
               dark
-              submitLabel="Envoyer"
+              submitLabel="Envoyer ma demande"
               successMessage="Merci — nous revenons vers vous sous 48 h."
             >
               <div className="c-form__row">
@@ -121,25 +136,49 @@ export default async function ContactPage() {
               <small>{agences[0]?.hours ?? ""} · appel non surtaxé</small>
             </a>
 
-            <span
-              className="c-label c-label--accent"
-              style={{ display: "block", margin: "var(--s-5) 0 var(--s-3)" }}
-              data-reveal
-            >
-              Ou directement en agence
-            </span>
-            {/* Les agences réellement publiées : le client en ouvre ou en
-                ferme une depuis le back-office, cette liste suit. */}
-            {agences.map((g) => (
-              <AgencyCard agency={g} key={g.id} />
-            ))}
             <p className="ct-direct" data-reveal>
               Une question rapide ? Écrivez-nous à{" "}
               <a href="mailto:contact@essensya.fr">contact@essensya.fr</a>
             </p>
+
+            {points.length > 0 && (
+              <div className="ct-carte" data-reveal>
+                <span className="c-label c-label--accent">
+                  {agences.length > 1 ? `Nos ${agences.length} agences` : "Notre agence"}
+                </span>
+                <AgencesMapLazy agences={points} />
+              </div>
+            )}
           </aside>
         </div>
       </section>
+
+      {/* Les agences réellement publiées : le client en ouvre ou en ferme
+          une depuis le back-office, cette grille suit. */}
+      {agences.length > 0 && (
+        <section className="ct-agences">
+          <div className="container">
+            <div className="c-section-head" data-reveal>
+              <span className="c-label c-label--accent">Ou directement en agence</span>
+              <h2>Un interlocuteur près de votre terrain</h2>
+            </div>
+            <div className="ct-agences__grille">
+              {agences.map((g) => (
+                <AgencyCard agency={g} key={g.id} />
+              ))}
+              {/* La case qui complète la dernière rangée : la phrase et le
+                  lien de /agences, ramenés vers le formulaire du dessus. */}
+              <div className="ct-ailleurs" data-reveal>
+                <span className="c-label c-label--accent">Ailleurs ?</span>
+                <p>Votre commune n&apos;est pas dans la liste ?</p>
+                <a href="#formulaire" className="c-link">
+                  Dites-nous où vous construisez <span className="arrow" aria-hidden="true">→</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </main>
   );
 }

@@ -12,7 +12,19 @@
 .c-map__canvas{position:absolute;inset:0}
 .leaflet-container{width:100%;height:100%;font-family:var(--f-body);background:var(--sable)}
 .leaflet-container a{color:var(--accent)}
-.leaflet-control-attribution{font-family:var(--f-mono);font-size:.62rem;background:rgba(242,243,243,.85);color:var(--pierre)}
+/* ⚠ PRÉFIXÉ PAR `.leaflet-container`, ET C'EST LE POINT. leaflet.css est
+   chargée APRÈS cette feuille et porte `.leaflet-container
+   .leaflet-control-attribution` : à spécificité moindre ou égale, le fond
+   et les couleurs d'ici étaient ignorés — seule la police passait. Le
+   lien restait le bleu de Leaflet sur un blanc à .8, et tombait à 2:1
+   là où les tuiles sombres transparaissaient. Fond opaque, couleurs du
+   fond clair écrites en dur (pas `--accent`, qui bascule en section
+   sombre). */
+.leaflet-container .leaflet-control-attribution{font-family:var(--f-mono);font-size:.62rem;color:var(--pierre)}
+/* Le fond, un cran plus spécifique encore : Leaflet pose le sien avec
+   EXACTEMENT `.leaflet-container .leaflet-control-attribution`. */
+.leaflet-container .leaflet-control-attribution.leaflet-control{background:var(--craie)}
+.leaflet-container .leaflet-control-attribution a{color:var(--terracotta-texte)}
 
 /* Le Plan IGN est une carte de randonneur : autoroutes orange, forêts
    vertes, parcs en pointillés. Sous des points anthracite et framboise,

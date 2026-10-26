@@ -3,9 +3,8 @@ import Link from "next/link";
 import FilAriane from "@/components/FilAriane";
 import AgencyCard from "@/components/AgencyCard";
 import AgencesMapLazy from "@/components/AgencesMapLazy";
-import { REEL } from "@/data/essensya";
 import { agencesPubliees } from "@/lib/agences";
-import { agencyUrl, fmtPrice } from "@/lib/format";
+import { agencyUrl } from "@/lib/format";
 import { markdownToHtml } from "@/lib/markdown";
 import { resolveMetadata } from "@/lib/seo";
 import { jsonLd, listeSchema } from "@/lib/schema";
@@ -58,6 +57,17 @@ function bloc(pages: PageEditable[], cle: string): string {
   return page?.blocs.find((b) => b.cle === cle)?.valeur.trim() ?? "";
 }
 
+/* Texte de référencement par défaut, tant que rien n'est saisi dans
+   « Pages → Nos agences ». Volontairement simple : il ne dit que ce que
+   la page affiche déjà (les cinq agences et les zones couvertes). */
+const TEXTE_SEO = `## Un constructeur de maisons près de chez vous
+
+Maisons ESSENSYA construit des maisons neuves dans le Sud Ouest, depuis cinq agences : Canéjan en Gironde, Parentis-en-Born, Saint-Vincent-de-Tyrosse, Tartas et Hagetmau dans les Landes.
+
+Chaque agence connaît les communes de son secteur : les terrains disponibles, les règles d'urbanisme locales et les artisans du coin. Vous avez un projet de construction en Gironde, dans les Landes ou au Pays basque ? Un conseiller habitat vous reçoit, étudie votre terrain et vous accompagne de la première visite jusqu'à la remise des clés.
+
+Pour trouver l'agence la plus proche, repérez votre commune sur la carte ou choisissez l'une des fiches ci-dessus, puis prenez rendez-vous.`;
+
 export default async function AgencesPage() {
   const [content, agences] = await Promise.all([getContent(), agencesPubliees()]);
 
@@ -66,7 +76,7 @@ export default async function AgencesPage() {
   const lien =
     bloc(content.pages, "hero.lien") ||
     "Votre commune n'est pas dans la liste ? Dites-nous où vous construisez";
-  const texteSeo = markdownToHtml(bloc(content.pages, "seo.texte"));
+  const texteSeo = markdownToHtml(bloc(content.pages, "seo.texte") || TEXTE_SEO);
 
   /* Seules les agences dont les coordonnées ont été saisies vont sur la
      carte — `geo` n'existe que si elles sont vraies (src/lib/agences.ts).
@@ -108,15 +118,18 @@ export default async function AgencesPage() {
               <p>{chapo}</p>
             ) : (
               <p>
-                Nous construisons dans les Landes, au même prix partout : à partir
-                de {fmtPrice(REEL.prixEntree)} hors terrain. Notre équipe connaît le
-                terrain de son secteur — au sens propre : les PLU, les lotissements
-                et les parcelles compatibles avec nos modèles.
+                Constructeur de maisons dans le Sud Ouest, Maisons ESSENSYA vous
+                accueille dans ses 5 agences à Canéjan, Parentis-en-Born,
+                Saint-Vincent-de-Tyrosse, Tartas et Hagetmau. Vous souhaitez faire
+                construire en Gironde ? Vous cherchez un constructeur dans les
+                Landes ? Vous voulez une maison neuve au Pays basque ? Les
+                conseillers habitat Maisons ESSENSYA sont à vos côtés pour vous
+                accompagner.
               </p>
             )}
             <p style={{ marginTop: "var(--s-3)" }}>
               <Link href="/contact" className="c-link">
-                {lien} →
+                {lien} <span aria-hidden="true">→</span>
               </Link>
             </p>
           </div>
@@ -138,7 +151,7 @@ export default async function AgencesPage() {
             <p style={{ maxWidth: "38em" }}>
               Nos agences sont en cours de réorganisation.{" "}
               <Link href="/contact" className="c-link">
-                Écrivez-nous votre projet →
+                Écrivez-nous votre projet <span aria-hidden="true">→</span>
               </Link>
             </p>
           ) : (

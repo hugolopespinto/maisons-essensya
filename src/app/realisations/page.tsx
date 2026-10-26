@@ -113,7 +113,7 @@ export default async function RealisationsPage() {
               </p>
               <div className="rz-vide__actions">
                 <Link href="/maisons" className="c-btn c-btn--solid">
-                  Découvrir nos modèles <span className="arrow">→</span>
+                  Découvrir nos modèles <span className="arrow" aria-hidden="true">→</span>
                 </Link>
                 <Link href="/contact" className="c-btn">
                   Visiter une maison

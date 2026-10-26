@@ -308,7 +308,7 @@ export const PAGES_DEFAUT: PageEditable[] = [
       {
         cle: "architecture.titre",
         label: "Titre de la section architecture",
-        valeur: "Un volume simple, dessiné jusqu'au bout",
+        valeur: "Une maison simple, dessinée jusque dans les moindres recoins",
       },
       {
         cle: "gamme.surtitre",
@@ -326,7 +326,7 @@ export const PAGES_DEFAUT: PageEditable[] = [
         cle: "gamme.texte",
         label: "Paragraphe de la section gamme",
         valeur:
-          "Chaque plan a été optimisé poste par poste, matériau par matériau : pas de dégagement inutile, pas de recoin qui ne sert à rien. Le modèle change, la méthode ne change pas.",
+          "Chaque plan a été optimisé poste par poste, matériau par matériau : pas de dégagement inutile, pas de recoin improductif. Le modèle change, la méthode non.",
         multiligne: true,
       },
       {

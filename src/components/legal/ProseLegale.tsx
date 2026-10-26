@@ -111,7 +111,7 @@ function rendreFragment(f: Fragment, ctx: ContexteLegal, cle: number): ReactNode
       if (f.nom === "cookies")
         return (
           <CookiePrefsLink key={cle} className="c-btn c-btn--solid">
-            Modifier mes préférences <span className="arrow">→</span>
+            Modifier mes préférences <span className="arrow" aria-hidden="true">→</span>
           </CookiePrefsLink>
         );
       if (f.nom === "tel") return <span key={cle}>{ctx.tel}</span>;

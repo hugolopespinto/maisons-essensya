@@ -24,7 +24,9 @@
 
 export const CONSENT_COOKIE = "essensya_consent";
 
-/** Incrémenter à chaque changement de finalités : re-demande le consentement. */
+/** Incrémenter quand une finalité est AJOUTÉE ou change de sens : re-demande
+ *  le consentement. En retirer une ne l'exige pas — l'accord donné sur les
+ *  autres reste valable (la finalité « publicité » a été retirée en v1). */
 export const CONSENT_VERSION = 1;
 
 /** 6 mois. La CNIL tolère 13 mois ; on est volontairement plus court. */
@@ -35,8 +37,13 @@ export interface Consent {
   necessaire: true;
   /** Mesure d'audience (GA4). */
   mesure: boolean;
-  /** Publicité et remarketing. */
-  marketing: boolean;
+  /* ⚠ PAS DE FINALITÉ « PUBLICITÉ ». Elle était proposée sans qu'aucun tag
+     ne s'en serve : GTM ne se charge qu'avec la mesure, la CSP bloque les
+     domaines publicitaires, et le bandeau n'annonçait que la mesure — un
+     « Tout accepter » valait donc accord publicitaire sans information.
+     La réintroduire le jour d'une campagne demande, ensemble : la
+     finalité ici, la phrase du bandeau, le chargement de GTM sur
+     `mesure || marketing`, les signaux `ad_*` et les domaines dans la CSP. */
   /** Version des finalités au moment du choix. */
   v: number;
   /** Horodatage ISO — sert de preuve du consentement. */
@@ -46,14 +53,12 @@ export interface Consent {
 export const REFUS_TOTAL: Omit<Consent, "at"> = {
   necessaire: true,
   mesure: false,
-  marketing: false,
   v: CONSENT_VERSION,
 };
 
 export const ACCEPT_TOTAL: Omit<Consent, "at"> = {
   necessaire: true,
   mesure: true,
-  marketing: true,
   v: CONSENT_VERSION,
 };
 
@@ -63,7 +68,7 @@ export const FINALITES = [
     cle: "necessaire" as const,
     titre: "Strictement nécessaires",
     texte:
-      "Indispensables au fonctionnement du site : mémorisation de votre choix de cookies, sécurité des formulaires. Ils ne peuvent pas être désactivés et ne servent à aucun suivi.",
+      "Indispensables au fonctionnement du site : mémorisation de votre choix de cookies, et de l'écran d'introduction de l'accueil déjà vu pendant votre visite. Ils ne peuvent pas être désactivés, ne contiennent aucun identifiant et ne servent à aucun suivi.",
     verrouille: true,
   },
   {
@@ -71,13 +76,6 @@ export const FINALITES = [
     titre: "Mesure d'audience",
     texte:
       "Nous aident à comprendre quelles pages sont consultées et par combien de personnes, pour améliorer le site. Les données sont agrégées — Google Analytics 4, via Google Tag Manager.",
-    verrouille: false,
-  },
-  {
-    cle: "marketing" as const,
-    titre: "Publicité et personnalisation",
-    texte:
-      "Permettent de mesurer l'efficacité de nos campagnes et de vous présenter nos offres sur d'autres sites. Aucun cookie publicitaire n'est déposé sans votre accord.",
     verrouille: false,
   },
 ];
@@ -178,11 +176,13 @@ function expireAnalyticsCookies() {
 }
 
 export function pushConsentToDataLayer(c: Consent) {
+  /* Les signaux publicitaires restent refusés quel que soit le choix :
+     aucune finalité ne les couvre (voir l'interface `Consent`). */
   gtag("consent", "update", {
     analytics_storage: c.mesure ? "granted" : "denied",
-    ad_storage: c.marketing ? "granted" : "denied",
-    ad_user_data: c.marketing ? "granted" : "denied",
-    ad_personalization: c.marketing ? "granted" : "denied",
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
   });
   if (!c.mesure) expireAnalyticsCookies();
 
@@ -191,7 +191,6 @@ export function pushConsentToDataLayer(c: Consent) {
   w.dataLayer.push({
     event: "consent_update",
     consent_mesure: c.mesure,
-    consent_marketing: c.marketing,
   });
 }
 

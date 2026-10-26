@@ -79,7 +79,7 @@ export default function EnPreparation({
               {relais.map((r) => (
                 <li key={r.href}>
                   <Link href={r.href} className="c-link">
-                    {r.label} <span className="arrow">→</span>
+                    {r.label} <span className="arrow" aria-hidden="true">→</span>
                   </Link>
                   <span>{r.quoi}</span>
                 </li>
@@ -88,7 +88,7 @@ export default function EnPreparation({
             <p className="prep__contact">
               Vous cherchez un renseignement précis&nbsp;?{" "}
               <Link href="/contact" className="c-link">
-                Posez-nous la question <span className="arrow">→</span>
+                Posez-nous la question <span className="arrow" aria-hidden="true">→</span>
               </Link>
             </p>
           </div>

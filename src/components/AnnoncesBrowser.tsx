@@ -135,7 +135,7 @@ function Pagination({
         </Link>
       ) : (
         <span className="l-pages__pas is-off" aria-hidden="true">
-          ← <span className="l-pages__mot">Précédente</span>
+          <span aria-hidden="true">←</span> <span className="l-pages__mot">Précédente</span>
         </span>
       )}
       <ol>
@@ -173,7 +173,7 @@ function Pagination({
         </Link>
       ) : (
         <span className="l-pages__pas is-off" aria-hidden="true">
-          <span className="l-pages__mot">Suivante</span> →
+          <span className="l-pages__mot">Suivante</span> <span aria-hidden="true">→</span>
         </span>
       )}
     </nav>
@@ -511,7 +511,7 @@ export default function AnnoncesBrowser({ resultat }: { resultat: ResultatRecher
             </select>
           </div>
           <button type="button" className="l-filters__reset" onClick={reset}>
-            Réinitialiser
+            Réinitialiser<span className="u-sr-only"> les filtres</span>
           </button>
           <div className="l-view-toggle" role="group" aria-label="Affichage">
             <button

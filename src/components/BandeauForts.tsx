@@ -132,7 +132,9 @@ function Carte({ item }: { item: NumberedItem }) {
   const contenu = (
     <>
       <div className="s-bande__tete">
-        <span className="s-bande__num">{item.num}</span>
+        {/* Masqué : le lien de la carte s'annonçait « 01 Conception
+            maîtrisée… », le numéro d'ordre en tête de son nom. */}
+        <span className="s-bande__num" aria-hidden="true">{item.num}</span>
         {item.icon ? <Icon name={item.icon} /> : null}
       </div>
       <h3>{item.title}</h3>

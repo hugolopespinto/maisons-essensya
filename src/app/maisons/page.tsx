@@ -1,33 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import ChampCommune from "@/components/ChampCommune";
-import FilAriane from "@/components/FilAriane";
-import HeroGamme, { type DiapoHero } from "@/components/HeroGamme";
-import type { VueVitrine } from "@/components/ImageVue";
-import LeadForm, { ContactFields } from "@/components/LeadForm";
-import PrixCompris from "@/components/PrixCompris";
-import SpecList from "@/components/SpecList";
-import VitrineGamme, { type ModeleVitrine } from "@/components/VitrineGamme";
+import PageGamme from "@/components/PageGamme";
 import { HOUSE, PRICE_FROM, REEL } from "@/data/essensya";
-import {
-  facadeDe,
-  gammeIncomplete,
-  modelesAvecVisuels,
-  MODELES,
-  pictosModele,
-  planDe,
-  vuesDe,
-} from "@/data/gamme";
-import { srcSet, type Visuel } from "@/data/visuels";
-import { lecteurBlocs } from "@/lib/blocs";
+import { modelesAvecVisuels, MODELES } from "@/data/gamme";
 import { fmtPrice } from "@/lib/format";
 import { jsonLd, listeSchema, produitGamme } from "@/lib/schema";
 import { resolveMetadata, titreGamme } from "@/lib/seo";
-import { getContent } from "@/lib/store";
-import "@/styles/pages/modele.css";
-import "@/styles/pages/maison.css";
-import "@/styles/pages/gamme.css";
-import "@/styles/pages/vitrine.css";
 
 /* ════════════════════════════════════════════════════════════════
    NOS MODÈLES — la page de gamme
@@ -53,6 +30,9 @@ import "@/styles/pages/vitrine.css";
      3. le reste — méthode, prestations, prix, dossier — garde ses
         textes, déjà arbitrés avec le client, dans une alternance
         clair / sombre qui laisse respirer les deux blocs d'images.
+
+   Le corps de la page vit dans src/components/PageGamme.tsx depuis le
+   24/10 : les pages « Plans maison N chambres » le partagent.
 
    ⚠ CE QUE LA PAGE DIT N'A PAS CHANGÉ, et rien de plus : la gamme
    existe, voici ses modèles en images, voici le prix d'entrée avec son
@@ -84,55 +64,8 @@ const METADATA_DEFAUT: Metadata = {
   },
 };
 
-const PRE_LINE = { whiteSpace: "pre-line" } as const;
-
-/* Garde de type plutôt que conversion : `vuesDe()` écarte déjà les
-   plans, mais le dire au compilateur évite d'écrire un ternaire qui
-   rangerait un type inconnu dans « extérieur » (voir LIBELLE_VUE dans
-   la fiche d'un modèle, qui a corrigé ce défaut-là). */
-const estVue = (v: Visuel): v is Visuel & { type: VueVitrine["type"] } => v.type !== "plan";
-
-/** Un visuel du catalogue, réduit à ce qu'un composant client affiche —
- *  les `srcset` calculés ici, côté serveur (voir ImageVue.tsx). */
-const versVitrine = (v: Visuel & { type: VueVitrine["type"] }): VueVitrine => ({
-  cle: v.cle,
-  src: v.src,
-  largeur: v.largeur,
-  hauteur: v.hauteur,
-  empreinte: v.empreinte,
-  avif: srcSet(v, "avif"),
-  webp: srcSet(v, "webp"),
-  type: v.type,
-});
-
 export default async function MaisonsPage() {
-  const { pages } = await getContent();
-  const t = lecteurBlocs(pages, "maison");
   const modeles = modelesAvecVisuels();
-  const enAttente = gammeIncomplete();
-
-  /* ⚠ PÉKIN OUVRE LE DIAPORAMA, et ce n'est pas un choix esthétique.
-     Le prix posé dans le héros est le sien (« modèle Pékin », dit la
-     mention). Ouvrir sur un autre modèle, c'était afficher 78 000 € sous
-     la façade d'une maison qui n'a pas ce prix — l'accueil a corrigé le
-     même défaut sur sa rangée de photos. Les dix autres suivent dans
-     l'ordre du catalogue. Le modèle est retrouvé par son nom, celui de
-     `REEL` : si le client change de modèle d'entrée, le diaporama suit. */
-  const entree = modeles.find((m) => m.nom === REEL.modeleEntree);
-  const diaposHero: DiapoHero[] = (entree ? [entree, ...modeles.filter((m) => m !== entree)] : modeles)
-    .flatMap((m) => {
-      const f = facadeDe(m);
-      return f && estVue(f) ? [{ slug: m.slug, nom: m.nom, vue: versVitrine(f) }] : [];
-    });
-
-  const vitrine: ModeleVitrine[] = modeles.map((m) => ({
-    slug: m.slug,
-    nom: m.nom,
-    pictos: pictosModele(m),
-    prix: m.prixDepart !== undefined ? fmtPrice(m.prixDepart) : null,
-    vues: vuesDe(m).filter(estVue).map(versVitrine),
-    aPlan: planDe(m) !== null,
-  }));
 
   return (
     <main className="page">
@@ -162,247 +95,15 @@ export default async function MaisonsPage() {
         }}
       />
 
-      {/* ── 1. Les façades, et le prix ──
-             Le texte est rendu ici, côté serveur, et passé au diaporama :
-             il est dans le HTML servi, lisible avant toute hydratation. */}
-      <HeroGamme diapos={diaposHero}>
-        <div className="gm-hero__grille">
-          <div className="gm-hero__texte">
-            <FilAriane items={[{ nom: "Accueil", path: "/" }, { nom: "Nos modèles" }]} />
-            <span className="c-label c-label--accent">
-              {t("hero.surtitre", "La gamme Essensya")}
-            </span>
-            <h1 id="gm-hero-titre">Nos modèles</h1>
-            <p className="gm-hero__accroche">{HOUSE.tagline}</p>
-            <div className="gm-hero__actions">
-              <a href="#gamme" className="c-btn c-btn--solid">
-                Explorer les {modeles.length} modèles <span className="arrow">→</span>
-              </a>
-              <a href="#prix" className="c-link">
-                Ce que le prix comprend →
-              </a>
-            </div>
-          </div>
-
-          <p className="c-price-xl gm-hero__prix">
-            <span className="from">À partir de</span>
-            {fmtPrice(PRICE_FROM)}
-            {/* La mention du client, mot pour mot. « Hors adaptation » est
-                le poste qui surprend en fin de parcours : il suit le prix
-                partout où le prix apparaît. */}
-            <small>{REEL.mentionPrix}</small>
-          </p>
-        </div>
-      </HeroGamme>
-
-      {/* ── 2. Le parti-pris ── */}
-      <section className="m-quote">
-        <div className="container">
-          <span className="c-label">{t("partiPris.surtitre", "Le parti-pris")}</span>
-          <p data-reveal>{HOUSE.philosophy}</p>
-        </div>
-      </section>
-
-      {/* ── 3. La vitrine ──
-             Toutes les vues de chaque modèle. Fond noir : c'est une salle
-             de projection, les rendus clairs y gagnent leur relief.
-             `u-sombre` bascule l'accent et le focus vers leurs versions
-             claires (voir base.css, « LES FONDS SOMBRES »). */}
-      <section className="gm-gamme u-sombre mp-anchor" id="gamme">
-        <div className="container">
-          <div className="gm-gamme__tete">
-            <div>
-              <span className="c-label">{t("gamme.surtitre", "La gamme")}</span>
-              <h2 style={PRE_LINE}>
-                {t("gamme.titre", `${MODELES.length} modèles, un seul parti-pris`)}
-              </h2>
-            </div>
-            <p style={PRE_LINE}>
-              {t(
-                "gamme.texte",
-                "Chaque plan a été optimisé poste par poste, matériau par matériau : pas de dégagement inutile, pas de recoin qui ne sert à rien. Le modèle change, la méthode ne change pas.",
-              )}
-            </p>
-          </div>
-        </div>
-
-        <VitrineGamme modeles={vitrine} />
-
-        {/* Le manque, dit franchement, avec une sortie. Il s'efface le
-            jour où les ONZE modèles porteront leurs chiffres — pas dès
-            le premier : c'est exactement à ce moment-là que la phrase
-            devient vraie pour les dix autres. */}
-        {enAttente && (
-          <div className="container">
-            <div className="gm-attente">
-              <p>
-                <strong>Les caractéristiques arrivent modèle par modèle.</strong>{" "}
-                Surfaces, nombre de chambres et de pièces, et prix par modèle sont
-                en cours de publication.
-              </p>
-              <p>
-                Vous voulez le détail d&apos;un modèle dès maintenant ?{" "}
-                <Link href="/contact" className="c-link" style={{ display: "inline" }}>
-                  Demandez-le nous
-                </Link>{" "}
-                — nous vous l&apos;envoyons avec le chiffrage pour votre commune.
-              </p>
-            </div>
-          </div>
-        )}
-      </section>
-
-      {/* ── 4. Les prestations ── */}
-      <section className="m-features">
-        <div className="container">
-          <div className="c-section-head">
-            <span className="c-label">{t("prestations.surtitre", "Les prestations")}</span>
-            <h2>{t("prestations.titre", "Là dès le départ, pas en supplément")}</h2>
-          </div>
-          <div className="m-features__grid">
-            {HOUSE.features.map((f) => (
-              <div className="m-features__item" key={f.t} data-reveal>
-                <b>{f.t}</b>
-                {f.d}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── 5. Ce qu'on ne voit pas : la méthode ── */}
-      <section className="m-arch">
-        <div className="container">
-          <div className="m-arch__grid">
-            <figure className="c-reveal-img">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={HOUSE.archImage} alt="Maison Essensya, vue extérieure" loading="lazy" />
-            </figure>
-            <div>
-              <span className="c-label">{t("architecture.surtitre", "La méthode")}</span>
-              <h2>{t("architecture.titre", "Un volume simple, dessiné jusqu'au bout")}</h2>
-              <p>{HOUSE.archText}</p>
-              {/* Quatre postes seulement, et tous écrits par le client.
-                  Les six prestations constructives qui figuraient ici
-                  décrivaient une maison qui n'est pas la sienne. */}
-              <SpecList rows={HOUSE.materials} dark className="mp-arch__specs" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 6. LE BLOC PRIX ──
-             Le montant d'abord, ce qu'il couvre ensuite, côte à côte : on
-             annonce le prix avant de dire ce qu'il comprend, jamais
-             l'inverse. La colonne « Non compris » est partie à la demande
-             du client ; la mention sous le montant reste — c'est elle qui
-             le rattache à Pékin, hors terrain et hors adaptation.
-
-             ⚠ `prix.titreCompris`, PAS `prix.titre`. Le titre annonçait
-             « ce qu'il ne comprend pas » ; une page déjà enregistrée dans
-             le back-office garde cette phrase en stock et l'aurait servie
-             par-dessus le nouveau défaut. Une clé neuve, c'est un bloc
-             neuf : l'ancienne valeur n'est plus lue (voir `fusionnerPages`). */}
-      <section className="m-price gm-prix mp-anchor" id="prix">
-        <div className="container">
-          <div className="gm-prix__grille">
-            <div className="gm-prix__tete">
-              <span className="c-label">{t("prix.surtitre", "Le prix")}</span>
-              <h2>{t("prix.titreCompris", "Ce que le prix comprend")}</h2>
-              <p className="c-price-xl">
-                <span className="from">À partir de</span>
-                {fmtPrice(PRICE_FROM)}
-                <small>{REEL.mentionPrix}</small>
-              </p>
-              <p className="gm-prix__note">
-                Chiffrage définitif selon le terrain et la commune, dès le premier
-                rendez-vous.
-              </p>
-              <a href="#dossier" className="c-btn">
-                Recevoir le chiffrage <span className="arrow">→</span>
-              </a>
-            </div>
-
-            <PrixCompris />
-          </div>
-        </div>
-      </section>
-
-      {/* ⚠ LE COMPARATIF « POURQUOI C'EST MOINS CHER » A ÉTÉ RETIRÉ ICI,
-          sur demande du client : pas de mise en regard avec un
-          « constructeur classique », le prix se dit par ce qu'il
-          comprend. Il avait déjà quitté l'accueil, jugée trop longue.
-          `Compare` reste documenté au styleguide. */}
-
-      {/* ── 7. Le dossier ── */}
-      <section className="s-cta" id="dossier">
-        <div className="container">
-          <div className="s-cta__grid">
-            <div>
-              <span className="c-label">{t("dossier.surtitre", "Le dossier")}</span>
-              <h2>{t("dossier.titre", "Recevoir le dossier complet")}</h2>
-              <p style={PRE_LINE}>
-                {t(
-                  "dossier.texte",
-                  "Les plans de nos modèles, le descriptif détaillé des prestations, la liste de ce qui est compris et de ce qui ne l'est pas, et le chiffrage pour votre commune.",
-                )}
-              </p>
-              <SpecList
-                className="mp-form__specs"
-                dark
-                rows={[
-                  ["Chiffrage", "Annoncé, pas estimé"],
-                  ["Cadre", "Contrat CCMI"],
-                  ["Engagement", "Aucun"],
-                ]}
-              />
-            </div>
-
-            <LeadForm
-              originKey="model"
-              gtmEvent="lead_model_request"
-              dark
-              submitLabel="Recevoir le dossier"
-              successMessage="Merci — le dossier complet et le chiffrage vous arrivent rapidement."
-              ctx={{ adContent: "Page gamme" }}
-            >
-              <ContactFields prefix="mf" />
-              <div className="c-field">
-                <label htmlFor="mf-zone">Commune ou code postal du projet</label>
-                <ChampCommune id="mf-zone" placeholder="Ex. 40000" />
-              </div>
-              {/* ⚠ Ce champ proposait « 2 chambres » ou « 3 chambres » et
-                  envoyait ce choix au CRM du client. Il liste maintenant
-                  les modèles réels : une donnée fausse dans un fichier
-                  commercial coûte plus cher qu'une page mal tournée.
-                  La vitrine le positionne sur le modèle regardé quand on
-                  clique « Recevoir le dossier de ce modèle » : l'`id` est
-                  donc un contrat avec VitrineGamme, à ne pas renommer. */}
-              <div className="c-field">
-                <label htmlFor="mf-modele">Modèle qui vous intéresse</label>
-                <select id="mf-modele" name="reason" defaultValue="Je ne sais pas encore">
-                  {MODELES.map((m) => (
-                    <option key={m.slug} value={m.nom}>
-                      {m.nom}
-                    </option>
-                  ))}
-                  <option value="Je ne sais pas encore">Je ne sais pas encore</option>
-                </select>
-              </div>
-            </LeadForm>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 8. L'étape d'après ── */}
-      <section className="m-next">
-        <div className="container">
-          <Link href="/annonces">
-            <span className="m-next__label">Étape suivante</span>
-            <span className="m-next__name">Trouver mon terrain →</span>
-          </Link>
-        </div>
-      </section>
+      <PageGamme
+        modeles={modeles}
+        fil={[{ nom: "Accueil", path: "/" }, { nom: "Nos modèles" }]}
+        titre="Nos modèles"
+        accroche={HOUSE.tagline}
+        chambres={null}
+        complete
+        origine="Page gamme"
+      />
     </main>
   );
 }
