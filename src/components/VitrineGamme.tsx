@@ -350,13 +350,9 @@ export default function VitrineGamme({ modeles }: { modeles: ModeleVitrine[] }) 
             </div>
 
             <div className="gm-barre__commandes">
-              <p className="gm-compteur" aria-live="polite" aria-atomic="true">
-                <span className="u-sr-only">Vue </span>
-                <strong>{deux(iVue + 1)}</strong>
-                <span aria-hidden="true"> / </span>
-                <span className="u-sr-only"> sur </span>
-                {deux(n)}
-              </p>
+              {/* Le compteur « 01 / 05 » est parti à la demande du client
+                  (retour du 26/10). Les boutons gardent « Vue N sur M »
+                  dans leur libellé pour les lecteurs d'écran. */}
               <button
                 type="button"
                 className="gm-rond"
