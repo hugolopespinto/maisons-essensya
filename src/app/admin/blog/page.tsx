@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { articlesPublies } from "@/lib/blog";
 import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { Article } from "@/lib/store/types";
 import { assertAdmin, requireAdmin } from "../actions";
@@ -74,6 +75,11 @@ export default async function AdminBlogPage({
       await patchContent("articles", reste);
       revalidatePath("/blog");
       revalidatePath(`/blog/${slug}`);
+      /* Le dernier article publié s'en va : « Actualités » quitte
+         l'en-tête de tout le site (voir le layout racine). */
+      if (articlesPublies(actuel.articles).length && !articlesPublies(reste).length) {
+        revalidatePath("/", "layout");
+      }
     }
     redirect("/admin/blog?ok=supprime");
   }

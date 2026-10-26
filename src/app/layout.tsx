@@ -8,8 +8,10 @@ import { IntroAccueilScript } from "@/components/IntroAccueil";
 import Reveal from "@/components/Reveal";
 import StickyCta from "@/components/StickyCta";
 import { AGENCIES, HOUSE, PLACEHOLDER, PRICE_FROM } from "@/data/essensya";
+import { NAVIGATION } from "@/data/navigation";
 import { agencyUrl, emailPublie, fmtPrice } from "@/lib/format";
 import { agencesPubliees } from "@/lib/agences";
+import { articlesPublies } from "@/lib/blog";
 import { resoudreMedia } from "@/lib/medias";
 import { resolveMetadata, titreAccueil } from "@/lib/seo";
 import { getContent } from "@/lib/store";
@@ -121,6 +123,33 @@ function entreesMenu(liens: LienMenu[]): EntreeChrome[] | undefined {
   return propres.length ? propres : undefined;
 }
 
+/* ──────────────────────────────────────────────────────────────────
+   LE JOURNAL N'ENTRE DANS LA BARRE QU'AVEC SON PREMIER ARTICLE
+
+   Sans article publié, /blog n'affiche que « Les premiers articles
+   arrivent » : une rubrique qui mène à une page vide. Le lien est donc
+   retiré — du menu par défaut comme d'un menu saisi en back-office, à
+   la barre comme dans un sous-menu — et revient de lui-même à la
+   première publication : l'écran Blog revalide alors tout le layout.
+   ────────────────────────────────────────────────────────────────── */
+const pointeVersJournal = (href?: string): boolean =>
+  /^\/blog(\/|$)/i.test((href ?? "").trim().split(/[?#]/)[0]);
+
+function sansJournal(entrees: EntreeChrome[]): EntreeChrome[] {
+  return entrees
+    .map((e) => {
+      const enfants = e.enfants?.filter((c) => !pointeVersJournal(c.href));
+      return {
+        ...e,
+        href: pointeVersJournal(e.href) ? undefined : e.href,
+        enfants: enfants?.length ? enfants : undefined,
+      };
+    })
+    /* Même règle qu'`entreesMenu` : sans adresse ni sous-menu, il ne
+       resterait qu'un libellé mort. */
+    .filter((e) => e.href || e.enfants);
+}
+
 function colonnesFooter(colonnes: ColonneFooter[]): ColonneChrome[] | undefined {
   const propres = colonnes
     .map((c) => ({ titre: c.titre.trim(), liens: liensMenu(c.liens), ordre: c.ordre }))
@@ -197,7 +226,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
      back-office ne sert que de repli : si NEXT_PUBLIC_GTM_ID est définie,
      c'est elle qui gagne. `Analytics` est un composant client et ne peut
      pas lire le contenu lui-même — d'où le passage par une prop. */
-  const { tracking, reglages, textes, menus } = await getContent();
+  const { tracking, reglages, textes, menus, articles } = await getContent();
 
   /* ⚠ LE CALCUL DES ZONES A ÉTÉ RETIRÉ D'ICI. Le pied de page listait
      les départements servis par le flux ; le brief du 22/09 remplace
@@ -258,6 +287,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
      logo livré. Provisoire, en attendant l'avis du client. */
   const logoEntete = logoTeleverse ?? "/marque/logo-entete.svg";
   const logoEnteteClair = logoTeleverse ?? "/marque/logo-entete-blanc.svg";
+
+  /* Le repli sur `NAVIGATION` est résolu ici, et non plus dans Header :
+     le menu par défaut porte « Actualités », il doit passer par le même
+     filtre que celui du back-office. */
+  const menuEntete = entreesMenu(menus.header) ?? NAVIGATION;
+  const liensEntete = articlesPublies(articles).length ? menuEntete : sansJournal(menuEntete);
 
   const reseaux = RESEAUX.map(([cle, label]) => ({
     label,
@@ -362,7 +397,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             logoCompact={!logoTeleverse}
             telephone={telephone}
             telHref={telHref(telephone)}
-            liens={entreesMenu(menus.header)}
+            liens={liensEntete}
           />
         </CoquillePublique>
         {/* La cible du lien d'évitement est portée ici plutôt que sur le

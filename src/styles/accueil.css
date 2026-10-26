@@ -173,7 +173,10 @@ html[data-intro-accueil]:has(#intro-accueil) .hero-fixe h1 .mot > span{transform
    dessous — demandée, et utile : elle montre le produit là où le bloc
    ne faisait que l'affirmer.
    ────────────────────────────────────────────────────────────────── */
-.s-juste{padding:var(--s-7) 0;background:var(--vert-fond)}
+/* ⚠ LE BAS EST RESSERRÉ, comme le haut de `.s-raison` qui suit : les
+   deux `--s-7` s'additionnaient en une bande vide de 320 px entre les
+   photos et le titre suivant, que le client a relevée. */
+.s-juste{padding:var(--s-7) 0 var(--s-5);background:var(--vert-fond)}
 .s-juste__grid{display:grid;grid-template-columns:5fr 7fr;gap:var(--s-5)}
 .s-juste__note{margin-top:var(--s-3);color:var(--pierre);font-size:var(--fs-small);max-width:52ch}
 /* UNE GRANDE, PUIS UNE ET DEUX EMPILÉES : la maquette « maison 2 » du
@@ -217,7 +220,7 @@ html[data-intro-accueil]:has(#intro-accueil) .hero-fixe h1 .mot > span{transform
    de celle qui la précède — c'est le « bloc dont la couleur change »
    que le client demande de conserver.
    ────────────────────────────────────────────────────────────────── */
-.s-raison{padding:var(--s-7) 0;background:var(--craie)}
+.s-raison{padding:var(--s-5) 0 var(--s-7);background:var(--craie)}
 
 /* ──────────────────────────────────────────────────────────────────
    NOS POINTS FORTS

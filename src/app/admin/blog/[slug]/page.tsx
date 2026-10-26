@@ -3,6 +3,7 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 import MediaPicker from "@/components/admin/MediaPicker";
+import { articlesPublies } from "@/lib/blog";
 import { markdownToHtml, markdownToText } from "@/lib/markdown";
 import { resoudreMedia } from "@/lib/medias";
 import { getContentFrais, patchContent } from "@/lib/store";
@@ -171,6 +172,13 @@ export default async function EditionArticlePage({
     revalidatePath("/blog");
     revalidatePath(`/blog/${finalSlug}`);
     if (origine && origine !== finalSlug) revalidatePath(`/blog/${origine}`);
+    /* La rubrique « Actualités » de l'en-tête n'existe qu'à partir du
+       premier article publié (voir le layout racine) : quand il arrive,
+       ou quand le dernier repasse en brouillon, c'est l'en-tête de tout
+       le site qui change. */
+    if (!articlesPublies(actuel.articles).length !== !articlesPublies(articles).length) {
+      revalidatePath("/", "layout");
+    }
 
     const q = finalSlug !== souhaite ? "?ok=1&renomme=1" : "?ok=1";
     redirect(`/admin/blog/${encodeURIComponent(finalSlug)}${q}`);
