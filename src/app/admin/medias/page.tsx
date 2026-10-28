@@ -42,8 +42,8 @@ import { assertAdmin, requireAdmin } from "../actions";
    ⚠ La suppression est destructrice et IRRATTRAPABLE : le fichier quitte
    le bucket. Elle passe donc par une page de confirmation (même choix
    que l'écran Blog : rechargeable, et on peut y montrer ce qu'on
-   détruit), et cette page dit où le média est utilisé. Supabase ne tient
-   pas ce graphe — on le recalcule ici, sur le contenu éditable.
+   détruit), et cette page dit où le média est utilisé. Le stockage ne
+   tient pas ce graphe — on le recalcule ici, sur le contenu éditable.
    ════════════════════════════════════════════════════════════════ */
 
 export const dynamic = "force-dynamic";
@@ -267,9 +267,9 @@ export default async function AdminMediasPage({
           <section className="adm-card">
             <h2>Ce qu&apos;il faut pour l&apos;activer</h2>
             <p>
-              Les fichiers ont besoin d&apos;un stockage : le site sait le faire
-              avec Supabase, et seulement avec lui. Trois choses à mettre en
-              place, dans cet ordre :
+              Les fichiers ont besoin d&apos;une base (pour leurs fiches) et
+              d&apos;un stockage S3 (pour les fichiers eux-mêmes) — Cellar chez
+              Clever Cloud. Trois choses à mettre en place, dans cet ordre :
             </p>
             <ol
               style={{
@@ -280,18 +280,19 @@ export default async function AdminMediasPage({
               }}
             >
               <li>
-                Renseigner <code>SUPABASE_URL</code> (avec son <code>https://</code>)
-                et <code>SUPABASE_SERVICE_ROLE_KEY</code> dans les variables
-                d&apos;environnement de l&apos;hébergement.
+                Lier l&apos;add-on PostgreSQL à l&apos;application (ou renseigner{" "}
+                <code>DATABASE_URL</code>), puis appliquer <code>db/schema.sql</code>{" "}
+                — il crée la table des fiches.
               </li>
               <li>
-                Appliquer <code>supabase/schema.sql</code> — il crée la table des
-                fiches.
+                Lier l&apos;add-on Cellar à l&apos;application&nbsp;: ses clés sont
+                alors fournies d&apos;office.
               </li>
               <li>
-                Créer le bucket <strong>privé</strong> <code>medias</code> dans
-                Supabase Storage. Privé : les visuels non diffusés du client
-                n&apos;ont pas à être accessibles à qui devine un nom de fichier.
+                Créer un bucket <strong>privé</strong> dans Cellar et déclarer son
+                nom dans <code>S3_BUCKET</code>, puis redéployer. Privé&nbsp;: les
+                visuels non diffusés du client n&apos;ont pas à être accessibles à
+                qui devine un nom de fichier.
               </li>
             </ol>
             <p style={{ marginTop: "var(--s-2)" }}>

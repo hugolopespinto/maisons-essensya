@@ -1,13 +1,15 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
+import { isBaseConfiguree, sql } from "@/lib/db";
 import { invaliderCache } from "@/lib/store";
-import {
-  auteurCourant,
-  clientSupabase,
-  isSupabaseConfigured,
-  journaliserExterne,
-} from "@/lib/store/supabase";
+import { auteurCourant, journaliserExterne } from "@/lib/store/postgres";
 import type { Media } from "@/lib/store/types";
+import {
+  deposerObjet,
+  isStockageConfigure,
+  retirerObjet,
+  signerObjet,
+} from "@/lib/stockage";
 
 /* ════════════════════════════════════════════════════════════════
    MÉDIATHÈQUE — l'accès au stockage de fichiers
@@ -18,7 +20,7 @@ import type { Media } from "@/lib/store/types";
    adresse affichable avec `resoudreMedia()`.
 
    DEUX OBJETS POUR UN MÉDIA, et ils doivent rester synchrones :
-     · le FICHIER, dans le bucket privé « medias » de Supabase Storage ;
+     · le FICHIER, dans le bucket privé de Cellar (voir `./stockage`) ;
      · la FICHE, dans la table `public.medias` (nom, alt, dimensions).
    Les créer ou les supprimer séparément produit soit un objet orphelin
    facturé et invisible, soit une fiche qui pointe vers le vide. Les deux
@@ -30,15 +32,12 @@ import type { Media } from "@/lib/store/types";
    devine un nom de fichier, sans trace dans aucun journal. On signe donc
    à la demande, et les adresses expirent.
 
-   ⚠ SANS SUPABASE, CE MODULE NE LÈVE PAS. Il répond « indisponible ».
-   Le back-office doit pouvoir afficher « médiathèque indisponible sans
-   Supabase » sur un écran qui s'ouvre, pas planter : c'est exactement le
-   mode dans lequel tourne une recette locale, et la règle du projet veut
-   que le site fonctionne sans base.
+   ⚠ SANS BASE NI STOCKAGE, CE MODULE NE LÈVE PAS. Il répond
+   « indisponible ». Le back-office doit pouvoir afficher « médiathèque
+   indisponible » sur un écran qui s'ouvre, pas planter : c'est
+   exactement le mode dans lequel tourne une recette locale, et la règle
+   du projet veut que le site fonctionne sans base.
    ════════════════════════════════════════════════════════════════ */
-
-/** Le bucket à créer une fois — voir la fin de `supabase/schema.sql`. */
-export const BUCKET = "medias";
 
 /** 10 Mo. Au-delà, c'est une photo non redimensionnée : on refuse et on
  *  le dit, plutôt que de laisser le client gonfler ses pages. */
@@ -49,8 +48,8 @@ export const TAILLE_MAX = 10 * 1024 * 1024;
  *
  * Liste blanche, pas liste noire : un format inconnu est refusé. Le SVG
  * y figure parce que les logos en ont besoin — il est servi depuis le
- * domaine de Supabase Storage, jamais depuis celui du site, et toujours
- * dans une balise `<img>` où aucun script embarqué ne s'exécute.
+ * domaine du stockage, jamais depuis celui du site, et toujours dans une
+ * balise `<img>` où aucun script embarqué ne s'exécute.
  */
 export const TYPES_AUTORISES = [
   "image/jpeg",
@@ -80,11 +79,18 @@ export type EtatMediatheque =
  * développeur dans des logs.
  */
 export function etatMediatheque(): EtatMediatheque {
-  if (!isSupabaseConfigured()) {
+  if (!isBaseConfiguree()) {
     return {
       disponible: false,
       raison:
-        "La médiathèque a besoin de Supabase pour stocker les fichiers. Sans SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY, les images doivent rester dans le code du site.",
+        "La médiathèque a besoin de la base de données pour ranger les fiches des fichiers. Sans DATABASE_URL (ou l'add-on PostgreSQL lié à l'application), les images doivent rester dans le code du site.",
+    };
+  }
+  if (!isStockageConfigure()) {
+    return {
+      disponible: false,
+      raison:
+        "La médiathèque a besoin d'un stockage de fichiers. Liez l'add-on Cellar à l'application et renseignez S3_BUCKET avec le nom du bucket : sans cela, les images doivent rester dans le code du site.",
     };
   }
   return { disponible: true };
@@ -146,15 +152,8 @@ function versTs(r: LigneMedia): Media {
 export async function listerMedias(): Promise<Media[]> {
   if (!etatMediatheque().disponible) return [];
   try {
-    const { data, error } = await clientSupabase()
-      .from("medias")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (error) {
-      console.error("[medias] listage impossible :", error.message);
-      return [];
-    }
-    return ((data ?? []) as LigneMedia[]).map(versTs);
+    const lignes = await sql<LigneMedia>("select * from medias order by created_at desc");
+    return lignes.map(versTs);
   } catch (e) {
     console.error("[medias] listage impossible :", (e as Error).message);
     return [];
@@ -172,14 +171,15 @@ export function mediasSansAlt(medias: Media[]): Media[] {
    URL SIGNÉES
    ────────────────────────────────────────────────────────────────── */
 
-/* Signer coûte un aller-retour réseau. Une grille de médiathèque en
-   demanderait des dizaines par rendu, et la page d'accueil en
-   redemanderait à chaque visiteur. On garde donc les adresses jusqu'à
-   une minute avant leur expiration. */
+/* La signature se calcule localement, sans réseau. On garde pourtant les
+   adresses jusqu'à une minute avant leur expiration : une adresse qui
+   change à chaque rendu empêcherait le navigateur de réutiliser l'image
+   déjà téléchargée, et la page d'accueil la ferait retélécharger à
+   chaque visite. */
 const signatures = new Map<string, { url: string; exp: number }>();
 
 /** Adresse temporaire d'un objet du bucket, ou `null` si elle n'a pas pu
- *  être produite (objet supprimé, bucket absent, base injoignable). */
+ *  être produite (stockage non configuré, clés invalides). */
 export async function urlSignee(
   chemin: string,
   secondes = SIGNATURE_TTL,
@@ -211,27 +211,22 @@ export async function signerChemins(
   }
   if (aSigner.length === 0) return resultat;
 
+  /* On garde la signature une minute de moins que sa durée réelle :
+     une URL servie juste avant l'échéance expirerait pendant le
+     chargement de l'image. */
+  const exp = maintenant + Math.max(secondes - 60, 30) * 1000;
   try {
-    const { data, error } = await clientSupabase()
-      .storage.from(BUCKET)
-      .createSignedUrls(aSigner, secondes);
-    if (error) {
-      console.error("[medias] signature impossible :", error.message);
-      return resultat;
-    }
-    /* On garde la signature une minute de moins que sa durée réelle :
-       une URL servie juste avant l'échéance expirerait pendant le
-       chargement de l'image. */
-    const exp = maintenant + Math.max(secondes - 60, 30) * 1000;
-    for (const entree of data ?? []) {
-      /* Supabase rend une entrée par chemin demandé, `path` et
-         `signedUrl` à null pour celles qui ont échoué (objet absent) :
-         on les saute, l'appelant verra simplement un chemin manquant. */
-      if (entree.error || !entree.path || !entree.signedUrl) continue;
-      signatures.set(entree.path, { url: entree.signedUrl, exp });
-      resultat.set(entree.path, entree.signedUrl);
+    for (const chemin of aSigner) {
+      const url = await signerObjet(chemin, secondes);
+      signatures.set(chemin, { url, exp });
+      resultat.set(chemin, url);
     }
   } catch (e) {
+    /* ⚠ Une signature ne vérifie PAS que l'objet existe : elle se calcule
+       sans interroger le stockage. Un objet supprimé donne donc une
+       adresse valide qui répondra 404 — l'image cassée se voit dans la
+       médiathèque, qui est l'endroit où la corriger. On n'arrive ici que
+       sur une configuration invalide. */
     console.error("[medias] signature impossible :", (e as Error).message);
   }
   return resultat;
@@ -252,13 +247,10 @@ async function cheminDeId(id: string): Promise<string | null> {
   const connu = cheminsConnus.get(id);
   if (connu) return connu;
   try {
-    const { data, error } = await clientSupabase()
-      .from("medias")
-      .select("chemin")
-      .eq("id", id)
-      .maybeSingle();
-    const ligne = data as { chemin?: string } | null;
-    if (error || typeof ligne?.chemin !== "string") return null;
+    const [ligne] = await sql<{ chemin: string }>("select chemin from medias where id = $1", [
+      id,
+    ]);
+    if (typeof ligne?.chemin !== "string") return null;
     cheminsConnus.set(id, ligne.chemin);
     return ligne.chemin;
   } catch {
@@ -320,7 +312,7 @@ function assainir(nom: string): string {
 }
 
 /* Rangement par année/mois, comme WordPress : un dossier reste lisible
-   dans l'explorateur Supabase même après trois ans de photos. */
+   dans l'explorateur du bucket même après trois ans de photos. */
 function cheminPour(nom: string): string {
   const d = new Date();
   const mois = String(d.getUTCMonth() + 1).padStart(2, "0");
@@ -336,8 +328,8 @@ const lisible = (octets: number): string =>
  * Ajoute un fichier à la médiathèque : l'objet dans le bucket, puis la
  * fiche en base.
  *
- * ⚠ Les deux écritures ne sont pas une transaction — Storage et Postgres
- * sont deux services. Si la fiche échoue après le téléversement, l'objet
+ * ⚠ Les deux écritures ne sont pas une transaction — le stockage et
+ * Postgres sont deux services. Si la fiche échoue après le téléversement, l'objet
  * est retiré immédiatement : mieux vaut un échec net qu'un fichier
  * orphelin dans le bucket, facturé et invisible du back-office.
  *
@@ -373,51 +365,57 @@ export async function televerser(
     };
   }
 
+  /* Le chemin porte un uuid : une collision signifierait un vrai
+     problème, pas un doublon à écraser. */
   const chemin = cheminPour(fichier.name || "fichier");
-  const octets = Buffer.from(await fichier.arrayBuffer());
-  const db = clientSupabase();
+  const contenu = await fichier.arrayBuffer();
+  const octets = Buffer.from(contenu);
 
-  const envoi = await db.storage.from(BUCKET).upload(chemin, octets, {
-    contentType: type,
-    /* Le chemin porte un uuid : une collision signifierait un vrai
-       problème, pas un doublon à écraser silencieusement. */
-    upsert: false,
-  });
-  if (envoi.error) {
+  try {
+    await deposerObjet(chemin, contenu, type);
+  } catch (e) {
     return {
       ok: false,
-      erreur: `Téléversement refusé : ${envoi.error.message}. Vérifiez que le bucket « ${BUCKET} » existe.`,
+      erreur: `Téléversement refusé par le stockage (${(e as Error).message}). Vérifiez que le bucket déclaré dans S3_BUCKET existe et que les clés Cellar sont valides.`,
     };
   }
 
   const taille = dimensions(octets, type);
-  const ligne = {
-    id: randomUUID(),
-    chemin,
-    nom: fichier.name || assainir(chemin),
-    alt: alt.trim(),
-    type,
-    taille: fichier.size,
-    largeur: taille?.largeur ?? null,
-    hauteur: taille?.hauteur ?? null,
-    updated_by: await auteurCourant(),
-  };
+  let ligne: LigneMedia | undefined;
+  let echec = "";
+  try {
+    [ligne] = await sql<LigneMedia>(
+      `insert into medias (id, chemin, nom, alt, type, taille, largeur, hauteur, updated_by)
+       values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       returning *`,
+      [
+        randomUUID(),
+        chemin,
+        fichier.name || assainir(chemin),
+        alt.trim(),
+        type,
+        fichier.size,
+        taille?.largeur ?? null,
+        taille?.hauteur ?? null,
+        await auteurCourant(),
+      ],
+    );
+  } catch (e) {
+    echec = (e as Error).message;
+  }
 
-  const { data, error } = await db
-    .from("medias")
-    .insert(ligne)
-    .select("*")
-    .single();
-
-  if (error || !data) {
-    await db.storage.from(BUCKET).remove([chemin]);
+  if (!ligne) {
+    await retirerObjet(chemin).catch(() => {
+      /* L'objet reste orphelin : regrettable, mais l'échec à signaler au
+         client est celui de la fiche, pas celui du nettoyage. */
+    });
     return {
       ok: false,
-      erreur: `Fichier envoyé mais fiche non enregistrée : ${error?.message ?? "réponse vide"}. Rien n'a été conservé.`,
+      erreur: `Fichier envoyé mais fiche non enregistrée : ${echec || "réponse vide"}. Rien n'a été conservé.`,
     };
   }
 
-  const media = versTs(data as LigneMedia);
+  const media = versTs(ligne);
   cheminsConnus.set(media.id, media.chemin);
   invaliderCache();
   return { ok: true, media };
@@ -446,36 +444,33 @@ export async function supprimerMedia(id: string): Promise<Resultat> {
   if (!etat.disponible) return { ok: false, erreur: etat.raison };
   if (!UUID.test(id)) return { ok: false, erreur: "Identifiant de média invalide." };
 
-  const db = clientSupabase();
-  const { data, error } = await db
-    .from("medias")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
-  if (error) {
-    return { ok: false, erreur: `Média introuvable : ${error.message}` };
+  let ligne: LigneMedia | undefined;
+  try {
+    [ligne] = await sql<LigneMedia>("select * from medias where id = $1", [id]);
+  } catch (e) {
+    return { ok: false, erreur: `Média introuvable : ${(e as Error).message}` };
   }
-  if (!data) return { ok: false, erreur: "Ce média n'existe plus." };
-
-  const ligne = data as LigneMedia;
+  if (!ligne) return { ok: false, erreur: "Ce média n'existe plus." };
 
   /* L'instantané part AVANT la suppression : c'est la seule trace qui
      restera de ce fichier, avec son nom et son texte alternatif. */
   await journaliserExterne(`media:${id}`, ligne);
 
-  const retrait = await db.storage.from(BUCKET).remove([ligne.chemin]);
-  if (retrait.error) {
+  try {
+    await retirerObjet(ligne.chemin);
+  } catch (e) {
     return {
       ok: false,
-      erreur: `Fichier non supprimé du stockage : ${retrait.error.message}. La fiche a été conservée, réessayez.`,
+      erreur: `Fichier non supprimé du stockage : ${(e as Error).message}. La fiche a été conservée, réessayez.`,
     };
   }
 
-  const suppression = await db.from("medias").delete().eq("id", id);
-  if (suppression.error) {
+  try {
+    await sql("delete from medias where id = $1", [id]);
+  } catch (e) {
     return {
       ok: false,
-      erreur: `Fichier supprimé mais fiche conservée : ${suppression.error.message}`,
+      erreur: `Fichier supprimé mais fiche conservée : ${(e as Error).message}`,
     };
   }
 

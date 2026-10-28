@@ -21,7 +21,7 @@
    N'importe quel fournisseur XYZ peut le remplacer via
    NEXT_PUBLIC_MAP_TILE_URL et NEXT_PUBLIC_MAP_TILE_ATTRIBUTION. Le
    filtre ne s'applique alors plus : un fond choisi est affiché tel quel.
-   Penser à ouvrir son domaine dans `img-src` (netlify.toml).
+   Penser à ouvrir son domaine dans `img-src` (next.config.ts).
    ════════════════════════════════════════════════════════════════ */
 
 import type { TileLayerOptions } from "leaflet";

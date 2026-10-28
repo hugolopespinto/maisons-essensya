@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { emailsDesComptes } from "@/lib/admin/comptes";
+import { sql } from "@/lib/db";
 import { getContentFrais, patchContent, storeDriver } from "@/lib/store";
-import { clientSupabase } from "@/lib/store/supabase";
 import type {
   Agence,
   AnnonceOverride,
@@ -52,7 +53,7 @@ import { assertAdmin, requireAdmin } from "../actions";
       navigateur : l'action relit la version en base à partir de son seul
       identifiant.
 
-   SANS SUPABASE, il n'y a pas d'historique du tout : le pilote fichier
+   SANS BASE, il n'y a pas d'historique du tout : le pilote fichier
    écrit le JSON par-dessus lui-même. L'écran le dit en toutes lettres
    plutôt que d'afficher un tableau vide, qui laisserait croire que rien
    n'a jamais été modifié.
@@ -395,25 +396,16 @@ async function resoudreApres(lignes: LigneVersion[]): Promise<Map<number, Apres>
     plusRecenteVue.set(l.scope, l);
   }
 
-  const db = clientSupabase();
-
   /* ── Les suivantes hors page ── */
   const orphelines: LigneVersion[] = [];
   await Promise.all(
     [...teteDePortee.values()].map(async (tete) => {
       try {
-        const { data, error } = await db
-          .from("content_versions")
-          .select("snapshot")
-          .eq("scope", tete.scope)
-          .gt("id", tete.id)
-          .order("id", { ascending: true })
-          .limit(1);
-        if (error) {
-          apres.set(tete.id, { connu: false });
-          return;
-        }
-        const suivante = (data ?? [])[0] as { snapshot: unknown } | undefined;
+        const [suivante] = await sql<{ snapshot: unknown }>(
+          `select snapshot from content_versions
+            where scope = $1 and id > $2 order by id asc limit 1`,
+          [tete.scope, tete.id],
+        );
         if (suivante) apres.set(tete.id, { connu: true, valeur: suivante.snapshot, origine: "version" });
         else orphelines.push(tete);
       } catch {
@@ -432,7 +424,11 @@ async function resoudreApres(lignes: LigneVersion[]): Promise<Map<number, Apres>
   const cles = (famille: string) =>
     (parFamille.get(famille) ?? []).map((l) => decouper(l.scope)[1]);
 
-  /** Une lecture groupée par famille, pas une par ligne. */
+  /** Une lecture groupée par famille, pas une par ligne.
+   *  `table` et `colonneCle` sont écrits en dur dans les appels plus
+   *  bas : ils peuvent entrer dans le texte SQL, les clés passent en
+   *  paramètre. Le cast en texte couvre les clés uuid comme les clés
+   *  texte (référence d'annonce, slug d'agence). */
   async function vivant(
     famille: string,
     table: string,
@@ -441,17 +437,11 @@ async function resoudreApres(lignes: LigneVersion[]): Promise<Map<number, Apres>
     const lignesFamille = parFamille.get(famille) ?? [];
     if (lignesFamille.length === 0) return;
     try {
-      const { data, error } = await db
-        .from(table)
-        .select("*")
-        .in(colonneCle, cles(famille));
-      if (error) {
-        for (const l of lignesFamille) apres.set(l.id, { connu: false });
-        return;
-      }
-      const parCle = new Map(
-        ((data ?? []) as Record<string, unknown>[]).map((r) => [chaine(r[colonneCle]), r]),
+      const lignesVivantes = await sql(
+        `select * from ${table} where ${colonneCle}::text = any($1::text[])`,
+        [cles(famille)],
       );
+      const parCle = new Map(lignesVivantes.map((r) => [chaine(r[colonneCle]), r]));
       for (const l of lignesFamille) {
         /* Absent = l'objet a été supprimé depuis. L'état d'après est
            donc « plus rien », et c'est une information : la version
@@ -472,17 +462,11 @@ async function resoudreApres(lignes: LigneVersion[]): Promise<Map<number, Apres>
       const lignesContent = parFamille.get("content") ?? [];
       if (lignesContent.length === 0) return;
       try {
-        const { data, error } = await db
-          .from("content")
-          .select("key, value")
-          .in("key", cles("content"));
-        if (error) {
-          for (const l of lignesContent) apres.set(l.id, { connu: false });
-          return;
-        }
-        const parCle = new Map(
-          ((data ?? []) as { key: string; value: unknown }[]).map((r) => [r.key, r.value]),
+        const lignesVivantes = await sql<{ key: string; value: unknown }>(
+          "select key, value from content where key = any($1::text[])",
+          [cles("content")],
         );
+        const parCle = new Map(lignesVivantes.map((r) => [r.key, r.value]));
         for (const l of lignesContent) {
           apres.set(l.id, {
             connu: true,
@@ -503,14 +487,10 @@ async function resoudreApres(lignes: LigneVersion[]): Promise<Map<number, Apres>
   return apres;
 }
 
-/** `auth.users.id` → e-mail. La table est minuscule : une seule lecture. */
+/** `admins.id` → e-mail, comptes révoqués compris. La table est minuscule : une seule lecture. */
 async function auteurs(): Promise<Map<string, string>> {
   try {
-    const { data, error } = await clientSupabase().from("admins").select("user_id, email");
-    if (error) return new Map();
-    return new Map(
-      ((data ?? []) as { user_id: string; email: string }[]).map((r) => [r.user_id, r.email]),
-    );
+    return await emailsDesComptes();
   } catch {
     return new Map();
   }
@@ -611,12 +591,10 @@ async function restaurerArticle(id: string, snapshot: unknown): Promise<Resultat
      les deux adresses pour ne pas laisser un doublon derrière soi. */
   let slugActuel = "";
   try {
-    const { data } = await clientSupabase()
-      .from("articles")
-      .select("slug")
-      .eq("id", id)
-      .maybeSingle();
-    slugActuel = chaine((data as { slug?: string } | null)?.slug);
+    const [ligne] = await sql<{ slug: string }>("select slug from articles where id::text = $1", [
+      id,
+    ]);
+    slugActuel = chaine(ligne?.slug);
   } catch {
     /* Lecture d'appoint : son échec ne doit pas empêcher la restauration. */
   }
@@ -745,17 +723,15 @@ async function restaurer(formData: FormData): Promise<void> {
 
   const id = Number(String(formData.get("id") ?? ""));
   if (!Number.isSafeInteger(id) || id <= 0) redirect(ROUTE);
-  if (storeDriver() !== "supabase") redirect(`${ROUTE}?e=pilote`);
+  if (storeDriver() !== "postgres") redirect(`${ROUTE}?e=pilote`);
 
   let issue: Resultat;
   try {
-    const { data, error } = await clientSupabase()
-      .from("content_versions")
-      .select("id, scope, snapshot")
-      .eq("id", id)
-      .maybeSingle();
-    const version = data as { scope: string; snapshot: unknown } | null;
-    if (error || !version) {
+    const [version] = await sql<{ scope: string; snapshot: unknown }>(
+      "select id, scope, snapshot from content_versions where id = $1",
+      [id],
+    );
+    if (!version) {
       issue = { ok: false, message: "Cette version est introuvable dans le journal." };
     } else {
       issue = await appliquer(version.scope, version.snapshot);
@@ -912,8 +888,8 @@ export default async function AdminRevisionsPage({
     </div>
   );
 
-  /* ════ SANS SUPABASE : il n'y a pas d'historique, on le dit ════ */
-  if (storeDriver() !== "supabase") {
+  /* ════ SANS BASE : il n'y a pas d'historique, on le dit ════ */
+  if (storeDriver() !== "postgres") {
     return (
       <>
         {tete}
@@ -926,9 +902,9 @@ export default async function AdminRevisionsPage({
         </p>
         <div className="adm-empty">
           <strong>Le filet de sécurité demande une base</strong>
-          Renseignez <code>SUPABASE_URL</code> et{" "}
-          <code>SUPABASE_SERVICE_ROLE_KEY</code>, puis jouez{" "}
-          <code>supabase/schema.sql</code>. Le journal se remplit alors tout seul,
+          Liez la base PostgreSQL à l&apos;application (ou renseignez{" "}
+          <code>DATABASE_URL</code>), puis jouez <code>db/schema.sql</code>. Le
+          journal se remplit alors tout seul,
           à chaque enregistrement, sans rien changer aux autres écrans.
           <div className="adm-actions">
             <Link href="/admin" className="c-btn">
@@ -953,28 +929,37 @@ export default async function AdminRevisionsPage({
   let panne = "";
 
   try {
-    const db = clientSupabase();
-    let requete = db
-      .from("content_versions")
-      .select("id, scope, snapshot, created_at, created_by", { count: "exact" });
-
-    if (portee.endsWith(":*")) requete = requete.like("scope", `${portee.slice(0, -1)}%`);
-    else if (portee) requete = requete.eq("scope", portee);
-    if (depuis) requete = requete.gte("created_at", depuis);
+    /* Les filtres viennent des listes blanches FILTRES et PERIODES : ils
+       passent quand même en paramètres, comme toute valeur. */
+    const conditions: string[] = [];
+    const valeurs: unknown[] = [];
+    if (portee.endsWith(":*")) {
+      valeurs.push(`${portee.slice(0, -1)}%`);
+      conditions.push(`scope like $${valeurs.length}`);
+    } else if (portee) {
+      valeurs.push(portee);
+      conditions.push(`scope = $${valeurs.length}`);
+    }
+    if (depuis) {
+      valeurs.push(depuis);
+      conditions.push(`created_at >= $${valeurs.length}`);
+    }
+    const ou = conditions.length ? `where ${conditions.join(" and ")}` : "";
 
     const debut = (page - 1) * PAR_PAGE;
-    const { data, error, count } = await requete
-      /* L'identifiant est une séquence : il ordonne le journal plus
-         sûrement que l'horodatage, qui peut être identique pour deux
-         écritures d'un même enregistrement. */
-      .order("id", { ascending: false })
-      .range(debut, debut + PAR_PAGE - 1);
-
-    if (error) panne = error.message;
-    else {
-      lignes = (data ?? []) as LigneVersion[];
-      total = count ?? lignes.length;
-    }
+    const [compte, lignesPage] = await Promise.all([
+      sql<{ n: number }>(`select count(*)::int as n from content_versions ${ou}`, valeurs),
+      sql<LigneVersion>(
+        /* L'identifiant est une séquence : il ordonne le journal plus
+           sûrement que l'horodatage, qui peut être identique pour deux
+           écritures d'un même enregistrement. */
+        `select id, scope, snapshot, created_at, created_by from content_versions ${ou}
+          order by id desc limit $${valeurs.length + 1} offset $${valeurs.length + 2}`,
+        [...valeurs, PAR_PAGE, debut],
+      ),
+    ]);
+    lignes = lignesPage;
+    total = compte[0]?.n ?? lignes.length;
   } catch (e) {
     panne = (e as Error).message;
   }
@@ -1023,7 +1008,7 @@ export default async function AdminRevisionsPage({
         <p className="adm-note adm-note--alerte" role="alert">
           ⚠ <strong>Le journal est illisible.</strong> La base a répondu :{" "}
           <code>{panne}</code>. Si la table <code>content_versions</code>{" "}
-          n&apos;existe pas encore, rejouez <code>supabase/schema.sql</code>.
+          n&apos;existe pas encore, rejouez <code>db/schema.sql</code>.
         </p>
       ) : null}
 

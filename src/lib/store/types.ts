@@ -109,7 +109,7 @@ export interface Textes {
 
 /* ════ MÉDIATHÈQUE ════
    L'entrée que le client reconnaîtra de WordPress. Le FICHIER vit dans
-   le bucket privé `medias` de Supabase Storage ; cette structure n'en
+   le bucket privé de Cellar (voir `src/lib/stockage.ts`) ; cette structure n'en
    décrit que la fiche. Les deux se suppriment ensemble — voir
    `src/lib/medias.ts`, seul endroit autorisé à toucher au bucket. */
 export interface Media {

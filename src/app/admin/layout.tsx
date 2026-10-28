@@ -70,7 +70,7 @@ type Entree = {
   label: string;
   /** Réservé au rôle `admin`. */
   admin?: true;
-  /** N'a de sens qu'avec des comptes nommés (pilote Supabase). */
+  /** N'a de sens qu'avec des comptes nommés (base configurée). */
   comptes?: true;
 };
 
@@ -148,7 +148,7 @@ export default async function AdminLayout({
      du rôle pour décider ce qu'elle montre. Même lecture de cookie, même
      coût — aucun appel réseau. */
   const admin = await currentAdmin();
-  const comptesNommes = authDriver() === "supabase";
+  const comptesNommes = authDriver() === "comptes";
 
   /* Coquille nue : ni navigation ni déconnexion tant qu'il n'y a pas de
      session. Rien à naviguer, et surtout rien à laisser deviner de la

@@ -144,7 +144,7 @@ function typeReel(tete: Buffer): string | null {
 /**
  * Un SVG est du code exécutable, pas une image.
  *
- * Il est servi depuis le domaine de Supabase Storage et affiché dans une
+ * Il est servi depuis le domaine du stockage (Cellar) et affiché dans une
  * balise `<img>`, où aucun script ne s'exécute — c'est le raisonnement
  * documenté dans `src/lib/medias.ts`, et il tient. Mais une URL signée
  * ouverte dans un onglet, elle, rend le document en entier. On refuse

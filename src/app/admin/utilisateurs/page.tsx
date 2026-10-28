@@ -1,9 +1,19 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { authDriver, currentAdmin, type RoleAdmin } from "@/lib/admin/auth";
-import { cleAnonManquante } from "@/lib/admin/supabase-auth";
-import { clientSupabase } from "@/lib/store/supabase";
+import {
+  changerRole as changerRoleCompte,
+  cheminAcces,
+  inviter as inviterCompte,
+  listerComptes,
+  nouveauLien,
+  revoquer as revoquerCompte,
+  type Compte,
+} from "@/lib/admin/comptes";
+import { SITE_URL } from "@/lib/site-url";
 import { assertRole, requireRole } from "../actions";
+import { CopierLien } from "./CopierLien";
 
 /* ════════════════════════════════════════════════════════════════
    BACK-OFFICE — UTILISATEURS
@@ -11,17 +21,17 @@ import { assertRole, requireRole } from "../actions";
    L'écran qui DISTRIBUE les droits. Il est donc, par construction, le
    seul que ceux qui les reçoivent ne doivent pas pouvoir ouvrir :
    `requireRole("admin")` sur la page, `assertRole("admin")` en première
-   ligne de CHACUNE des trois actions — une Server Action est une route
-   POST publique, l'écran qui l'affiche ne la protège pas.
+   ligne de CHACUNE des actions — une Server Action est une route POST
+   publique, l'écran qui l'affiche ne la protège pas.
 
-   CE QUE CET ÉCRAN GÈRE, ET CE QU'IL NE GÈRE PAS
-   Supabase Auth détient les identifiants (mot de passe, réinitialisation,
-   second facteur). La table `admins` détient le DROIT : être authentifié
-   n'est pas être administrateur du site (voir supabase/schema.sql). Cet
-   écran travaille donc sur `admins` — il accorde et retire l'accès au
-   back-office — et n'invite dans Supabase Auth que pour créer le compte
-   qui manque. Retirer l'accès ne supprime pas le compte Supabase : on ne
-   détruit pas une identité pour fermer une porte.
+   CE QUE CET ÉCRAN GÈRE
+   Les comptes vivent dans la table `admins` (voir src/lib/admin/comptes.ts) :
+   identité, empreinte du mot de passe et rôle. Inviter crée le compte et
+   produit un LIEN D'ACCÈS à usage unique, valable 72 h, que
+   l'administrateur transmet lui-même — aucun e-mail n'est envoyé par le
+   site. Le même bouton sert au mot de passe oublié. Retirer l'accès
+   conserve l'identité : le journal des modifications continue de nommer
+   ce que la personne a écrit.
 
    ⚠ TROIS VERROUS ANTI-AUTO-ENFERMEMENT, la manière la plus courante de
    se retrouver dehors de son propre back-office :
@@ -36,10 +46,10 @@ import { assertRole, requireRole } from "../actions";
    publique n'affiche la liste des comptes. Rien à régénérer.
 
    ⚠ UNE RÉVOCATION N'EST PAS IMMÉDIATE. La session est un cookie signé
-   vérifié hors ligne (voir `src/lib/admin/auth.ts`) : un compte retiré
-   d'`admins` garde ses droits jusqu'à l'expiration de son cookie, 8 h au
-   plus. Pour couper à la seconde, faire tourner ADMIN_SESSION_SECRET —
-   toutes les sessions tombent, la vôtre comprise. L'écran le dit.
+   vérifié hors ligne (voir `src/lib/admin/auth.ts`) : un compte révoqué
+   garde ses droits jusqu'à l'expiration de son cookie, 8 h au plus.
+   Pour couper à la seconde, faire tourner ADMIN_SESSION_SECRET — toutes
+   les sessions tombent, la vôtre comprise. L'écran le dit.
    ════════════════════════════════════════════════════════════════ */
 
 export const dynamic = "force-dynamic";
@@ -52,10 +62,9 @@ export const metadata: Metadata = {
 const ROUTE = "/admin/utilisateurs";
 
 /** Comptes nommés actifs ? Sinon, il n'y a qu'un mot de passe partagé. */
-const comptesNommes = (): boolean => authDriver() === "supabase";
+const comptesNommes = (): boolean => authDriver() === "comptes";
 
-/* Volontairement permissif : la validation qui fait foi est celle de
-   Supabase Auth. On n'écarte ici que les saisies qui ne sont
+/* Volontairement permissif : on n'écarte que les saisies qui ne sont
    manifestement pas une adresse. */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -75,59 +84,59 @@ function fin(params: Record<string, string>): never {
 const detail = (m: string) => m.slice(0, 200);
 
 /* ──────────────────────────────────────────────────────────────────
-   LECTURE DES COMPTES
+   LIEN D'ACCÈS À AFFICHER
+
+   ⚠ LE LIEN NE PASSE PAS PAR L'URL DE L'ÉCRAN. Après l'invitation,
+   l'action redirige ici ; mettre le lien dans la query string le
+   laisserait dans l'historique du navigateur et dans les journaux
+   d'accès de l'hébergeur. Il voyage dans un cookie httpOnly limité à
+   cet écran et qui expire au bout de deux minutes — le temps de
+   l'afficher et de le copier. La base, elle, n'en garde que l'empreinte :
+   passé ce délai, plus personne ne peut le relire, il faut en générer un
+   nouveau.
    ────────────────────────────────────────────────────────────────── */
 
-type Compte = {
-  /** `auth.users.id` — la clé durable, l'e-mail peut changer. */
-  userId: string;
-  email: string;
-  role: RoleAdmin;
-  creeLe: string;
-};
+const COOKIE_LIEN = "essensya_lien_acces";
+
+async function memoriserLien(email: string, jeton: string): Promise<void> {
+  const jar = await cookies();
+  jar.set(COOKIE_LIEN, JSON.stringify({ email, lien: `${SITE_URL}${cheminAcces(jeton)}` }), {
+    httpOnly: true,
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+    path: ROUTE,
+    maxAge: 120,
+  });
+}
+
+async function lienAffiche(): Promise<{ email: string; lien: string } | null> {
+  const brut = (await cookies()).get(COOKIE_LIEN)?.value;
+  if (!brut) return null;
+  try {
+    const v = JSON.parse(brut) as { email?: unknown; lien?: unknown };
+    return typeof v.email === "string" && typeof v.lien === "string"
+      ? { email: v.email, lien: v.lien }
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   LECTURE DES COMPTES
+   ────────────────────────────────────────────────────────────────── */
 
 type Lecture = { comptes: Compte[]; panne: string | null };
 
 /**
- * La table `admins`, lue avec la clé de service : son RLS n'accorde rien
- * aux rôles `anon` et `authenticated`, sans cette clé la requête
- * reviendrait vide — ce qui se lirait à l'écran comme « aucun compte »,
- * c'est-à-dire le pire message possible.
- *
  * Une panne n'est jamais silencieuse : elle remonte, et l'écran affiche
- * « impossible de lire » plutôt qu'une liste vide.
+ * « impossible de lire » plutôt qu'une liste vide — qui se lirait comme
+ * « aucun compte », c'est-à-dire le pire message possible.
  */
 async function lireComptes(): Promise<Lecture> {
   if (!comptesNommes()) return { comptes: [], panne: null };
-
   try {
-    const { data, error } = await clientSupabase()
-      .from("admins")
-      .select("user_id,email,role,created_at")
-      .order("created_at", { ascending: true });
-
-    if (error) return { comptes: [], panne: error.message };
-
-    const lignes = (data ?? []) as {
-      user_id?: unknown;
-      email?: unknown;
-      role?: unknown;
-      created_at?: unknown;
-    }[];
-
-    const comptes = lignes
-      .filter((l) => typeof l.user_id === "string" && typeof l.email === "string")
-      .map((l) => ({
-        userId: String(l.user_id),
-        email: String(l.email).trim().toLowerCase(),
-        /* Tout rôle inattendu redescend à `editeur` : même règle de
-           moindre privilège que `lireAdmin()` — un `role` mal saisi en
-           base ne doit pas se lire ici comme un administrateur. */
-        role: (l.role === "admin" ? "admin" : "editeur") as RoleAdmin,
-        creeLe: typeof l.created_at === "string" ? l.created_at : "",
-      }));
-
-    return { comptes, panne: null };
+    return { comptes: await listerComptes(), panne: null };
   } catch (e) {
     return { comptes: [], panne: messageErreur(e) };
   }
@@ -135,54 +144,6 @@ async function lireComptes(): Promise<Lecture> {
 
 const nbAdmins = (comptes: Compte[]): number =>
   comptes.filter((c) => c.role === "admin").length;
-
-/* ──────────────────────────────────────────────────────────────────
-   INVITATION
-   ────────────────────────────────────────────────────────────────── */
-
-/**
- * Retrouve un compte Supabase Auth par son adresse. Nécessaire parce
- * qu'une invitation envoyée à quelqu'un qui a DÉJÀ un compte échoue :
- * l'adresse est prise. Ce n'est pas une erreur de l'utilisateur — c'est
- * le cas « cette personne existe déjà, donnez-lui seulement l'accès ».
- *
- * Pagination bornée : l'API ne sait pas filtrer par e-mail, on parcourt.
- * Dix pages de 200 suffisent très largement pour les comptes
- * d'administration d'un site vitrine ; au-delà, on abandonne plutôt que
- * de faire tourner la requête indéfiniment.
- */
-async function idDeLUtilisateur(mail: string): Promise<string | null> {
-  const db = clientSupabase();
-  for (let page = 1; page <= 10; page += 1) {
-    const { data, error } = await db.auth.admin.listUsers({ page, perPage: 200 });
-    if (error) return null;
-    const trouve = data.users.find((u) => (u.email ?? "").toLowerCase() === mail);
-    if (trouve) return trouve.id;
-    if (data.users.length < 200) return null;
-  }
-  return null;
-}
-
-type Invitation = { id: string; deja: boolean } | { erreur: string };
-
-/** Invite, ou rattache un compte existant. Ne touche pas à `admins`. */
-async function inviterOuRetrouver(mail: string): Promise<Invitation> {
-  try {
-    const { data, error } = await clientSupabase().auth.admin.inviteUserByEmail(mail);
-
-    if (!error && data.user?.id) return { id: data.user.id, deja: false };
-
-    /* GoTrue ne normalise pas ses messages d'une version à l'autre : on
-       ne tente pas de reconnaître « adresse déjà prise » au texte. On
-       cherche le compte — c'est la recherche qui tranche vraiment. */
-    const id = await idDeLUtilisateur(mail);
-    if (id) return { id, deja: true };
-
-    return { erreur: error?.message ?? "invitation refusée par Supabase" };
-  } catch (e) {
-    return { erreur: messageErreur(e) };
-  }
-}
 
 /* ──────────────────────────────────────────────────────────────────
    ACTIONS
@@ -201,33 +162,46 @@ async function inviter(formData: FormData) {
 
   if (!mail || mail.length > 254 || !EMAIL_RE.test(mail)) fin({ err: "email" });
 
-  const { comptes, panne } = await lireComptes();
-  if (panne) fin({ err: "base", detail: detail(panne) });
-  if (comptes.some((c) => c.email === mail)) fin({ err: "existe" });
-
-  const resultat = await inviterOuRetrouver(mail);
-  if ("erreur" in resultat) {
-    console.error("[admin/utilisateurs] invitation impossible :", resultat.erreur);
-    fin({ err: "invitation", detail: detail(resultat.erreur) });
-  }
-
-  const echec = await (async (): Promise<string | null> => {
+  const resultat = await (async () => {
     try {
-      const { error } = await clientSupabase()
-        .from("admins")
-        .insert({ user_id: resultat.id, email: mail, role });
-      return error ? error.message : null;
+      return await inviterCompte(mail, role);
     } catch (e) {
-      return messageErreur(e);
+      console.error("[admin/utilisateurs] invitation impossible :", messageErreur(e));
+      return { ok: false as const, raison: "base" as const, detail: messageErreur(e) };
     }
   })();
 
-  if (echec) {
-    console.error("[admin/utilisateurs] écriture de `admins` impossible :", echec);
-    fin({ err: "base", detail: detail(echec) });
+  if (!resultat.ok) {
+    if (resultat.raison === "existe") fin({ err: "existe" });
+    fin({ err: "base", detail: detail("detail" in resultat ? resultat.detail : "") });
   }
 
-  fin({ ok: resultat.deja ? "rattache" : "invite" });
+  await memoriserLien(mail, resultat.jeton);
+  fin({ ok: resultat.reactive ? "reactive" : "invite" });
+}
+
+async function genererLien(formData: FormData) {
+  "use server";
+  await assertRole("admin");
+  if (!comptesNommes()) fin({ err: "indisponible" });
+
+  const id = String(formData.get("user_id") ?? "").trim();
+  const { comptes, panne } = await lireComptes();
+  if (panne) fin({ err: "base", detail: detail(panne) });
+
+  const cible = comptes.find((c) => c.id === id);
+  if (!cible) fin({ err: "introuvable" });
+
+  let jeton: string | null = null;
+  try {
+    jeton = await nouveauLien(id);
+  } catch (e) {
+    fin({ err: "base", detail: detail(messageErreur(e)) });
+  }
+  if (!jeton) fin({ err: "introuvable" });
+
+  await memoriserLien(cible.email, jeton);
+  fin({ ok: "lien" });
 }
 
 async function changerRole(formData: FormData) {
@@ -235,13 +209,13 @@ async function changerRole(formData: FormData) {
   await assertRole("admin");
   if (!comptesNommes()) fin({ err: "indisponible" });
 
-  const userId = String(formData.get("user_id") ?? "").trim();
+  const id = String(formData.get("user_id") ?? "").trim();
   const role = lireRole(formData.get("role"));
 
   const [moi, { comptes, panne }] = await Promise.all([currentAdmin(), lireComptes()]);
   if (panne) fin({ err: "base", detail: detail(panne) });
 
-  const cible = comptes.find((c) => c.userId === userId);
+  const cible = comptes.find((c) => c.id === id);
   if (!cible) fin({ err: "introuvable" });
 
   /* Verrou 2 : on ne se rétrograde pas soi-même. La comparaison se fait
@@ -257,21 +231,11 @@ async function changerRole(formData: FormData) {
     fin({ err: "dernier" });
   }
 
-  const echec = await (async (): Promise<string | null> => {
-    try {
-      const { error } = await clientSupabase()
-        .from("admins")
-        .update({ role })
-        .eq("user_id", userId);
-      return error ? error.message : null;
-    } catch (e) {
-      return messageErreur(e);
-    }
-  })();
-
-  if (echec) {
-    console.error("[admin/utilisateurs] changement de rôle impossible :", echec);
-    fin({ err: "base", detail: detail(echec) });
+  try {
+    await changerRoleCompte(id, role);
+  } catch (e) {
+    console.error("[admin/utilisateurs] changement de rôle impossible :", messageErreur(e));
+    fin({ err: "base", detail: detail(messageErreur(e)) });
   }
 
   fin({ ok: "role" });
@@ -282,12 +246,12 @@ async function revoquer(formData: FormData) {
   await assertRole("admin");
   if (!comptesNommes()) fin({ err: "indisponible" });
 
-  const userId = String(formData.get("user_id") ?? "").trim();
+  const id = String(formData.get("user_id") ?? "").trim();
 
   const [moi, { comptes, panne }] = await Promise.all([currentAdmin(), lireComptes()]);
   if (panne) fin({ err: "base", detail: detail(panne) });
 
-  const cible = comptes.find((c) => c.userId === userId);
+  const cible = comptes.find((c) => c.id === id);
   if (!cible) fin({ err: "introuvable" });
 
   /* Verrou 1 : on ne se révoque pas soi-même. */
@@ -297,25 +261,11 @@ async function revoquer(formData: FormData) {
   /* Verrou 3, versant révocation. */
   if (cible.role === "admin" && nbAdmins(comptes) <= 1) fin({ err: "dernier" });
 
-  const echec = await (async (): Promise<string | null> => {
-    try {
-      /* On retire le DROIT, pas l'identité : la ligne d'`admins`
-         disparaît, le compte Supabase Auth reste. Le supprimer viderait
-         aussi les `updated_by` du journal des versions — l'historique
-         perdrait son auteur pour une simple fin de mission. */
-      const { error } = await clientSupabase()
-        .from("admins")
-        .delete()
-        .eq("user_id", userId);
-      return error ? error.message : null;
-    } catch (e) {
-      return messageErreur(e);
-    }
-  })();
-
-  if (echec) {
-    console.error("[admin/utilisateurs] révocation impossible :", echec);
-    fin({ err: "base", detail: detail(echec) });
+  try {
+    await revoquerCompte(id);
+  } catch (e) {
+    console.error("[admin/utilisateurs] révocation impossible :", messageErreur(e));
+    fin({ err: "base", detail: detail(messageErreur(e)) });
   }
 
   fin({ ok: "revoque" });
@@ -327,19 +277,20 @@ async function revoquer(formData: FormData) {
 
 const OK: Record<string, string> = {
   invite:
-    "Invitation envoyée. La personne apparaît dans la liste : elle entrera dès qu'elle aura défini son mot de passe.",
-  rattache:
-    "Ce compte existait déjà dans Supabase Auth : aucune invitation n'a été renvoyée, l'accès au back-office lui a simplement été accordé.",
+    "Compte créé. Transmettez le lien ci-dessous à la personne : elle y choisira son mot de passe, et entrera aussitôt.",
+  reactive:
+    "Cette adresse avait eu accès par le passé : le compte est rouvert, avec le rôle choisi. Transmettez le lien ci-dessous pour qu'elle choisisse un nouveau mot de passe.",
+  lien: "Nouveau lien d'accès généré. Le précédent ne fonctionne plus. Le mot de passe actuel reste valable jusqu'à ce qu'un nouveau soit choisi.",
   role: "Rôle modifié. Il s'appliquera à la prochaine connexion de la personne, ou dans 8 h au plus tard.",
   revoque:
-    "Accès retiré. Le compte Supabase Auth existe toujours : l'identité est conservée, seul le droit est repris.",
+    "Accès retiré. L'identité est conservée pour le journal des modifications ; le mot de passe a été effacé.",
   rien: "Ce rôle était déjà celui du compte : rien n'a été modifié.",
 };
 
 const ERR: Record<string, string> = {
-  email: "Cette adresse e-mail n'est pas valide. Rien n'a été envoyé.",
+  email: "Cette adresse e-mail n'est pas valide. Aucun compte n'a été créé.",
   existe:
-    "Cette adresse a déjà accès au back-office. Changez son rôle plutôt que de l'inviter à nouveau.",
+    "Cette adresse a déjà accès au back-office. Changez son rôle, ou générez-lui un nouveau lien d'accès, plutôt que de l'inviter à nouveau.",
   introuvable:
     "Ce compte n'est plus dans la liste. L'écran a sans doute été rouvert après une révocation.",
   soi: "Vous ne pouvez ni vous révoquer, ni vous rétrograder vous-même — c'est la façon la plus courante de se verrouiller dehors. Demandez-le à un autre administrateur.",
@@ -347,8 +298,6 @@ const ERR: Record<string, string> = {
     "C'est le dernier compte administrateur. Le retirer laisserait un back-office que plus personne ne peut administrer : nommez d'abord un autre administrateur.",
   indisponible:
     "Les comptes nommés ne sont pas actifs sur cette installation : il n'y a rien à gérer.",
-  invitation:
-    "L'invitation n'a pas pu être envoyée par Supabase. Vérifiez le service d'envoi d'e-mails du projet (Authentication → Emails) : sans SMTP propre, les envois sont très fortement limités.",
   base: "La base n'a pas répondu comme attendu. Rien n'a été modifié.",
 };
 
@@ -409,19 +358,24 @@ export default async function UtilisateursPage({
      les reçoivent. */
   await requireRole("admin");
 
-  const [sp, moi, { comptes, panne }] = await Promise.all([
+  const [sp, moi, { comptes, panne }, aTransmettre] = await Promise.all([
     searchParams,
     currentAdmin(),
     lireComptes(),
+    lienAffiche(),
   ]);
 
   const actif = comptesNommes();
-  const ok = OK[premier(sp.ok)];
+  const codeOk = premier(sp.ok);
+  const ok = OK[codeOk];
   const err = ERR[premier(sp.err)];
   const precision = premier(sp.detail).slice(0, 200);
   const mailCourant = (moi?.email ?? "").trim().toLowerCase();
   const total = comptes.length;
   const admins = nbAdmins(comptes);
+  /* Le lien n'est montré que juste après l'action qui l'a produit : un
+     cookie encore vivant ne doit pas le réafficher sous un autre message. */
+  const lien = ["invite", "reactive", "lien"].includes(codeOk) ? aTransmettre : null;
 
   return (
     <>
@@ -434,8 +388,8 @@ export default async function UtilisateursPage({
           {actif ? "Comptes nommés" : "Mot de passe partagé"}
         </span>
         <p>
-          Qui peut entrer dans le back-office, et jusqu&apos;où. Les identifiants sont gérés par
-          Supabase&nbsp;; ce qui se règle ici, c&apos;est le droit.
+          Qui peut entrer dans le back-office, et jusqu&apos;où. Chaque personne a son adresse
+          e-mail et son propre mot de passe&nbsp;; ce qui se règle ici, c&apos;est le droit.
         </p>
       </div>
 
@@ -456,6 +410,20 @@ export default async function UtilisateursPage({
             </>
           )}
         </p>
+      )}
+
+      {lien && (
+        <section className="adm-card" aria-labelledby="adm-lien-t">
+          <h2 id="adm-lien-t">Lien d&apos;accès pour {lien.email}</h2>
+          <CopierLien lien={lien.lien} />
+          <p className="adm-field__aide">
+            À transmettre à la personne par le moyen de votre choix (e-mail, messagerie). Il ne
+            sert qu&apos;une fois et expire dans 72&nbsp;heures.{" "}
+            <strong>Il ne sera plus affiché</strong> une fois cette page quittée&nbsp;: la base
+            n&apos;en garde qu&apos;une empreinte illisible. En cas de perte, générez-en
+            simplement un nouveau depuis le tableau.
+          </p>
+        </section>
       )}
 
       {!actif ? (
@@ -484,25 +452,7 @@ export default async function UtilisateursPage({
 
           <section className="adm-card">
             <h2>Activer les comptes nommés</h2>
-
-            {cleAnonManquante() ? (
-              <p className="adm-note adm-note--alerte">
-                <strong>Vous y êtes presque.</strong> La base Supabase est configurée, mais la
-                connexion par e-mail réclame la clé anonyme du projet —{" "}
-                <code>SUPABASE_ANON_KEY</code> (Supabase&nbsp;: Settings → API Keys → clé{" "}
-                <strong>publishable</strong>, <code>sb_publishable_…</code> — sur les projets
-                antérieurs à 2025 elle s&apos;appelait <code>anon</code>, d&apos;où le nom de
-                notre variable). Tant qu&apos;elle manque, l&apos;authentification retombe
-                silencieusement sur le mot de passe partagé. Cette clé est publique par
-                nature&nbsp;; c&apos;est la clé de service, elle, qui ne doit jamais sortir du
-                serveur.
-              </p>
-            ) : (
-              <p>
-                Trois variables d&apos;environnement à renseigner sur l&apos;hébergement, puis un
-                redéploiement&nbsp;:
-              </p>
-            )}
+            <p>Les comptes nommés s&apos;activent d&apos;eux-mêmes dès que la base est en place&nbsp;:</p>
 
             <ol
               style={{
@@ -512,18 +462,17 @@ export default async function UtilisateursPage({
               }}
             >
               <li>
-                <code>SUPABASE_URL</code>, <code>SUPABASE_SERVICE_ROLE_KEY</code> et{" "}
-                <code>SUPABASE_ANON_KEY</code> — les trois&nbsp;: une configuration à moitié faite
-                est traitée comme absente, et le mot de passe partagé reprend la main.
+                Lier l&apos;add-on PostgreSQL à l&apos;application (Clever Cloud fournit alors{" "}
+                <code>POSTGRESQL_ADDON_URI</code>), ou renseigner <code>DATABASE_URL</code>, puis
+                redéployer.
               </li>
               <li>
-                Exécuter <code>supabase/schema.sql</code> dans l&apos;éditeur SQL du
-                projet&nbsp;: il crée la table <code>admins</code>, celle qui porte les rôles.
+                Exécuter <code>db/schema.sql</code> sur la base&nbsp;: il crée la table{" "}
+                <code>admins</code>, celle qui porte les comptes et les rôles.
               </li>
               <li>
-                Créer la première personne dans Supabase (Authentication → Users → Add user),
-                puis lui donner le rôle <code>admin</code>. C&apos;est la seule étape qui ne peut
-                pas se faire depuis cet écran, puisqu&apos;il faut déjà être administrateur pour
+                Créer le premier administrateur. C&apos;est la seule étape qui ne peut pas se
+                faire depuis cet écran, puisqu&apos;il faut déjà être administrateur pour
                 l&apos;ouvrir&nbsp;:
               </li>
             </ol>
@@ -538,15 +487,13 @@ export default async function UtilisateursPage({
                 border: "1px solid var(--pierre)",
               }}
             >
-              <code>{`insert into public.admins (user_id, email, role)
-select id, email, 'admin' from auth.users
-where email = 'vous@exemple.fr';`}</code>
+              <code>{`node scripts/premier-admin.mjs vous@exemple.fr`}</code>
             </pre>
 
             <p className="adm-field__aide">
-              Une fois ces étapes faites, l&apos;écran de connexion demande une adresse e-mail en
-              plus du mot de passe, et cette page devient la vôtre&nbsp;: invitations, rôles,
-              révocations.
+              Le script affiche un lien d&apos;accès&nbsp;: ouvrez-le pour choisir votre mot de
+              passe. L&apos;écran de connexion demande alors une adresse e-mail en plus du mot de
+              passe, et cette page devient la vôtre&nbsp;: invitations, rôles, révocations.
             </p>
           </section>
 
@@ -558,8 +505,8 @@ where email = 'vous@exemple.fr';`}</code>
             <p className="adm-note adm-note--alerte">
               <strong>La liste des comptes n&apos;a pas pu être lue.</strong> Ce n&apos;est pas
               une liste vide&nbsp;: la base n&apos;a pas répondu. Vérifiez que{" "}
-              <code>supabase/schema.sql</code> a bien été exécuté (table <code>admins</code>) et
-              que la clé de service est toujours valide.{" "}
+              <code>db/schema.sql</code> a bien été exécuté (table <code>admins</code>) et que
+              l&apos;adresse de la base est toujours valide.{" "}
               <span className="u-muted">Détail&nbsp;: {detail(panne)}</span>
             </p>
           )}
@@ -590,11 +537,10 @@ where email = 'vous@exemple.fr';`}</code>
 
             {total === 0 && !panne ? (
               <div className="adm-empty">
-                <strong>Aucun compte dans la table des administrateurs.</strong>
+                <strong>Aucun compte.</strong>
                 <p>
                   La connexion par e-mail est active, mais personne n&apos;y a encore droit. Le
-                  premier compte se crée dans Supabase (Authentication → Users), puis
-                  s&apos;ajoute à la table <code>admins</code> avec le rôle <code>admin</code>.
+                  premier administrateur se crée avec <code>scripts/premier-admin.mjs</code>.
                 </p>
               </div>
             ) : (
@@ -606,6 +552,7 @@ where email = 'vous@exemple.fr';`}</code>
                       <th scope="col">Rôle</th>
                       <th scope="col">Ajouté le</th>
                       <th scope="col">Changer de rôle</th>
+                      <th scope="col">Lien d&apos;accès</th>
                       <th scope="col">Accès</th>
                     </tr>
                   </thead>
@@ -618,13 +565,21 @@ where email = 'vous@exemple.fr';`}</code>
                          serveur qui refuse (voir les trois verrous). */
                       const verrouille = estMoi || dernierAdmin;
                       return (
-                        <tr key={c.userId}>
+                        <tr key={c.id}>
                           <td style={{ overflowWrap: "anywhere" }}>
                             {c.email}
                             {estMoi && (
                               <>
                                 {" "}
                                 <span className="adm-badge adm-badge--on">vous</span>
+                              </>
+                            )}
+                            {!c.actif && (
+                              <>
+                                {" "}
+                                <span className="adm-badge adm-badge--off">
+                                  {c.lienExpire ? "invitation en attente" : "invitation expirée"}
+                                </span>
                               </>
                             )}
                           </td>
@@ -654,7 +609,7 @@ where email = 'vous@exemple.fr';`}</code>
                                   flexWrap: "wrap",
                                 }}
                               >
-                                <input type="hidden" name="user_id" value={c.userId} />
+                                <input type="hidden" name="user_id" value={c.id} />
                                 <div className="adm-field" style={{ flex: "0 1 8.5rem" }}>
                                   <select
                                     name="role"
@@ -673,11 +628,27 @@ where email = 'vous@exemple.fr';`}</code>
                           </td>
 
                           <td>
+                            {/* Pas de verrou ici : se générer un lien à
+                                soi-même est le moyen de changer son propre
+                                mot de passe, et cela ne retire aucun droit. */}
+                            <form action={genererLien}>
+                              <input type="hidden" name="user_id" value={c.id} />
+                              <button
+                                className="c-btn"
+                                type="submit"
+                                aria-label={`Nouveau lien d'accès pour ${c.email}`}
+                              >
+                                Nouveau lien
+                              </button>
+                            </form>
+                          </td>
+
+                          <td>
                             {verrouille ? (
                               <span className="u-muted">—</span>
                             ) : (
                               <form action={revoquer}>
-                                <input type="hidden" name="user_id" value={c.userId} />
+                                <input type="hidden" name="user_id" value={c.id} />
                                 <button className="c-btn c-btn--danger" type="submit">
                                   Retirer l&apos;accès
                                 </button>
@@ -718,9 +689,8 @@ where email = 'vous@exemple.fr';`}</code>
                     aria-describedby="email-aide"
                   />
                   <small id="email-aide" className="adm-field__aide">
-                    L&apos;adresse à laquelle Supabase enverra l&apos;invitation. Si cette
-                    personne a déjà un compte, aucune invitation n&apos;est renvoyée&nbsp;: on lui
-                    accorde simplement l&apos;accès.
+                    Ce sera son identifiant de connexion. Aucun e-mail n&apos;est envoyé par le
+                    site&nbsp;: vous recevez un lien à lui transmettre.
                   </small>
                 </div>
 
@@ -740,24 +710,16 @@ where email = 'vous@exemple.fr';`}</code>
 
               <div className="adm-actions">
                 <button className="c-btn c-btn--solid" type="submit">
-                  Envoyer l&apos;invitation
+                  Créer le compte
                 </button>
               </div>
             </form>
 
             <p className="adm-note">
-              <strong>Ce que reçoit la personne invitée.</strong> Un e-mail envoyé par Supabase,
-              contenant un lien qui la renvoie vers l&apos;adresse configurée dans le projet
-              (Authentication → URL Configuration). Ce site n&apos;embarque pas d&apos;écran
-              «&nbsp;je choisis mon mot de passe&nbsp;»&nbsp;: si le lien ne mène nulle part
-              d&apos;utile, définissez le mot de passe directement dans Supabase (Authentication →
-              Users), transmettez-le de vive voix, et demandez qu&apos;il soit changé.
-            </p>
-            <p className="adm-note">
-              <strong>Les envois d&apos;e-mails sont limités par défaut.</strong> Tant
-              qu&apos;aucun SMTP n&apos;est déclaré dans le projet Supabase, le service
-              d&apos;envoi intégré n&apos;autorise que quelques messages par heure&nbsp;: une
-              invitation peut donc échouer sans que rien ne soit en cause de votre côté.
+              <strong>Ce que reçoit la personne invitée&nbsp;:</strong> rien, tant que vous ne lui
+              avez pas transmis le lien. Elle l&apos;ouvre, choisit son mot de passe, et entre
+              directement dans le back-office. Le même bouton «&nbsp;Nouveau lien&nbsp;» sert
+              quand quelqu&apos;un a oublié son mot de passe.
             </p>
           </section>
 
@@ -767,17 +729,16 @@ where email = 'vous@exemple.fr';`}</code>
             <h2>Deux points à connaître</h2>
             <p>
               <strong>Retirer l&apos;accès ne supprime pas le compte.</strong> La personne sort de
-              la liste des administrateurs&nbsp;: elle ne peut plus rien ouvrir dans le
-              back-office. Son compte Supabase, lui, subsiste — ce qui préserve l&apos;historique
-              des modifications, où son nom reste attaché à ce qu&apos;elle a écrit. Pour
-              supprimer l&apos;identité elle-même, il faut passer par Supabase (Authentication →
-              Users).
+              la liste&nbsp;: elle ne peut plus rien ouvrir dans le back-office, et son mot de
+              passe est effacé. Son identité, elle, reste dans la base — ce qui préserve
+              l&apos;historique des modifications, où son nom reste attaché à ce qu&apos;elle a
+              écrit. La réinviter plus tard rouvre le même compte.
             </p>
             <p>
               <strong>Une révocation n&apos;est pas instantanée.</strong> La session est un jeton
               signé, valable 8&nbsp;heures, que le serveur vérifie sans interroger la base à
               chaque page — c&apos;est ce qui rend le back-office rapide, et utilisable même
-              pendant un incident Supabase. Conséquence&nbsp;: une personne déjà connectée
+              pendant un incident de base. Conséquence&nbsp;: une personne déjà connectée
               conserve ses droits jusqu&apos;à l&apos;expiration de son jeton, 8&nbsp;heures au
               plus. Pour couper immédiatement, changez la variable{" "}
               <code>ADMIN_SESSION_SECRET</code> sur l&apos;hébergement&nbsp;: toutes les sessions

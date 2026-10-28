@@ -80,7 +80,7 @@ export async function requireAdmin(): Promise<void> {
 }
 
 /* ════ RÔLES ════
-   Deux rôles seulement (voir supabase/schema.sql) :
+   Deux rôles seulement (voir db/schema.sql) :
      · `editeur` — contenu, blog, SEO, annonces ;
      · `admin`   — tout cela, plus les écrans sensibles.
 
@@ -99,7 +99,7 @@ export async function requireAdmin(): Promise<void> {
 
    En mode mot de passe partagé, tout le monde est `admin` : il n'y a
    qu'un identifiant, donc rien à distinguer. Ces gardes n'ont donc
-   d'effet réel qu'avec Supabase — ce qui est exactement l'intérêt de
+   d'effet réel qu'avec les comptes nommés — ce qui est exactement l'intérêt de
    passer aux comptes nommés. */
 
 /**

@@ -43,8 +43,10 @@ function valide(v: string | undefined): string | null {
  *  3. `DEPLOY_PRIME_URL` — injectée par Netlify sur une preview de branche ;
  *  4. localhost — dernier recours, qui fait servir `Disallow: /`.
  *
- * Les deux variables Netlify sont lues directement plutôt que recopiées
- * dans `netlify.toml` : c'est la seule façon d'obtenir leur VALEUR.
+ * ⚠ CHEZ CLEVER CLOUD, NEXT_PUBLIC_SITE_URL EST OBLIGATOIRE : aucune
+ * variable équivalente à celles de Netlify n'y est injectée. Elle doit
+ * être définie AVANT le build — une variable NEXT_PUBLIC_ est figée dans
+ * le code à la compilation.
  */
 export const SITE_URL: string =
   valide(process.env.NEXT_PUBLIC_SITE_URL) ??
@@ -70,6 +72,8 @@ export function estProduction(url: string = SITE_URL): boolean {
     if (/^(localhost$|127\.|0\.0\.0\.0$|\[|\d+\.\d+\.\d+\.\d+$)/.test(hostname)) return false;
     // Sous-domaines techniques des plateformes de déploiement.
     if (/\.(netlify|vercel|pages\.dev|onrender|fly)\.(app|dev|com)$/.test(hostname)) return false;
+    // Domaine technique de Clever Cloud, attribué à chaque application.
+    if (/\.cleverapps\.io$/.test(hostname)) return false;
     if (/^(deploy-preview|preview|staging|recette|dev|test)[.-]/.test(hostname)) return false;
     return true;
   } catch {

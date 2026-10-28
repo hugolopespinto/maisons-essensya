@@ -1,18 +1,61 @@
 -- ════════════════════════════════════════════════════════════════
--- MAISONS ESSENSYA — schéma du back-office
+-- MAISONS ESSENSYA — schéma du back-office (Postgres)
 --
--- À exécuter dans l'éditeur SQL de Supabase (ou via `supabase db push`).
+-- À exécuter une fois sur la base de production (add-on PostgreSQL de
+-- Clever Cloud) :
+--   psql "$POSTGRESQL_ADDON_URI" -f db/schema.sql
 -- Idempotent : relançable sans casse.
 --
--- PRINCIPE DE SÉCURITÉ, à lire avant de toucher aux politiques :
--- aucune de ces tables n'est accessible depuis le navigateur. Le RLS est
--- actif PARTOUT et aucune politique n'ouvre l'accès aux rôles `anon` et
--- `authenticated`. Tous les accès passent par le serveur Next, avec la
--- clé `service_role` — qui ne doit JAMAIS être exposée côté client
--- (variable SUPABASE_SERVICE_ROLE_KEY, sans préfixe NEXT_PUBLIC_).
--- C'est le même principe que le token Vitahome : le secret ne quitte
--- pas le serveur.
+-- Ce schéma remplace `supabase/schema.sql`. Trois différences, toutes
+-- dues au départ de Supabase :
+--   · plus de référence à `auth.users` : les comptes du back-office
+--     vivent dans `admins`, mot de passe compris (empreinte scrypt) ;
+--   · plus de RLS : il n'y a plus d'API publique devant la base. Seul le
+--     serveur Next s'y connecte, avec l'adresse DATABASE_URL — qui ne
+--     doit JAMAIS être exposée côté client (pas de préfixe NEXT_PUBLIC_) ;
+--   · les fichiers de la médiathèque sont dans Cellar (S3), pas dans un
+--     bucket Supabase. Voir la fin de ce fichier.
+--
+-- Postgres 13 au minimum : `gen_random_uuid()` y est natif, sans
+-- extension à installer — ce que les bases managées n'autorisent pas
+-- toujours.
 -- ════════════════════════════════════════════════════════════════
+
+-- ── Comptes d'administration ──────────────────────────────────────
+-- Créée en PREMIER : les colonnes `updated_by` des autres tables la
+-- référencent.
+--
+-- Une ligne = une identité ET un droit. Retirer l'accès ne supprime pas
+-- la ligne : `revoque_le` est posé et le mot de passe effacé. Supprimer
+-- l'identité viderait les `updated_by` du journal — l'historique
+-- perdrait son auteur pour une simple fin de mission.
+create table if not exists public.admins (
+  -- Conservé à l'identique depuis Supabase lors de la migration : le
+  -- journal des versions désigne ses auteurs par cet identifiant.
+  id            uuid        primary key default gen_random_uuid(),
+  -- Toujours en minuscules : c'est l'identifiant de connexion.
+  email         text        not null unique,
+  role          text        not null default 'editeur'
+                check (role in ('editeur', 'admin')),
+  -- Empreinte scrypt (`scrypt$N$r$p$sel$empreinte`), jamais le mot de
+  -- passe. Nulle tant que la personne n'a pas utilisé son lien d'accès.
+  mot_de_passe  text,
+  -- Empreinte SHA-256 du lien d'accès en cours (invitation ou
+  -- réinitialisation), jamais le lien lui-même : une fuite de la base
+  -- ne donne aucun lien utilisable.
+  jeton         text,
+  jeton_expire  timestamptz,
+  revoque_le    timestamptz,
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now()
+);
+
+comment on column public.admins.role is
+  'editeur : contenu, blog, SEO, annonces. admin : + tracking et comptes.';
+
+create unique index if not exists admins_jeton_idx
+  on public.admins (jeton)
+  where jeton is not null;
 
 -- ── Contenu par domaine ───────────────────────────────────────────
 -- Un enregistrement par domaine éditable ('seo', 'tracking', 'textes').
@@ -24,7 +67,7 @@ create table if not exists public.content (
   key         text primary key,
   value       jsonb       not null default '{}'::jsonb,
   updated_at  timestamptz not null default now(),
-  updated_by  uuid        references auth.users (id) on delete set null
+  updated_by  uuid        references public.admins (id) on delete set null
 );
 
 comment on table public.content is
@@ -46,7 +89,7 @@ create table if not exists public.articles (
   seo         jsonb       not null default '{}'::jsonb,
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now(),
-  updated_by  uuid        references auth.users (id) on delete set null
+  updated_by  uuid        references public.admins (id) on delete set null
 );
 
 -- Le site public ne liste que les articles publiés, triés par date.
@@ -68,7 +111,7 @@ create table if not exists public.annonce_overrides (
   masquee        boolean     not null default false,
   seo            jsonb       not null default '{}'::jsonb,
   updated_at     timestamptz not null default now(),
-  updated_by     uuid        references auth.users (id) on delete set null
+  updated_by     uuid        references public.admins (id) on delete set null
 );
 
 create index if not exists annonce_overrides_coup_de_coeur_idx
@@ -77,8 +120,8 @@ create index if not exists annonce_overrides_coup_de_coeur_idx
 
 -- ── Médiathèque ───────────────────────────────────────────────────
 -- La FICHE d'un fichier, pas le fichier : l'objet vit dans le bucket
--- privé « medias » de Supabase Storage (voir la fin de ce fichier).
--- Les deux se créent et se suppriment ensemble, par src/lib/medias.ts.
+-- Cellar (voir la fin de ce fichier). Les deux se créent et se
+-- suppriment ensemble, par src/lib/medias.ts.
 -- `chemin` est unique : c'est la clé de rapprochement avec le bucket, et
 -- deux fiches pour un même objet rendraient la suppression ambiguë.
 create table if not exists public.medias (
@@ -96,11 +139,11 @@ create table if not exists public.medias (
   hauteur     integer,
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now(),
-  updated_by  uuid        references auth.users (id) on delete set null
+  updated_by  uuid        references public.admins (id) on delete set null
 );
 
 comment on table public.medias is
-  'Fiches de la médiathèque. Le fichier lui-même est dans le bucket « medias ».';
+  'Fiches de la médiathèque. Le fichier lui-même est dans le bucket Cellar.';
 
 -- La médiathèque s'affiche du plus récent au plus ancien, comme WordPress.
 create index if not exists medias_recents_idx
@@ -118,11 +161,6 @@ create table if not exists public.agences (
   -- l'URL reste lisible — « constructeur maison Tartas » se joue aussi
   -- là. Un uuid donnerait /agences/6f3a1b2c-… : illisible pour un
   -- visiteur, muet pour un moteur.
-  --
-  -- La colonne était en uuid, et le code coercait donc silencieusement
-  -- le slug calculé en un uuid tiré au hasard : l'identifiant lisible
-  -- était jeté sans que rien ne le signale, et le commentaire de
-  -- l'écran d'administration promettait exactement l'inverse.
   id           text        primary key,
   nom          text        not null,
   zone         text        not null default '',
@@ -144,26 +182,11 @@ create table if not exists public.agences (
   ordre        integer     not null default 0,
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now(),
-  updated_by   uuid        references auth.users (id) on delete set null
+  updated_by   uuid        references public.admins (id) on delete set null
 );
 
 create index if not exists agences_ordre_idx
   on public.agences (ordre, nom);
-
--- ── Comptes d'administration ──────────────────────────────────────
--- Supabase Auth gère les identifiants, la réinitialisation de mot de
--- passe et le second facteur. Cette table ne porte que le rôle
--- applicatif : être authentifié ne suffit pas à être administrateur.
-create table if not exists public.admins (
-  user_id    uuid primary key references auth.users (id) on delete cascade,
-  email      text not null,
-  role       text not null default 'editeur'
-             check (role in ('editeur', 'admin')),
-  created_at timestamptz not null default now()
-);
-
-comment on column public.admins.role is
-  'editeur : contenu, blog, SEO, annonces. admin : + tracking et comptes.';
 
 -- ── Journal des modifications ─────────────────────────────────────
 -- « Qui a changé quoi, et quand » — la question que le client posera au
@@ -176,25 +199,11 @@ create table if not exists public.content_versions (
   scope       text        not null,
   snapshot    jsonb       not null,
   created_at  timestamptz not null default now(),
-  created_by  uuid        references auth.users (id) on delete set null
+  created_by  uuid        references public.admins (id) on delete set null
 );
 
 create index if not exists content_versions_scope_idx
   on public.content_versions (scope, created_at desc);
-
--- ── Verrouillage ──────────────────────────────────────────────────
--- RLS actif et AUCUNE politique : par défaut, tout est refusé à `anon`
--- et à `authenticated`. Seule la clé `service_role`, utilisée côté
--- serveur uniquement, contourne le RLS. Si un jour on ouvre un accès
--- direct depuis le navigateur, il faudra ajouter des politiques ici —
--- et ce sera une décision consciente, pas un oubli.
-alter table public.content            enable row level security;
-alter table public.articles           enable row level security;
-alter table public.annonce_overrides  enable row level security;
-alter table public.medias             enable row level security;
-alter table public.agences            enable row level security;
-alter table public.admins             enable row level security;
-alter table public.content_versions   enable row level security;
 
 -- ── Horodatage automatique ────────────────────────────────────────
 create or replace function public.touch_updated_at()
@@ -206,6 +215,11 @@ begin
   return new;
 end;
 $$;
+
+drop trigger if exists admins_touch on public.admins;
+create trigger admins_touch
+  before update on public.admins
+  for each row execute function public.touch_updated_at();
 
 drop trigger if exists content_touch on public.content;
 create trigger content_touch
@@ -241,8 +255,7 @@ create trigger agences_touch
 -- des blocs (quelles pages, quels champs, quels libellés) vit dans le
 -- code — PAGES_DEFAUT, src/lib/store/index.ts — parce qu'un bloc n'a de
 -- sens que si un gabarit sait l'afficher. La base ne garde que les
--- valeurs saisies par le client. La recopier ici imposerait de rejouer
--- ce fichier à chaque section ajoutée au site.
+-- valeurs saisies par le client.
 insert into public.content (key, value) values
   ('seo',      '[]'::jsonb),
   ('tracking', '{"conversions":[]}'::jsonb),
@@ -256,19 +269,14 @@ on conflict (key) do nothing;
 -- MÉDIAS — LE BUCKET
 --
 -- La table public.medias (plus haut) ne porte que les fiches. Les
--- FICHIERS vont dans un bucket de Supabase Storage, à créer une fois :
+-- FICHIERS vont dans un bucket Cellar (stockage S3 de Clever Cloud), à
+-- créer une fois depuis la console de l'add-on, puis à déclarer dans la
+-- variable S3_BUCKET.
 --
---   insert into storage.buckets (id, name, public)
---   values ('medias', 'medias', false)
---   on conflict (id) do nothing;
---
--- ⚠ PRIVÉ (public = false), et pas par excès de prudence : un bucket
--- public expose toute la photothèque du client — y compris les plans,
--- les visuels non diffusés et les brouillons — à qui devine un nom de
--- fichier, sans trace dans aucun journal. Les URL sont donc signées à la
--- demande côté serveur, et elles expirent (src/lib/medias.ts).
---
--- Aucune politique sur storage.objects : comme pour les tables, seule la
--- clé service_role passe, et elle ne quitte pas le serveur. Le navigateur
--- ne parle jamais au bucket, il ne voit que des URL signées.
+-- ⚠ PRIVÉ, et pas par excès de prudence : un bucket public expose toute
+-- la photothèque du client — y compris les plans, les visuels non
+-- diffusés et les brouillons — à qui devine un nom de fichier, sans
+-- trace dans aucun journal. Les URL sont donc signées à la demande côté
+-- serveur, et elles expirent (src/lib/medias.ts). Ne pas lui poser de
+-- politique de lecture publique.
 -- ════════════════════════════════════════════════════════════════

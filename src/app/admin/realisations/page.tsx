@@ -171,7 +171,7 @@ export default async function AdminRealisations({
       {!ecriture && (
         <p className="adm-alerte">
           Le stockage est en lecture seule : vos modifications ne seront pas
-          enregistrées. Configurez Supabase pour activer l&apos;écriture.
+          enregistrées. Branchez la base de données pour activer l&apos;écriture.
         </p>
       )}
 

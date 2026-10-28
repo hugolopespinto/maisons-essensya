@@ -2,8 +2,8 @@ import "server-only";
 import { revalidateTag, updateTag } from "next/cache";
 import type { Content, PageEditable } from "./types";
 import * as fichier from "./file";
-import { TAG_MAGASIN } from "./supabase";
-import * as supabase from "./supabase";
+import { TAG_MAGASIN } from "./postgres";
+import * as postgres from "./postgres";
 import { PAGES_LEGALES } from "./pages-legales";
 
 /* ════════════════════════════════════════════════════════════════
@@ -16,16 +16,17 @@ import { PAGES_LEGALES } from "./pages-legales";
    d'administration.
 
    LE CHOIX SE FAIT SUR L'ENVIRONNEMENT, pas sur un drapeau :
-     · SUPABASE_URL (avec son schéma http/https) + SUPABASE_SERVICE_ROLE_KEY
-       définies → Postgres ;
+     · DATABASE_URL (ou POSTGRESQL_ADDON_URI, posée par Clever Cloud)
+       définie → Postgres ;
      · sinon → fichier JSON local.
    Le repli fichier reste le comportement par défaut, et il n'exige
    aucune configuration : le site se build et tourne en local sans base,
    exactement comme avant.
 
-   ⚠ Le pilote fichier ne sait pas écrire en serverless (disque en
-   lecture seule). `isWritable()` le dit, et le tableau de bord l'affiche.
-   Pour confier le back-office au client en production, il faut Supabase.
+   ⚠ Le pilote fichier n'est pas fait pour la production : le disque
+   d'une instance d'hébergement est éphémère, il repart de zéro à chaque
+   déploiement. `isWritable()` le dit, et le tableau de bord l'affiche.
+   Pour confier le back-office au client en production, il faut la base.
 
    Quatre choses vivent ici plutôt que dans les pilotes, parce qu'elles
    sont communes aux deux : le cache court, les valeurs par défaut,
@@ -470,9 +471,9 @@ export const EMPTY: Content = {
 
 /** Le contrat que tout pilote doit remplir. */
 interface Pilote {
-  nom: "fichier" | "supabase";
-  /** `frais` : sans cache. Voir `getContentFrais()` et le second client
-   *  du pilote Supabase — une lecture mise en cache avant une écriture
+  nom: "fichier" | "postgres";
+  /** `frais` : sans cache. Voir `getContentFrais()` et `read()` du
+   *  pilote Postgres — une lecture mise en cache avant une écriture
    *  peut effacer ce qui a été créé depuis. */
   read(frais?: boolean): Promise<Partial<Content>>;
   write(data: Content): Promise<void>;
@@ -481,29 +482,16 @@ interface Pilote {
   patch?<K extends keyof Content>(key: K, value: Content[K]): Promise<void>;
 }
 
-const pilote: Pilote = supabase.isSupabaseConfigured() ? supabase : fichier;
-
-/**
- * LA définition de « Supabase est configuré », pour tout le projet.
- *
- * Elle vivait en double — ici sur la seule présence des deux variables,
- * dans `src/lib/admin/supabase-auth.ts` avec en plus la validation du
- * schéma de l'URL. Une URL saisie sans `https://` mettait donc le
- * magasin sur Postgres pendant que l'authentification retombait sur le
- * mot de passe partagé, sans le moindre message : le client se croyait
- * sur des comptes nommés alors que le site tournait sur un secret
- * partagé. Une seule fonction, la plus stricte, tranche désormais.
- *
- * ⚠ `src/lib/admin/supabase-auth.ts` garde pour l'instant sa propre
- * copie — MOT POUR MOT la même règle — parce qu'il s'interdit d'importer
- * `@supabase/supabase-js`, que ce module-ci charge. Le jour où ce fichier
- * est rouvert, la bonne ligne est :
- *   `export { isSupabaseConfigured } from "@/lib/store";`
- */
-export const isSupabaseConfigured = supabase.isSupabaseConfigured;
+/* « La base est configurée » n'a qu'UNE définition dans le projet :
+   `isBaseConfiguree()`, dans `src/lib/db.ts`. Le magasin, la médiathèque
+   et les comptes nommés la lisent tous. Du temps de Supabase, deux
+   copies divergentes ont mis le magasin sur la base pendant que
+   l'authentification retombait sur le mot de passe partagé, sans le
+   moindre message : ne pas en réécrire une troisième. */
+const pilote: Pilote = postgres.isBaseConfiguree() ? postgres : fichier;
 
 /** Le pilote réellement actif — le tableau de bord l'affiche au client. */
-export function storeDriver(): "supabase" | "fichier" {
+export function storeDriver(): "postgres" | "fichier" {
   return pilote.nom;
 }
 
@@ -583,13 +571,13 @@ export async function getContent(): Promise<Content> {
 
 /* ⚠ À APPELER APRÈS CHAQUE ÉCRITURE, SANS EXCEPTION.
 
-   Les lectures Supabase sont étiquetées (`TAG_MAGASIN`, voir ./supabase)
-   pour que les pages publiques restent pré-générées. Le revers : sans
-   cette invalidation, une modification enregistrée resterait invisible
-   jusqu'à une minute — et les `revalidatePath()` des écrans d'admin
-   régénéreraient les pages À PARTIR DE LA RÉPONSE HTTP PÉRIMÉE. C'est
-   exactement la panne qu'on vient de corriger ; elle ne donnait aucun
-   message d'erreur.
+   Les lectures de la base sont étiquetées (`TAG_MAGASIN`, voir
+   ./postgres) pour que les pages publiques restent pré-générées. Le
+   revers : sans cette invalidation, une modification enregistrée
+   resterait invisible jusqu'à une demi-heure — et les `revalidatePath()`
+   des écrans d'admin régénéreraient les pages À PARTIR DE LA LECTURE
+   PÉRIMÉE. Cette panne a existé ; elle ne donnait aucun message
+   d'erreur.
 
    Elle vit ici, dans le magasin, et pas dans les vingt-sept écrans qui
    écrivent : un écran ajouté demain en hérite sans y penser.
@@ -641,7 +629,7 @@ export async function patchContent<K extends keyof Content>(
     v: 1,
     majLe: new Date().toISOString(),
   };
-  /* Quand le pilote sait écrire un domaine seul (Supabase), on le laisse
+  /* Quand le pilote sait écrire un domaine seul (Postgres), on le laisse
      faire : réécrire l'ensemble à chaque virgule corrigée ferait tourner
      cinq requêtes au lieu d'une et noierait le journal des versions. */
   if (pilote.patch) await pilote.patch(key, value);
@@ -667,7 +655,7 @@ export function invaliderCache(): void {
  * complète, y ajouter ou modifier un élément, puis renvoyer LA LISTE
  * ENTIÈRE à `patchContent()`. Or les pilotes traitent cette liste comme
  * la vérité : une ligne présente en base mais absente de la liste reçue
- * est SUPPRIMÉE (voir `ecrireAgences` et ses sœurs dans ./supabase).
+ * est SUPPRIMÉE (voir `ecrireAgences` et ses sœurs dans ./postgres).
  *
  * Conséquence : si la lecture initiale rend une liste périmée — parce
  * qu'elle sort du cache mémoire de 5 s, ou du Data Cache de Next étiqueté

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { authDriver, isAdminEnabled } from "@/lib/admin/auth";
-import { cleAnonManquante } from "@/lib/admin/supabase-auth";
 import { dept } from "@/lib/format";
+import { etatMediatheque } from "@/lib/medias";
 import { getContentFrais, isWritable, storeDriver } from "@/lib/store";
 import { getAnnonces } from "@/lib/vitahome/annonces";
 import { hasLiveFeed } from "@/lib/vitahome/config";
@@ -181,41 +181,40 @@ export default async function AdminDashboard() {
       libelle: "Stockage du contenu",
       ok: ecriture && !fichierEnProd,
       valeur:
-        pilote === "supabase"
-          ? `Base Supabase — ${ecriture ? "accessible en écriture" : "écriture refusée"}`
+        pilote === "postgres"
+          ? `Base PostgreSQL — ${ecriture ? "accessible en écriture" : "injoignable"}`
           : `Fichier JSON local — ${ecriture ? "accessible en écriture" : "lecture seule"}`,
       quoiFaire:
-        pilote === "supabase"
-          ? "La base répond mais refuse l'écriture : vérifier SUPABASE_SERVICE_ROLE_KEY (c'est la seule clé qui passe le RLS) et que le schéma supabase/schema.sql a bien été exécuté sur ce projet."
-          : "Le pilote actuel écrit un fichier JSON (content/content.json). Sur Netlify, Vercel ou tout hébergement serverless, le disque est en LECTURE SEULE et éphémère : toute modification faite ici échouera, ou disparaîtra au déploiement suivant. Renseigner SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY pour basculer sur la base managée — le back-office, lui, ne bouge pas.",
+        pilote === "postgres"
+          ? "La base est configurée mais ne répond pas : vérifier que l'add-on PostgreSQL est bien lié à l'application (ou la valeur de DATABASE_URL), et que db/schema.sql a été exécuté sur cette base."
+          : "Le pilote actuel écrit un fichier JSON (content/content.json). Chez un hébergeur, le disque d'une instance repart de zéro à chaque déploiement : toute modification faite ici disparaîtra au déploiement suivant. Lier l'add-on PostgreSQL à l'application (ou renseigner DATABASE_URL) pour basculer sur la base — le back-office, lui, ne bouge pas.",
     },
     {
       cle: "admin",
       libelle: "Accès au back-office",
       ok: isAdminEnabled(),
       valeur:
-        piloteAuth === "supabase"
-          ? "Comptes nommés (Supabase Auth)"
+        piloteAuth === "comptes"
+          ? "Comptes nommés"
           : isAdminEnabled()
             ? "Mot de passe partagé"
             : "aucun moyen d'authentification",
       quoiFaire:
-        "Définir ADMIN_PASSWORD (8 caractères minimum) et, de préférence, ADMIN_SESSION_SECRET — ou, mieux, passer aux comptes nommés (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY). Sans l'un ou l'autre, le back-office refuse toute connexion.",
+        "Définir ADMIN_PASSWORD (8 caractères minimum) et, de préférence, ADMIN_SESSION_SECRET — ou, mieux, passer aux comptes nommés en branchant la base (DATABASE_URL). Sans l'un ou l'autre, le back-office refuse toute connexion.",
     },
   ];
 
-  /* Configuration Supabase à moitié faite : la base est là, les comptes
-     nommés non. Le back-office continue de fonctionner (mot de passe
-     partagé) mais plus personne n'est identifié — ça ne peut pas rester
-     silencieux. */
-  if (cleAnonManquante()) {
+  /* La base est là mais pas le stockage de fichiers : tout le reste
+     fonctionne, seule la médiathèque est fermée. Ça se dit, sinon le
+     client découvre le problème au premier téléversement. */
+  const mediatheque = etatMediatheque();
+  if (pilote === "postgres" && !mediatheque.disponible) {
     verifs.push({
-      cle: "supabase-anon",
-      libelle: "Comptes nommés Supabase",
+      cle: "mediatheque",
+      libelle: "Stockage des fichiers",
       ok: false,
-      valeur: "SUPABASE_ANON_KEY manquante",
-      quoiFaire:
-        "La base Supabase est configurée, mais la connexion par e-mail réclame la clé anonyme du projet (Settings → API → clé `anon`). Tant qu'elle manque, l'authentification retombe sur le mot de passe partagé : plus de comptes individuels, plus de rôles, et aucune trace de qui modifie quoi. Cette clé est publique par nature — c'est la clé de service, elle, qui ne doit jamais sortir du serveur.",
+      valeur: "non configuré",
+      quoiFaire: mediatheque.raison,
     });
   }
 
@@ -396,15 +395,15 @@ export default async function AdminDashboard() {
         <div className="adm-row">
           <span>Où sont enregistrées les modifications</span>
           <span>
-            {pilote === "supabase"
-              ? "Base Supabase (Postgres)"
+            {pilote === "postgres"
+              ? "Base PostgreSQL"
               : "Fichier content/content.json"}
           </span>
         </div>
         <div className="adm-row">
           <span>Connexion au back-office</span>
           <span>
-            {piloteAuth === "supabase"
+            {piloteAuth === "comptes"
               ? "Comptes nommés, avec rôles"
               : "Mot de passe partagé"}
           </span>
@@ -466,12 +465,20 @@ export default async function AdminDashboard() {
 
       {!ecriture && (
         <div className="adm-note adm-note--alerte" style={{ marginTop: "1rem" }}>
-          <strong>Aucune modification ne pourra être enregistrée.</strong> Le
-          stockage est en lecture seule. Sur un hébergement serverless
-          (Netlify, Vercel), c&apos;est le comportement normal et définitif :
-          il faut renseigner <code>SUPABASE_URL</code> et{" "}
-          <code>SUPABASE_SERVICE_ROLE_KEY</code> pour que le contenu parte dans
-          la base, avant de confier le back-office au client.
+          <strong>Aucune modification ne pourra être enregistrée.</strong>{" "}
+          {pilote === "postgres" ? (
+            <>
+              La base ne répond pas&nbsp;: vérifier l&apos;add-on PostgreSQL de
+              l&apos;application et son adresse (<code>DATABASE_URL</code> ou{" "}
+              <code>POSTGRESQL_ADDON_URI</code>).
+            </>
+          ) : (
+            <>
+              Le stockage est en lecture seule. Il faut brancher la base
+              PostgreSQL (<code>DATABASE_URL</code>) pour que le contenu y parte,
+              avant de confier le back-office au client.
+            </>
+          )}
         </div>
       )}
 
@@ -488,8 +495,8 @@ export default async function AdminDashboard() {
           En production, ce fichier n&apos;est partagé par aucune autre
           instance et disparaît au déploiement suivant : une modification
           faite ici peut sembler enregistrée, puis revenir à son ancienne
-          valeur. Renseigner <code>SUPABASE_URL</code> et{" "}
-          <code>SUPABASE_SERVICE_ROLE_KEY</code> bascule le stockage sur la
+          valeur. Brancher la base PostgreSQL (<code>DATABASE_URL</code>, ou
+          l&apos;add-on lié à l&apos;application) bascule le stockage sur la
           base, sans rien changer aux écrans.
         </div>
       )}

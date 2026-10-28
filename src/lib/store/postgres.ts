@@ -1,6 +1,7 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { unstable_cache } from "next/cache";
+import { codeErreur, isBaseConfiguree, sql, TABLE_ABSENTE } from "@/lib/db";
 import type {
   Agence,
   AnnonceOverride,
@@ -17,13 +18,15 @@ import type {
 } from "./types";
 
 /* ════════════════════════════════════════════════════════════════
-   PILOTE SUPABASE — le contenu sur Postgres
+   PILOTE POSTGRES — le contenu en base
 
    Même contrat que le pilote fichier (`./file`), sur une base managée :
-   c'est ce qui rend le back-office utilisable en serverless, où le
-   disque est en lecture seule.
+   c'est ce qui rend le back-office utilisable en production. Il
+   remplace le pilote Supabase à l'identique — mêmes tables, mêmes
+   règles de delta et de journal — mais parle SQL directement à la base
+   au lieu de passer par l'API REST de Supabase. Voir `src/lib/db.ts`.
 
-   LE SCHÉMA FAIT FOI : `supabase/schema.sql`. Trois surfaces de données,
+   LE SCHÉMA FAIT FOI : `db/schema.sql`. Trois surfaces de données,
    pour trois raisons différentes :
      · `content` — une ligne par domaine (seo, tracking, textes, menus,
        reglages, pages), en JSONB : ces formes bougent au rythme du
@@ -37,165 +40,46 @@ import type {
        premier texte disparu ; sans ce journal, la réponse est « on ne
        sait pas ».
 
-   SÉCURITÉ. Le RLS est actif sur toutes les tables et AUCUNE politique
-   n'ouvre l'accès : seule la clé `service_role` passe. Elle n'a donc
-   rien à faire dans le navigateur — d'où `server-only` en tête de
-   fichier et une variable SANS préfixe NEXT_PUBLIC_. Même principe que
-   le token Vitahome : le secret ne quitte pas le serveur.
-
    ⚠ snake_case côté SQL, camelCase côté TypeScript. Le mapping est
    écrit à la main, champ par champ, plus bas : aucune conversion
    automatique, donc aucune colonne qui se renomme toute seule le jour
    où quelqu'un ajoute un champ.
    ════════════════════════════════════════════════════════════════ */
 
-/* ──────────────────────────────────────────────────────────────────
-   CONNEXION
-   ────────────────────────────────────────────────────────────────── */
-
-/* Pas de barre finale : on concatène des chemins absolus derrière, et
-   `//rest/v1` n'est pas la même route que `/rest/v1`. */
-/* Lus à la requête : une constante de module fige la valeur dans les
-   artefacts de build — un déploiement a déjà échoué pour cela. */
-const sbUrl = (): string => (process.env.SUPABASE_URL ?? "").trim().replace(/\/+$/, "");
-const sbKey = (): string => (process.env.SUPABASE_SERVICE_ROLE_KEY ?? "").trim();
-
 /** Nom affiché dans le back-office. */
-export const nom = "supabase" as const;
+export const nom = "postgres" as const;
 
-/**
- * LA détection de « Supabase est configuré ». Réexportée par `./index`,
- * qui documente pourquoi elle est unique.
- *
- * Deux conditions, pas une : les deux secrets, ET une URL qui porte son
- * schéma. Tester la seule présence — ce que faisait ce module — laissait
- * passer une URL saisie « projet.supabase.co » : le magasin partait sur
- * Postgres, `createClient` échouait à chaque requête, et
- * l'authentification (qui, elle, validait le schéma) retombait sur le
- * mot de passe partagé. Deux comportements contradictoires, aucun
- * message. Une configuration à moitié faite est traitée comme absente :
- * le repli fichier + mot de passe partagé est cohérent, lui.
- */
-export function isSupabaseConfigured(): boolean {
-  return /^https?:\/\/.+/.test(sbUrl()) && sbKey().length > 0;
-}
+export { isBaseConfiguree };
 
-/** Ancien nom, conservé pour ne casser aucun appelant. */
-export const isConfigured = isSupabaseConfigured;
+/* ⚠ CE QUI FAIT QUE LES PAGES PUBLIQUES RESTENT PRÉ-GÉNÉRÉES.
 
-/* Client créé à la première utilisation, pas à l'import : sans cette
-   paresse, un build sans Supabase configuré planterait au chargement du
-   module, alors que le repli fichier suffit parfaitement. */
-let client: SupabaseClient | null = null;
+   Le pilote Supabase lisait la base par `fetch` : Next mettait ces
+   lectures en cache, étiquetées `TAG_MAGASIN`, et l'écriture invalidait
+   l'étiquette. Une requête SQL n'est pas un `fetch` — Next ne la voit
+   pas. Sans rien faire, chaque régénération relirait bien la base, mais
+   l'étiquette n'invaliderait plus rien : une modification du menu
+   resterait invisible sur les pages qui ne sont pas régénérées
+   explicitement, jusqu'à leur échéance d'une demi-heure.
 
-/* ⚠ CE QUI FAIT QUE LE BACK-OFFICE SERT À QUELQUE CHOSE.
+   On enveloppe donc la lecture dans `unstable_cache`, avec la même
+   étiquette et la même fraîcheur. `invaliderDataCache()` (./index) n'a
+   pas à changer : il invalide une étiquette, peu importe ce qu'elle
+   couvre.
 
-   Next met en cache tout `fetch` atteignable avant une API de requête
-   (doc : 01-app/02-guides/caching-without-cache-components.md, § fetchCache).
-   Nos pages publiques sont statiques : les appels REST de Supabase
-   tombaient donc dans le Data Cache, qui survit AUX BUILDS puisqu'il vit
-   dans `.next/cache` — restauré d'un déploiement à l'autre sur Netlify.
+   ⚠ La doc de Next 16 annonce `unstable_cache` remplacé par la
+   directive `use cache` (doc : 04-functions/unstable_cache.md). Elle
+   exige d'activer `cacheComponents`, qui change le modèle de rendu de
+   TOUT le site : c'est un chantier en soi, pas un détail de migration.
+   `unstable_cache` fonctionne sans, et c'est ce qu'on garde ici.
 
-   Le symptôme était muet, et c'est ce qui le rendait grave : le client
-   enregistre un titre, `revalidatePath()` régénère bien la page, mais la
-   régénération relit la réponse HTTP figée. Le back-office écrivait juste,
-   la base contenait la bonne valeur, et la page servait l'ancienne. Mesuré
-   sur un build : 25 lectures sur 28 rendaient un `seo` vide alors que la
-   base était pleine.
-
-   ⚠ NE PAS « CORRIGER » EN METTANT `cache: "no-store"`. Essayé, mesuré :
-   cela fait basculer presque toutes les pages publiques en rendu à la
-   demande (`ƒ`) — /concept, /contact, /cookies, /agences, /annonces… Le
-   site perd sa pré-génération pour réparer un cache. On étiquette plutôt
-   la requête, et l'écriture invalide l'étiquette : voir `patchContent()`
-   dans ./index.ts. Les pages restent statiques, et une modification est
-   visible immédiatement.
-
-   `FRAICHEUR` est la ceinture de sécurité, pas le mécanisme principal :
-   elle borne ce qui échapperait à l'étiquette — une ligne modifiée
-   directement depuis l'interface Supabase, ou un cache restauré d'un
-   déploiement précédent.
-
-   ⚠ SA VALEUR N'EST PAS LIBRE. Next retient la plus courte des deux
-   fraîcheurs, celle de la page et celle de ses `fetch` : à 60 s, toutes
-   les pages du site se régénéraient chaque minute au lieu de la demi-heure
-   que leur code demande (`export const revalidate = 1800`, src/app/agences).
-   Constaté dans le tableau des routes du build, colonne « Revalidate ».
-   On s'aligne donc sur cette demi-heure — le `fetch` ne doit jamais être
-   plus pressé que la page qu'il sert. */
+   ⚠ SA VALEUR N'EST PAS LIBRE. Next retient la plus courte des
+   fraîcheurs d'une page et de ses données : à 60 s, toutes les pages du
+   site se régénéraient chaque minute au lieu de la demi-heure que leur
+   code demande (`export const revalidate = 1800`, src/app/agences). On
+   s'aligne donc sur cette demi-heure — la donnée ne doit jamais être
+   plus pressée que la page qu'elle sert. */
 export const TAG_MAGASIN = "magasin-contenu";
 const FRAICHEUR = 1800;
-
-const fetchMagasin: typeof fetch = (input, init) => {
-  /* Seules les lectures sont cachées. Étiqueter un POST ou un PATCH n'a
-     pas de sens et Next refuse de les mettre en cache de toute façon. */
-  const methode = (init?.method ?? "GET").toUpperCase();
-  if (methode !== "GET") return fetch(input, { ...init, cache: "no-store" });
-  return fetch(input, {
-    ...init,
-    next: { tags: [TAG_MAGASIN], revalidate: FRAICHEUR },
-  });
-};
-
-/* ⚠ UN SECOND CLIENT, SANS AUCUN CACHE, POUR LES LECTURES QUI PRÉCÈDENT
-   UNE ÉCRITURE.
-
-   Le client courant étiquette ses GET et les laisse vivre 30 minutes —
-   c'est ce qui permet aux pages publiques de rester pré-générées. Mais
-   les écrans d'administration lisent la liste complète, la modifient, et
-   la renvoient ENTIÈRE : une ligne absente de la liste reçue est
-   supprimée. Lire cette liste dans un cache, c'est risquer d'effacer ce
-   qui a été créé depuis l'instantané, sans message ni erreur.
-
-   Un client séparé plutôt qu'un paramètre : la distinction « je lis pour
-   afficher » / « je lis pour écrire » doit être visible à l'appel, pas
-   cachée dans un drapeau qu'on oublie de passer. */
-let clientFrais: SupabaseClient | null = null;
-
-function sbFrais(): SupabaseClient {
-  if (!isSupabaseConfigured()) {
-    throw new Error("Supabase n'est pas configuré.");
-  }
-  clientFrais ??= createClient(sbUrl(), sbKey(), {
-    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
-    global: {
-      fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
-    },
-  });
-  return clientFrais;
-}
-
-function sb(): SupabaseClient {
-  if (!isSupabaseConfigured()) {
-    throw new Error(
-      "Supabase n'est pas configuré (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY).",
-    );
-  }
-  client ??= createClient(sbUrl(), sbKey(), {
-    /* Pas de session à persister ni de jeton à rafraîchir : on est côté
-       serveur, avec une clé de service et aucun utilisateur connecté. */
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: false,
-    },
-    global: { fetch: fetchMagasin },
-  });
-  return client;
-}
-
-/**
- * Le client de service, pour les modules serveur qui ont besoin d'autre
- * chose que du contenu — aujourd'hui `src/lib/medias.ts` et le bucket de
- * fichiers. Un seul client pour le processus : en créer un par module
- * multiplierait les pools de connexions pour rien.
- *
- * Lève si Supabase n'est pas configuré. Les appelants testent
- * `isSupabaseConfigured()` avant, et dégradent proprement.
- */
-export function clientSupabase(): SupabaseClient {
-  return sb();
-}
 
 /* ──────────────────────────────────────────────────────────────────
    AUTORAT — qui a écrit
@@ -220,7 +104,7 @@ export function clientSupabase(): SupabaseClient {
    et l'on écrit sans auteur, plutôt que de refuser l'écriture.
    ────────────────────────────────────────────────────────────────── */
 
-/** `auth.users.id` de qui écrit, ou `null` si l'identité est inconnue. */
+/** `admins.id` de qui écrit, ou `null` si l'identité est inconnue. */
 type Auteur = string | null;
 
 /* L'e-mail de session ne donne pas l'uuid : il faut le lire dans
@@ -238,13 +122,10 @@ async function idDepuisEmail(email: string): Promise<Auteur> {
     return memoIdentite.id;
   }
   try {
-    const { data, error } = await sb()
-      .from("admins")
-      .select("user_id")
-      .eq("email", email)
-      .maybeSingle();
-    const ligne = data as { user_id?: string } | null;
-    const id = !error && typeof ligne?.user_id === "string" ? ligne.user_id : null;
+    const [ligne] = await sql<{ id: string }>("select id from admins where email = $1", [
+      email,
+    ]);
+    const id = typeof ligne?.id === "string" ? ligne.id : null;
     memoIdentite = { email, id, at: Date.now() };
     return id;
   } catch {
@@ -253,12 +134,12 @@ async function idDepuisEmail(email: string): Promise<Auteur> {
 }
 
 /**
- * Qui écrit, en `auth.users.id`. Exportée pour `src/lib/medias.ts`, qui
+ * Qui écrit, en `admins.id`. Exportée pour `src/lib/medias.ts`, qui
  * écrit dans `medias` sans passer par le magasin (le fichier et sa fiche
  * naissent ensemble) et doit renseigner le même `updated_by`.
  */
 export async function auteurCourant(): Promise<Auteur> {
-  if (!isSupabaseConfigured()) return null;
+  if (!isBaseConfiguree()) return null;
   let email = "";
   try {
     const { currentAdmin } = await import("@/lib/admin/auth");
@@ -389,18 +270,16 @@ const seoVersSql = (v: SeoJson | undefined): SeoJson => ({
   ...(v?.description ? { description: v.description } : {}),
 });
 
-/* Postgres rend « 2026-09-12T08:00:00+00:00 » ; le site manipule de l'ISO
-   en Z. On normalise ici, une fois, plutôt que dans chaque gabarit. */
+/* `src/lib/db.ts` rend déjà les `timestamptz` en ISO « …Z ». On
+   normalise quand même ici : une date saisie dans le back-office, ou
+   relue d'un instantané écrit par l'ancien pilote, n'a pas forcément
+   cette forme. */
 const iso = (v: string | null | undefined): string | undefined => {
   if (!v) return undefined;
   const d = new Date(v);
   return Number.isNaN(d.getTime()) ? undefined : d.toISOString();
 };
 
-/* Les clés primaires `uuid` sont fournies par le back-office (qui doit
-   pouvoir désigner une ligne avant de l'avoir enregistrée). Un
-   identifiant qui n'est pas un uuid ferait échouer l'insertion côté
-   Postgres avec un message incompréhensible : on en tire un propre. */
 /**
  * L'identifiant d'une agence : un slug d'URL, pas un uuid.
  *
@@ -488,7 +367,7 @@ function agenceVersTs(r: LigneAgence): Agence {
     lng: nombre(r.lng),
     image: texte(r.image),
     /* `text[]` peut revenir `null` sur une ligne créée à la main dans
-       l'éditeur SQL : les gabarits itèrent dessus sans se protéger. */
+       un client SQL : les gabarits itèrent dessus sans se protéger. */
     villes: Array.isArray(r.villes) ? r.villes.filter(Boolean) : [],
     description: r.description,
     actif: r.actif,
@@ -529,11 +408,44 @@ function mediaVersTs(r: LigneMedia): Media {
 }
 
 /* ──────────────────────────────────────────────────────────────────
+   COMPARAISON
+   ────────────────────────────────────────────────────────────────── */
+
+/**
+ * `JSON.stringify` à clés triées.
+ *
+ * Postgres réordonne les clés d'un objet JSONB à l'écriture. Comparer la
+ * valeur relue en base à celle que l'écran envoie avec un
+ * `JSON.stringify` simple voyait donc un changement à chaque
+ * enregistrement d'un objet — et le journal se remplissait de versions
+ * identiques à la suivante.
+ */
+function stable(v: unknown): string {
+  return JSON.stringify(v, (_cle, valeur: unknown) =>
+    valeur && typeof valeur === "object" && !Array.isArray(valeur)
+      ? Object.fromEntries(
+          Object.entries(valeur as Record<string, unknown>).sort(([a], [b]) =>
+            a < b ? -1 : a > b ? 1 : 0,
+          ),
+        )
+      : valeur,
+  );
+}
+
+/** Compare les colonnes écrites à la ligne en base : pas d'écriture inutile, pas de version inutile. */
+function inchange(
+  colonnes: Record<string, unknown>,
+  ligne: Record<string, unknown>,
+): boolean {
+  return Object.keys(colonnes).every((k) => stable(colonnes[k]) === stable(ligne[k]));
+}
+
+/* ──────────────────────────────────────────────────────────────────
    JOURNAL — content_versions
    ────────────────────────────────────────────────────────────────── */
 
 interface Version {
-  /** 'content:seo' · 'article:<uuid>' · 'annonce:<ref>' · 'agence:<uuid>' */
+  /** 'content:seo' · 'article:<uuid>' · 'annonce:<ref>' · 'agence:<id>' */
   scope: string;
   /** L'état AVANT l'écriture, complet. */
   snapshot: unknown;
@@ -551,19 +463,21 @@ interface Version {
  */
 async function journaliser(versions: Version[], auteur: Auteur): Promise<void> {
   if (versions.length === 0) return;
-  const { error } = await sb()
-    .from("content_versions")
-    .insert(
-      versions.map((v) => ({
-        scope: v.scope,
-        snapshot: v.snapshot,
-        created_by: auteur,
-      })),
+  const valeurs: unknown[] = [];
+  const tuples = versions.map((v) => {
+    valeurs.push(v.scope, JSON.stringify(v.snapshot ?? null), auteur);
+    const n = valeurs.length;
+    return `($${n - 2}, $${n - 1}::jsonb, $${n})`;
+  });
+  try {
+    await sql(
+      `insert into content_versions (scope, snapshot, created_by) values ${tuples.join(", ")}`,
+      valeurs,
     );
-  if (error) {
+  } catch (e) {
     console.error(
-      "[store/supabase] journal des versions indisponible :",
-      error.message,
+      "[store/postgres] journal des versions indisponible :",
+      (e as Error).message,
     );
   }
 }
@@ -580,23 +494,55 @@ export async function journaliserExterne(
   scope: string,
   snapshot: unknown,
 ): Promise<void> {
-  if (!isSupabaseConfigured()) return;
+  if (!isBaseConfiguree()) return;
   await journaliser([{ scope, snapshot }], await auteurCourant());
 }
 
-/** Compare les colonnes écrites à la ligne en base : pas d'écriture inutile, pas de version inutile. */
-function inchange(
-  colonnes: Record<string, unknown>,
-  ligne: Record<string, unknown>,
-): boolean {
-  return Object.keys(colonnes).every(
-    (k) => JSON.stringify(colonnes[k]) === JSON.stringify(ligne[k]),
-  );
+/** Toute erreur SQL remonte avec son contexte : le back-office doit pouvoir dire « non enregistré ». */
+async function executer<T>(contexte: string, requete: () => Promise<T>): Promise<T> {
+  try {
+    return await requete();
+  } catch (e) {
+    throw new Error(`[store/postgres] ${contexte} : ${(e as Error).message}`);
+  }
 }
 
-/** Toute erreur SQL remonte telle quelle : le back-office doit pouvoir dire « non enregistré ». */
-function verifier(contexte: string, error: { message: string } | null): void {
-  if (error) throw new Error(`[store/supabase] ${contexte} : ${error.message}`);
+/**
+ * Insère ou met à jour plusieurs lignes en une requête.
+ *
+ * `table`, `cle` et les noms de colonnes viennent du code, jamais d'une
+ * saisie : ils peuvent donc entrer dans le texte SQL. Les VALEURS, elles,
+ * passent toutes en paramètres. Les colonnes JSONB sont sérialisées et
+ * castées à part — voir l'avertissement de `sql()`.
+ */
+async function upsert(
+  table: string,
+  cle: string,
+  lignes: Record<string, unknown>[],
+  colonnesJson: string[] = [],
+): Promise<void> {
+  if (lignes.length === 0) return;
+  const colonnes = Object.keys(lignes[0]);
+  const valeurs: unknown[] = [];
+  const tuples = lignes.map(
+    (ligne) =>
+      `(${colonnes
+        .map((c) => {
+          const json = colonnesJson.includes(c);
+          valeurs.push(json ? JSON.stringify(ligne[c] ?? {}) : ligne[c]);
+          return `$${valeurs.length}${json ? "::jsonb" : ""}`;
+        })
+        .join(", ")})`,
+  );
+  const maj = colonnes
+    .filter((c) => c !== cle)
+    .map((c) => `${c} = excluded.${c}`)
+    .join(", ");
+  await sql(
+    `insert into ${table} (${colonnes.join(", ")}) values ${tuples.join(", ")} ` +
+      `on conflict (${cle}) do update set ${maj}`,
+    valeurs,
+  );
 }
 
 /* ──────────────────────────────────────────────────────────────────
@@ -611,102 +557,94 @@ let dernierSucces: Partial<Content> | null = null;
 /**
  * Lecture d'une table AJOUTÉE APRÈS la première mise en production.
  *
- * `agences` et `medias` n'existent pas tant que `supabase/schema.sql`
- * n'a pas été rejoué. Les traiter comme les autres ferait échouer TOUTE
- * la lecture — donc tomber le site entier — pour une table que personne
- * n'utilise encore. On journalise et on rend une liste vide : les écrans
- * concernés s'affichent vides, le reste du site continue.
+ * `agences` et `medias` n'existaient pas au départ. Une base dont le
+ * schéma n'a pas été rejoué ne doit pas faire tomber TOUTE la lecture —
+ * donc le site entier — pour une table que personne n'utilise encore.
+ *
+ * ⚠ SEULE L'ABSENCE DE LA TABLE EST TOLÉRÉE. Toute autre erreur remonte
+ * et fait échouer la lecture entière. C'est voulu : la lecture est mise
+ * en cache une demi-heure, et une panne passagère avalée ici y figerait
+ * une liste d'agences vide — le site afficherait « aucune agence » à
+ * tous les visiteurs pendant trente minutes après une coupure d'une
+ * seconde. Une lecture qui échoue, elle, n'est pas mise en cache.
  */
 async function lireTableOptionnelle<T>(
   table: string,
-  requete: () => PromiseLike<{ data: unknown; error: { message: string } | null }>,
+  requete: () => Promise<T[]>,
 ): Promise<T[]> {
   try {
-    const { data, error } = await requete();
-    if (error) {
-      console.error(
-        `[store/supabase] table « ${table} » illisible (schema.sql à rejouer ?) :`,
-        error.message,
-      );
-      return [];
-    }
-    return (data ?? []) as T[];
+    return await requete();
   } catch (e) {
-    console.error(
-      `[store/supabase] table « ${table} » illisible :`,
-      (e as Error).message,
-    );
+    if (codeErreur(e) !== TABLE_ABSENTE) throw e;
+    console.error(`[store/postgres] table « ${table} » absente (db/schema.sql à rejouer ?)`);
     return [];
   }
 }
 
+async function lireBase(): Promise<Partial<Content>> {
+  const [lignesContenu, lignesArticles, lignesAnnonces, agences, medias] = await Promise.all([
+    sql<LigneContent>("select key, value, updated_at from content"),
+    /* Les plus récents d'abord, les non datés (brouillons) en tête :
+       c'est l'ordre attendu par l'écran d'administration, et les pages
+       publiques retrient de toute façon ce qu'elles affichent. */
+    sql<LigneArticle>("select * from articles order by publie_le desc nulls first, slug asc"),
+    sql<LigneAnnonce>("select * from annonce_overrides order by ref asc"),
+    lireTableOptionnelle("agences", () =>
+      sql<LigneAgence>("select * from agences order by ordre asc, nom asc"),
+    ),
+    lireTableOptionnelle("medias", () =>
+      sql<LigneMedia>("select * from medias order by created_at desc"),
+    ),
+  ]);
+
+  const parCle = new Map(lignesContenu.map((l) => [l.key, l.value]));
+
+  return {
+    seo: (parCle.get("seo") as SeoEntry[] | undefined) ?? [],
+    realisations: (parCle.get("realisations") as Realisation[] | undefined) ?? [],
+    /* Domaine absent = domaine jamais enregistré : on laisse le
+       sélecteur poser les valeurs par défaut, comme pour le fichier. */
+    tracking: parCle.get("tracking") as TrackingConfig | undefined,
+    textes: parCle.get("textes") as Textes | undefined,
+    menus: parCle.get("menus") as Menus | undefined,
+    reglages: parCle.get("reglages") as Reglages | undefined,
+    /* Seules les `valeur` de ce tableau sont relues : la structure des
+       pages vient du code (voir `fusionnerPages` dans ./index). */
+    pages: parCle.get("pages") as PageEditable[] | undefined,
+    articles: lignesArticles.map(articleVersTs),
+    annonces: lignesAnnonces.map(annonceVersTs),
+    agences: agences.map(agenceVersTs),
+    medias: medias.map(mediaVersTs),
+    /* La dernière écriture, tous domaines confondus : le maximum des
+       `updated_at` rendus par les requêtes. */
+    majLe: derniereMaj([
+      ...lignesContenu.map((l) => l.updated_at),
+      ...lignesArticles.map((l) => l.updated_at),
+      ...lignesAnnonces.map((l) => l.updated_at),
+      ...agences.map((l) => l.updated_at),
+      ...medias.map((l) => l.updated_at),
+    ]),
+  };
+}
+
+/* La lecture mise en cache, étiquetée : voir `TAG_MAGASIN` plus haut. */
+const lireEnCache = unstable_cache(lireBase, ["magasin-contenu"], {
+  tags: [TAG_MAGASIN],
+  revalidate: FRAICHEUR,
+});
+
 export async function read(frais = false): Promise<Partial<Content>> {
   try {
-    /* `frais` : lecture hors cache, pour les écrans qui vont écrire. */
-    const db = frais ? sbFrais() : sb();
-    const [contenu, articles, annonces, agences, medias] = await Promise.all([
-      db.from("content").select("key, value, updated_at"),
-      db
-        .from("articles")
-        .select("*")
-        /* Les plus récents d'abord, les non datés (brouillons) en tête :
-           c'est l'ordre attendu par l'écran d'administration, et les pages
-           publiques retrient de toute façon ce qu'elles affichent. */
-        .order("publie_le", { ascending: false, nullsFirst: true })
-        .order("slug", { ascending: true }),
-      db.from("annonce_overrides").select("*").order("ref", { ascending: true }),
-      lireTableOptionnelle<LigneAgence>("agences", () =>
-        db
-          .from("agences")
-          .select("*")
-          .order("ordre", { ascending: true })
-          .order("nom", { ascending: true }),
-      ),
-      lireTableOptionnelle<LigneMedia>("medias", () =>
-        db.from("medias").select("*").order("created_at", { ascending: false }),
-      ),
-    ]);
-
-    verifier("lecture de content", contenu.error);
-    verifier("lecture de articles", articles.error);
-    verifier("lecture de annonce_overrides", annonces.error);
-
-    const lignesContenu = (contenu.data ?? []) as LigneContent[];
-    const lignesArticles = (articles.data ?? []) as LigneArticle[];
-    const lignesAnnonces = (annonces.data ?? []) as LigneAnnonce[];
-    const parCle = new Map(lignesContenu.map((l) => [l.key, l.value]));
-
-    const data: Partial<Content> = {
-      seo: (parCle.get("seo") as SeoEntry[] | undefined) ?? [],
-      realisations: (parCle.get("realisations") as Realisation[] | undefined) ?? [],
-      /* Domaine absent = domaine jamais enregistré : on laisse le
-         sélecteur poser les valeurs par défaut, comme pour le fichier. */
-      tracking: parCle.get("tracking") as TrackingConfig | undefined,
-      textes: parCle.get("textes") as Textes | undefined,
-      menus: parCle.get("menus") as Menus | undefined,
-      reglages: parCle.get("reglages") as Reglages | undefined,
-      /* Seules les `valeur` de ce tableau sont relues : la structure des
-         pages vient du code (voir `fusionnerPages` dans ./index). */
-      pages: parCle.get("pages") as PageEditable[] | undefined,
-      articles: lignesArticles.map(articleVersTs),
-      annonces: lignesAnnonces.map(annonceVersTs),
-      agences: agences.map(agenceVersTs),
-      medias: medias.map(mediaVersTs),
-      /* La dernière écriture, tous domaines confondus : le maximum des
-         `updated_at` rendus par les requêtes. */
-      majLe: derniereMaj([
-        ...lignesContenu.map((l) => l.updated_at),
-        ...lignesArticles.map((l) => l.updated_at),
-        ...lignesAnnonces.map((l) => l.updated_at),
-        ...agences.map((l) => l.updated_at),
-        ...medias.map((l) => l.updated_at),
-      ]),
-    };
-
+    /* ⚠ `frais` : lecture HORS CACHE, pour les écrans qui vont écrire.
+       Ils lisent la liste complète, la modifient et la renvoient
+       ENTIÈRE : une ligne absente de la liste reçue est supprimée. Lire
+       cette liste dans un cache, c'est risquer d'effacer ce qui a été
+       créé depuis l'instantané, sans message ni erreur. */
+    const data = frais ? await lireBase() : await lireEnCache();
     dernierSucces = data;
     return data;
   } catch (e) {
-    console.error("[store/supabase] lecture impossible :", (e as Error).message);
+    console.error("[store/postgres] lecture impossible :", (e as Error).message);
     /* Le site public doit rester debout : le contenu précédent s'il existe,
        les valeurs par défaut sinon (posées par le sélecteur). */
     return dernierSucces ?? {};
@@ -753,22 +691,24 @@ async function ecrireDomaine(
   value: unknown,
   auteur: Auteur,
 ): Promise<void> {
-  const db = sb();
-  const actuel = await db
-    .from("content")
-    .select("value")
-    .eq("key", key)
-    .maybeSingle();
-  verifier(`lecture de content:${key}`, actuel.error);
+  /* `undefined` n'est pas une valeur JSON : rien à écrire. */
+  if (value === undefined) return;
 
-  const avant = (actuel.data as { value: unknown } | null)?.value ?? null;
-  if (JSON.stringify(avant) === JSON.stringify(value)) return;
+  const [actuel] = await executer(`lecture de content:${key}`, () =>
+    sql<{ value: unknown }>("select value from content where key = $1", [key]),
+  );
+
+  const avant = actuel?.value ?? null;
+  if (stable(avant) === stable(value)) return;
 
   await journaliser([{ scope: `content:${key}`, snapshot: avant ?? {} }], auteur);
-  const { error } = await db
-    .from("content")
-    .upsert({ key, value, updated_by: auteur }, { onConflict: "key" });
-  verifier(`écriture de content:${key}`, error);
+  await executer(`écriture de content:${key}`, () =>
+    sql(
+      `insert into content (key, value, updated_by) values ($1, $2::jsonb, $3)
+       on conflict (key) do update set value = excluded.value, updated_by = excluded.updated_by`,
+      [key, JSON.stringify(value), auteur],
+    ),
+  );
 }
 
 /**
@@ -782,11 +722,9 @@ async function ecrireDomaine(
  * à jour.
  */
 async function ecrireArticles(liste: Article[], auteur: Auteur): Promise<void> {
-  const db = sb();
-  const actuel = await db.from("articles").select("*");
-  verifier("lecture de articles", actuel.error);
-
-  const existantes = (actuel.data ?? []) as LigneArticle[];
+  const existantes = await executer("lecture de articles", () =>
+    sql<LigneArticle>("select * from articles"),
+  );
   const parSlug = new Map(existantes.map((l) => [l.slug, l]));
 
   const versions: Version[] = [];
@@ -816,19 +754,11 @@ async function ecrireArticles(liste: Article[], auteur: Auteur): Promise<void> {
 
   await journaliser(versions, auteur);
 
-  if (aEcrire.length) {
-    const { error } = await db.from("articles").upsert(aEcrire, { onConflict: "id" });
-    verifier("écriture de articles", error);
-  }
+  await executer("écriture de articles", () => upsert("articles", "id", aEcrire, ["seo"]));
   if (aSupprimer.length) {
-    const { error } = await db
-      .from("articles")
-      .delete()
-      .in(
-        "id",
-        aSupprimer.map((l) => l.id),
-      );
-    verifier("suppression d'articles", error);
+    await executer("suppression d'articles", () =>
+      sql("delete from articles where id = any($1::uuid[])", [aSupprimer.map((l) => l.id)]),
+    );
   }
 }
 
@@ -842,11 +772,9 @@ async function ecrireAnnonces(
   liste: AnnonceOverride[],
   auteur: Auteur,
 ): Promise<void> {
-  const db = sb();
-  const actuel = await db.from("annonce_overrides").select("*");
-  verifier("lecture de annonce_overrides", actuel.error);
-
-  const existantes = (actuel.data ?? []) as LigneAnnonce[];
+  const existantes = await executer("lecture de annonce_overrides", () =>
+    sql<LigneAnnonce>("select * from annonce_overrides"),
+  );
   const parRef = new Map(existantes.map((l) => [l.ref, l]));
 
   const versions: Version[] = [];
@@ -870,21 +798,15 @@ async function ecrireAnnonces(
 
   await journaliser(versions, auteur);
 
-  if (aEcrire.length) {
-    const { error } = await db
-      .from("annonce_overrides")
-      .upsert(aEcrire, { onConflict: "ref" });
-    verifier("écriture de annonce_overrides", error);
-  }
+  await executer("écriture de annonce_overrides", () =>
+    upsert("annonce_overrides", "ref", aEcrire, ["seo"]),
+  );
   if (aSupprimer.length) {
-    const { error } = await db
-      .from("annonce_overrides")
-      .delete()
-      .in(
-        "ref",
+    await executer("suppression de surcharges d'annonces", () =>
+      sql("delete from annonce_overrides where ref = any($1::text[])", [
         aSupprimer.map((l) => l.ref),
-      );
-    verifier("suppression de surcharges d'annonces", error);
+      ]),
+    );
   }
 }
 
@@ -897,11 +819,9 @@ async function ecrireAnnonces(
  * ferait perdre ses villes, sa fiche et son historique.
  */
 async function ecrireAgences(liste: Agence[], auteur: Auteur): Promise<void> {
-  const db = sb();
-  const actuel = await db.from("agences").select("*");
-  verifier("lecture de agences", actuel.error);
-
-  const existantes = (actuel.data ?? []) as LigneAgence[];
+  const existantes = await executer("lecture de agences", () =>
+    sql<LigneAgence>("select * from agences"),
+  );
   const parId = new Map(existantes.map((l) => [l.id, l]));
 
   const versions: Version[] = [];
@@ -909,21 +829,12 @@ async function ecrireAgences(liste: Agence[], auteur: Auteur): Promise<void> {
   const gardes = new Set<string>();
 
   for (const agence of liste) {
-    /* ⚠ PAS DE `uuidValide()` ICI, ET C'EST TOUT L'ENJEU.
-       L'identifiant d'une agence EST son adresse publique. Il était
-       passé par `uuidValide()`, qui remplace toute valeur non conforme
-       par un uuid tiré au hasard : le slug lisible calculé par l'écran
-       d'administration — « agence-de-tartas » — était donc jeté à
-       l'écriture, et l'agence se retrouvait à /agences/6f3a1b2c-…
-
-       Personne ne le voyait : l'écriture réussissait, la fiche
-       s'affichait, seule l'URL était illisible. Et le commentaire de
-       l'écran affirmait le contraire, ce qui garantissait qu'on ne
-       cherche pas là.
-
+    /* ⚠ L'identifiant d'une agence EST son adresse publique.
        `slugAgence()` normalise sans dénaturer, et ne tire au sort qu'en
        tout dernier recours — un nom composé uniquement de caractères
-       non latins, par exemple. */
+       non latins, par exemple. Ne jamais le remplacer par un uuid : le
+       slug lisible serait jeté à l'écriture, et l'agence se
+       retrouverait à /agences/6f3a1b2c-… sans que rien ne le signale. */
     const id = slugAgence(agence.id, agence.nom);
     const colonnes = agenceVersSql(agence);
     const ancienne = parId.get(id);
@@ -941,35 +852,11 @@ async function ecrireAgences(liste: Agence[], auteur: Auteur): Promise<void> {
 
   await journaliser(versions, auteur);
 
-  if (aEcrire.length) {
-    const { error } = await db.from("agences").upsert(aEcrire, { onConflict: "id" });
-    /* ⚠ L'ERREUR QUE PERSONNE NE SAURAIT LIRE.
-       Si la migration `migration-agences-id-texte.sql` n'a pas été
-       lancée, la colonne `id` est encore en `uuid` et Postgres répond
-       « invalid input syntax for type uuid: "agence-de-tartas" ». Côté
-       back-office, cela se traduit par une page d'erreur générique : le
-       client conclut que le formulaire est cassé et cherche du côté de
-       sa saisie, alors qu'il manque une requête SQL.
-       On remplace donc le message par celui qui dit quoi faire. */
-    if (error && /uuid/i.test(error.message)) {
-      throw new Error(
-        "[store/supabase] La colonne `agences.id` est encore de type uuid, " +
-          "alors que l'identifiant d'une agence est son adresse publique. " +
-          "Exécutez supabase/migration-agences-id-texte.sql dans l'éditeur SQL " +
-          "de Supabase, puis réessayez.",
-      );
-    }
-    verifier("écriture de agences", error);
-  }
+  await executer("écriture de agences", () => upsert("agences", "id", aEcrire));
   if (aSupprimer.length) {
-    const { error } = await db
-      .from("agences")
-      .delete()
-      .in(
-        "id",
-        aSupprimer.map((l) => l.id),
-      );
-    verifier("suppression d'agences", error);
+    await executer("suppression d'agences", () =>
+      sql("delete from agences where id = any($1::text[])", [aSupprimer.map((l) => l.id)]),
+    );
   }
 }
 
@@ -986,17 +873,19 @@ async function ecrireAgences(liste: Agence[], auteur: Auteur): Promise<void> {
  *   · un téléversement écrit directement dans cette table. Un delta
  *     destructif effacerait l'image qu'un collègue vient d'ajouter
  *     pendant qu'un autre corrigeait un texte alternatif.
+ *
+ * ⚠ UPDATE ET NON UPSERT : une fiche ne naît que du téléversement. Un
+ * upsert partiel tenterait d'insérer une ligne sans `chemin`, que la
+ * contrainte NOT NULL refuserait.
  */
 async function ecrireMedias(liste: Media[], auteur: Auteur): Promise<void> {
-  const db = sb();
-  const actuel = await db.from("medias").select("*");
-  verifier("lecture de medias", actuel.error);
-
-  const existantes = (actuel.data ?? []) as LigneMedia[];
+  const existantes = await executer("lecture de medias", () =>
+    sql<LigneMedia>("select * from medias"),
+  );
   const parId = new Map(existantes.map((l) => [l.id, l]));
 
   const versions: Version[] = [];
-  const aEcrire: Record<string, unknown>[] = [];
+  const aEcrire: { id: string; alt: string; nom: string }[] = [];
 
   for (const media of liste) {
     const ancienne = parId.get(media.id);
@@ -1010,14 +899,20 @@ async function ecrireMedias(liste: Media[], auteur: Auteur): Promise<void> {
     };
     if (inchange(colonnes, ancienne as unknown as Record<string, unknown>)) continue;
     versions.push({ scope: `media:${media.id}`, snapshot: ancienne });
-    aEcrire.push({ id: media.id, ...colonnes, updated_by: auteur });
+    aEcrire.push({ id: media.id, ...colonnes });
   }
 
   await journaliser(versions, auteur);
 
-  if (aEcrire.length) {
-    const { error } = await db.from("medias").upsert(aEcrire, { onConflict: "id" });
-    verifier("écriture de medias", error);
+  for (const m of aEcrire) {
+    await executer("écriture de medias", () =>
+      sql("update medias set alt = $2, nom = $3, updated_by = $4 where id = $1", [
+        m.id,
+        m.alt,
+        m.nom,
+        auteur,
+      ]),
+    );
   }
 }
 
@@ -1079,16 +974,16 @@ const SONDE_TTL = 5_000;
 /**
  * Vrai si la base répond.
  *
- * On interroge en lecture plutôt qu'en écriture : avec la clé
- * `service_role` le RLS est contourné, donc qui lit écrit. Une sonde en
- * écriture salirait la base à chaque affichage du tableau de bord.
+ * On interroge en lecture plutôt qu'en écriture : le serveur est
+ * propriétaire de la base, donc qui lit écrit. Une sonde en écriture
+ * salirait la base à chaque affichage du tableau de bord.
  */
 export async function writable(): Promise<boolean> {
-  if (!isSupabaseConfigured()) return false;
+  if (!isBaseConfiguree()) return false;
   if (sonde && Date.now() - sonde.at < SONDE_TTL) return sonde.ok;
   try {
-    const { error } = await sb().from("content").select("key").limit(1);
-    sonde = { ok: !error, at: Date.now() };
+    await sql("select key from content limit 1");
+    sonde = { ok: true, at: Date.now() };
   } catch {
     sonde = { ok: false, at: Date.now() };
   }

@@ -12,12 +12,12 @@ import type { Content } from "./types";
    conteneur avec volume persistant.
 
    ⚠ LIMITE, à lire avant toute mise en production :
-   sur Netlify, Vercel ou toute plateforme serverless, le système de
-   fichiers est en LECTURE SEULE et éphémère. `isWritable()` renverra
-   faux et le back-office l'affichera — c'est le comportement voulu,
-   pas une panne. Pour la production, définir SUPABASE_URL et
-   SUPABASE_SERVICE_ROLE_KEY : le sélecteur (`./index`) bascule seul
-   sur le pilote Supabase.
+   chez un hébergeur, le disque d'une instance est éphémère — en lecture
+   seule sur une plateforme serverless, effacé à chaque déploiement chez
+   Clever Cloud. Le back-office le signale — c'est le comportement voulu,
+   pas une panne. Pour la production, brancher la base PostgreSQL
+   (DATABASE_URL, ou l'add-on lié) : le sélecteur (`./index`) bascule
+   seul sur le pilote Postgres.
 
    Ce module ne connaît QUE la persistance : ni cache, ni valeurs par
    défaut, ni horodatage. Ces trois-là sont communs à tous les pilotes
@@ -30,8 +30,8 @@ import type { Content } from "./types";
      · pas d'auteur : sans base, il n'y a pas de compte nommé, donc
        personne à inscrire dans `updated_by` ;
      · pas de médiathèque : les fiches `medias` se lisent et s'écrivent
-       ici comme le reste, mais les FICHIERS vivent dans le bucket
-       Supabase. Sans Supabase, `src/lib/medias.ts` répond « médiathèque
+       ici comme le reste, mais les FICHIERS vivent dans le bucket S3.
+       Sans base ni stockage, `src/lib/medias.ts` répond « médiathèque
        indisponible » et les écrans l'affichent tel quel.
    Tous les domaines de `Content` — y compris `menus`, `reglages`,
    `pages` et `agences` — sont en revanche persistés sans rien de
@@ -64,7 +64,7 @@ export async function read(): Promise<Partial<Content>> {
    arrivé écrasant le premier avec un état lu avant lui. Les écritures
    sont donc sérialisées dans le processus. Ce n'est pas un verrou entre
    processus — s'il en faut un, c'est que le site tourne en plusieurs
-   instances, et alors c'est Supabase qu'il faut. */
+   instances, et alors c'est la base qu'il faut. */
 let file: Promise<unknown> = Promise.resolve();
 
 function enFile<T>(tache: () => Promise<T>): Promise<T> {

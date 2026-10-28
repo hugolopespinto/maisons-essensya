@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { authDriver, isAdminEnabled, isAuthenticated } from "@/lib/admin/auth";
-import { etatCleAnon } from "@/lib/admin/supabase-auth";
 
 /* ════════════════════════════════════════════════════════════════
    ÉCRAN DE CONNEXION
@@ -13,7 +12,7 @@ import { etatCleAnon } from "@/lib/admin/supabase-auth";
    jamais dans un état React sérialisé vers le client.
 
    Deux formulaires pour une seule action : e-mail + mot de passe quand
-   Supabase pilote l'authentification, mot de passe seul sinon. C'est le
+   les comptes nommés sont actifs, mot de passe seul sinon. C'est le
    SEUL endroit du back-office qui sait quel pilote tourne — partout
    ailleurs, `requireAdmin()` suffit.
 
@@ -39,17 +38,10 @@ export default async function LoginPage({
 
   const { e } = await searchParams;
   const erreur = e === "1";
-  const comptesNommes = authDriver() === "supabase";
-
-  /* ⚠ ON VÉRIFIE QUE LA CLÉ ANONYME EST VRAIMENT ACCEPTÉE, pas seulement
-     qu'elle est renseignée. Une clé fausse mais non vide fait afficher
-     « Comptes nommés (Supabase) » et échouer toutes les connexions, sans
-     rien qui distingue cela d'un mot de passe erroné. Voir la note en
-     tête de `etatCleAnon()`. Un seul aller-retour, mémorisé 60 s. */
-  const cleAnon = comptesNommes ? await etatCleAnon() : "inconnu";
+  const comptesNommes = authDriver() === "comptes";
 
   /* ── Back-office non configuré ──────────────────────────────────
-     Sans Supabase NI mot de passe partagé, aucune session ne peut être
+     Sans base NI mot de passe partagé, aucune session ne peut être
      créée : afficher un formulaire qui ne peut pas aboutir ferait perdre
      un quart d'heure à quelqu'un. On dit ce qui manque et où le mettre. */
   if (!isAdminEnabled()) {
@@ -65,15 +57,14 @@ export default async function LoginPage({
         <div className="adm-note adm-note--alerte">
           <strong>Comptes nommés (recommandé)</strong>
           <code style={{ display: "block", marginTop: ".5rem" }}>
-            SUPABASE_URL=…
-            <br />
-            SUPABASE_SERVICE_ROLE_KEY=…
+            DATABASE_URL=postgresql://…
           </code>
           <span className="u-muted">
             {" "}
-            Chaque personne a son e-mail et son mot de passe, et doit figurer
-            dans la table <code>admins</code> : être authentifié ne suffit pas.
-            Schéma à exécuter : <code>supabase/schema.sql</code>.
+            Chez Clever Cloud, lier l&apos;add-on PostgreSQL suffit. Chaque
+            personne a son e-mail et son mot de passe, rangés dans la table{" "}
+            <code>admins</code>. Schéma à exécuter : <code>db/schema.sql</code>,
+            puis <code>scripts/premier-admin.mjs</code> pour le premier compte.
           </span>
         </div>
         <div className="adm-note" style={{ marginTop: ".75rem" }}>
@@ -108,24 +99,6 @@ export default async function LoginPage({
       <h1 id="adm-login-t" style={{ fontSize: "1.5rem", margin: ".4rem 0 1rem" }}>
         Administration
       </h1>
-
-      {cleAnon === "rejetee" && (
-        /* Le seul message de l'écran qui s'adresse à l'exploitant et non
-           au visiteur : aucune saisie ne peut aboutir tant qu'il est là,
-           et le dire économise la demi-heure passée à retaper un mot de
-           passe qui était bon. */
-        <p className="adm-alerte" role="status" style={{ marginBottom: "1rem" }}>
-          <strong>Clé Supabase refusée.</strong> Le serveur possède bien une
-          valeur pour <code>SUPABASE_ANON_KEY</code>, mais Supabase la rejette
-          (HTTP&nbsp;401) : elle est erronée, périmée, ou appartient à un autre
-          projet. <strong>Aucune connexion ne peut aboutir</strong> tant qu&apos;elle
-          n&apos;est pas corrigée — le mot de passe n&apos;est pas en cause.
-          Reprenez la clé <em>publishable</em> du projet dans Supabase (Project
-          Settings → API Keys) et remplacez la variable chez l&apos;hébergeur, en
-          vérifiant qu&apos;elle est bien exposée aux fonctions et pas seulement
-          aux builds.
-        </p>
-      )}
 
       {/* POST classique vers un point d'entrée HTTP, et non une Server
           Action : les gestionnaires de mots de passe ne proposent
@@ -192,8 +165,8 @@ export default async function LoginPage({
       <p className="u-muted" style={{ marginTop: "1.25rem", fontSize: ".8rem" }}>
         {comptesNommes ? (
           <>
-            Comptes nommés (Supabase), session de 8 heures, cookie strictement
-            serveur. Mot de passe oublié : demander une réinitialisation à un
+            Comptes nommés, session de 8 heures, cookie strictement serveur.
+            Mot de passe oublié : demander un nouveau lien d&apos;accès à un
             administrateur.
           </>
         ) : (

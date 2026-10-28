@@ -15,7 +15,7 @@ pas réécrit. Ce qui change, c'est ce qu'il y avait autour.
 | **Next.js (App Router)** | Le v7 route en `#/annonce/ES-1001` → invisible pour Google. Ici chaque annonce, modèle et agence est une **vraie URL pré-rendue côté serveur**. Pour un constructeur, le SEO local *est* le canal d'acquisition. |
 | **TypeScript** | Le flux Vitahome a des pièges (`house: false` pour un terrain, `latitude` en String, `postCode` en Number). Les types les rendent impossibles à oublier. |
 | **CSS natif + tokens** | Le design system existe déjà en variables CSS. Le passer en Tailwind coûterait des jours et perdrait en fidélité. |
-| **Vercel** | `git push` → déploiement. Une URL de preview par branche, pratique pour faire valider chaque itération au client comme tu l'as fait de v1 à v7. |
+| **Clever Cloud** | Hébergement souverain demandé par le client : société française, serveurs à Paris, non soumise au droit américain. `git push` → déploiement, base PostgreSQL et stockage de fichiers (Cellar) chez le même prestataire. Voir [Hébergement](#hébergement--clever-cloud). |
 
 **Ce que Next apporte concrètement ici :**
 
@@ -184,6 +184,73 @@ mêmes points, mêmes styles (`src/styles/carte.css`).
 
 ---
 
+## Hébergement — Clever Cloud
+
+Tout est en France, chez un seul prestataire :
+
+| Service | Rôle | Remplace |
+| --- | --- | --- |
+| Application **Node.js** (zone Paris) | `next start`, pages, API, back-office | Netlify |
+| Add-on **PostgreSQL** | contenu, comptes du back-office, journal des versions | Supabase (base + Auth) |
+| Add-on **Cellar** (S3) | fichiers de la médiathèque, bucket privé | Supabase Storage |
+
+Le code ne dépend d'aucune API propre à Clever Cloud : du Postgres
+standard (`src/lib/db.ts`) et du S3 standard (`src/lib/stockage.ts`).
+
+### Mise en route (une fois)
+
+1. **Créer l'application** Node.js, zone Paris, reliée au dépôt Git.
+   Taille XS ou S (le build de Next a besoin de mémoire).
+2. **Créer et lier les add-ons** PostgreSQL et Cellar. Lier suffit :
+   Clever Cloud injecte `POSTGRESQL_ADDON_URI` et `CELLAR_ADDON_*`.
+   ⚠ Éviter l'offre PostgreSQL gratuite (DEV) : elle limite le nombre
+   de connexions, et `next build` ouvre une connexion par processus de
+   prérendu (deux au plus par processus, voir `PG_POOL_MAX`).
+3. **Créer un bucket privé** dans la console Cellar.
+4. **Variables d'environnement** de l'application, toutes définies
+   AVANT le premier build (les `NEXT_PUBLIC_*` et l'origine du stockage
+   sont figées à la compilation) :
+
+   | Variable | Valeur |
+   | --- | --- |
+   | `CC_POST_BUILD_HOOK` | `npm run build` |
+   | `CC_NODE_DEV_DEPENDENCIES` | `install` (TypeScript est requis par le build) |
+   | `NEXT_PUBLIC_SITE_URL` | l'adresse https définitive — obligatoire, rien ne la remplace ici |
+   | `S3_BUCKET` | le nom du bucket créé à l'étape 3 |
+   | `ADMIN_SESSION_SECRET` | une longue chaîne aléatoire (signature des sessions) |
+   | `VITAHOME_TOKEN`, `VITAHOME_ENTITY_ID`, `NEXT_PUBLIC_GTM_ID`, `GA4_*`… | reprises telles quelles de Netlify |
+
+   Le port (`PORT=8080`) et la version de Node (`engines` du
+   `package.json`) sont pris en charge par Clever Cloud.
+5. **Schéma** : `psql "$POSTGRESQL_ADDON_URI" -f db/schema.sql`, ou
+   coller le contenu de `db/schema.sql` dans l'interface web de l'add-on.
+   La base doit être en UTF-8 (c'est le défaut chez Clever Cloud).
+6. **Données** : `node scripts/migrer-depuis-supabase.mjs --essai`, puis
+   sans `--essai`. Le script copie les tables, les fichiers et les
+   comptes, et affiche un **lien d'accès** par compte : les mots de passe
+   restent chez Supabase, chacun en choisit un nouveau.
+   Sans migration (installation neuve) : `node scripts/premier-admin.mjs vous@exemple.fr`.
+7. **Domaine** : l'ajouter dans l'onglet « Noms de domaine » de
+   l'application et suivre l'enregistrement DNS indiqué par la console.
+8. Une fois le site vérifié en ligne : supprimer le projet Supabase et
+   le site Netlify.
+
+### Comptes du back-office
+
+Les comptes vivent dans la table `admins` (mot de passe en empreinte
+scrypt). Aucun e-mail n'est envoyé par le site : « Inviter » et
+« Nouveau lien » produisent un lien à usage unique, valable 72 h, que
+l'administrateur transmet lui-même. Porte de secours si plus personne ne
+peut se connecter : `node scripts/premier-admin.mjs adresse@exemple.fr`.
+
+### En-têtes de sécurité
+
+CSP, HSTS, `Permissions-Policy`… sont posés par `next.config.ts`
+(`headers()`), donc envoyés par le serveur Next quel que soit
+l'hébergeur. Ils vivaient auparavant dans `netlify.toml`.
+
+---
+
 ## Reste à faire
 
 1. **Photos réelles** → passer les `<img>` en `next/image` (les domaines sont
@@ -192,7 +259,7 @@ mêmes points, mêmes styles (`src/styles/carte.css`).
    le Plan IGN, sans clé. Pour un autre rendu, basculer sur un fournisseur
    XYZ (MapTiler, Stadia, CARTO avec clé…) : une seule variable,
    `NEXT_PUBLIC_MAP_TILE_URL`, plus l'attribution correspondante — et son
-   domaine dans `img-src` (`netlify.toml`).
+   domaine dans `img-src` (`next.config.ts`).
 3. **CMS** pour le contenu éditorial et les landings (`src/data/essensya.ts`).
    Le contrat de types ne bouge pas, seule la source change.
 4. **GTM** — les `dataLayer.push` sont câblés dans `LeadForm`
