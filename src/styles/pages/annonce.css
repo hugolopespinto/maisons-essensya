@@ -3,7 +3,9 @@
 .a-head .c-breadcrumb{color:var(--pierre);margin-bottom:var(--s-3)}
 .a-head__top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s-3);align-items:end}
 .a-head__top h1{margin-top:var(--s-2)}
-.a-head h1{font-size:clamp(1.9rem,4.5vw,3.4rem);max-width:18ch}
+.a-head h1{font-size:clamp(1.6rem,3.2vw,2.6rem);max-width:26ch}
+/* Les pictos et leurs libellés passent en vert (retour du 01/11). */
+.a-head .c-picto,.a-head .c-picto span small{color:var(--vert-texte)}
 .a-head__top .c-offer{margin-left:.5rem}
 /* Le prix passe devant le titre : c'est lui l'argument, pas le lieu.
    Plafonné sous la valeur libre de .c-price-xl pour tenir sur une ligne
@@ -17,24 +19,44 @@
 .a-head .c-pictos{margin-top:var(--s-4);border-top:var(--line);padding-top:var(--s-3)}
 
 .a-gallery{padding-bottom:var(--s-5)}
-.a-gallery .container{display:grid;grid-template-columns:2fr 1fr;gap:var(--s-2)}
+.a-gallery .container{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:var(--s-2)}
 /* Aucune photo à côté du visuel principal : il prend toute la largeur
    plutôt que de laisser une colonne vide. */
 .a-gallery .container.is-solo{grid-template-columns:1fr}
 .a-gallery .c-reveal-img{aspect-ratio:16/10}
-.a-gallery__side{display:grid;gap:var(--s-2)}
-.a-gallery__side .c-reveal-img{aspect-ratio:16/9.8}
+.a-gallery__side{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-2);align-content:start}
 .a-gallery img{width:100%;height:100%;object-fit:cover}
-@media (max-width:900px){.a-gallery .container{grid-template-columns:1fr}.a-gallery__side{grid-template-columns:1fr 1fr}}
+.a-gallery__ouvrir,.a-gallery__vignette{display:block;width:100%;border:0;padding:0;background:none;cursor:zoom-in}
+/* Le visuel suit la hauteur de la colonne de vignettes, sans vide autour de lui. */
+.a-gallery__ouvrir{display:flex}
+.a-gallery__ouvrir>.c-reveal-img{flex:1;min-width:0}
+.a-gallery__vignette{position:relative;aspect-ratio:16/10;overflow:hidden;border-radius:var(--radius)}
+/* La première vignette, ou chacune quand il y en a peu, prend la colonne. */
+.a-gallery__vignette:first-child,.a-gallery__side.is-peu .a-gallery__vignette{grid-column:1/-1}
+/* Le compte des photos qui ne tiennent pas dans la colonne. */
+.a-gallery__vignette span{position:absolute;inset:0;display:grid;place-items:center;background:rgba(44,46,53,.62);color:var(--craie);font-family:var(--f-mono);font-size:1.1rem}
+@media (max-width:900px){.a-gallery .container{grid-template-columns:1fr}.a-gallery__side{grid-template-columns:repeat(3,1fr)}.a-gallery__vignette:first-child,.a-gallery__side.is-peu .a-gallery__vignette{grid-column:auto}}
 
-.a-body{padding-bottom:var(--s-7)}
+/* La visionneuse : la photo en grand, sur fond noir. */
+.a-visionneuse{margin:auto;width:100vw;height:100dvh;max-width:none;max-height:none;border:0;background:rgba(10,12,15,.94);color:var(--craie);--focus:var(--craie)}
+.a-visionneuse::backdrop{background:transparent}
+.a-visionneuse[open]{display:grid;place-items:center}
+.a-visionneuse img{max-width:min(92vw,1500px);max-height:84dvh;width:auto;height:auto;object-fit:contain}
+.a-visionneuse p{position:absolute;left:50%;bottom:var(--s-2);transform:translateX(-50%);font-family:var(--f-mono);font-size:var(--fs-small)}
+.a-visionneuse button{position:absolute;width:3rem;height:3rem;border:1px solid rgba(242,243,243,.4);border-radius:var(--radius);background:rgba(44,46,53,.75);color:var(--craie);font-size:1.3rem;cursor:pointer}
+.a-visionneuse button:hover{background:var(--craie);color:var(--anthracite)}
+.a-visionneuse__fermer{top:var(--s-2);right:var(--s-2)}
+.a-visionneuse__pas{top:50%;transform:translateY(-50%)}
+.a-visionneuse__pas--avant{left:var(--s-2)}
+.a-visionneuse__pas--apres{right:var(--s-2)}
+
+.a-body{padding-bottom:var(--s-6)}
 .a-body .container{display:grid;grid-template-columns:7fr 5fr;gap:var(--s-6);align-items:start}
 @media (max-width:900px){.a-body .container{grid-template-columns:1fr}}
 .a-content h2{font-size:clamp(1.4rem,2.6vw,2rem);margin-bottom:var(--s-3)}
 .a-content > p{color:var(--pierre);max-width:38em}
 /* Intertitre de section dans la colonne de contenu. */
 .a-sub{font-size:1.05rem;letter-spacing:.02em;margin:var(--s-5) 0 var(--s-2)}
-.a-note{margin:var(--s-3) 0 var(--s-2);font-size:var(--fs-small)}
 
 /* ════ LA MAISON SUR CE TERRAIN ════
    Le plan du RDC fourni par le flux vaut mieux qu'une photo de façade
@@ -57,6 +79,12 @@
 /* Mentions légales de l'annonce : obligatoires, donc présentes ; discrètes,
    donc en pied de colonne. */
 .a-mention{margin-top:var(--s-5);padding-top:var(--s-3);border-top:var(--line);font-family:var(--f-mono);font-size:var(--fs-label);line-height:1.7;color:var(--pierre);max-width:60em}
+
+/* ════ D'AUTRES CONSTRUCTIONS AUTOUR ════ */
+.a-autour{padding:var(--s-5) 0;background:var(--sable)}
+.a-autour h2{font-size:clamp(1.4rem,2.6vw,2rem);margin-bottom:var(--s-4)}
+.a-autour__grille{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-3);margin-bottom:var(--s-4)}
+@media (max-width:900px){.a-autour{padding-bottom:calc(var(--s-5) + 72px)}.a-autour__grille{grid-template-columns:1fr}}
 
 /* ════ CARTE FORMULAIRE (partagée avec la page agence) ════ */
 .a-aside{position:sticky;top:calc(var(--header-h) + var(--s-3))}
@@ -81,7 +109,7 @@
   /* Le tiroir rejoue le formulaire de l'aside : le laisser aussi en pied
      de page afficherait deux fois la même chose. */
   .a-body .a-aside{display:none}
-  .a-body{padding-bottom:calc(var(--s-6) + 72px)}
+  .a-body{padding-bottom:var(--s-5)}
   .a-cta{display:block}
   .a-cta__bar{position:fixed;left:0;right:0;bottom:0;z-index:150;display:flex;align-items:center;gap:var(--s-2);padding:.7rem var(--gutter) calc(.7rem + env(safe-area-inset-bottom));background:rgba(44,46,53,.97);backdrop-filter:blur(10px);color:var(--craie)}
   .a-cta__price{display:flex;flex-direction:column;line-height:1.2;min-width:0}

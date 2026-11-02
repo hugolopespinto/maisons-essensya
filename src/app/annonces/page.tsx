@@ -8,28 +8,33 @@ import { annonceTitle, annonceUrl } from "@/lib/format";
 import { jsonLd, listeSchema } from "@/lib/schema";
 import { resolveMetadata } from "@/lib/seo";
 import { getContent } from "@/lib/store";
+import { markdownToHtml } from "@/lib/markdown";
+import { TEXTE_ANNONCES } from "@/data/redactionnel/annonces";
 import "@/styles/carte.css";
+import "@/styles/prose.css";
 import "@/styles/pages/annonces.css";
 
 /* Singulier assumé : il n'y a qu'une maison, c'est le terrain qui change. */
 const TITRE = "Terrains & maisons";
 const CHAPO =
-  "Des terrains repérés par nos agences, seuls ou livrés avec la maison Essensya. Le lieu change, la maison ne change pas — et son prix non plus.";
+  "Des terrains à bâtir sélectionnés avec nos partenaires fonciers. Des projets de construction de maison élaborés par nos conseillers habitat dans les Landes, en Gironde et au Pays basque.";
 
 
-/* Le chapô est affiché ET servi à Google : sans cela, le client corrige
-   l'accroche de la page et la description des résultats de recherche
-   continue d'annoncer l'ancienne — c'est ce que promet l'aide du champ. */
+/* Le titre et la description pour Google sont ceux du texte livré par le
+   client le 01/11 (Texte_page_resultat_Annonces.docx).
+
+   ⚠ `hero.intro`, PAS `hero.chapo` : la base garde en stock l'ancien chapô,
+   qui serait servi par-dessus le nouveau (voir `fusionnerPages`). */
 export async function generateMetadata({
   searchParams,
 }: {
   searchParams: Promise<Params>;
 }): Promise<Metadata> {
-  const [{ pages }, sp] = await Promise.all([getContent(), searchParams]);
-  const t = lecteurBlocs(pages, "annonces");
+  const sp = await searchParams;
   const meta = await resolveMetadata("/annonces", {
-    title: "Terrains & maisons disponibles",
-    description: t("hero.chapo", CHAPO),
+    title: "Choisir son terrain constructible : critères et conseils",
+    description:
+      "Choisir son terrain constructible dans les Landes, le sud Gironde ou le Pays basque : nos propositions de maisons neuves.",
     alternates: { canonical: "/annonces" },
   });
 
@@ -93,11 +98,24 @@ export default async function AnnoncesPage({
             ]}
           />
           <h1>{t("hero.titre", TITRE)}</h1>
-          <p style={{ whiteSpace: "pre-line" }}>{t("hero.chapo", CHAPO)}</p>
+          <p style={{ whiteSpace: "pre-line" }}>{t("hero.intro", CHAPO)}</p>
         </div>
       </section>
 
       <AnnoncesBrowser resultat={resultat} />
+
+      {/* Le texte de référencement, sur la seule première page : répété sur
+          les suivantes, il les ferait passer pour des doublons. */}
+      {resultat.criteres.page === 1 ? (
+        <section className="l-texte">
+          <div className="container">
+            <div
+              className="c-prose"
+              dangerouslySetInnerHTML={{ __html: markdownToHtml(TEXTE_ANNONCES) }}
+            />
+          </div>
+        </section>
+      ) : null}
     </main>
   );
 }

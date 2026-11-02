@@ -131,10 +131,10 @@ export const PAGES_DEFAUT: PageEditable[] = [
         multiligne: true,
       },
       {
-        cle: "juste.texte",
+        cle: "juste.note",
         label: "Paragraphe secondaire de la section prix",
         valeur:
-          "Avec Maisons ESSENSYA, chaque plan est conçu par notre bureau d'études avec un mot d'ordre : uniquement l'essentiel pour maximiser le prix.",
+          "Avec Maisons ESSENSYA, chaque plan est conçu par notre bureau d'études avec un mot d'ordre : uniquement l'essentiel pour minimiser le prix.",
         multiligne: true,
       },
       {
@@ -379,11 +379,10 @@ export const PAGES_DEFAUT: PageEditable[] = [
         valeur: "Terrains & maisons",
       },
       {
-        cle: "hero.chapo",
+        cle: "hero.intro",
         label: "Chapô de la page",
-        aide: "Sert aussi de description de la page pour Google si l'écran Référencement n'en donne pas d'autre.",
         valeur:
-          "Des terrains repérés par nos agences, seuls ou livrés avec la maison Essensya. Le lieu change, la maison ne change pas — et son prix non plus.",
+          "Des terrains à bâtir sélectionnés avec nos partenaires fonciers. Des projets de construction de maison élaborés par nos conseillers habitat dans les Landes, en Gironde et au Pays basque.",
         multiligne: true,
       },
     ],

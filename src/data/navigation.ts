@@ -19,10 +19,11 @@
    sous-menu. « Plans de maisons » et « Projets de construction » mènent
    en plus à la page qui les rassemble déjà : la gamme et les annonces.
 
-   ⚠ TROIS LIENS VISENT UNE SECTION ET NON UNE PAGE : les étapes, la FAQ
-   et les engagements vivent aujourd'hui sur /concept. Le schéma leur
-   donne des pages propres (la FAQ s'y divise même en trois) ; le jour
-   où elles existent, seul le `href` change ici.
+   « Votre construction » : une page et une adresse par onglet.
+   « L'expérience ESSENSYA » : ses cinq premiers onglets sont les sections
+   d'une seule page, /concept ; les suivants ont chacun la leur (retour du
+   client du 01/11). « Avis clients » attend d'avoir des avis : sa page reste
+   en ligne, hors du menu.
    ════════════════════════════════════════════════════════════════ */
 
 /** Un lien de sous-menu. */
@@ -75,24 +76,23 @@ export const NAVIGATION: EntreeNav[] = [
       { label: "Construire dans les Landes", href: "/construire/landes" },
       { label: "Construire au Pays basque", href: "/construire/pays-basque" },
       { label: "Construire en Gironde", href: "/construire/gironde" },
-      { label: "Les étapes de construction", href: "/concept#etapes" },
+      { label: "Les étapes de construction", href: "/etapes-de-construction" },
       { label: "Nos guides de construction", href: "/guides" },
-      { label: "Foire aux questions", href: "/concept#faq" },
+      { label: "Foire aux questions", href: "/faq" },
       { label: "Simulateur de financement", href: "/simulateur-de-financement" },
     ],
   },
   {
     label: "L'expérience ESSENSYA",
     enfants: [
-      { label: "Qui sommes-nous", href: "/qui-sommes-nous" },
-      { label: "Le concept ESSENSYA", href: "/concept" },
+      { label: "Qui sommes-nous", href: "/concept#qui-sommes-nous" },
+      { label: "Le concept ESSENSYA", href: "/concept#concept" },
       { label: "Nos engagements", href: "/concept#engagements" },
+      { label: "L'accompagnement ESSENSYA", href: "/concept#accompagnement" },
+      { label: "Nos équipes", href: "/concept#equipes" },
       { label: "Nos garanties", href: "/garanties" },
-      { label: "Nos équipes", href: "/equipes" },
-      { label: "Parrainage", href: "/parrainage" },
-      { label: "Avis clients", href: "/avis-clients" },
       { label: "Nos réalisations", href: "/realisations" },
-      { label: "L'accompagnement ESSENSYA", href: "/accompagnement" },
+      { label: "Parrainage", href: "/parrainage" },
     ],
   },
   /* Pas de sous-menu : sur le schéma, les agences et les actualités

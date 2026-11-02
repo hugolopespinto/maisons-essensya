@@ -82,6 +82,13 @@ html:has(.sf-modale[open]){overflow:hidden}
 .sf-modale__tete h2{font-size:clamp(1.6rem,3vw,2.4rem)}
 .sf-modale__fermer{display:inline-grid;place-items:center;flex:none;width:44px;height:44px;border-radius:50%;border:var(--line);color:var(--anthracite);transition:border-color var(--dur-fast) var(--ease)}
 .sf-modale__fermer:hover{border-color:var(--anthracite)}
+/* Portables bas (1 366 × 768) : la mention, allongée des prêts bonifiés
+   le 28/10, faisait défiler la fenêtre d'une trentaine de pixels. Les
+   marges se resserrent ; les grands écrans ne changent pas. */
+@media (min-width:641px) and (max-height:800px){
+  .sf-modale__corps{padding:var(--s-3)}
+  .sf-modale .sf-grille{row-gap:var(--s-3)}
+}
 @media (max-width:640px){
   .sf-modale{width:100%;height:100dvh;max-height:100dvh;border-radius:0}
   .sf-modale__corps{padding:var(--s-3)}

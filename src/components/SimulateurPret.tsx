@@ -7,7 +7,6 @@ import {
   DUREE_DEFAUT,
   TAUX_DEFAUT,
   TAUX_MAX_CURSEUR,
-  apportSuggere,
   calculer,
   enSaisie,
   lire,
@@ -23,16 +22,20 @@ import {
 
    PRÉ-REMPLI depuis le 24/10, à la demande du client : le prix du bien
    quand le simulateur s'ouvre depuis une fiche, un taux de 3 % réglé
-   au curseur (0 à 5 %), 20 ans, et un apport de 10 % du projet arrondi
-   à 5 000 €. Le calcul vit dans src/lib/simulation.ts.
+   au curseur (0 à 5 %) et 20 ans. Le calcul vit dans
+   src/lib/simulation.ts.
+
+   L'APPORT, LUI, PART VIDE (retour du client, 28/10) : les 10 % du
+   projet proposés jusque-là ne disaient rien de la situation du
+   visiteur, et le client a fait retirer la ligne qui les annonçait.
 
    ⚠ LE TAUX PAR DÉFAUT EST UN EXEMPLE. Jusqu'au 24/10, le site n'en
    proposait aucun : une mensualité calculée sur un taux que NOUS
    affichons se rapproche d'une publicité pour un crédit, avec ses
    mentions obligatoires (voir l'aide du champ « Mensualité indicative »
-   du back-office). Le client a demandé ce taux ; l'aide du champ et la
-   mention le présentent comme un exemple, et la validation juridique
-   reste à faire avant d'indexer la page.
+   du back-office). Le client a demandé ce taux ; la mention le présente
+   comme un exemple, et la validation juridique reste à faire avant
+   d'indexer la page.
    ════════════════════════════════════════════════════════════════ */
 
 /**
@@ -60,15 +63,10 @@ export default function SimulateurPret({
 }) {
   const id = useId();
   const [projet, setProjet] = useState(montantInitial ? enSaisie(montantInitial) : "");
-  /* `null` tant que le visiteur n'a pas touché à l'apport : il suit
-     alors le montant du projet (10 %, arrondi). Dès la première saisie,
-     c'est la sienne qui compte, même vide. */
-  const [apportSaisi, setApportSaisi] = useState<string | null>(null);
+  const [apport, setApport] = useState("");
   const [taux, setTaux] = useState(enSaisie(TAUX_DEFAUT));
   const [duree, setDuree] = useState(String(DUREE_DEFAUT));
 
-  const p = lire(projet);
-  const apport = apportSaisi ?? (p ? enSaisie(apportSuggere(p)) : "");
   const r = calculer(projet, apport, taux, duree);
   const annees = lire(duree);
   const curseur = Math.min(lire(taux) ?? 0, TAUX_MAX_CURSEUR);
@@ -108,15 +106,11 @@ export default function SimulateurPret({
                 inputMode="numeric"
                 autoComplete="off"
                 value={apport}
-                onChange={(e) => setApportSaisi(e.target.value)}
+                onChange={(e) => setApport(e.target.value)}
                 placeholder="0"
-                aria-describedby={`${id}-apport-aide`}
               />
               <span aria-hidden="true">€</span>
             </div>
-            <span className="sf-aide" id={`${id}-apport-aide`}>
-              Proposé à 10 % du projet.
-            </span>
           </div>
 
           <div className="c-field">
@@ -150,7 +144,8 @@ export default function SimulateurPret({
               </div>
             </div>
             <span className="sf-aide" id={`${id}-taux-aide`}>
-              Un exemple : réglez-le sur celui de votre banque.
+              Réglez le taux sur celui de votre banque ou regardez sur Internet
+              les taux en cours actuellement.
             </span>
           </div>
 

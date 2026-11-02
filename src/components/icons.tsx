@@ -69,6 +69,26 @@ const paths: Record<IconName, { size: number; body: JSX.Element }> = {
       </>
     ),
   },
+  arbre: {
+    size: 20,
+    body: (
+      <>
+        <path d="M12 21v-8" />
+        <path d="M12 3a5 5 0 014.9 6A4 4 0 0116 16.5H8A4 4 0 017.1 9 5 5 0 0112 3z" />
+        <path d="M12 13l-2.5-2.5M12 15l2.5-2.5" />
+      </>
+    ),
+  },
+  /* Une feuille : la RE 2020, c'est la sobriété et le carbone. */
+  re2020: {
+    size: 20,
+    body: (
+      <>
+        <path d="M5 19C4 11 9 5 20 4c0 11-6 16-13 15" />
+        <path d="M5 21c1-5 4-9 9-11" />
+      </>
+    ),
+  },
   loc: {
     size: 20,
     body: (

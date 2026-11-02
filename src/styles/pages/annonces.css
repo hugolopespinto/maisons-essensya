@@ -25,6 +25,8 @@
 .l-view-toggle button.is-on{background:var(--anthracite);color:var(--craie)}
 .l-body{padding:var(--s-4) 0 var(--s-6)}
 .l-body .container{display:grid;grid-template-columns:7fr 5fr;gap:var(--s-4);align-items:start}
+/* Le texte de référencement, sous les résultats. */
+.l-texte{padding:var(--s-5) 0;background:var(--sable);border-top:var(--line)}
 .l-results{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-3);scroll-margin-top:calc(var(--header-h) + 92px)}
 /* Le temps que le serveur réponde, la liste affichée est celle d'avant :
    on la grise pour le dire. Après un court délai seulement — une réponse

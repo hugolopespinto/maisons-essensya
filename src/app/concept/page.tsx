@@ -3,10 +3,12 @@ import Link from "next/link";
 import FilAriane from "@/components/FilAriane";
 import { MarkedList } from "@/components/SpecList";
 import { ESSENSYA_DATA, HOUSE, PRICE_FROM, REEL } from "@/data/essensya";
-import { MODELES } from "@/data/gamme";
+import { FAQ } from "@/data/faq";
 import { lecteurBlocs } from "@/lib/blocs";
 import { fmtPrice } from "@/lib/format";
+import { markdownToHtml } from "@/lib/markdown";
 import { getContent } from "@/lib/store";
+import "@/styles/prose.css";
 import "@/styles/pages/concept.css";
 import { resolveMetadata } from "@/lib/seo";
 
@@ -28,57 +30,46 @@ const METADATA_DEFAUT: Metadata = {
 
 const c = ESSENSYA_DATA.concept;
 
+const SOMMAIRE = [
+  ["qui-sommes-nous", "Qui sommes-nous"],
+  ["concept", "Le concept ESSENSYA"],
+  ["engagements", "Nos engagements"],
+  ["accompagnement", "L'accompagnement ESSENSYA"],
+  ["equipes", "Nos équipes"],
+] as const;
 
-/* ════ FAQ ════
-   Page de réassurance : c'est ici qu'on répond aux objections avant
-   qu'elles n'arrivent au téléphone — et c'est le principal gisement de
-   requêtes longue traîne du métier. Les réponses sont écrites en dur
-   sauf les prix et les libellés produit, qui viennent des données pour
-   ne jamais diverger de la fiche maison. */
-const FAQ: { q: string; a: string }[] = [
-  {
-    q: "Pourquoi vos maisons coûtent-elles moins cher ?",
-    a: `Parce qu'un plan dessiné jusqu'au bout revient moins cher qu'un catalogue de trente plans étudiés à moitié. Nos ${MODELES.length} modèles sont optimisés poste par poste, matériau par matériau : pas de dégagement inutile, pas de recoin qui ne sert à rien. L'étude de chacun est faite, chiffrée et amortie sur toutes les maisons construites — ce que nous ne dépensons pas en complexité, nous le rendons sur le prix.`,
-  },
-  {
-    q: "« Moins cher », est-ce que ça veut dire moins bien construit ?",
-    a: "Non, et c'est vérifiable poste par poste. Conformité RE 2020, système de chauffage performant, salle de bain équipée, garantie décennale et assurance dommages-ouvrage : ce sont les mêmes exigences et les mêmes garanties que chez un constructeur bien plus cher. Ce qui baisse, c'est le coût de la complexité — l'étude refaite à chaque client, les options à arbitrer, les avenants en cours de chantier. Pas le coût du mur.",
-  },
-  {
-    q: "Puis-je personnaliser ma maison ?",
-    a: "Oui, sur une base tenue. Les grands arbitrages — volumes, organisation du plan, équipements — sont déjà faits : c'est ce qui permet d'annoncer le prix avant le premier rendez-vous. La personnalisation porte sur ce qui ne rouvre ni l'étude ni le permis. Un plan entièrement sur mesure relève d'un architecte, qui le fera mieux que nous — et plus cher.",
-  },
-  {
-    q: "Que comprend exactement le prix annoncé ?",
-    a: `${fmtPrice(PRICE_FROM)}, c'est le prix d'entrée de gamme : ${REEL.mentionPrix} Sont compris : ${HOUSE.included.join(" · ")}. Ne sont pas compris : ${HOUSE.excluded.join(" · ")}. Cette seconde liste est affichée partout où le prix l'est : un prix bas dont on tait les exclusions n'est pas un prix bas.`,
-  },
-  {
-    q: "Que couvre le contrat CCMI ?",
-    a: "Le contrat de construction de maison individuelle est le cadre le plus protecteur du droit français. Il fige le prix et les délais, et il ouvre la garantie de livraison à prix et délais convenus, la garantie de parfait achèvement (1 an), la garantie biennale (2 ans), la garantie décennale (10 ans) et l'assurance dommages-ouvrage. Le prix ne peut pas bouger en cours de chantier, sauf si c'est vous qui demandez une modification.",
-  },
-  {
-    q: "Et si mon terrain est en pente ou de forme irrégulière ?",
-    a: "L'étude de sol et l'adaptation au terrain ne sont PAS comprises dans le prix affiché, et c'est écrit à côté de ce prix. Une pente marquée, un sol argileux ou un accès difficile demandent des fondations spécifiques : ce surcoût existe chez tous les constructeurs, et nous le chiffrons avant la signature, pas après. Nos agences repèrent les parcelles réellement compatibles avec nos modèles — et quand un terrain ne convient pas, nous vous le disons.",
-  },
-  {
-    q: "Combien de temps entre le premier rendez-vous et les clés ?",
-    a: "Le chiffrage complet est remis sous 48 h, puisqu'il n'y a rien à étudier de nouveau. Il faut ensuite compter l'instruction du permis de construire — deux mois pour une maison individuelle, trois en secteur protégé — puis le chantier. Les délais exacts sont écrits dans le CCMI, qui les garantit : un retard vous est dû, il n'est pas subi.",
-  },
-  {
-    q: "Faut-il un apport pour faire construire ?",
-    a: "Pas systématiquement. Les banques demandent le plus souvent de quoi couvrir les frais de notaire et de garantie, et certains prêts aidés — le prêt à taux zéro en tête, sous conditions de ressources et de zone — permettent de financer un premier achat avec un apport limité. Nous ne sommes ni banque ni courtier : nous vous remettons un chiffrage complet et daté, c'est exactement la pièce que votre banque réclamera.",
-  },
-];
+/* ⚠ TEXTES À FAIRE VALIDER PAR LE CLIENT, qui n'en a pas livré pour ces trois
+   sections : ils ne reprennent que ses documents du 01/11 et le reste du site.
+   Ni nom, ni chiffre nouveau. */
+const QUI_SOMMES_NOUS = `Maisons ESSENSYA est un constructeur de maisons individuelles implanté dans les Landes et en Gironde, avec cinq agences : Canéjan, Parentis-en-Born, Saint-Vincent-de-Tyrosse, Tartas et Hagetmau.
 
-const faqJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: FAQ.map((f) => ({
-    "@type": "Question",
-    name: f.q,
-    acceptedAnswer: { "@type": "Answer", text: f.a },
-  })),
-};
+Nos maisons sont conçues, chiffrées et construites par nos équipes, avec 40 ans d'expérience au sein du groupe CIMI. Notre mot d'ordre tient en une phrase : l'essentiel de la qualité au meilleur prix.
+
+[Trouver votre agence](/agences)`;
+
+const ACCOMPAGNEMENT = `Un conseiller unique et son équipe vous accompagnent du premier rendez-vous à la remise des clés : ils coordonnent la conception, les démarches administratives, la gestion des travaux et le respect du planning. Vous bénéficiez d'un accompagnement complet sans piloter seul les corps de métier.
+
+- **Votre terrain :** nous vous proposons des terrains à bâtir sélectionnés avec nos partenaires fonciers, ou nous étudions la faisabilité du vôtre.
+- **Votre financement :** vos conseillers habitat vous aident à établir un plan de financement clair, qui intègre toutes les dépenses liées au projet.
+- **Vos démarches :** nous montons le dossier de permis de construire, produisons l'attestation RE2020 et souscrivons l'assurance dommages-ouvrage à votre nom.
+- **Votre chantier :** votre conducteur de travaux tient le planning, coordonne les artisans et fait avec vous le point à chaque étape.
+- **Votre réception :** nous organisons la visite, levons les réserves éventuelles et vous remettons les clés.
+
+[Les étapes de construction, en détail](/etapes-de-construction)`;
+
+const EQUIPES = `- **Votre conseiller habitat** vous reçoit en agence, étudie votre projet et votre terrain, et reste votre interlocuteur du premier rendez-vous à la remise des clés.
+- **Notre bureau d'études** conçoit chaque plan, avec l'essentiel pour mot d'ordre.
+- **Votre conducteur de travaux** organise le chantier, récapitule vos choix avant l'ouverture et vous fait visiter votre maison à chaque étape.
+- **Des artisans locaux**, qui connaissent le terrain et travaillent avec nos agences, réalisent les travaux.
+
+[Rencontrer nos équipes en agence](/agences)`;
+
+
+/* L'extrait de la FAQ : les questions au complet, et leurs données
+   structurées, sont sur /faq. */
+const EXTRAIT_FAQ = FAQ.filter((f) =>
+  /coûtent-elles moins cher|moins bien construit|contrat CCMI|premier rendez-vous/.test(f.q),
+);
 
 
 /* Les titres en deux temps sont saisis avec un vrai retour à la ligne :
@@ -91,19 +82,12 @@ export default async function ConceptPage() {
 
   return (
     <main className="page">
-      {/* JSON-LD FAQPage : les questions ci-dessous sont éligibles aux
-          résultats enrichis, à condition d'être visibles dans la page. */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(faqJsonLd).replace(/</g, "\\u003c"),
-        }}
-      />
-
       <section className="p-head">
         <div className="container">
-          <FilAriane items={[{ nom: "Accueil", path: "/" }, { nom: "Notre concept" }]} />
-          <h1>{t("hero.titre", "Le concept Essensya")}</h1>
+          <FilAriane items={[{ nom: "Accueil", path: "/" }, { nom: "L'expérience ESSENSYA" }]} />
+          {/* ⚠ `experience.titre`, PAS `hero.titre` : la base garde en stock
+              l'ancien titre, qui serait servi par-dessus celui-ci. */}
+          <h1>{t("experience.titre", "L'expérience ESSENSYA")}</h1>
           <p style={PRE_LINE}>
             {t(
               "hero.chapo",
@@ -118,7 +102,28 @@ export default async function ConceptPage() {
         </div>
       </section>
 
-      <section className="pc-manifesto">
+      {/* Le sommaire de la page : les cinq onglets du menu, dans leur ordre. */}
+      <nav className="xp-sommaire" aria-label="Sur cette page">
+        <div className="container">
+          {SOMMAIRE.map(([id, nom]) => (
+            <a href={`#${id}`} key={id}>
+              {nom}
+            </a>
+          ))}
+        </div>
+      </nav>
+
+      <section className="xp-texte" id="qui-sommes-nous">
+        <div className="container">
+          <div className="c-section-head" data-reveal>
+            <span className="c-label c-label--accent">Qui sommes-nous</span>
+            <h2>Un constructeur local, 40 ans d&apos;expérience</h2>
+          </div>
+          <div className="c-prose" dangerouslySetInnerHTML={{ __html: markdownToHtml(QUI_SOMMES_NOUS) }} />
+        </div>
+      </section>
+
+      <section className="pc-manifesto" id="concept">
         <div className="container">
           <span
             className="c-label c-label--accent"
@@ -186,9 +191,8 @@ export default async function ConceptPage() {
         </div>
       </section>
 
-      {/* Cible de « Les étapes de construction » dans la navigation, et
-          des liens du plan du site et de /accompagnement : l'ancre
-          manquait, ils atterrissaient tous en haut de page. */}
+      {/* Le guide complet a sa page, /etapes-de-construction ; l'ancre reste
+          pour les liens déjà publiés. */}
       <section className="s-steps" id="etapes">
         <div className="container">
           <div className="c-section-head" data-reveal>
@@ -205,6 +209,31 @@ export default async function ConceptPage() {
                 <p>{i.text}</p>
               </div>
             ))}
+          </div>
+          <p style={{ marginTop: "var(--s-4)" }} data-reveal>
+            <Link href="/etapes-de-construction" className="c-link">
+              Le guide complet des étapes <span aria-hidden="true">→</span>
+            </Link>
+          </p>
+        </div>
+      </section>
+
+      {/* Ce que le prix comprend. La colonne « Non compris » est partie à
+          la demande du client, comme sur /maisons ; le périmètre reste dit
+          par `REEL.mentionPrix` sous le montant de l'en-tête.
+
+          ⚠ `prix.titreCompris`, PAS `prix.titre` : une page déjà
+          enregistrée dans le back-office garde « ce qu'il ne comprend
+          pas » en stock et l'aurait servie par-dessus le nouveau défaut
+          (voir `fusionnerPages`). */}
+      <section className="pc-commit" style={{ paddingTop: 0 }} id="prix">
+        <div className="container">
+          <div className="c-section-head" data-reveal>
+            <span className="c-label c-label--accent">{t("prix.surtitre", "Le prix")}</span>
+            <h2>{t("prix.titreCompris", "Ce que le prix comprend")}</h2>
+          </div>
+          <div data-reveal>
+            <MarkedList items={HOUSE.included} variant="in" />
           </div>
         </div>
       </section>
@@ -229,25 +258,26 @@ export default async function ConceptPage() {
         </div>
       </section>
 
-      {/* Ce que le prix comprend. La colonne « Non compris » est partie à
-          la demande du client, comme sur /maisons ; le périmètre reste dit
-          par `REEL.mentionPrix` sous le montant de l'en-tête.
-
-          ⚠ `prix.titreCompris`, PAS `prix.titre` : une page déjà
-          enregistrée dans le back-office garde « ce qu'il ne comprend
-          pas » en stock et l'aurait servie par-dessus le nouveau défaut
-          (voir `fusionnerPages`). */}
-      <section className="pc-commit" style={{ paddingTop: 0 }} id="prix">
+      <section className="xp-texte" id="accompagnement">
         <div className="container">
           <div className="c-section-head" data-reveal>
-            <span className="c-label c-label--accent">{t("prix.surtitre", "Le prix")}</span>
-            <h2>{t("prix.titreCompris", "Ce que le prix comprend")}</h2>
+            <span className="c-label c-label--accent">L&apos;accompagnement ESSENSYA</span>
+            <h2>À vos côtés, du premier rendez-vous aux clés</h2>
           </div>
-          <div data-reveal>
-            <MarkedList items={HOUSE.included} variant="in" />
-          </div>
+          <div className="c-prose" dangerouslySetInnerHTML={{ __html: markdownToHtml(ACCOMPAGNEMENT) }} />
         </div>
       </section>
+
+      <section className="xp-texte" id="equipes">
+        <div className="container">
+          <div className="c-section-head" data-reveal>
+            <span className="c-label c-label--accent">Nos équipes</span>
+            <h2>Des interlocuteurs identifiés</h2>
+          </div>
+          <div className="c-prose" dangerouslySetInnerHTML={{ __html: markdownToHtml(EQUIPES) }} />
+        </div>
+      </section>
+
 
       <section className="pc-commit" style={{ paddingTop: 0 }} id="faq">
         <div className="container">
@@ -258,7 +288,7 @@ export default async function ConceptPage() {
             <h2>{t("faq.titre", "Les réponses avant les questions")}</h2>
           </div>
           <div className="pc-commit__list">
-            {FAQ.map((f, i) => (
+            {EXTRAIT_FAQ.map((f, i) => (
               <div className="pc-commit__item" data-reveal key={f.q}>
                 <span className="pc-commit__num">{String(i + 1).padStart(2, "0")}</span>
                 <h3>{f.q}</h3>
@@ -266,6 +296,11 @@ export default async function ConceptPage() {
               </div>
             ))}
           </div>
+          <p style={{ marginTop: "var(--s-4)" }} data-reveal>
+            <Link href="/faq" className="c-link">
+              Toutes les questions fréquentes <span aria-hidden="true">→</span>
+            </Link>
+          </p>
         </div>
       </section>
 

@@ -26,6 +26,10 @@ const STATICS: [string, number][] = [
   ["/realisations", 0.8],
   ["/agences", 0.8],
   ["/concept", 0.7],
+  ["/garanties", 0.7],
+  ["/faq", 0.7],
+  ["/etapes-de-construction", 0.7],
+  ["/construire/landes", 0.7],
   ["/contact", 0.7],
   /* Le blog manquait purement et simplement : ses articles étaient en
      ligne, indexables, et absents du seul fichier qui dit à Google

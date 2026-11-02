@@ -14,7 +14,9 @@ export type IconName =
   /* Ajoutées pour le bandeau « Nos points forts », qui demande un picto
      par bloc. Le jeu d'origine décrit un bien immobilier — surface, lit,
      terrain ; il ne savait dire ni « conception » ni « qualité ». */
-  | "compass" | "checklist" | "flow" | "wall" | "team";
+  | "compass" | "checklist" | "flow" | "wall" | "team"
+  /* Les pictos de la fiche annonce demandés par le client (01/11). */
+  | "arbre" | "re2020";
 
 export interface GalleryItem {
   src: string;

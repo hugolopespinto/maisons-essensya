@@ -22,7 +22,7 @@ export default function Page() {
       fil={[{ nom: "Accueil", path: "/" }, { nom: "Nos guides de construction" }]}
       titre={"Nos guides de construction"}
       quand={"Les guides pour préparer votre projet seront réunis ici : choisir son terrain, choisir son plan, financer sa maison, comprendre le CCMI."}
-      relais={[{ href: "/concept#faq", label: "Les questions fréquentes", quoi: "Prix, délais, apport, garanties : les réponses les plus demandées." }, { href: "/concept#etapes", label: "Les étapes de construction", quoi: "Le parcours en quatre étapes, déjà détaillé." }]}
+      relais={[{ href: "/faq", label: "Les questions fréquentes", quoi: "Prix, délais, apport, garanties : les réponses les plus demandées." }, { href: "/concept#etapes", label: "Les étapes de construction", quoi: "Le parcours en quatre étapes, déjà détaillé." }]}
     />
   );
 }

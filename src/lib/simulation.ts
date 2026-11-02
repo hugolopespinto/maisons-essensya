@@ -17,17 +17,14 @@
  *
  * ⚠ C'EST UN EXEMPLE, ET IL DOIT LE RESTER À L'ÉCRAN. Un taux affiché
  * par le site rapproche le simulateur d'une publicité pour un crédit :
- * l'aide du champ le dit (« un exemple »), la mention le répète, et la
- * page reste hors de l'index tant que le client ne l'a pas fait valider.
+ * la mention le dit (« un exemple, pas une offre »), le chapô de la page
+ * le répète, et la page reste hors de l'index tant que le client ne l'a
+ * pas fait valider.
  */
 export const TAUX_DEFAUT = 3;
 /** La borne haute du curseur ; un taux plus élevé reste saisissable. */
 export const TAUX_MAX_CURSEUR = 5;
 export const DUREE_DEFAUT = 20;
-
-/** L'apport proposé : 10 % du projet, arrondi aux 5 000 € les plus proches. */
-export const apportSuggere = (projet: number): number =>
-  Math.round((projet * 0.1) / 5000) * 5000;
 
 /**
  * « 180 000 », « 3,45 % » → nombre ; vide, négatif ou illisible → null.

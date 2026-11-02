@@ -8,12 +8,16 @@ import { TAUX_DEFAUT, enSaisie } from "@/lib/simulation";
 export default function MentionSimulation() {
   return (
     <>
+      {/* La première phrase est celle du client (retour du 28/10). */}
       <p className="sf-mention">
-        Simulation indicative et non contractuelle, à taux fixe, hors assurance
-        emprunteur et frais de garantie. Le taux proposé par défaut (
-        {enSaisie(TAUX_DEFAUT)} %) est un exemple, pas une offre : seule celle
-        de votre banque fait foi. Maisons Essensya n&apos;est ni une banque ni un
-        courtier.
+        Cette simulation est indicative et ne tient pas compte des prêts
+        bonifiés dont vous pourriez profiter, comme le prêt à taux zéro, un
+        prêt Action Logement ou des prêts complémentaires, qui feraient
+        baisser le montant des mensualités. Non contractuelle, elle est
+        calculée à taux fixe, hors assurance emprunteur et frais de garantie.
+        Le taux proposé par défaut ({enSaisie(TAUX_DEFAUT)} %) est un
+        exemple, pas une offre : seule celle de votre banque fait foi.
+        Maisons Essensya n&apos;est ni une banque ni un courtier.
       </p>
       <p className="sf-relais">
         <Link href="/concept#faq" className="c-link">

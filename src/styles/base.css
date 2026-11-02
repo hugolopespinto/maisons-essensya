@@ -136,7 +136,7 @@
    (voir `fonds-sombres.mjs` dans les scripts de qualification). C'est
    ce relevé-là qu'il faut rejouer après avoir ajouté une section. */
 .u-sombre,
-.s-forts,.s-opp,.s-cta,.s-proof,.s-philo,.site-footer,.mobile-nav,
+.s-forts,.s-cta,.s-proof,.s-philo,.site-footer,.mobile-nav,
 .c-cookies,.footer-legal,.g-hero,.a-aside__card,.pc-figures,
 .m-hero,.m-arch,.ct-form-card,.lp-hero,.skip-link,
 /* Le héros et la vitrine de la gamme, tous deux sur `--noir` : « La
@@ -588,7 +588,7 @@ body.lp-mode .header-cta{display:inline-flex}
 
 
 /* ════ 12. FOOTER ════ */
-.site-footer{background:var(--noir);color:var(--sable);padding:var(--s-6) 0 var(--s-4)}
+.site-footer{background:var(--noir);color:var(--sable);padding:var(--s-5) 0 var(--s-4)}
 .site-footer .logo{color:var(--craie)}
 .footer-grid{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:var(--s-4);padding-bottom:var(--s-5);border-bottom:1px solid rgba(242,243,243,.14)}
 .footer-col h4{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.18em;text-transform:uppercase;color:var(--muet);margin-bottom:var(--s-2);font-weight:500}

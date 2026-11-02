@@ -1,0 +1,15 @@
+/* ════ PAGES DE TEXTE (.r-) — guides livrés par le client ════ */
+.r-titre{font-size:clamp(1.9rem,4vw,3.2rem)}
+.r-corps{padding:0 0 var(--s-6)}
+.r-corps .c-prose + .c-prose{margin-top:var(--s-3)}
+.r-tableau{max-width:66ch;margin-top:var(--s-3);overflow-x:auto}
+.r-tableau table{width:100%;border-collapse:collapse;font-size:var(--fs-small)}
+.r-tableau th,.r-tableau td{padding:.8rem .8rem .8rem 0;border-bottom:var(--line);text-align:left;vertical-align:top}
+.r-tableau th{font-family:var(--f-mono);font-size:var(--fs-label);font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--pierre)}
+.r-faq{max-width:66ch;margin-top:var(--s-5);padding-top:var(--s-3);border-top:var(--line)}
+.r-faq h2{font-size:clamp(1.4rem,2.8vw,1.9rem)}
+.r-faq__item{margin-top:var(--s-4)}
+.r-faq__item h3{font-size:clamp(1.05rem,2vw,1.25rem)}
+.r-faq__item p{margin-top:.6rem;line-height:1.72}
+.r-liens{display:flex;flex-wrap:wrap;gap:var(--s-2);margin-top:var(--s-5)}
+@media (max-width:560px){.r-liens .c-btn{flex:1 1 100%;justify-content:center}}

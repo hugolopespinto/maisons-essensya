@@ -162,14 +162,15 @@ export function zoneUtile(vue: Zone, points: readonly { lat: number; lng: number
 export function lireCriteres(sp: Params, departements: readonly string[]): Criteres {
   const type = premier(sp.type);
   const dept = premier(sp.dept);
-  const chambres = Number(premier(sp.chambres));
   const tri = premier(sp.tri);
   const page = premier(sp.page);
   return {
     q: normaliserRecherche(premier(sp.q)),
     type: (TYPES as readonly string[]).includes(type) ? (type as TypeAnnonce) : null,
     dept: dept && departements.includes(dept) ? dept : null,
-    chambres: (CHAMBRES as readonly number[]).includes(chambres) ? chambres : null,
+    /* Le filtre a été retiré à la demande du client (01/11) : une ancienne URL
+       en `?chambres=` reste valide, le paramètre est ignoré. */
+    chambres: null,
     tri: (TRIS as readonly string[]).includes(tri) ? (tri as Tri) : "recent",
     /* Des chiffres et rien d'autre : `Number` accepterait « 1e3 » ou « 0x2 ». */
     page: /^\d{1,6}$/.test(page) ? Math.max(1, Number(page)) : 1,

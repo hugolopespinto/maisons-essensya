@@ -12,6 +12,7 @@ import { FILM_ACCUEIL } from "@/data/film-accueil";
 import { facade } from "@/data/visuels";
 import { srcSet, vue, type Visuel } from "@/data/visuels";
 import visuelEngagements from "@/data/visuel-engagements.json";
+import visuelsRaisons from "@/data/visuels-raisons.json";
 import "@/styles/accueil.css";
 import { lecteurBlocs } from "@/lib/blocs";
 import { annonceUrl, fmtPrice, fmtSurface } from "@/lib/format";
@@ -74,6 +75,11 @@ const PHOTOS_JUSTE = [
    paliers et son empreinte suivent pourtant les mêmes règles que
    scripts/images.mjs — mêmes largeurs, mêmes qualités AVIF et WebP. */
 const VISUEL_ENGAGEMENTS = visuelEngagements as Visuel;
+
+/* Les photos des raisons 3 et 5, livrées par le client le 01/11. Hors du
+   catalogue des modèles pour la même raison que le visuel ci-dessus. */
+const FOND_PROCESSUS = visuelsRaisons.processus as Visuel;
+const FOND_GARANTIES = visuelsRaisons.garanties as Visuel;
 
 /* ⚠ VISUEL DE SECOURS DU BLOC « OPPORTUNITÉ ».
    Le client demande d'afficher la première image de l'annonce ; 90 % du
@@ -196,8 +202,11 @@ export default async function HomePage() {
               </p>
               <p className="s-juste__note" data-reveal>
                 {t(
-                  "juste.texte",
-                  "Avec Maisons ESSENSYA, chaque plan est conçu par notre bureau d'études avec un mot d'ordre : uniquement l'essentiel pour maximiser le prix.",
+                  /* ⚠ `juste.note`, PAS `juste.texte` : la base garde en stock
+                     l'ancienne coquille (« maximiser le prix »), qui serait
+                     servie par-dessus ce texte (voir `fusionnerPages`). */
+                  "juste.note",
+                  "Avec Maisons ESSENSYA, chaque plan est conçu par notre bureau d'études avec un mot d'ordre : uniquement l'essentiel pour minimiser le prix.",
                 )}
               </p>
             </div>
@@ -285,18 +294,15 @@ export default async function HomePage() {
         surtitre={t("forts.surtitre", "Nos points forts")}
         titre={t("forts.titre", "Six raisons de construire avec nous")}
         items={D.philosophy}
-        /* ⚠ ESSAI À FAIRE VALIDER — une photo par carte, prise dans les
-           rendus existants faute de photos dédiées. Dans l'ordre des
-           cartes : le plan (conception), la cuisine équipée (les bons
-           choix), une maison livrée (processus), la salle d'eau
-           (qualité), une façade (garanties), une terrasse (l'équipe).
-           La sixième appelle une vraie photo de l'équipe. */
+        /* Une photo par carte. Le client a validé les 1, 2 et 4 et fourni
+           les 3 et 5 (01/11). La sixième, une terrasse, reste en attendant
+           une vraie photo de l'équipe. */
         fonds={[
           vue("athenes", "plan-axonometrique"),
           vue("athenes", "vue-4-interieur"),
-          vue("pekin", "vue-1-exterieur"),
+          FOND_PROCESSUS,
           vue("athenes", "vue-9-interieur"),
-          vue("hanoi", "vue-1-exterieur"),
+          FOND_GARANTIES,
           vue("pekin", "vue-4-terrasse"),
         ]}
       />

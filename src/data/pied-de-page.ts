@@ -94,10 +94,10 @@ export const colonnesPiedDefaut = (agences: LienPied[]): ColonnePied[] => [
   {
     titre: "L'expérience ESSENSYA",
     liens: [
-      { href: "/qui-sommes-nous", label: "Qui sommes-nous" },
-      { href: "/concept", label: "Le concept ESSENSYA" },
-      { href: "/accompagnement", label: "L'accompagnement ESSENSYA" },
+      { href: "/concept#qui-sommes-nous", label: "Qui sommes-nous" },
+      { href: "/concept#concept", label: "Le concept ESSENSYA" },
       { href: "/concept#engagements", label: "Nos engagements" },
+      { href: "/concept#accompagnement", label: "L'accompagnement ESSENSYA" },
       { href: "/guides/choisir-son-plan-de-maison", label: "Guide pour choisir votre plan de maison" },
       { href: "/guides/choisir-son-terrain", label: "Guide pour choisir votre terrain" },
       { href: "/contact", label: "Contact" },

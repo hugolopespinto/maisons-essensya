@@ -15,7 +15,7 @@ import {
   SANS_PHOTO,
   type AgenceAffichee,
 } from "@/lib/agences";
-import { agencyUrl, annonceTitle, annonceUrl, dept, fmtPrice } from "@/lib/format";
+import { agencyUrl, dept, fmtPrice } from "@/lib/format";
 import { markdownToHtml } from "@/lib/markdown";
 import { couper, titreCourt } from "@/lib/seo";
 import { getAnnonces } from "@/lib/vitahome/annonces";
@@ -207,13 +207,10 @@ export default async function AgencyPage({
   );
   const secteur = exact.length ? exact : local;
   const annonces = secteur.slice(0, 9);
-  const pointsAnnonces = secteur.flatMap((a) =>
-    a.lat != null && a.lng != null
-      ? [{ id: a.id, nom: annonceTitle(a), adresse: a.city, href: annonceUrl(a), lat: a.lat, lng: a.lng }]
-      : [],
-  );
 
-  const ville = g.zone || postalAddress(g.address).addressLocality || g.name;
+  /* La commune de l'agence, pas sa zone : `g.zone` vaut « Gironde » ou
+     « Landes », et le titre affichait « Constructeur de maisons à Gironde ». */
+  const ville = g.cities[0] || g.name.replace(/^Agence (de |du |d['’])/i, "");
   const nomDept = DEPARTEMENTS[agencyDept];
   const titreLocal = `Constructeur de maisons à ${ville}${
     agencyDept ? ` (${nomDept ? nomDept + " " : ""}${agencyDept})` : ""
@@ -357,14 +354,9 @@ export default async function AgencyPage({
                 <AnnonceCard annonce={a} key={a.id} />
               ))}
             </CarrouselAnnonces>
-            {pointsAnnonces.length > 0 && (
-              <div className="g-annonces-map" data-reveal>
-                <AgencesMapLazy agences={pointsAnnonces} />
-              </div>
-            )}
             <div style={{ marginTop: "var(--s-4)" }} data-reveal>
-              <Link href="/annonces" className="c-link">
-                Voir tous les terrains <span aria-hidden="true">→</span>
+              <Link href="/annonces" className="c-btn c-btn--solid">
+                Voir tous les projets <span className="arrow" aria-hidden="true">→</span>
               </Link>
             </div>
           </div>

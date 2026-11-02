@@ -513,24 +513,19 @@ export const ESSENSYA_DATA: EssensyaData = {
        s'ajoute, elle ne remplace pas. Les pages qui ont la place
        affichent toujours `text`.
 
-       ⚠ LES SIX `href` SONT À CONFIRMER PAR LE CLIENT. Ils visent des
-       ancres qui existent réellement — vérifiées une par une, pas
-       devinées. Quatre des six retombent sur /concept : le site n'a pas
-       encore six pages distinctes qui méritent ce lien. Les pages qui
-       conviendraient (/accompagnement, les guides) sont en préparation
-       et en noindex, donc hors de question depuis l'accueil. */
+       Les six `href` sont ceux du client (retour du 01/11). */
     {
       num: "01", title: "Conception maîtrisée", icon: "compass", href: "/maisons#gamme",
       text: "Chaque plan de chaque modèle a été optimisé poste par poste, matériau par matériau. Rien n'est laissé au hasard.",
       textCourt: "Chaque plan optimisé poste par poste, matériau par matériau.",
     },
     {
-      num: "02", title: "Les bons choix déjà faits", icon: "checklist", href: "/maisons#prix",
+      num: "02", title: "Les bons choix déjà faits", icon: "checklist", href: "/concept",
       text: "Nous avons déjà sélectionné les meilleurs choix pour vous : volumes, équipements. Il ne vous reste plus qu'à personnaliser.",
       textCourt: "Volumes et équipements déjà sélectionnés. Il ne reste qu'à personnaliser.",
     },
     {
-      num: "03", title: "Processus simplifié", icon: "flow", href: "/concept",
+      num: "03", title: "Processus simplifié", icon: "flow", href: "/concept#faq",
       text: "Moins d'étapes, moins d'aller-retour, votre projet avance vite et bien en toute transparence.",
       textCourt: "Moins d'étapes, moins d'aller-retour, en toute transparence.",
     },
@@ -540,7 +535,7 @@ export const ESSENSYA_DATA: EssensyaData = {
       textCourt: "RE 2020 respectée, équipements sélectionnés, exigences élevées.",
     },
     {
-      num: "05", title: "Garanties constructeur et CCMI", icon: "shield", href: "/concept#faq",
+      num: "05", title: "Garanties constructeur et CCMI", icon: "shield", href: "/garanties",
       text: "CCMI, garanties décennales, assurance dommages-ouvrage, vous bénéficiez du cadre juridique le plus protecteur pour les futurs propriétaires.",
       textCourt: "CCMI, décennale, dommages-ouvrage : le cadre le plus protecteur.",
     },

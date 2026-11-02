@@ -78,6 +78,23 @@ export const annonceTitle = (a: Pick<Annonce, "type" | "landSurface" | "city">) 
     : `Maison + terrain à ${a.city}`;
 };
 
+/**
+ * Le titre automatique d'une fiche (client, 01/11) :
+ * « Projet de construction d'une maison de 3 chambres à Cestas (33610) ».
+ * Sans nombre de chambres dans le flux, le titre s'en passe.
+ */
+export const annonceH1 = (
+  a: Pick<Annonce, "type" | "landSurface" | "city" | "zip" | "bedrooms">,
+) => {
+  const lieu = `${a.city}${a.zip ? ` (${a.zip})` : ""}`;
+  if (a.type === "terrain") {
+    const s = fmtSurface(a.landSurface);
+    return `Terrain${s ? ` de ${s}` : ""} à ${lieu}`;
+  }
+  const chambres = a.bedrooms ? ` de ${a.bedrooms} chambre${a.bedrooms > 1 ? "s" : ""}` : "";
+  return `Projet de construction d'une maison${chambres} à ${lieu}`;
+};
+
 /** Specs courtes de carte — n'affiche que ce qui existe réellement. */
 export const annonceSpecs = (
   a: Pick<Annonce, "type" | "landSurface" | "houseSurface" | "bedrooms">,

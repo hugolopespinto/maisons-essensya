@@ -12,7 +12,6 @@ import {
 } from "react";
 import AnnonceCard from "@/components/AnnonceCard";
 import {
-  CHAMBRES,
   CRITERES_VIDES,
   TRIS,
   TYPES,
@@ -52,15 +51,14 @@ const AnnoncesMap = dynamic(() => import("@/components/AnnoncesMap"), {
    · Les pages sont de vrais liens : Google les suit, et un clic du
      milieu les ouvre dans un onglet comme n'importe quel lien.
 
-   Pas de budget maximum : le filtre a été retiré à la demande du
-   client. Une ancienne URL en `?max=` reste valide, le paramètre est
-   ignoré (voir `lireCriteres`).
+   Ni budget maximum, ni chambres : ces filtres ont été retirés à la
+   demande du client. Une ancienne URL en `?max=` ou `?chambres=` reste
+   valide, le paramètre est ignoré (voir `lireCriteres`).
    ════════════════════════════════════════════════════════════════ */
 
 const ATTENTE_SAISIE = 300;
 const ATTENTE_CARTE = 300;
 
-const libelleChambres = (n: number) => `${n} chambre${n === 1 ? "" : "s"}`;
 const libelleTotal = (n: number) => `${n} opportunité${n > 1 ? "s" : ""}`;
 
 /** La valeur d'un menu, si elle est l'une des valeurs prévues ; « all » → aucune. */
@@ -429,18 +427,6 @@ export default function AnnoncesBrowser({ resultat }: { resultat: ResultatRecher
             naviguer((c) => c);
           }}
         >
-          <div className="l-filter l-filter--wide">
-            <label htmlFor="fl-q">Commune ou code postal</label>
-            <input
-              id="fl-q"
-              name="q"
-              type="search"
-              value={saisie}
-              onChange={(e) => onSaisie(e.target.value)}
-              placeholder="Mont-de-Marsan, 40000…"
-              autoComplete="off"
-            />
-          </div>
           <div className="l-filter">
             <label htmlFor="fl-type">Type</label>
             <select
@@ -456,6 +442,18 @@ export default function AnnoncesBrowser({ resultat }: { resultat: ResultatRecher
               <option value="terrain">Terrain seul</option>
             </select>
           </div>
+          <div className="l-filter l-filter--wide">
+            <label htmlFor="fl-q">Commune ou code postal</label>
+            <input
+              id="fl-q"
+              name="q"
+              type="search"
+              value={saisie}
+              onChange={(e) => onSaisie(e.target.value)}
+              placeholder="Mont-de-Marsan, 40000…"
+              autoComplete="off"
+            />
+          </div>
           <div className="l-filter">
             <label htmlFor="fl-dept">Département</label>
             <select
@@ -470,27 +468,6 @@ export default function AnnoncesBrowser({ resultat }: { resultat: ResultatRecher
               {resultat.departements.map(([code, name]) => (
                 <option key={code} value={code}>
                   {name === code ? code : `${name} (${code})`}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="l-filter">
-            <label htmlFor="fl-bed">Chambres</label>
-            <select
-              id="fl-bed"
-              name="chambres"
-              value={criteres.chambres ?? "all"}
-              onChange={(e) =>
-                filtrer((c) => ({
-                  ...c,
-                  chambres: e.target.value === "all" ? null : Number(e.target.value),
-                }))
-              }
-            >
-              <option value="all">Indifférent</option>
-              {CHAMBRES.map((n) => (
-                <option key={n} value={n}>
-                  {libelleChambres(n)}
                 </option>
               ))}
             </select>
@@ -591,18 +568,6 @@ export default function AnnoncesBrowser({ resultat }: { resultat: ResultatRecher
                 ))}
                 <Pagination criteres={resultat.criteres} pages={resultat.pages} onPage={allerPage} />
               </>
-            ) : resultat.chambresAbsentes && resultat.criteres.chambres !== null ? (
-              /* Rien à élargir : aucune annonce du flux n'a ce nombre de
-                 chambres, où que soit la carte. Le dire, plutôt que de
-                 renvoyer le visiteur déplacer une carte qui ne trouvera
-                 rien — il arrive souvent ici depuis le menu. */
-              <div className="l-results__empty">
-                Aucune maison {libelleChambres(resultat.criteres.chambres)} parmi nos annonces en
-                ce moment.
-                <br />
-                Choisissez un autre nombre de chambres, ou{" "}
-                <Link href="/contact">parlez-nous de votre projet</Link>.
-              </div>
             ) : resultat.criteres.zone ? (
               <div className="l-results__empty">
                 Aucune opportunité dans cette zone avec ces critères.

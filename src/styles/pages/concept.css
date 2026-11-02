@@ -35,3 +35,13 @@
    arrivent bien. Pas de `scroll-padding-top` global sur `html` : il
    s'ajouterait aux ancres qui ont déjà le leur. */
 #faq,#prix{scroll-margin-top:calc(var(--header-h) + var(--s-3))}
+
+/* ════ LA PAGE « L'EXPÉRIENCE ESSENSYA » ════
+   Le sommaire reprend les cinq onglets du menu qui mènent ici. */
+.xp-sommaire{position:sticky;top:var(--header-h);z-index:5;background:var(--craie);border-top:var(--line);border-bottom:var(--line)}
+.xp-sommaire .container{display:flex;gap:var(--s-3);overflow-x:auto;scrollbar-width:none;padding-block:.9rem}
+.xp-sommaire a{flex:none;font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.12em;text-transform:uppercase}
+.xp-sommaire a:hover{color:var(--accent)}
+.xp-texte{padding:var(--s-6) 0}
+/* L'en-tête et le sommaire sont fixes : une ancre doit arriver sous les deux. */
+#qui-sommes-nous,#concept,#engagements,#accompagnement,#equipes,#faq,#prix{scroll-margin-top:calc(var(--header-h) + 3.2rem)}

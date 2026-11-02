@@ -173,10 +173,10 @@ html[data-intro-accueil]:has(#intro-accueil) .hero-fixe h1 .mot > span{transform
    dessous — demandée, et utile : elle montre le produit là où le bloc
    ne faisait que l'affirmer.
    ────────────────────────────────────────────────────────────────── */
-/* ⚠ LE BAS EST RESSERRÉ, comme le haut de `.s-raison` qui suit : les
-   deux `--s-7` s'additionnaient en une bande vide de 320 px entre les
-   photos et le titre suivant, que le client a relevée. */
-.s-juste{padding:var(--s-7) 0 var(--s-5);background:var(--vert-fond)}
+/* ⚠ RESSERRÉE EN HAUT ET EN BAS : le client a relevé la bande vide sous le
+   héros (retour du 01/11), puis celle qui séparait les photos du titre
+   suivant, où deux `--s-7` s'additionnaient. */
+.s-juste{padding:var(--s-5) 0;background:var(--vert-fond)}
 .s-juste__grid{display:grid;grid-template-columns:5fr 7fr;gap:var(--s-5)}
 .s-juste__note{margin-top:var(--s-3);color:var(--pierre);font-size:var(--fs-small);max-width:52ch}
 /* UNE GRANDE, PUIS UNE ET DEUX EMPILÉES : la maquette « maison 2 » du
@@ -220,7 +220,11 @@ html[data-intro-accueil]:has(#intro-accueil) .hero-fixe h1 .mot > span{transform
    de celle qui la précède — c'est le « bloc dont la couleur change »
    que le client demande de conserver.
    ────────────────────────────────────────────────────────────────── */
-.s-raison{padding:var(--s-5) 0 var(--s-7);background:var(--craie)}
+.s-raison{padding:var(--s-5) 0;background:var(--craie)}
+/* Les chiffres passent au premier plan. Le contour fin de `.c-model-row__num`
+   disparaissait sur les photos 2 et 3 : un plein bordé de craie se lit sur
+   l'image comme sur le fond (retour du 01/11). */
+.s-raison .c-model-row__num{color:var(--anthracite);-webkit-text-stroke:.09em var(--craie);paint-order:stroke fill}
 
 /* ──────────────────────────────────────────────────────────────────
    NOS POINTS FORTS
@@ -228,7 +232,7 @@ html[data-intro-accueil]:has(#intro-accueil) .hero-fixe h1 .mot > span{transform
    numérotées, sans image. On ne fait que changer le fond pour garder
    l'alternance.
    ────────────────────────────────────────────────────────────────── */
-.s-forts{padding:var(--s-7) 0;background:var(--anthracite);color:var(--craie)}
+.s-forts{padding:var(--s-5) 0;background:var(--anthracite);color:var(--craie)}
 .s-forts .c-label{color:var(--sable)}
 /* ══════ LE BANDEAU DE POINTS FORTS ══════
    La grille de six blocs en texte seul a été remplacée par une grande
@@ -427,23 +431,16 @@ a.s-bande__carte:hover .s-bande__fleche{transform:translateX(4px)}
    assez léger pour montrer la maison, il ne suffit plus au titre. Les
    deux besoins sont contradictoires — on les sépare au lieu d'arbitrer.
    ────────────────────────────────────────────────────────────────── */
-.s-opp{background:var(--anthracite);color:var(--craie);padding:var(--s-6) 0}
+/* Fond sauge plutôt qu'anthracite : entre « Nos points forts » et les sections
+   sombres, le bloc se noyait dans le noir (retour du 01/11). */
+.s-opp{background:var(--vert-fond);color:var(--anthracite);padding:var(--s-5) 0}
 .s-opp__grid{display:grid;grid-template-columns:7fr 5fr;gap:var(--s-5);align-items:center}
 .s-opp__media{aspect-ratio:16/10;overflow:hidden;border-radius:var(--radius);background:var(--noir)}
 .s-opp__media img{width:100%;height:100%;object-fit:cover}
 .s-opp__corps .c-label{display:block;margin-bottom:var(--s-2)}
-/* Le sauge de la charte ne passe pas le contraste sur fond sombre non
-   plus : sur l'anthracite, c'est le sable qui porte le surtitre. */
-.s-opp__corps .c-label--accent{color:var(--sable)}
 .s-opp__corps h2{font-size:clamp(1.8rem,3.4vw,2.8rem)}
-.s-opp__plate{margin-top:var(--s-3);border-color:rgba(242,243,243,.22)}
-.s-opp__plate .c-plate__spec{color:var(--sable)}
-.s-opp__plate .c-plate__spec strong{color:var(--craie)}
+.s-opp__plate{margin-top:var(--s-3)}
 .s-opp__actions{display:flex;flex-wrap:wrap;gap:var(--s-2);margin-top:var(--s-4)}
-/* Le bouton secondaire est sur fond sombre : sa bordure anthracite par
-   défaut y serait invisible. */
-.s-opp__actions .c-btn:not(.c-btn--solid){border-color:var(--craie);color:var(--craie)}
-.s-opp__actions .c-btn:not(.c-btn--solid):hover{background:var(--craie);color:var(--anthracite)}
 @media (max-width:900px){
   .s-opp__grid{grid-template-columns:1fr;gap:var(--s-4)}
   .s-opp__actions .c-btn{flex:1 1 100%;justify-content:center}
@@ -461,7 +458,9 @@ a.s-bande__carte:hover .s-bande__fleche{transform:translateX(4px)}
    une classe chacune : à poids égal, c'est l'ordre de chargement des
    feuilles qui trancherait, et il n'est pas garanti.
    ────────────────────────────────────────────────────────────────── */
-.s-trust.s-trust--visuel{padding-bottom:0}
+.s-trust.s-trust--visuel{padding:var(--s-5) 0 0}
+/* Le formulaire de rappel de l'accueil, resserré comme le reste de la page. */
+#projet.s-cta{padding:var(--s-5) 0}
 .s-trust__visuel{margin-top:var(--s-5);background-size:cover;background-position:center}
 /* Pas d'arrondi : le bas de l'image touche le bloc sombre, et les coins
    de 2 px y laisseraient passer le fond clair. */

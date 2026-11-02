@@ -54,9 +54,7 @@
 .g-visuel img{width:100%;height:100%;object-fit:cover;display:block}
 .g-loc{margin-top:var(--s-4)}
 .g-loc .c-map__frame{aspect-ratio:16/9}
-.g-loc .map-fond--ign,.g-annonces-map .map-fond--ign{filter:none}
-.g-annonces-map{margin-top:var(--s-5)}
-.g-annonces-map .c-map__frame{aspect-ratio:16/8}
+.g-loc .map-fond--ign{filter:none}
 .g-carrousel__piste{display:flex;gap:var(--s-3);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:2px}
 .g-carrousel__piste::-webkit-scrollbar{display:none}
 .g-carrousel__piste > *{flex:0 0 calc((100% - 2 * var(--s-3)) / 3);scroll-snap-align:start;min-width:0}

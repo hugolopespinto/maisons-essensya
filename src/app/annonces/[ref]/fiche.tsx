@@ -2,24 +2,26 @@ import type { Metadata } from "next";
 import { ViewTransition } from "react";
 import Link from "next/link";
 import FilAriane from "@/components/FilAriane";
-import { AnnonceAside, AnnonceStickyForm } from "@/components/AnnonceCard";
+import AnnonceCard, { AnnonceAside, AnnonceStickyForm } from "@/components/AnnonceCard";
+import GalerieAnnonce from "@/components/GalerieAnnonce";
 import BoutonSimulateur from "@/components/SimulateurModale";
-import { MarkedList, SpecList } from "@/components/SpecList";
+import { SpecList } from "@/components/SpecList";
 import { AnnonceMedia } from "@/components/Substitut";
 import { Picto } from "@/components/icons";
-import { AGENCIES, HOUSE, PRICE_FROM, REEL, versionBySlug } from "@/data/essensya";
+import { AGENCIES, PRICE_FROM, REEL, versionBySlug } from "@/data/essensya";
 import {
   agencyUrl,
-  annonceTitle,
+  annonceH1,
   annonceUrl,
+  dept,
   fmtPrice,
   fmtSurface,
   houseUrl,
-  housePart,
 } from "@/lib/format";
+import { libelleChambres } from "@/lib/plans";
 import { annonceSchema, jsonLd } from "@/lib/schema";
 import { couper, titreCourt } from "@/lib/seo";
-import { getAnnonceOverride } from "@/lib/vitahome/annonces";
+import { getAnnonceOverride, getAnnonces } from "@/lib/vitahome/annonces";
 import type { Annonce } from "@/types";
 import "@/styles/pages/annonce.css";
 
@@ -52,6 +54,33 @@ const trim = (v: string | undefined): string | undefined => {
   return s ? s : undefined;
 };
 
+/** Distance approchée en kilomètres : à cette échelle, un plan suffit. */
+const distanceKm = (a: Annonce, b: Annonce): number | null => {
+  if (a.lat == null || a.lng == null || b.lat == null || b.lng == null) return null;
+  const x = (b.lng - a.lng) * Math.cos((a.lat * Math.PI) / 180) * 111;
+  const y = (b.lat - a.lat) * 111;
+  return Math.hypot(x, y);
+};
+
+/**
+ * Trois annonces de la même ville ou des alentours. Le même type d'annonce
+ * d'abord s'il y en a assez, puis la même ville, puis les plus proches ; sans
+ * coordonnées, le même département passe devant le reste.
+ */
+function annoncesAutour(a: Annonce, toutes: Annonce[]): Annonce[] {
+  const autres = toutes.filter((x) => x.id !== a.id);
+  const memeType = autres.filter((x) => x.type === a.type);
+  const rang = (x: Annonce) => {
+    if (x.city === a.city) return 0;
+    return distanceKm(a, x) ?? (dept(x) === dept(a) ? 1e4 : 1e5);
+  };
+  return (memeType.length >= 3 ? memeType : autres)
+    .map((x) => ({ x, r: rang(x) }))
+    .sort((p, q) => p.r - q.r)
+    .slice(0, 3)
+    .map(({ x }) => x);
+}
+
 /** Les métadonnées de la fiche. La canonical est TOUJOURS la fiche de la
  *  parcelle : une version n'est pas une page de plus à indexer, c'est la
  *  même annonce vue sous une autre maison. */
@@ -59,7 +88,7 @@ export async function metadataFiche(a: Annonce): Promise<Metadata> {
   /* Le back-office peut surcharger le titre et le SEO de cette fiche.
      Jamais son prix ni ses surfaces : ceux-là se corrigent dans Vitahome. */
   const o = await getAnnonceOverride(a);
-  const title = trim(o?.titre) ?? annonceTitle(a);
+  const title = trim(o?.titre) ?? annonceH1(a);
   const seoTitle = trim(o?.seo?.title);
   const seoDesc = trim(o?.seo?.description) ?? trim(o?.accroche);
   return {
@@ -80,18 +109,18 @@ export async function FicheAnnonce({ a }: { a: Annonce }) {
   const o = await getAnnonceOverride(a);
 
   const isTM = a.type === "terrain-maison";
-  const title = trim(o?.titre) ?? annonceTitle(a);
+  const title = trim(o?.titre) ?? annonceH1(a);
+  const autour = annoncesAutour(a, await getAnnonces());
   const accroche = trim(o?.accroche);
   /* La déclinaison réellement portée par l'annonce — jamais un autre produit. */
   const version = a.versionSlug ? versionBySlug(a.versionSlug) : null;
   const agencyPage = a.agency.slug ? (AGENCIES.find((g) => g.id === a.agency.slug) ?? null) : null;
   const agencyHref = agencyPage ? agencyUrl(agencyPage) : null;
   const phone = a.contact?.phone ?? a.agency.phone;
-  const part = housePart(a);
   const plan = a.planImage ?? version?.planImage ?? null;
   /* Une annonce T+M dont le slug Vitahome est inconnu ne devient pas
      un autre produit : on retombe sur ce que le flux dit de la maison. */
-  const houseLabel = version?.label ?? (a.bedrooms ? `${a.bedrooms} chambres` : "plain-pied");
+  const houseLabel = version?.label ?? (a.bedrooms ? libelleChambres(a.bedrooms) : "plain-pied");
   const houseMeta = [
     fmtSurface(a.houseSurface ?? version?.surface ?? null),
     a.rooms ? `${a.rooms} pièces` : null,
@@ -99,11 +128,6 @@ export async function FicheAnnonce({ a }: { a: Annonce }) {
   ]
     .filter(Boolean)
     .join(" · ");
-
-  /* « Le terrain » figure dans les exclusions de la maison seule : sur une
-     annonce terrain + maison, il est justement compris dans le prix. */
-  const horsPrix = HOUSE.excluded.filter((x) => x.toLowerCase() !== "le terrain");
-  const resteACharge = isTM ? horsPrix : ["La construction de la maison", ...horsPrix];
 
   /* Le plan a son propre bloc plus bas : il ne fait pas nombre en galerie.
      S'il ne reste aucune photo, le tracé coté occupe toute la largeur — on
@@ -116,7 +140,7 @@ export async function FicheAnnonce({ a }: { a: Annonce }) {
   /* Le visuel principal est retiré par son adresse, pas par sa place :
      quand c'est un plan, il n'est plus dans `photos`, et `slice(1)`
      aurait écarté la première vraie photo à sa place. */
-  const side = photos.filter((src) => src !== a.image).slice(0, 2);
+  const autresPhotos = photos.filter((src) => src !== a.image);
 
   const secteur = [a.city && `${a.city}${a.zip ? ` (${a.zip})` : ""}`, a.dept]
     .filter(Boolean)
@@ -175,7 +199,8 @@ export async function FicheAnnonce({ a }: { a: Annonce }) {
               )}
             </div>
           </div>
-          {/* Quatre chiffres au plus, et aucun qui répète le titre ou le prix. */}
+          {/* Aucun chiffre qui répète le prix. Les mêmes pictos en vert, l'arbre
+              pour le terrain, les pièces et la RE 2020 : retour du 01/11. */}
           <div className="c-pictos">
             {isTM ? (
               <>
@@ -184,16 +209,18 @@ export async function FicheAnnonce({ a }: { a: Annonce }) {
                 ) : null}
                 {a.bedrooms ? <Picto icon="bed" value={a.bedrooms} label="Chambres" /> : null}
                 {a.landSurface ? (
-                  <Picto icon="land" value={fmtSurface(a.landSurface)} label="Terrain" />
+                  <Picto icon="arbre" value={fmtSurface(a.landSurface)} label="Terrain" />
                 ) : null}
+                {a.rooms ? <Picto icon="door" value={a.rooms} label="Pièces" /> : null}
                 {a.garageArea ? (
                   <Picto icon="garage" value={fmtSurface(a.garageArea)} label="Garage" />
                 ) : null}
+                <Picto icon="re2020" value="Oui" label="RE2020" />
               </>
             ) : (
               <>
                 {a.landSurface ? (
-                  <Picto icon="land" value={fmtSurface(a.landSurface)} label="Terrain" />
+                  <Picto icon="arbre" value={fmtSurface(a.landSurface)} label="Terrain" />
                 ) : null}
                 {a.dept ? <Picto icon="loc" value={a.dept} label="Département" /> : null}
               </>
@@ -202,31 +229,19 @@ export async function FicheAnnonce({ a }: { a: Annonce }) {
         </div>
       </section>
 
-      <section className="a-gallery">
-        <div className={`container${side.length ? "" : " is-solo"}`}>
-          {/* Même `name` que la vignette du listing — voir AnnonceCard. */}
-          <ViewTransition name={`annonce-${a.id}`} share="morph" default="none">
-            <div className="c-reveal-img">
-              <AnnonceMedia annonce={a} eager />
-            </div>
-          </ViewTransition>
-          {side.length > 0 && (
-            <div className="a-gallery__side">
-              {side.map((src) => (
-                <div className="c-reveal-img" key={src}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt={`${title} — visuel complémentaire`} loading="lazy" />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+      <GalerieAnnonce principale={a.image} autres={autresPhotos} titre={title}>
+        {/* Même `name` que la vignette du listing — voir AnnonceCard. */}
+        <ViewTransition name={`annonce-${a.id}`} share="morph" default="none">
+          <div className="c-reveal-img">
+            <AnnonceMedia annonce={a} eager />
+          </div>
+        </ViewTransition>
+      </GalerieAnnonce>
 
       <section className="a-body">
         <div className="container">
           <div className="a-content">
-            <h2>L&apos;opportunité</h2>
+            <h2>Construction de maison à {a.city}</h2>
             {/* L'accroche du back-office passe DEVANT la description du flux :
                 c'est le seul texte que le client écrit lui-même sur la fiche. */}
             {accroche ? (
@@ -234,7 +249,8 @@ export async function FicheAnnonce({ a }: { a: Annonce }) {
                 <strong>{accroche}</strong>
               </p>
             ) : null}
-            <p>
+            {/* `pre-line` : les sauts de ligne saisis dans Vitahome restent à l'écran. */}
+            <p style={{ whiteSpace: "pre-line" }}>
               {a.description ||
                 `${title}. Votre agence vous communique le détail de la parcelle et l'étude d'implantation de votre maison.`}
             </p>
@@ -243,33 +259,12 @@ export async function FicheAnnonce({ a }: { a: Annonce }) {
             <SpecList
               rows={[
                 ["Surface", fmtSurface(a.landSurface)],
-                ["Viabilisation", a.servicingLong ?? a.servicing ?? ""],
-                [
-                  "Configuration",
-                  [a.landConfiguration, a.landType].filter(Boolean).join(" · "),
-                ],
-                ["État", a.landState ?? ""],
+                ["État", "Sous réserve de disponibilité chez notre partenaire foncier"],
                 ["Lotissement", a.subdivision ?? ""],
                 ["Numéro de lot", a.lotNumber ?? ""],
                 ["Secteur", secteur],
               ]}
             />
-
-            <h3 className="a-sub">À propos du prix</h3>
-            <SpecList
-              rows={[
-                [isTM ? "Terrain + maison" : "Terrain", fmtPrice(a.price)],
-                ["Dont terrain", a.landPrice !== null ? fmtPrice(a.landPrice) : ""],
-                ["Dont maison", part !== null ? fmtPrice(part) : ""],
-              ]}
-            />
-            {/* Un prix bas ne tient que si l'on dit aussi ce qu'il ne couvre pas. */}
-            <p className="u-muted u-measure a-note">
-              {isTM
-                ? "Reste à votre charge, en plus du prix affiché :"
-                : "Prix du terrain seul. Restent à votre charge, en plus du prix affiché :"}
-            </p>
-            <MarkedList items={resteACharge} variant="out" />
 
             {isTM ? (
               <Link
@@ -348,6 +343,27 @@ export async function FicheAnnonce({ a }: { a: Annonce }) {
           </aside>
         </div>
       </section>
+
+      {autour.length > 0 && (
+        <section className="a-autour">
+          <div className="container">
+            <h2>
+              D&apos;autres constructions de maisons neuves autour{" "}
+              {/* Pas de h : « de Hagetmau », comme le nom de l'agence. */}
+              {/^[aeiouyàâéèêîïôöû]/i.test(a.city) ? "d’" : "de "}
+              {a.city}
+            </h2>
+            <div className="a-autour__grille">
+              {autour.map((x) => (
+                <AnnonceCard annonce={x} key={x.id} />
+              ))}
+            </div>
+            <Link href="/annonces" className="c-btn c-btn--solid">
+              Voir tous les projets <span className="arrow" aria-hidden="true">→</span>
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* Sous 900 px, l'aside sort du champ de vision : même formulaire,
           rejoué dans un tiroir depuis une barre fixe. */}

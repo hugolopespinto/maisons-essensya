@@ -1,0 +1,70 @@
+{
+  "processus": {
+    "cle": "processus",
+    "src": "/visuels/raisons/processus.webp",
+    "largeur": 1920,
+    "hauteur": 1281,
+    "empreinte": "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAQBACdASoUAA0APu1iqU2ppaQiMAgBMB2JYgCdACIhdCZv/4ssW1tJAAD+7kNm7kbE99ZS5p8fBQGGMW/AIfnvEMfF6s0jOWIRGm71uoudOeeEZDegaxn/Aqqas+t29hhuZDy1a5XtiD2DstFI1jSpP2U8y/VAAAA=",
+    "variantes": [
+      {
+        "largeur": 480,
+        "avif": "/visuels/raisons/processus-480.avif",
+        "webp": "/visuels/raisons/processus-480.webp"
+      },
+      {
+        "largeur": 720,
+        "avif": "/visuels/raisons/processus-720.avif",
+        "webp": "/visuels/raisons/processus-720.webp"
+      },
+      {
+        "largeur": 1024,
+        "avif": "/visuels/raisons/processus-1024.avif",
+        "webp": "/visuels/raisons/processus-1024.webp"
+      },
+      {
+        "largeur": 1440,
+        "avif": "/visuels/raisons/processus-1440.avif",
+        "webp": "/visuels/raisons/processus-1440.webp"
+      },
+      {
+        "largeur": 1920,
+        "avif": "/visuels/raisons/processus-1920.avif",
+        "webp": "/visuels/raisons/processus-1920.webp"
+      }
+    ]
+  },
+  "garanties": {
+    "cle": "garanties",
+    "src": "/visuels/raisons/garanties.webp",
+    "largeur": 1536,
+    "hauteur": 1024,
+    "empreinte": "data:image/webp;base64,UklGRqIAAABXRUJQVlA4IJYAAACwAwCdASoUAA0APu1iqU2ppaOiMAgBMB2JZACdABdNoactk83/AAD+iln8V95RY9KdN6DMMd90o1qPJH8JZgDNgXz7ctesigRlHVKlyyTsk0JvNJwTciGI9Q630dLxWb6lscoslOFiFT+NKKgJ32qu2DJCO5C6lnjVe+MJ/2Ux9OT/bK6598jSuSC5Wpvrxx+vSyr84AA=",
+    "variantes": [
+      {
+        "largeur": 480,
+        "avif": "/visuels/raisons/garanties-480.avif",
+        "webp": "/visuels/raisons/garanties-480.webp"
+      },
+      {
+        "largeur": 720,
+        "avif": "/visuels/raisons/garanties-720.avif",
+        "webp": "/visuels/raisons/garanties-720.webp"
+      },
+      {
+        "largeur": 1024,
+        "avif": "/visuels/raisons/garanties-1024.avif",
+        "webp": "/visuels/raisons/garanties-1024.webp"
+      },
+      {
+        "largeur": 1440,
+        "avif": "/visuels/raisons/garanties-1440.avif",
+        "webp": "/visuels/raisons/garanties-1440.webp"
+      },
+      {
+        "largeur": 1536,
+        "avif": "/visuels/raisons/garanties-1536.avif",
+        "webp": "/visuels/raisons/garanties-1536.webp"
+      }
+    ]
+  }
+}

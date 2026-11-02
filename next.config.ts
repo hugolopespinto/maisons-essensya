@@ -162,6 +162,11 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
+      /* Ces trois pages sont devenues des sections de /concept (retour du
+         client du 01/11). */
+      { source: "/qui-sommes-nous", destination: "/concept#qui-sommes-nous", permanent: true },
+      { source: "/accompagnement", destination: "/concept#accompagnement", permanent: true },
+      { source: "/equipes", destination: "/concept#equipes", permanent: true },
       ...ANCIENNES_DECLINAISONS.map((slug) => ({
         source: `/maisons/${slug}`,
         destination: "/maisons",
