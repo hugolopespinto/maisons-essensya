@@ -100,7 +100,7 @@ function rendreFragment(f: Fragment, ctx: ContexteLegal, cle: number): ReactNode
         /* Le texte du pavé porte déjà ses doubles crochets : il a été
            repris mot pour mot des pages d'origine, où ils faisaient
            partie de la chaîne. Les rajouter ici les doublerait. */
-        return <ACompleter key={cle} texte={MENTIONS[f.arg].pave} valeur={ctx.valeurs(f.arg)} />;
+        return <ACompleter key={cle} texte={MENTIONS[f.arg].pave} valeur={ctx.valeurs(f.arg) || MENTIONS[f.arg].defaut} />;
       }
       /* Le bouton exact de la page d'origine, libellé compris. C'est le
          seul point d'accès permanent au retrait du consentement : la

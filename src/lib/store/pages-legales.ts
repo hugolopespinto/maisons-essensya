@@ -39,7 +39,7 @@ const mention = (cle: string): BlocEditable => ({
   cle,
   label: MENTIONS[cle].label,
   aide: MENTIONS[cle].aide,
-  valeur: "",
+  valeur: MENTIONS[cle].defaut ?? "",
   multiligne: true,
 });
 

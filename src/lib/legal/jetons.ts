@@ -36,6 +36,8 @@ export interface Mention {
   aide: string;
   /** Le pavé affiché au visiteur tant que rien n'est saisi. */
   pave: string;
+  /** La valeur livrée, quand elle ne dépend pas du client. Remplace le pavé. */
+  defaut?: string;
 }
 
 export const MENTIONS: Record<string, Mention> = {
@@ -53,6 +55,9 @@ export const MENTIONS: Record<string, Mention> = {
     label: "Hébergeur du site",
     aide: "Dénomination sociale, adresse postale, numéro de téléphone et pays d'hébergement des serveurs. À faire correspondre à l'hébergeur réellement retenu.",
     pave: "[[À COMPLÉTER : dénomination sociale de l'hébergeur, adresse postale, numéro de téléphone, pays d'hébergement des serveurs]]",
+    /* Source : https://www.clever.cloud/legal-notice/ */
+    defaut:
+      "Clever Cloud SAS\n4 rue Voltaire, 44000 Nantes, France\nTéléphone : +33 2 85 52 07 69\nServeurs situés en France (Paris)",
   },
   "rcs": {
     label: "Immatriculation au RCS",

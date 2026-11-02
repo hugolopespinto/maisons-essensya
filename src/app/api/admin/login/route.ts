@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import {
   DELAI_ECHEC_MS,
   attendre,
@@ -8,6 +7,7 @@ import {
   tropDeTentatives,
 } from "@/lib/admin/tentatives";
 import { createSession, isAdminEnabled, setSessionCookie } from "@/lib/admin/auth";
+import { redirection303 } from "@/lib/redirection";
 
 /* ════════════════════════════════════════════════════════════════
    CONNEXION — POINT D'ENTRÉE HTTP CLASSIQUE
@@ -42,8 +42,8 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /** Réponse unique de tous les échecs : on ne dit jamais lequel. */
-function refus(req: Request) {
-  return NextResponse.redirect(new URL("/admin/login?e=1", req.url), 303);
+function refus() {
+  return redirection303("/admin/login?e=1");
 }
 
 export async function POST(req: Request) {
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
      mot de passe faux. */
   if (tropDeTentatives(ip)) {
     await attendre(DELAI_ECHEC_MS);
-    return refus(req);
+    return refus();
   }
 
   const token = isAdminEnabled() ? await createSession(motDePasse, email) : null;
@@ -69,15 +69,15 @@ export async function POST(req: Request) {
     /* Un seul code d'erreur, jamais de détail : ne dire ni « mot de passe
        incorrect », ni « compte inconnu », ni « back-office non
        configuré », ni « trop de tentatives ». */
-    return refus(req);
+    return refus();
   }
 
   reinitialiserEchecs(ip);
   await setSessionCookie(token);
-  return NextResponse.redirect(new URL("/admin", req.url), 303);
+  return redirection303("/admin");
 }
 
 /* Une navigation directe vers cette adresse n'a rien à afficher. */
-export async function GET(req: Request) {
-  return NextResponse.redirect(new URL("/admin/login", req.url), 303);
+export async function GET() {
+  return redirection303("/admin/login");
 }
