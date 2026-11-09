@@ -9,7 +9,7 @@ import { jsonLd, listeSchema } from "@/lib/schema";
 import { resolveMetadata } from "@/lib/seo";
 import { getContent } from "@/lib/store";
 import { markdownToHtml } from "@/lib/markdown";
-import { TEXTE_ANNONCES } from "@/data/redactionnel/annonces";
+import { TEXTE_ANNONCES_TERRAINS, TEXTE_ANNONCES_TERRAIN_MAISON } from "@/data/redactionnel/annonces";
 import "@/styles/carte.css";
 import "@/styles/prose.css";
 import "@/styles/pages/annonces.css";
@@ -21,7 +21,9 @@ const CHAPO =
 
 
 /* Le titre et la description pour Google sont ceux du texte livré par le
-   client le 01/11 (Texte_page_resultat_Annonces.docx).
+   client le 09/11 (Texte_Annonces_terrains.docx et
+   Texte_Annonces_terrain-maison.docx), un couple par filtre ?type= : pas de
+   texte dédié pour la vue sans filtre, qui reprend celui de "terrain".
 
    ⚠ `hero.intro`, PAS `hero.chapo` : la base garde en stock l'ancien chapô,
    qui serait servi par-dessus le nouveau (voir `fusionnerPages`). */
@@ -31,10 +33,23 @@ export async function generateMetadata({
   searchParams: Promise<Params>;
 }): Promise<Metadata> {
   const sp = await searchParams;
+  const { criteres } = await rechercherAnnonces(sp);
+
+  const metaParType =
+    criteres.type === "terrain-maison"
+      ? {
+          title: "Annonce terrain + maison : trouvez l'offre adaptée à vos critères",
+          description:
+            "Annonce terrain + maison dans les Landes, le sud Gironde et le Pays basque côtier : définissez vos critères et trouvez l'offre clé en main qui vous correspond.",
+        }
+      : {
+          title: "Choisir son terrain constructible : critères et conseils",
+          description:
+            "Choisir son terrain constructible dans les Landes, le sud Gironde ou le Pays basque : urbanisme, viabilisation, sol, risques. Nos conseils d'experts.",
+        };
+
   const meta = await resolveMetadata("/annonces", {
-    title: "Choisir son terrain constructible : critères et conseils",
-    description:
-      "Choisir son terrain constructible dans les Landes, le sud Gironde ou le Pays basque : nos propositions de maisons neuves.",
+    ...metaParType,
     alternates: { canonical: "/annonces" },
   });
 
@@ -44,7 +59,6 @@ export async function generateMetadata({
      Chacune porte donc son numéro et, hors filtre, sa propre canonique
      (`urlCanonique`). La page 1 garde intacte la surcharge éventuelle du
      back-office. */
-  const { criteres } = await rechercherAnnonces(sp);
   if (criteres.page === 1) return meta;
   return {
     ...meta,
@@ -111,7 +125,13 @@ export default async function AnnoncesPage({
           <div className="container">
             <div
               className="c-prose"
-              dangerouslySetInnerHTML={{ __html: markdownToHtml(TEXTE_ANNONCES) }}
+              dangerouslySetInnerHTML={{
+                __html: markdownToHtml(
+                  resultat.criteres.type === "terrain-maison"
+                    ? TEXTE_ANNONCES_TERRAIN_MAISON
+                    : TEXTE_ANNONCES_TERRAINS,
+                ),
+              }}
             />
           </div>
         </section>
