@@ -21,6 +21,8 @@ import {
 import { libelleChambres } from "@/lib/plans";
 import { annonceSchema, jsonLd } from "@/lib/schema";
 import { couper, titreCourt } from "@/lib/seo";
+import { TAUX_DEFAUT } from "@/lib/simulation";
+import { getContent } from "@/lib/store";
 import { getAnnonceOverride, getAnnonces } from "@/lib/vitahome/annonces";
 import type { Annonce } from "@/types";
 import "@/styles/pages/annonce.css";
@@ -107,6 +109,7 @@ export async function FicheAnnonce({ a }: { a: Annonce }) {
   /* Enrichissement éditorial : le client peut forcer le titre et poser une
      accroche devant la description. Tout le reste vient du flux. */
   const o = await getAnnonceOverride(a);
+  const tauxSimulateur = (await getContent()).reglages.tauxSimulateur ?? TAUX_DEFAUT;
 
   const isTM = a.type === "terrain-maison";
   const title = trim(o?.titre) ?? annonceH1(a);
@@ -188,7 +191,7 @@ export async function FicheAnnonce({ a }: { a: Annonce }) {
                       24/10). Seulement quand il y a un prix : « sur
                       demande » ne se simule pas. */}
                   <div className="a-head__simuler">
-                    <BoutonSimulateur montant={a.price} className="c-link" />
+                    <BoutonSimulateur montant={a.price} taux={tauxSimulateur} className="c-link" />
                   </div>
                 </>
               ) : (

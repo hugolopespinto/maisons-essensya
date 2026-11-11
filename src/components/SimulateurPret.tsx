@@ -51,20 +51,26 @@ import {
  *
  * `montantInitial` : le prix du bien, quand le simulateur s'ouvre depuis
  * une fiche ou avec `?montant=` dans l'adresse.
+ *
+ * `tauxInitial` : le taux pré-rempli, réglé depuis le back-office
+ * (Réglages → Simulateur de financement). Retombe sur `TAUX_DEFAUT` si
+ * l'appelant ne le précise pas.
  */
 export default function SimulateurPret({
   intro,
   pied,
   montantInitial,
+  tauxInitial = TAUX_DEFAUT,
 }: {
   intro?: ReactNode;
   pied?: ReactNode;
   montantInitial?: number;
+  tauxInitial?: number;
 }) {
   const id = useId();
   const [projet, setProjet] = useState(montantInitial ? enSaisie(montantInitial) : "");
   const [apport, setApport] = useState("");
-  const [taux, setTaux] = useState(enSaisie(TAUX_DEFAUT));
+  const [taux, setTaux] = useState(enSaisie(tauxInitial));
   const [duree, setDuree] = useState(String(DUREE_DEFAUT));
 
   const r = calculer(projet, apport, taux, duree);

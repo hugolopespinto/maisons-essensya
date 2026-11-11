@@ -13,7 +13,11 @@
    ════════════════════════════════════════════════════════════════ */
 
 /**
- * Le taux pré-rempli, demandé par le client le 24/10.
+ * Le taux pré-rempli, demandé par le client le 24/10. C'est le repli de
+ * code : le client règle désormais la valeur réellement affichée depuis
+ * le back-office (Réglages → Simulateur de financement,
+ * `Reglages.tauxSimulateur`), et cette constante ne sert plus que tant
+ * que ce champ est vide.
  *
  * ⚠ C'EST UN EXEMPLE, ET IL DOIT LE RESTER À L'ÉCRAN. Un taux affiché
  * par le site rapproche le simulateur d'une publicité pour un crédit :

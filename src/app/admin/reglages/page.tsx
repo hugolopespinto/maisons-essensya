@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import MediaPicker from "@/components/admin/MediaPicker";
 import { AGENCIES, PLACEHOLDER } from "@/data/essensya";
+import { TAUX_DEFAUT, enSaisie, lire } from "@/lib/simulation";
 import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { Reglages } from "@/lib/store/types";
 import { assertAdmin, requireAdmin } from "../actions";
@@ -134,6 +135,18 @@ function normaliserUrl(brut: string): string | null {
   return s;
 }
 
+/**
+ * Taux du simulateur de financement, saisi « 3 », « 3,5 » ou « 3,5 % » —
+ * `lire()` (src/lib/simulation.ts) accepte les trois et refuse déjà le
+ * négatif et l'illisible. On n'y ajoute qu'un plafond : au-delà de 20 %,
+ * `calculer()` refuse elle-même la simulation, un taux pré-rempli plus
+ * haut n'afficherait donc jamais de résultat.
+ */
+function normaliserTaux(brut: string): number | null {
+  const n = lire(brut);
+  return n === null || n > 20 ? null : n;
+}
+
 /* Libellés des champs écartés, pour le message de retour. Les clés
    voyagent dans l'URL (`?refus=tel.email`) : courtes et stables. */
 const LIBELLES: Record<string, string> = {
@@ -143,6 +156,7 @@ const LIBELLES: Record<string, string> = {
   linkedin: "LinkedIn",
   facebook: "Facebook",
   pinterest: "Pinterest",
+  tauxSimulateur: "Taux du simulateur",
 };
 
 const RESEAUX = [
@@ -193,6 +207,10 @@ export default async function ReglagesPage({
     const mail = brutMail === undefined ? undefined : normaliserEmail(brutMail);
     if (mail === null) ecartes.push("email");
 
+    const brutTaux = txt(formData.get("tauxSimulateur"));
+    const taux = brutTaux === undefined ? undefined : normaliserTaux(brutTaux);
+    if (taux === null) ecartes.push("tauxSimulateur");
+
     const liens: NonNullable<Reglages["reseaux"]> = {};
     for (const { cle } of RESEAUX) {
       const saisi = txt(formData.get(cle));
@@ -219,6 +237,7 @@ export default async function ReglagesPage({
       email: mail === null ? actuel.email : mail,
       adresse: txt(formData.get("adresse")),
       horaires: txt(formData.get("horaires")),
+      tauxSimulateur: taux === null ? actuel.tauxSimulateur : taux,
       reseaux: liens,
     };
 
@@ -263,7 +282,8 @@ export default async function ReglagesPage({
           </strong>{" "}
           Le format saisi n&apos;était pas exploitable : un numéro doit comporter
           dix chiffres, une adresse e-mail une arobase et un nom de domaine, une
-          adresse de réseau social commencer par <code>https://</code>.{" "}
+          adresse de réseau social commencer par <code>https://</code>, un taux
+          rester entre 0 et 20 %.{" "}
           {refuses.length > 1
             ? "Ces champs ont gardé leur valeur précédente"
             : "Ce champ a gardé sa valeur précédente"}{" "}
@@ -426,6 +446,39 @@ export default async function ReglagesPage({
             />
             <span className="adm-field__aide">
               En clair, tels qu&apos;un visiteur les lit.
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* ════ SIMULATEUR DE FINANCEMENT ════ */}
+      <section className="adm-card">
+        <h2>Simulateur de financement</h2>
+        <p className="adm-field__aide">
+          Le taux pré-rempli sur la page <code>/simulateur-de-financement</code>{" "}
+          et dans la fenêtre « Simuler mon financement » des fiches annonce. Le
+          visiteur peut toujours le modifier : c&apos;est un exemple affiché à
+          côté du calcul, pas une offre de Maisons Essensya.
+        </p>
+
+        <div className="adm-grid">
+          <div className="adm-field">
+            <label htmlFor="tauxSimulateur">Taux proposé par défaut (%)</label>
+            <input
+              id="tauxSimulateur"
+              name="tauxSimulateur"
+              type="text"
+              inputMode="decimal"
+              defaultValue={
+                r.tauxSimulateur !== undefined ? enSaisie(r.tauxSimulateur) : ""
+              }
+              placeholder={enSaisie(TAUX_DEFAUT)}
+              autoComplete="off"
+            />
+            <span className="adm-field__aide">
+              {refuses.includes("tauxSimulateur")
+                ? "Taux refusé : il doit être un nombre entre 0 et 20 %."
+                : "Entre 0 et 20 %. Vide : le site garde le taux prévu dans le code."}
             </span>
           </div>
         </div>

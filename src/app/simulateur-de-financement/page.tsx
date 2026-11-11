@@ -4,6 +4,7 @@ import MentionSimulation from "@/components/MentionSimulation";
 import SimulateurPret from "@/components/SimulateurPret";
 import { resolveMetadata } from "@/lib/seo";
 import { TAUX_DEFAUT, enSaisie, lire } from "@/lib/simulation";
+import { getContent } from "@/lib/store";
 import "@/styles/pages/simulateur.css";
 
 /* La page « en préparation » annoncée par la navigation (« Votre
@@ -36,6 +37,8 @@ export default async function Page({
 }) {
   const { montant } = await searchParams;
   const montantInitial = typeof montant === "string" ? lire(montant) ?? undefined : undefined;
+  const content = await getContent();
+  const taux = content.reglages.tauxSimulateur ?? TAUX_DEFAUT;
 
   return (
     <main className="page">
@@ -53,14 +56,15 @@ export default async function Page({
               dans le HTML servi — la mention est là avant tout calcul. */}
           <SimulateurPret
             montantInitial={montantInitial}
+            tauxInitial={taux}
             intro={
               <p className="sf-chapo">
                 Estimez la mensualité de votre projet avant de rencontrer votre
-                banque. Le taux de {enSaisie(TAUX_DEFAUT)} % est un exemple :
+                banque. Le taux de {enSaisie(taux)} % est un exemple :
                 réglez-le sur celui qu&apos;elle vous propose.
               </p>
             }
-            pied={<MentionSimulation />}
+            pied={<MentionSimulation taux={taux} />}
           />
         </div>
       </section>

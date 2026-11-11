@@ -29,10 +29,13 @@ import "@/styles/pages/simulateur.css";
 
 export default function BoutonSimulateur({
   montant,
+  taux,
   className = "c-btn",
 }: {
   /** Le prix affiché par la fiche : il devient le montant du projet. */
   montant: number;
+  /** Le taux réglé en back-office (Réglages). Absent = `TAUX_DEFAUT`. */
+  taux?: number;
   className?: string;
 }) {
   const [ouvert, setOuvert] = useState(false);
@@ -46,12 +49,20 @@ export default function BoutonSimulateur({
       >
         Simuler mon financement <span className="arrow" aria-hidden="true">→</span>
       </button>
-      {ouvert && <Fenetre montant={montant} onFermer={() => setOuvert(false)} />}
+      {ouvert && <Fenetre montant={montant} taux={taux} onFermer={() => setOuvert(false)} />}
     </>
   );
 }
 
-function Fenetre({ montant, onFermer }: { montant: number; onFermer: () => void }) {
+function Fenetre({
+  montant,
+  taux,
+  onFermer,
+}: {
+  montant: number;
+  taux?: number;
+  onFermer: () => void;
+}) {
   const dialogue = useRef<HTMLDialogElement | null>(null);
   const fermer = useRef(onFermer);
   const titre = useId();
@@ -102,13 +113,14 @@ function Fenetre({ montant, onFermer }: { montant: number; onFermer: () => void 
         </div>
         <SimulateurPret
           montantInitial={montant}
+          tauxInitial={taux}
           intro={
             <p className="sf-chapo">
               Le prix de ce bien est déjà saisi. Ajustez l&apos;apport, la durée et le
               taux à votre situation.
             </p>
           }
-          pied={<MentionSimulation />}
+          pied={<MentionSimulation taux={taux} />}
         />
       </div>
     </dialog>,

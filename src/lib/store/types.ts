@@ -218,6 +218,12 @@ export interface Reglages {
     facebook?: string;
     pinterest?: string;
   };
+  /** Taux pré-rempli du simulateur de financement (/simulateur-de-financement
+   *  et la fenêtre « Simuler mon financement » des fiches annonce). Absent =
+   *  le site garde `TAUX_DEFAUT` (src/lib/simulation.ts). Voir l'avertissement
+   *  de ce fichier : c'est un exemple affiché au visiteur, pas une offre —
+   *  le client doit pouvoir l'ajuster sans déploiement. */
+  tauxSimulateur?: number;
 }
 
 /* ════ BLOCS DE TEXTE DES PAGES PUBLIQUES ════
