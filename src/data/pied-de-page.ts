@@ -67,18 +67,31 @@ export const colonnesPiedDefaut = (agences: LienPied[]): ColonnePied[] => [
   },
   {
     titre: "Projets de construction",
-    /* Les six entrées géographiques du brief. ⚠ Le flux Vitahome ne sert
-       aujourd'hui ni les Landes, ni la Gironde, ni le Pays basque — il
-       rend la Charente-Maritime, la Vendée et l'Eure-et-Loir. Ces pages
-       annoncent donc un territoire, pas un stock, tant qu'un flux pour
-       ces départements n'est pas branché. */
+    /* Les six entrées géographiques du brief, tranché le 10/11 : elles
+       mènent directement au listing /annonces, département déjà posé
+       dans le filtre (`dept`, voir src/lib/annonces/criteres.ts), plutôt
+       qu'à une page éditoriale par territoire. « Construction de
+       maisons » pose aussi `type=terrain-maison`, « Terrains
+       constructibles » `type=terrain` : sans ce second filtre, les deux
+       entrées d'un même département pointeraient vers la même URL.
+
+       Codes INSEE : 40 Landes, 33 Gironde, 64 Pyrénées-Atlantiques (le
+       Pays basque n'a pas son propre code département — même
+       correspondance que dans src/app/agences/[slug]/page.tsx). Un
+       département absent du catalogue courant n'est pas une erreur : le
+       filtre est simplement ignoré (`lireCriteres`), et le listing
+       s'affiche sans lui.
+
+       /construire/[dept] reste au menu de tête et à /plan-du-site ;
+       /terrains-constructibles/[dept] reste à /plan-du-site : aucune des
+       deux ne devient une page orpheline en quittant le pied de page. */
     liens: [
-      { href: "/construire/landes", label: "Construction de maisons dans les Landes" },
-      { href: "/construire/pays-basque", label: "Construction de maisons au Pays basque" },
-      { href: "/construire/gironde", label: "Construction de maisons en Gironde" },
-      { href: "/terrains-constructibles/landes", label: "Terrains constructibles dans les Landes" },
-      { href: "/terrains-constructibles/pays-basque", label: "Terrains constructibles au Pays basque" },
-      { href: "/terrains-constructibles/gironde", label: "Terrains constructibles en Gironde" },
+      { href: "/annonces?type=terrain-maison&dept=40", label: "Construction de maisons dans les Landes" },
+      { href: "/annonces?type=terrain-maison&dept=64", label: "Construction de maisons au Pays basque" },
+      { href: "/annonces?type=terrain-maison&dept=33", label: "Construction de maisons en Gironde" },
+      { href: "/annonces?type=terrain&dept=40", label: "Terrains constructibles dans les Landes" },
+      { href: "/annonces?type=terrain&dept=64", label: "Terrains constructibles au Pays basque" },
+      { href: "/annonces?type=terrain&dept=33", label: "Terrains constructibles en Gironde" },
     ],
   },
   {
