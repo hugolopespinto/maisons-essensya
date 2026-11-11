@@ -232,7 +232,7 @@ html[data-intro-accueil]:has(#intro-accueil) .hero-fixe h1 .mot > span{transform
    numérotées, sans image. On ne fait que changer le fond pour garder
    l'alternance.
    ────────────────────────────────────────────────────────────────── */
-.s-forts{padding:var(--s-5) 0;background:var(--anthracite);color:var(--craie)}
+.s-forts{padding:var(--s-5) 0 var(--s-4);background:var(--anthracite);color:var(--craie)}
 .s-forts .c-label{color:var(--sable)}
 /* ══════ LE BANDEAU DE POINTS FORTS ══════
    La grille de six blocs en texte seul a été remplacée par une grande
@@ -433,7 +433,7 @@ a.s-bande__carte:hover .s-bande__fleche{transform:translateX(4px)}
    ────────────────────────────────────────────────────────────────── */
 /* Fond sauge plutôt qu'anthracite : entre « Nos points forts » et les sections
    sombres, le bloc se noyait dans le noir (retour du 01/11). */
-.s-opp{background:var(--vert-fond);color:var(--anthracite);padding:var(--s-5) 0}
+.s-opp{background:var(--vert-fond);color:var(--anthracite);padding:var(--s-4) 0 var(--s-5)}
 .s-opp__grid{display:grid;grid-template-columns:7fr 5fr;gap:var(--s-5);align-items:center}
 .s-opp__media{aspect-ratio:16/10;overflow:hidden;border-radius:var(--radius);background:var(--noir)}
 .s-opp__media img{width:100%;height:100%;object-fit:cover}
