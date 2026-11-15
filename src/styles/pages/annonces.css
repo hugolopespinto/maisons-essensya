@@ -61,6 +61,9 @@
 .l-results__empty a{color:var(--accent);text-decoration:underline;text-underline-offset:.2em}
 .l-results__empty a:hover{text-decoration-thickness:2px}
 .l-map{position:sticky;top:calc(var(--header-h) + 92px)}
+/* Le fond de carte garde ses couleurs d'origine, comme sur /agences
+   (demande client) ; le filtre désaturant vit dans carte.css. */
+.l-map .map-fond--ign{filter:none}
 /* Le cadre, le fond, les points et les boutons de zoom sont communs
    à toutes les cartes du site : src/styles/carte.css. */
 .l-map__frame--loading{aspect-ratio:4/5}

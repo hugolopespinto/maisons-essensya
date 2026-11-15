@@ -8,7 +8,8 @@
 .g-head{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:var(--s-5);align-items:center}
 .g-map .c-map__frame{aspect-ratio:4/3}
 /* Ici le fond de carte garde ses couleurs d'origine (demande client) ;
-   les autres cartes du site restent désaturées (carte.css). */
+   même réglage sur /annonces (annonces.css). Seule la carte de
+   /contact reste désaturée (carte.css). */
 .g-map .map-fond--ign{filter:none}
 @media (max-width:900px){.g-head{grid-template-columns:1fr;gap:var(--s-4)}}
 /* Le texte de référencement, sous les fiches (« Pages → Nos agences »).
