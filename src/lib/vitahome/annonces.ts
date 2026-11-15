@@ -443,9 +443,11 @@ export function findOverride(
 }
 
 /**
- * Trois effets sur l'objet `Annonce`, et pas un de plus :
+ * Quatre effets sur l'objet `Annonce`, et pas un de plus :
  *   · `masquee` retire l'annonce du site — le CRM, lui, n'en sait rien ;
  *   · `titre` remplit `title`, le champ de titre du flux ;
+ *   · `description` remplace celle du flux : la fiche, sa balise meta et
+ *     son JSON-LD la lisent tous sur l'annonce ;
  *   · `coupDeCoeur` force `highlighted`, que getSpotlight() interroge
  *     déjà pour l'opportunité mise en avant en home.
  * L'accroche et le SEO ne sont portés par aucun champ d'`Annonce` : la
@@ -462,13 +464,22 @@ function applyOverrides(list: Annonce[], index: Map<string, AnnonceOverride>): A
     }
     if (o.masquee) continue;
     const titre = nz(o.titre);
+    const description = nz(o.description);
     out.push({
       ...a,
       title: titre ?? a.title,
-      /* Le titre du back-office vaut pour la parcelle : il est recopié sur
-         chaque offre, pour qu'une fiche de version (src/lib/offres.ts),
-         qui reprend le titre de SON offre, ne le perde pas. */
-      offres: titre ? a.offres.map((of) => ({ ...of, title: titre })) : a.offres,
+      description: description ?? a.description,
+      /* Le titre et la description du back-office valent pour la parcelle :
+         ils sont recopiés sur chaque offre, pour qu'une fiche de version
+         (src/lib/offres.ts), qui reprend ceux de SON offre, ne les perde pas. */
+      offres:
+        titre || description
+          ? a.offres.map((of) => ({
+              ...of,
+              ...(titre ? { title: titre } : {}),
+              ...(description ? { description } : {}),
+            }))
+          : a.offres,
       /* Un coup de cœur ajoute une mise en avant, il n'en retire jamais :
          `highlighted` porte aussi isPriority / isExclusive côté Vitahome. */
       highlighted: o.coupDeCoeur === true || a.highlighted,

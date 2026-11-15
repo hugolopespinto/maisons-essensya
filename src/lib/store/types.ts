@@ -73,6 +73,9 @@ export interface AnnonceOverride {
   titre?: string;
   /** Texte d'accroche ajouté AVANT la description du flux. */
   accroche?: string;
+  /** REMPLACE la description du flux, sauts de ligne compris. Vide = celle
+   *  de Vitahome. Le secours quand le texte du CRM n'est pas publiable. */
+  description?: string;
   /** Mise en avant en home (bloc « opportunité du moment »). */
   coupDeCoeur?: boolean;
   /** Retire l'annonce du site sans toucher au CRM. */

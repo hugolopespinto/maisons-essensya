@@ -187,6 +187,7 @@ interface LigneAnnonce {
   ref: string;
   titre: string | null;
   accroche: string | null;
+  description: string | null;
   coup_de_coeur: boolean;
   masquee: boolean;
   seo: SeoJson;
@@ -334,6 +335,7 @@ function annonceVersTs(r: LigneAnnonce): AnnonceOverride {
     ref: r.ref,
     titre: texte(r.titre),
     accroche: texte(r.accroche),
+    description: texte(r.description),
     coupDeCoeur: r.coup_de_coeur,
     masquee: r.masquee,
     seo: seoVersTs(r.seo),
@@ -348,6 +350,7 @@ function annonceVersSql(o: AnnonceOverride): ColonnesAnnonce {
     ref: o.ref,
     titre: nullable(o.titre),
     accroche: nullable(o.accroche),
+    description: nullable(o.description),
     coup_de_coeur: Boolean(o.coupDeCoeur),
     masquee: Boolean(o.masquee),
     seo: seoVersSql(o.seo),

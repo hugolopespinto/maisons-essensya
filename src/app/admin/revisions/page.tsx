@@ -614,6 +614,7 @@ async function restaurerAnnonce(ref: string, snapshot: unknown): Promise<Resulta
     ref: cle,
     titre: texteOuRien(r.titre),
     accroche: texteOuRien(r.accroche),
+    description: texteOuRien(r.description),
     coupDeCoeur: r.coup_de_coeur === true,
     masquee: r.masquee === true,
     seo: seoDe(r.seo),

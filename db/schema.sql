@@ -114,6 +114,10 @@ create table if not exists public.annonce_overrides (
   updated_by     uuid        references public.admins (id) on delete set null
 );
 
+-- Description saisie à la main, qui remplace celle du flux (15/11). Ajoutée
+-- après coup : `add column if not exists` met à niveau une base déjà créée.
+alter table public.annonce_overrides add column if not exists description text;
+
 create index if not exists annonce_overrides_coup_de_coeur_idx
   on public.annonce_overrides (coup_de_coeur)
   where coup_de_coeur = true;

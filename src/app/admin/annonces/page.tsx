@@ -38,7 +38,14 @@ export const metadata: Metadata = {
 const ROUTE = "/admin/annonces";
 
 /** Longueurs utiles, pas des limites arbitraires : au-delà, Google coupe. */
-const MAX = { titre: 160, accroche: 400, seoTitle: 90, seoDescription: 300 } as const;
+const MAX = {
+  titre: 160,
+  accroche: 400,
+  /* Les descriptions du flux font autour de 1 500 caractères. */
+  description: 5000,
+  seoTitle: 90,
+  seoDescription: 300,
+} as const;
 
 const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
 
@@ -130,6 +137,8 @@ async function enregistrer(formData: FormData) {
 
   const titre = champ(formData, "titre");
   const accroche = champ(formData, "accroche");
+  /* Le navigateur envoie les retours à la ligne d'un textarea en CRLF. */
+  const texteLibre = champ(formData, "description")?.replaceAll("\r\n", "\n");
   const title = champ(formData, "seoTitle");
   const description = champ(formData, "seoDescription");
   const coupDeCoeur = formData.get("coupDeCoeur") === "on";
@@ -137,7 +146,8 @@ async function enregistrer(formData: FormData) {
 
   /* Une surcharge entièrement vide, c'est exactement le flux : on ne
      laisse pas de ligne morte dans le contenu. */
-  const vide = !titre && !accroche && !title && !description && !coupDeCoeur && !masquee;
+  const vide =
+    !titre && !accroche && !texteLibre && !title && !description && !coupDeCoeur && !masquee;
 
   await ecrire(
     a.id,
@@ -147,6 +157,7 @@ async function enregistrer(formData: FormData) {
           ref: a.id,
           ...(titre ? { titre } : {}),
           ...(accroche ? { accroche } : {}),
+          ...(texteLibre ? { description: texteLibre } : {}),
           ...(coupDeCoeur ? { coupDeCoeur } : {}),
           ...(masquee ? { masquee } : {}),
           ...(title || description
@@ -209,6 +220,7 @@ function etats(o: AnnonceOverride | null): string[] {
     o.coupDeCoeur ? "Coup de cœur" : null,
     o.titre ? "Titre" : null,
     o.accroche ? "Accroche" : null,
+    o.description ? "Description" : null,
     o.seo?.title || o.seo?.description ? "SEO" : null,
   ].filter((x): x is string => !!x);
 }
@@ -482,8 +494,25 @@ export default async function AdminAnnoncesPage({
                                   maxLength={MAX.accroche}
                                 />
                                 <p className="adm-field__aide">
-                                  Placée avant la description du flux, qui reste affichée :
-                                  «&nbsp;
+                                  Placée en gras avant la description, qui reste affichée.
+                                </p>
+                              </div>
+
+                              <div className="adm-field">
+                                <label htmlFor={`description-${a.id}`}>
+                                  Description personnalisée
+                                </label>
+                                <textarea
+                                  id={`description-${a.id}`}
+                                  name="description"
+                                  rows={8}
+                                  defaultValue={o?.description ?? ""}
+                                  maxLength={MAX.description}
+                                />
+                                <p className="adm-field__aide">
+                                  Remplace la description de Vitahome sur la fiche ; les
+                                  retours à la ligne sont conservés. Vide : le texte du
+                                  flux reste affiché, «&nbsp;
                                   {a.description
                                     ? `${a.description.slice(0, 110)}${a.description.length > 110 ? "…" : ""}`
                                     : "aucune description au flux"}
