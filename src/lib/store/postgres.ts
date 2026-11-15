@@ -6,6 +6,7 @@ import type {
   Agence,
   AnnonceOverride,
   Article,
+  Avis,
   Content,
   Media,
   Menus,
@@ -605,6 +606,7 @@ async function lireBase(): Promise<Partial<Content>> {
   return {
     seo: (parCle.get("seo") as SeoEntry[] | undefined) ?? [],
     realisations: (parCle.get("realisations") as Realisation[] | undefined) ?? [],
+    avis: (parCle.get("avis") as Avis[] | undefined) ?? [],
     /* Domaine absent = domaine jamais enregistré : on laisse le
        sélecteur poser les valeurs par défaut, comme pour le fichier. */
     tracking: parCle.get("tracking") as TrackingConfig | undefined,
@@ -672,6 +674,7 @@ function derniereMaj(dates: (string | null | undefined)[]): string | undefined {
 type DomaineJson =
   | "seo"
   | "realisations"
+  | "avis"
   | "tracking"
   | "textes"
   | "menus"
@@ -681,6 +684,7 @@ type DomaineJson =
 const DOMAINES_JSON: DomaineJson[] = [
   "seo",
   "realisations",
+  "avis",
   "tracking",
   "textes",
   "menus",
@@ -954,6 +958,8 @@ export async function patch<K extends keyof Content>(
 export async function write(data: Content): Promise<void> {
   const auteur = await auteurCourant();
   await ecrireDomaine("seo", data.seo, auteur);
+  await ecrireDomaine("realisations", data.realisations, auteur);
+  await ecrireDomaine("avis", data.avis, auteur);
   await ecrireDomaine("tracking", data.tracking, auteur);
   await ecrireDomaine("textes", data.textes, auteur);
   await ecrireDomaine("menus", data.menus, auteur);

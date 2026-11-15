@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import MediaPicker from "@/components/admin/MediaPicker";
 import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { Realisation } from "@/lib/store/types";
+import GuideEcran from "@/components/admin/GuideEcran";
 import { assertAdmin, requireAdmin } from "../actions";
 
 /* ════════════════════════════════════════════════════════════════
@@ -167,6 +168,8 @@ export default async function AdminRealisations({
           </Link>
         )}
       </div>
+
+      <GuideEcran cle="realisations" />
 
       {!ecriture && (
         <p className="adm-alerte">

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { articlesPublies } from "@/lib/blog";
 import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { Article } from "@/lib/store/types";
+import GuideEcran from "@/components/admin/GuideEcran";
 import { assertAdmin, requireAdmin } from "../actions";
 
 /* ════════════════════════════════════════════════════════════════
@@ -101,6 +102,8 @@ export default async function AdminBlogPage({
           dans leur projet, quand le choix du constructeur est encore ouvert.
         </p>
       </div>
+
+      <GuideEcran cle="blog" />
 
       {ok === "supprime" ? (
         <p className="adm-note" role="status">

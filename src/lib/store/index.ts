@@ -457,6 +457,7 @@ export const EMPTY: Content = {
   v: 1,
   seo: [],
   realisations: [],
+  avis: [],
   tracking: { conversions: [] },
   articles: [],
   annonces: [],
@@ -552,6 +553,7 @@ function normaliser(partiel: Partial<Content>): Content {
     /* Une liste remplace, elle ne fusionne pas : une liste vide est une
        intention — « je n'ai plus de réalisation à montrer ». */
     realisations: partiel.realisations ?? EMPTY.realisations,
+    avis: partiel.avis ?? EMPTY.avis,
     menus: {
       header: partiel.menus?.header ?? [],
       footer: partiel.menus?.footer ?? [],

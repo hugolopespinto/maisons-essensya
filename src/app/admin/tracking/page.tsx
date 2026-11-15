@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { TrackingConfig } from "@/lib/store/types";
+import GuideEcran from "@/components/admin/GuideEcran";
 import { assertRole, requireRole } from "../actions";
 
 /* ════════════════════════════════════════════════════════════════
@@ -198,6 +199,8 @@ export default async function TrackingPage({
           envoyés par le site.
         </p>
       </div>
+
+      <GuideEcran cle="tracking" />
 
       <p className="adm-note">
         <strong>Écran réservé aux administrateurs.</strong> Avec des comptes nommés, les comptes

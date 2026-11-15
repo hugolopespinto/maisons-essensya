@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CHEMIN_PUBLIC, PAGES_DEFAUT, getContentFrais, isWritable } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
+import GuideEcran from "@/components/admin/GuideEcran";
 import { requireAdmin } from "../actions";
 
 /* ════════════════════════════════════════════════════════════════
@@ -82,6 +83,8 @@ export default async function AdminPagesPage() {
           dans <Link href="/admin/contenu">Textes du site</Link>.
         </p>
       </div>
+
+      <GuideEcran cle="pages" />
 
       {!inscriptible ? (
         <p className="adm-note adm-note--alerte">

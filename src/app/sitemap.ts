@@ -35,6 +35,7 @@ const STATICS: [string, number][] = [
      ligne, indexables, et absents du seul fichier qui dit à Google
      qu'ils existent. */
   ["/blog", 0.6],
+  ["/avis-clients", 0.6],
   /* Pages légales : indexables — un visiteur qui cherche « mentions
      légales Essensya » doit les trouver — mais en priorité plancher.
      Elles ne portent aucune requête commerciale. */

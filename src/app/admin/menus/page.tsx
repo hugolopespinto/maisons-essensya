@@ -13,6 +13,7 @@ import { agencyUrl, deptUrl, landingUrl } from "@/lib/format";
 import { departementsPubliables } from "@/lib/geo";
 import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { ColonneFooter, LienMenu, Menus } from "@/lib/store/types";
+import GuideEcran from "@/components/admin/GuideEcran";
 import { assertAdmin, requireAdmin } from "../actions";
 
 /* ════════════════════════════════════════════════════════════════
@@ -635,6 +636,8 @@ export default async function MenusPage({
           ou saisissez librement une adresse extérieure au site.
         </p>
       </div>
+
+      <GuideEcran cle="menus" />
 
       {ok ? (
         <p className="adm-note" role="status">

@@ -7,6 +7,7 @@ import { verifierCorps } from "@/lib/legal/verifier";
 import { CHEMIN_PUBLIC, PAGES_DEFAUT, getContentFrais, isWritable, patchContent } from "@/lib/store";
 import { PAGES_LEGALES } from "@/lib/store/pages-legales";
 import type { PageEditable } from "@/lib/store/types";
+import GuideEcran from "@/components/admin/GuideEcran";
 import { assertAdmin, requireAdmin } from "../../actions";
 
 /* ════════════════════════════════════════════════════════════════
@@ -241,6 +242,8 @@ export default async function EditionPagePage({
           affiche tant que vous n&apos;écrivez rien.
         </p>
       </div>
+
+      <GuideEcran cle="pages" />
 
       <div className="adm-actions adm-actions--serre">
         <Link href="/admin/pages" className="c-btn">

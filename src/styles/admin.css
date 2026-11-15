@@ -683,6 +683,166 @@ body:has(.adm) .c-cookies { display: none !important; }
 }
 
 /* ══════════════════════════════════════════════════════════════════
+   LA RECHERCHE (.adm-recherche) ET LE GUIDE D'ÉCRAN (.adm-guide)
+
+   Pour des administrateurs qui ne connaissent pas le site : la barre
+   en haut à droite trouve un réglage par son nom (« simulateur »), le
+   guide dit en tête d'écran ce que change chaque champ. Composants :
+   src/components/admin/RechercheAdmin.tsx et GuideEcran.tsx.
+   ══════════════════════════════════════════════════════════════════ */
+.adm__corps { min-width: 0; }
+/* Même largeur que la zone de contenu : le champ s'aligne sur le bord
+   droit des cartes, pas sur celui d'un écran de 27 pouces. */
+.adm__barre {
+  display: flex;
+  justify-content: flex-end;
+  max-width: 74rem;
+  padding: var(--s-3) var(--gutter) 0;
+}
+.adm__barre + .adm__main { padding-top: var(--s-2); }
+
+.adm-recherche { position: relative; width: min(26rem, 100%); }
+.adm-recherche input {
+  width: 100%;
+  min-height: 2.6rem;
+  padding: .55rem 4.2rem .55rem .8rem;
+  border: 1px solid var(--beton);
+  border-radius: var(--radius);
+  background: var(--blanc);
+  font: inherit;
+  font-size: var(--fs-small);
+  color: var(--anthracite);
+}
+.adm-recherche input:hover { border-color: var(--anthracite); }
+.adm-recherche__kbd {
+  position: absolute;
+  top: 50%;
+  right: .6rem;
+  transform: translateY(-50%);
+  padding: .1rem .35rem;
+  border: 1px solid var(--beton);
+  border-radius: var(--radius);
+  font-family: var(--f-mono);
+  font-size: var(--fs-label);
+  color: var(--pierre);
+  pointer-events: none;
+}
+.adm-recherche input:focus ~ .adm-recherche__kbd { display: none; }
+
+.adm-recherche__panneau {
+  position: absolute;
+  top: calc(100% + .35rem);
+  right: 0;
+  z-index: 70;
+  width: min(32rem, calc(100vw - 2 * var(--gutter)));
+  max-height: min(70vh, 34rem);
+  overflow-y: auto;
+  border: 1px solid var(--anthracite);
+  border-radius: var(--radius);
+  background: var(--blanc);
+}
+.adm-recherche__option {
+  display: flex;
+  flex-direction: column;
+  gap: .15rem;
+  padding: .65rem .8rem;
+  border-left: 2px solid transparent;
+  cursor: pointer;
+}
+.adm-recherche__option + .adm-recherche__option { border-top: var(--line); }
+.adm-recherche__option[aria-selected="true"] {
+  background: var(--craie);
+  border-left-color: var(--accent);
+}
+.adm-recherche__ecran {
+  font-family: var(--f-mono);
+  font-size: var(--fs-label);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--pierre);
+}
+.adm-recherche__titre { font-weight: 600; font-size: var(--fs-small); }
+.adm-recherche__detail {
+  font-size: var(--fs-small);
+  color: var(--pierre);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.adm-recherche__vide { padding: .8rem; font-size: var(--fs-small); color: var(--pierre); }
+
+/* Le champ visé par un résultat de recherche (ou un lien du guide) :
+   la page défile jusqu'à lui et il est encadré, pour qu'on le trouve
+   d'un coup d'œil dans un long formulaire. */
+.adm [id] { scroll-margin-top: var(--s-4); }
+.adm-field:has(:target),
+.adm-card:target,
+.adm-rubrique:target {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--radius);
+}
+
+.adm-guide {
+  margin-bottom: var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  border: var(--line);
+  border-left: 2px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--blanc);
+  font-size: var(--fs-small);
+  line-height: 1.55;
+}
+.adm-guide > summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .3rem .75rem;
+  min-height: 24px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.adm-guide > summary::after {
+  content: "+";
+  margin-left: auto;
+  font-family: var(--f-mono);
+  color: var(--pierre);
+}
+.adm-guide[open] > summary::after { content: "–"; }
+.adm-guide > summary::-webkit-details-marker { display: none; }
+.adm-guide > summary { list-style: none; }
+.adm-guide__label {
+  padding: .1rem .4rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  font-family: var(--f-mono);
+  font-size: var(--fs-label);
+  font-weight: 400;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.adm-guide__liste { margin-top: var(--s-2); display: grid; gap: .6rem; }
+.adm-guide__liste dt { font-weight: 600; }
+.adm-guide__liste dt a { text-decoration: underline; text-underline-offset: .2em; }
+.adm-guide__liste dd { margin: .1rem 0 0; color: var(--pierre); }
+.adm-guide__sous { margin-top: var(--s-2); font-weight: 600; }
+.adm-guide__ailleurs { margin-top: .3rem; padding-left: 1.1rem; list-style: disc; }
+.adm-guide__ailleurs a { text-decoration: underline; text-underline-offset: .2em; }
+.adm-guide__astuce { margin-top: var(--s-2); color: var(--pierre); }
+
+@media (max-width: 900px) {
+  .adm__barre { padding: var(--s-2) var(--gutter) 0; }
+  .adm-recherche { width: 100%; }
+  .adm-recherche__kbd { display: none; }
+  .adm-recherche input { padding-right: .8rem; }
+  /* La navigation devient une barre collée en haut : le champ visé doit
+     s'arrêter sous elle, pas derrière. */
+  .adm [id] { scroll-margin-top: 5rem; }
+}
+
+/* ══════════════════════════════════════════════════════════════════
    LES CORPS LÉGAUX
 
    Un champ Markdown de page légale ne contient pas une ligne d'adresse

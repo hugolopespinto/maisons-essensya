@@ -8,6 +8,7 @@ import { markdownToHtml, markdownToText } from "@/lib/markdown";
 import { resoudreMedia } from "@/lib/medias";
 import { getContentFrais, patchContent } from "@/lib/store";
 import type { Article } from "@/lib/store/types";
+import GuideEcran from "@/components/admin/GuideEcran";
 import { assertAdmin, requireAdmin } from "../../actions";
 import "@/styles/prose.css";
 import "@/styles/pages/blog.css";
@@ -272,6 +273,8 @@ export default async function EditionArticlePage({
           </button>
         </div>
       </div>
+
+      <GuideEcran cle="blog" />
 
       {ok ? (
         <p className="adm-note" role="status">

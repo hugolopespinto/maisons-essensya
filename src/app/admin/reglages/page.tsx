@@ -6,6 +6,7 @@ import { AGENCIES, PLACEHOLDER } from "@/data/essensya";
 import { TAUX_DEFAUT, enSaisie, lire } from "@/lib/simulation";
 import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { Reglages } from "@/lib/store/types";
+import GuideEcran from "@/components/admin/GuideEcran";
 import { assertAdmin, requireAdmin } from "../actions";
 
 /* ════════════════════════════════════════════════════════════════
@@ -266,6 +267,8 @@ export default async function ReglagesPage({
           aperçus de partage et données structurées lues par Google.
         </p>
       </div>
+
+      <GuideEcran cle="reglages" />
 
       {ok && refuses.length === 0 ? (
         <p className="adm-note" role="status">

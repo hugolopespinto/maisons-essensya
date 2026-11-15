@@ -1,0 +1,25 @@
+/* ════ 15. AVIS CLIENTS (.av-) ════
+   Des avis recopiés à la main, pas un flux : la grille reste sobre, et
+   l'état vide doit rester digne — c'est lui qu'on verra en premier. */
+
+.av-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-4);padding-top:var(--s-2)}
+@media (max-width:1000px){.av-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.av-grid{grid-template-columns:1fr}}
+
+.av-carte{border:var(--line);border-radius:var(--radius);padding:var(--s-4);background:var(--blanc);display:flex;flex-direction:column;gap:var(--s-2)}
+
+.av-etoiles{font-size:1.1rem;letter-spacing:.1em;color:var(--vert-texte)}
+
+.av-carte__texte{flex:1;font-size:var(--fs-small);color:var(--pierre)}
+
+.av-carte__pied{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s-2);margin-top:var(--s-2)}
+.av-carte__pied .c-label{margin-top:.2rem}
+
+.av-carte__source{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.1em;text-transform:uppercase;color:var(--vert-texte);white-space:nowrap}
+
+/* L'état vide. Encadré plutôt que flottant — même traitement que les
+   réalisations : un grand blanc au milieu d'une page se lit comme une
+   erreur de chargement, un bloc encadré se lit comme une intention. */
+.av-vide{border:1px dashed var(--beton);border-radius:var(--radius);padding:var(--s-6) var(--s-4);text-align:center;background:var(--vert-fond)}
+.av-vide h2{font-size:var(--fs-h3)}
+.av-vide p{margin:var(--s-3) auto 0;max-width:46ch;color:var(--pierre)}

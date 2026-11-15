@@ -12,6 +12,7 @@ import {
 } from "@/lib/medias";
 import type { Content, Media } from "@/lib/store/types";
 import { TeleverseurMedias } from "@/components/admin/MediaPicker";
+import GuideEcran from "@/components/admin/GuideEcran";
 import { assertAdmin, requireAdmin } from "../actions";
 
 /* ════════════════════════════════════════════════════════════════
@@ -255,6 +256,8 @@ export default async function AdminMediasPage({
           déposé ici, il se choisit d&apos;un clic depuis les autres écrans.
         </p>
       </div>
+
+      <GuideEcran cle="medias" />
 
       {/* ════ MÉDIATHÈQUE INDISPONIBLE ════
           L'écran s'ouvre quand même et explique quoi configurer : c'est

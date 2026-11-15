@@ -13,6 +13,7 @@ import {
   overrideIndex,
 } from "@/lib/vitahome/annonces";
 import type { Annonce } from "@/types";
+import GuideEcran from "@/components/admin/GuideEcran";
 import { assertAdmin, requireAdmin } from "../actions";
 
 /* ════════════════════════════════════════════════════════════════
@@ -303,6 +304,8 @@ export default async function AdminAnnoncesPage({
           ligne dès le chargement suivant.
         </p>
       </div>
+
+      <GuideEcran cle="annonces" />
 
       {actualise &&
         (flux.length > 0 ? (

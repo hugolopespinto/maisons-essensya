@@ -6,6 +6,7 @@ import { etatMediatheque } from "@/lib/medias";
 import { getContentFrais, isWritable, storeDriver } from "@/lib/store";
 import { getAnnonces } from "@/lib/vitahome/annonces";
 import { hasLiveFeed } from "@/lib/vitahome/config";
+import GuideEcran from "@/components/admin/GuideEcran";
 import { requireAdmin } from "./actions";
 
 /* ════════════════════════════════════════════════════════════════
@@ -237,6 +238,8 @@ export default async function AdminDashboard() {
           )}
         </p>
       </div>
+
+      <GuideEcran cle="tableau" />
 
       {aCorriger.length > 0 && (
         <div className="adm-note adm-note--alerte" style={{ marginBottom: "1.5rem" }}>

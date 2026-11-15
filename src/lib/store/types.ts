@@ -268,6 +268,36 @@ export interface PageEditable {
   blocs: BlocEditable[];
 }
 
+/* ════ AVIS CLIENTS ════
+   La version « maison » : pas d'API Google (5 avis maximum, facturée,
+   un `place_id` par agence). Le client copie lui-même le texte d'avis
+   réels — Google, Trustpilot, ou recueillis directement — dans le
+   back-office, mot pour mot. `lien` pointe vers l'avis d'origine : la
+   preuve que ce n'est pas inventé tient dans ce lien, pas dans un badge.
+
+   ⚠ Rangé dans le JSONB `content`, comme les réalisations : pas de
+   table dédiée tant que le volume reste modeste. */
+export interface Avis {
+  id: string;
+  auteur: string;
+  /** 1 à 5. */
+  note: number;
+  /** Texte copié mot pour mot — jamais reformulé. */
+  texte: string;
+  /** Lisible, pas forcément ISO : « Avril 2025 ». */
+  date?: string;
+  /** Agence ou commune concernée, pour les sites à plusieurs agences. */
+  agence?: string;
+  /** D'où vient l'avis : « Avis Google », « Trustpilot »… */
+  source?: string;
+  /** Lien vers l'avis d'origine — la preuve qu'il n'a pas été inventé. */
+  lien?: string;
+  /** Masqué du site sans être supprimé — même logique que les agences. */
+  actif: boolean;
+  /** Ordre d'affichage, croissant. */
+  ordre: number;
+}
+
 /* ════ L'ENSEMBLE ════ */
 /* ════════════════════════════════════════════════════════════════
    UNE RÉALISATION — une maison réellement construite et livrée
@@ -308,6 +338,8 @@ export interface Content {
   seo: SeoEntry[];
   /** Chantiers livrés, affichés sur /realisations. */
   realisations: Realisation[];
+  /** Avis clients, affichés sur /avis-clients. */
+  avis: Avis[];
   tracking: TrackingConfig;
   articles: Article[];
   annonces: AnnonceOverride[];

@@ -4,9 +4,11 @@ import { redirect } from "next/navigation";
 import Aide from "@/components/admin/Aide";
 import MediaPicker from "@/components/admin/MediaPicker";
 import ChampCompte from "@/components/admin/ChampCompte";
+import { ancreSeo } from "@/lib/admin/recherche";
 import { SEO_LIMITES, SEO_ROUTES } from "@/lib/seo";
 import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { SeoEntry } from "@/lib/store/types";
+import GuideEcran from "@/components/admin/GuideEcran";
 import { assertAdmin, requireAdmin } from "../actions";
 
 /* ════════════════════════════════════════════════════════════════
@@ -112,6 +114,8 @@ export default async function SeoPage({
         </p>
       </div>
 
+      <GuideEcran cle="seo" />
+
       <p className="adm-note">
         <strong>La balise title</strong> est le titre cliquable dans les résultats de recherche ;{" "}
         <strong>la meta description</strong> est le paragraphe gris juste en dessous. Écrivez-les
@@ -145,7 +149,7 @@ export default async function SeoPage({
         const e = content.seo.find((s) => s.path === route.path);
         const cle = route.path.replace(/[^a-z0-9]+/gi, "-") || "-";
         return (
-          <form key={route.path} action={enregistrer} className="adm-card">
+          <form key={route.path} id={ancreSeo(route.path)} action={enregistrer} className="adm-card">
             <input type="hidden" name="path" value={route.path} />
             <h2>{route.label}</h2>
 

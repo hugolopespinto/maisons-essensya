@@ -9,6 +9,7 @@ import type {
   Agence,
   AnnonceOverride,
   Article,
+  Avis,
   Media,
   Menus,
   PageEditable,
@@ -17,6 +18,7 @@ import type {
   Textes,
   TrackingConfig,
 } from "@/lib/store/types";
+import GuideEcran from "@/components/admin/GuideEcran";
 import { assertAdmin, requireAdmin } from "../actions";
 
 /* ════════════════════════════════════════════════════════════════
@@ -127,7 +129,7 @@ const fmtDateHeure = (iso: string): string => {
    Personne ne doit avoir à les décoder.
    ────────────────────────────────────────────────────────────────── */
 
-/** Les six domaines rangés en JSONB dans la table `content`. */
+/** Les domaines rangés en JSONB dans la table `content`. */
 const DOMAINES = {
   seo: "Référencement",
   tracking: "Tracking",
@@ -135,6 +137,7 @@ const DOMAINES = {
   menus: "Menus",
   reglages: "Réglages du site",
   pages: "Pages",
+  avis: "Avis clients",
 } as const;
 
 type Domaine = keyof typeof DOMAINES;
@@ -199,6 +202,7 @@ const FILTRES: { valeur: string; label: string }[] = [
   { valeur: "content:tracking", label: "Tracking" },
   { valeur: "content:menus", label: "Menus" },
   { valeur: "content:reglages", label: "Réglages du site" },
+  { valeur: "content:avis", label: "Avis clients" },
   { valeur: "article:*", label: "Blog" },
   { valeur: "annonce:*", label: "Annonces" },
   { valeur: "agence:*", label: "Agences" },
@@ -519,7 +523,7 @@ async function restaurerDomaine(domaine: string, snapshot: unknown): Promise<Res
      schéma : on refuse plutôt que d'écrire une valeur que les gabarits
      ne savent pas lire. */
   const liste = Array.isArray(snapshot);
-  const attenduListe = domaine === "seo" || domaine === "pages";
+  const attenduListe = domaine === "seo" || domaine === "pages" || domaine === "avis";
   if (attenduListe !== liste) {
     return {
       ok: false,
@@ -535,6 +539,9 @@ async function restaurerDomaine(domaine: string, snapshot: unknown): Promise<Res
       break;
     case "pages":
       await patchContent("pages", snapshot as PageEditable[]);
+      break;
+    case "avis":
+      await patchContent("avis", snapshot as Avis[]);
       break;
     case "tracking": {
       const t = objet(snapshot);
@@ -874,6 +881,7 @@ export default async function AdminRevisionsPage({
   const succes = premier(params.ok) === "1";
 
   const tete = (
+    <>
     <div className="adm-head">
       <div>
         <span className="c-label c-label--accent">Outils</span>
@@ -887,6 +895,8 @@ export default async function AdminRevisionsPage({
         marche arrière une fois de plus.
       </p>
     </div>
+    <GuideEcran cle="revisions" />
+    </>
   );
 
   /* ════ SANS BASE : il n'y a pas d'historique, on le dit ════ */

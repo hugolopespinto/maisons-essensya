@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { ESSENSYA_DATA, PLACEHOLDER } from "@/data/essensya";
 import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { Textes } from "@/lib/store/types";
+import GuideEcran from "@/components/admin/GuideEcran";
 import { assertAdmin, requireAdmin } from "../actions";
 
 /* ════════════════════════════════════════════════════════════════
@@ -180,11 +181,13 @@ export default async function ContenuPage({
         </button>
         <p>
           Les blocs que vous ajusterez réellement : le nom de la maison, son
-          accroche, le titre de l&apos;accueil, le téléphone, les quatre prix et
+          accroche, le téléphone, les quatre prix et
           le tableau comparatif. Le reste — plan, matériaux, visite — relève de
           la fiche produit et reste dans le code, où il est versionné et relu.
         </p>
       </div>
+
+      <GuideEcran cle="contenu" />
 
       {ok ? (
         <p className="adm-note" role="status">
@@ -201,13 +204,12 @@ export default async function ContenuPage({
       ) : null}
 
       <p className="adm-note adm-note--alerte">
-        ⚠ <strong>Les prix affichés aujourd&apos;hui sont provisoires.</strong> Ils
-        viennent du code et ont été calés sur la médiane des annonces Vitahome pour
-        rester plausibles — ce ne sont pas vos tarifs. Chaque champ ci-dessous
-        affiche en gris la valeur actuellement publiée : c&apos;est ce que voient
-        vos visiteurs. Tant que vous ne saisissez rien, elle reste affichée. Dès
-        que vous saisissez, c&apos;est votre valeur qui est publiée — et vider un
-        champ revient à la valeur du code.
+        ⚠ <strong>Seul le téléphone de cet écran est repris par le site</strong> — et
+        seulement si celui de Réglages du site est vide. Le nom commercial,
+        l&apos;accroche, les prix « à partir de » et le comparatif sont enregistrés,
+        mais ne s&apos;affichent encore nulle part : les prix en ligne viennent de la
+        grille des modèles. Modifier ces champs ne change rien sur le site pour
+        l&apos;instant.
       </p>
 
       {/* ════ LA MAISON ════ */}

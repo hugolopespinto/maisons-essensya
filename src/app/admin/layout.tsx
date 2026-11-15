@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import RechercheAdmin from "@/components/admin/RechercheAdmin";
 import { authDriver, currentAdmin } from "@/lib/admin/auth";
+import { indexRecherche } from "@/lib/admin/recherche";
 import { logout } from "./actions";
 import "@/styles/admin.css";
 
@@ -91,6 +93,7 @@ const FAMILLES: Famille[] = [
       { href: "/admin/annonces", label: "Annonces" },
       { href: "/admin/agences", label: "Agences" },
       { href: "/admin/realisations", label: "Réalisations" },
+      { href: "/admin/avis", label: "Avis clients" },
       { href: "/admin/medias", label: "Médiathèque" },
     ],
   },
@@ -163,6 +166,13 @@ export default async function AdminLayout({
     ),
   })).filter((f) => f.entrees.length > 0);
 
+  /* Construit APRÈS le contrôle de session : l'index contient les noms
+     des agences et des articles, rien à montrer à un visiteur anonyme. */
+  const entrees = await indexRecherche({
+    admin: admin.role === "admin",
+    comptes: comptesNommes,
+  });
+
   return (
     <div className="adm">
       <nav className="adm__nav" aria-label="Navigation du back-office">
@@ -227,7 +237,12 @@ export default async function AdminLayout({
         </div>
       </nav>
 
-      <main className="adm__main">{children}</main>
+      <div className="adm__corps">
+        <div className="adm__barre">
+          <RechercheAdmin entrees={entrees} />
+        </div>
+        <main className="adm__main">{children}</main>
+      </div>
     </div>
   );
 }

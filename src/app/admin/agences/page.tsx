@@ -6,6 +6,7 @@ import MediaPicker from "@/components/admin/MediaPicker";
 import { AGENCIES } from "@/data/essensya";
 import { getContentFrais, isWritable, patchContent } from "@/lib/store";
 import type { Agence } from "@/lib/store/types";
+import GuideEcran from "@/components/admin/GuideEcran";
 import { assertAdmin, requireAdmin } from "../actions";
 
 /* ════════════════════════════════════════════════════════════════
@@ -357,6 +358,8 @@ export default async function AdminAgencesPage({
           </div>
         </div>
 
+        <GuideEcran cle="agences" />
+
         {!inscriptible ? (
           <p className="adm-note adm-note--alerte">
             ⚠ <strong>Le stockage est en lecture seule sur cet hébergement.</strong>{" "}
@@ -647,6 +650,8 @@ export default async function AdminAgencesPage({
           .
         </p>
       </div>
+
+      <GuideEcran cle="agences" />
 
       {ok && messages[ok] ? (
         <p className="adm-note" role="status">

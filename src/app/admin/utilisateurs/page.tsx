@@ -12,6 +12,7 @@ import {
   type Compte,
 } from "@/lib/admin/comptes";
 import { SITE_URL } from "@/lib/site-url";
+import GuideEcran from "@/components/admin/GuideEcran";
 import { assertRole, requireRole } from "../actions";
 import { CopierLien } from "./CopierLien";
 
@@ -392,6 +393,8 @@ export default async function UtilisateursPage({
           e-mail et son propre mot de passe&nbsp;; ce qui se règle ici, c&apos;est le droit.
         </p>
       </div>
+
+      <GuideEcran cle="utilisateurs" />
 
       <p className="adm-note">
         <strong>Écran réservé aux administrateurs.</strong> C&apos;est le seul écran qui
