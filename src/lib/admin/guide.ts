@@ -236,8 +236,9 @@ export const GUIDE = {
       { nom: "Pied de page", effet: "Les colonnes de liens en bas de chaque page.", ancre: "pied", motsCles: "footer bas de page colonnes liens" },
       { nom: "Libellé et adresse d'un lien", effet: "Le texte cliquable et la page vers laquelle il mène. Commencez à taper une adresse pour voir les pages du site.", motsCles: "lien url libelle" },
       { nom: "Flèches ↑ ↓", effet: "L'ordre affiché ici est l'ordre affiché sur le site.", motsCles: "ordre deplacer" },
+      { nom: "Masquer sur le site", effet: "Retire une rubrique ou un sous-lien de la barre sans le supprimer : pour une page pas encore prête. Décochez pour le réafficher.", ancre: "entete", motsCles: "masquer cacher retirer pas pret lancement page vide sous-menu" },
     ],
-    motsCles: "menu navigation liens footer header",
+    motsCles: "menu navigation liens footer header masquer cacher",
   },
 
   reglages: {

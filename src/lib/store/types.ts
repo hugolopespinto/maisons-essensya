@@ -184,6 +184,10 @@ export interface LienMenu {
    *  niveau : les liens qu'il contient n'en portent pas. Absent dans
    *  les données enregistrées avant l'apparition des sous-menus. */
   enfants?: LienMenu[];
+  /** Masqué sur le site public, mais gardé dans le back-office : une
+   *  rubrique ou un sous-lien dont la page n'est pas prête au lancement.
+   *  On le décoche le jour où elle l'est, sans rien ressaisir. */
+  masque?: boolean;
 }
 
 export interface ColonneFooter {

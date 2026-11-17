@@ -384,6 +384,9 @@ export default async function MenusPage({
       label: txt(formData.get(`${pre}_label`)),
       href: txt(formData.get(`${pre}_href`)),
       ordre: 0,
+      /* Posé seulement s'il est coché : les menus déjà enregistrés
+         n'ont pas le champ, et l'absence vaut « affiché ». */
+      ...(formData.get(`${pre}_masque`) === "1" ? { masque: true } : {}),
     });
 
     const entete: LienMenu[] = [];
@@ -514,10 +517,15 @@ export default async function MenusPage({
     opSuppr: string;
     premier: boolean;
     dernier: boolean;
+    /** Seuls les liens de l'en-tête se masquent : c'est la barre qui
+     *  ne doit pas mener à une page encore vide. */
+    masquable?: boolean;
+    /** Le sous-lien d'une rubrique masquée l'est avec elle. */
+    parentMasque?: boolean;
   }) => {
     const nom = o.l.label.trim() || o.l.href.trim() || "sans titre";
     return (
-      <div key={o.l.id}>
+      <div key={o.l.id} className={o.l.masque || o.parentMasque ? "adm-lien--masque" : undefined}>
         <input type="hidden" name={`${o.pre}_id`} value={o.l.id} />
         <div className="adm-grid">
           <div className="adm-field">
@@ -546,6 +554,20 @@ export default async function MenusPage({
             {diagnostic(o.etat, `${o.pre}_etat`)}
           </div>
         </div>
+        {o.masquable ? (
+          <label className="adm-check">
+            <input
+              type="checkbox"
+              name={`${o.pre}_masque`}
+              value="1"
+              defaultChecked={o.l.masque === true}
+            />
+            <span>
+              Masquer sur le site{o.parentMasque ? " (déjà masqué avec sa rubrique)" : ""}
+              <span className="u-sr-only"> : {nom}</span>
+            </span>
+          </label>
+        ) : null}
         <div className="adm-actions adm-actions--serre">
           <button
             type="submit"
@@ -686,7 +708,11 @@ export default async function MenusPage({
           le même ordre dans le menu mobile. Six au plus : au-delà, elles ne tiennent
           plus sur une ligne. Chaque rubrique peut porter un sous-menu, qui s&apos;ouvre
           au survol ; une rubrique à sous-menu peut rester sans adresse, son titre
-          ouvre alors simplement la liste.
+          ouvre alors simplement la liste. Une page pas encore prête ? Cochez
+          « Masquer sur le site » : le lien disparaît de la barre mais reste ici,
+          prêt à être réaffiché d&apos;un clic. Une rubrique masquée emporte son
+          sous-menu ; une rubrique sans adresse dont tous les sous-liens sont
+          masqués disparaît aussi.
           {heriteEntete
             ? " Les liens ci-dessous sont ceux affichés aujourd'hui, repris du code : corrigez-les, le premier enregistrement vous en donne la main."
             : ""}
@@ -716,6 +742,7 @@ export default async function MenusPage({
                   opSuppr: `h.suppr:${i}`,
                   premier: i === 0,
                   dernier: i === header.length - 1,
+                  masquable: true,
                 })}
                 <input type="hidden" name={`h_${i}_n`} value={enfants.length} />
                 <div className="adm-sous-menu">
@@ -737,6 +764,8 @@ export default async function MenusPage({
                         opSuppr: `e.suppr:${i}:${k}`,
                         premier: k === 0,
                         dernier: k === enfants.length - 1,
+                        masquable: true,
+                        parentMasque: l.masque === true,
                       }),
                     )
                   )}

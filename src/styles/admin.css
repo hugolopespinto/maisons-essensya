@@ -666,6 +666,10 @@ body:has(.adm) .c-cookies { display: none !important; }
 @media (max-width: 600px) {
   .adm-sous-menu { margin-left: 0; padding-left: var(--s-2); }
 }
+/* Un lien masqué sur le site : grisé, pour se repérer d'un coup d'œil
+   — sans toucher à la case, qui doit rester lisible pour être décochée. */
+.adm-lien--masque .adm-grid { opacity: .55; }
+.adm-check { margin-top: var(--s-1, .5rem); }
 
 /* Un libellé long dans une colonne de 140 px : il se plie au lieu de
    pousser le cadre. */

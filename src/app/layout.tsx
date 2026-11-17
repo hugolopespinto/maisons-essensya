@@ -102,7 +102,7 @@ const telHref = (numero: string): string =>
    ────────────────────────────────────────────────────────────────── */
 function liensMenu(liens: LienMenu[]): LienChrome[] | undefined {
   const propres = liens
-    .filter((l) => l.label.trim() && l.href.trim())
+    .filter((l) => !l.masque && l.label.trim() && l.href.trim())
     .sort((a, b) => a.ordre - b.ordre)
     .map((l) => ({ label: l.label.trim(), href: l.href.trim() }));
   return propres.length ? propres : undefined;
@@ -112,15 +112,26 @@ function liensMenu(liens: LienMenu[]): LienChrome[] | undefined {
  *  légitime SI elle a des liens à dérouler — sinon elle n'est qu'un
  *  libellé mort, et elle est écartée comme une ligne incomplète. */
 function entreesMenu(liens: LienMenu[]): EntreeChrome[] | undefined {
-  const propres = [...liens]
-    .sort((a, b) => a.ordre - b.ordre)
-    .map((l) => ({
-      label: l.label.trim(),
-      href: l.href.trim() || undefined,
-      enfants: liensMenu(l.enfants ?? []),
-    }))
-    .filter((e) => e.label && (e.href || e.enfants));
-  return propres.length ? propres : undefined;
+  /* ⚠ « MASQUÉ » N'EST PAS « VIDE ». Le repli sur le menu du code ne
+     joue que si rien d'utilisable n'a été saisi ; une rubrique masquée
+     a bien été saisie. Sans cette distinction, masquer la dernière
+     rubrique visible ferait réapparaître tout le menu d'origine.
+     Une rubrique sans adresse dont tous les sous-liens sont masqués
+     disparaît avec eux : son titre n'ouvrirait plus qu'une liste vide. */
+  const enAffichant = (avecMasques: boolean) =>
+    [...liens]
+      .filter((l) => avecMasques || !l.masque)
+      .sort((a, b) => a.ordre - b.ordre)
+      .map((l) => ({
+        label: l.label.trim(),
+        href: l.href.trim() || undefined,
+        enfants: liensMenu(
+          (l.enfants ?? []).map((c) => (avecMasques ? { ...c, masque: false } : c)),
+        ),
+      }))
+      .filter((e) => e.label && (e.href || e.enfants));
+  if (!enAffichant(true).length) return undefined;
+  return enAffichant(false);
 }
 
 /* ──────────────────────────────────────────────────────────────────
