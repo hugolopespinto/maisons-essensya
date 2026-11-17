@@ -111,8 +111,15 @@ export const MENTIONS: Record<string, Mention> = {
   },
   "hebergement": {
     label: "Hébergement et localisation des données",
-    aide: "Hébergeur du site, pays d'hébergement, localisation des serveurs Vitahome, et existence éventuelle d'un transfert hors UE.",
+    aide: "Hébergeur du site, pays d'hébergement, localisation des serveurs Vitahome, et existence éventuelle d'un transfert hors UE. Le texte proposé décrit l'hébergement chez Clever Cloud (Paris) et les serveurs de Vitahome (France, Allemagne) : à modifier si l'un d'eux change.",
     pave: "[[À COMPLÉTER : hébergeur du site, pays d'hébergement, localisation des serveurs Vitahome, et existence éventuelle d'un transfert hors UE avec la garantie applicable]]",
+    /* Texte validé par l'utilisateur le 17/11/2026. Localisation de
+       Vitahome relevée d'après les adresses IP de pro.vitahome.fr (France)
+       et annonces.vitahome.fr (Allemagne) : la dernière phrase — aucun
+       transfert hors UE — engage le constructeur, à faire confirmer par
+       lui et par Vitahome. */
+    defaut:
+      "Ce site, sa base de données et les fichiers de son back-office sont hébergés par Clever Cloud SAS (Nantes), sur des serveurs situés en France, à Paris. Les photos et les plans des annonces sont servis par les serveurs de Vitahome, situés en France et en Allemagne. Aucun de ces hébergements n'entraîne de transfert de données en dehors de l'Union européenne.",
   },
   "dpo": {
     label: "Contact RGPD",
