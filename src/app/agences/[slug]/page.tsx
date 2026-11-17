@@ -229,9 +229,10 @@ export default async function AgencyPage({
 
   /* Décoratif tant qu'aucune photo n'a été choisie : décrire un aplat de
      couleur n'apporte rien à un lecteur d'écran, et l'annoncer comme
-     « l'agence de … » serait faux. */
+     « l'agence de … » serait faux. Le fond du héros reste toujours
+     décoratif : la même photo est décrite plus bas, une fois suffit. */
   const altPhoto =
-    g.image === SANS_PHOTO ? "" : `Vitrine Maisons Essensya — ${g.name}`;
+    g.image === SANS_PHOTO ? "" : `Devanture de l'agence Maisons Essensya à ${ville}`;
 
   return (
     <main className="page">
@@ -245,14 +246,14 @@ export default async function AgencyPage({
       <section className="g-hero">
         <div className="g-hero__bg">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={g.image} alt={altPhoto} />
+          <img src={g.image} alt="" />
         </div>
         <div className="container">
           <FilAriane
             items={[
               { nom: "Accueil", path: "/" },
               { nom: "Nos agences", path: "/agences" },
-              { nom: g.zone || g.name },
+              { nom: g.name },
             ]}
           />
           {g.zone ? (

@@ -8,6 +8,14 @@ import {
   MODELES,
 } from "@/data/gamme";
 import { fmtPrice } from "@/lib/format";
+import {
+  CHAMBRES_PLANS,
+  descriptionPlans,
+  libelleChambres,
+  plansPubliables,
+  titrePlans,
+  urlPlans,
+} from "@/lib/plans";
 import { getContent } from "@/lib/store";
 import type { SeoEntry } from "@/lib/store/types";
 
@@ -56,7 +64,7 @@ export const BUDGET_TITRE = SEO_LIMITES.title - " — Maisons Essensya".length;
    fixe et que le compteur du back-office applique. Une seule source,
    et le client voit exactement ce qui part en ligne. */
 export const titreAccueil = (nomSite: string) =>
-  `${nomSite} — constructeur au prix juste, ${REEL.departement}`;
+  `${nomSite} — constructeur de maisons Landes et Gironde`;
 
 export const titreGamme = () => `Nos modèles de maisons dès ${fmtPrice(PRICE_FROM)}`;
 
@@ -171,6 +179,16 @@ export const SEO_ROUTES: SeoRoute[] = [
         : undefined,
     defaut: defautModele(m),
   })),
+  /* Les quatre pages existent toujours (le menu y mène) ; celles sans
+     modèle publiable sont en noindex, ce que l'aide rappelle. */
+  ...CHAMBRES_PLANS.map((n) => ({
+    path: urlPlans(n),
+    label: `Plans — ${libelleChambres(n)}`,
+    aide: plansPubliables(n)
+      ? undefined
+      : "Cette page est encore hors de Google : aucun modèle publiable n'y figure. Le titre saisi ici servira le jour où il y en aura un.",
+    defaut: { title: titrePlans(n), description: descriptionPlans(n) },
+  })),
   {
     path: "/annonces",
     label: "Terrains & maisons",
@@ -197,6 +215,16 @@ export const SEO_ROUTES: SeoRoute[] = [
     },
   },
   {
+    path: "/construire/landes",
+    label: "Construire dans les Landes",
+    aide: "La page de référence sur les recherches « construire une maison dans les Landes ». Gardez le mot « Landes » dans le titre.",
+    defaut: {
+      title: "Construction de maisons dans les Landes",
+      description:
+        "Construire dans les Landes : les étapes, les règles locales, le budget, les styles de maisons et le rôle d'un constructeur implanté dans le département.",
+    },
+  },
+  {
     path: "/realisations",
     label: "Réalisations",
     aide: "Le contenu vient de l'écran Réalisations : on ne règle ici que le titre et la description dans Google.",
@@ -207,12 +235,20 @@ export const SEO_ROUTES: SeoRoute[] = [
     },
   },
   {
+    path: "/avis-clients",
+    label: "Avis clients",
+    defaut: {
+      title: "Avis clients",
+      description: "Ce que disent nos clients de Maisons Essensya, après la remise des clés.",
+    },
+  },
+  {
     path: "/agences",
     label: "Nos agences",
     defaut: {
-      title: "Nos agences dans les Landes",
+      title: "Nos agences : Landes et Gironde",
       description:
-        "Nous construisons dans les Landes. Notre équipe connaît le terrain de son secteur — au sens propre — et suit votre projet jusqu'à la remise des clés.",
+        "Constructeur de maisons dans les Landes et en Gironde. Chaque agence connaît le terrain de son secteur et suit votre projet jusqu'à la remise des clés.",
     },
   },
   {
@@ -221,7 +257,34 @@ export const SEO_ROUTES: SeoRoute[] = [
     defaut: {
       title: "Notre concept — construire à l'essentiel",
       description:
-        "Pourquoi nos maisons coûtent moins cher, comment nos plans sont optimisés, et ce que le prix comprend exactement. Questions fréquentes comprises.",
+        "Pourquoi nous ne construisons qu'une maison, pourquoi elle coûte moins cher, et ce que le prix comprend exactement. Questions fréquentes comprises.",
+    },
+  },
+  {
+    path: "/etapes-de-construction",
+    label: "Étapes de construction",
+    defaut: {
+      title: "Les étapes de construction d'une maison neuve",
+      description:
+        "Du budget à la remise des clés : les étapes de la construction d'une maison neuve, avec pour chacune une durée indicative, et ce que font le constructeur et le client.",
+    },
+  },
+  {
+    path: "/garanties",
+    label: "Nos garanties",
+    defaut: {
+      title: "Nos garanties",
+      description:
+        "Livraison, parfait achèvement, biennale, décennale, dommages-ouvrage : les garanties qui encadrent votre construction.",
+    },
+  },
+  {
+    path: "/faq",
+    label: "Questions fréquentes",
+    defaut: {
+      title: "Foire aux questions",
+      description:
+        "Prix, personnalisation, contrat CCMI, terrain, délais, apport : les réponses à vos questions sur la construction de votre maison avec Maisons Essensya.",
     },
   },
   {
@@ -246,6 +309,15 @@ export const SEO_ROUTES: SeoRoute[] = [
       title: "Gestion des cookies",
       description:
         "Quels cookies nous déposons, pourquoi, combien de temps, et comment modifier votre choix à tout moment.",
+    },
+  },
+  {
+    path: "/plan-du-site",
+    label: "Plan du site",
+    defaut: {
+      title: "Plan du site",
+      description:
+        "Toutes les pages du site Maisons Essensya : modèles, terrains, agences, guides et informations légales.",
     },
   },
   /* Les pages légales sont indexables et figurent au sitemap : un visiteur

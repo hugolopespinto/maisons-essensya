@@ -3,17 +3,17 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import FilAriane from "@/components/FilAriane";
 import PageGamme from "@/components/PageGamme";
-import { PRICE_FROM } from "@/data/essensya";
 import { modelesAvecVisuels } from "@/data/gamme";
-import { fmtPrice } from "@/lib/format";
 import {
   CHAMBRES_PLANS,
   chambresDuSlugPlans,
+  descriptionPlans,
   libelleChambres,
   modelesAChambres,
   modelesChambresInconnues,
   plansPubliables,
   slugPlans,
+  titrePlans as titre,
   urlPlans,
 } from "@/lib/plans";
 import { jsonLd, listeSchema } from "@/lib/schema";
@@ -47,8 +47,6 @@ export async function generateStaticParams() {
   return CHAMBRES_PLANS.map((n) => ({ chambres: slugPlans(n) }));
 }
 
-const titre = (n: number) => `Plans de maison ${libelleChambres(n)}`;
-
 export async function generateMetadata({
   params,
 }: {
@@ -58,13 +56,9 @@ export async function generateMetadata({
   const n = chambresDuSlugPlans(chambres);
   if (n === null) return {};
 
-  const noms = modelesAChambres(n).map((m) => m.nom);
   return resolveMetadata(urlPlans(n), {
     title: titre(n),
-    description: noms.length
-      ? `Nos modèles de maison ${libelleChambres(n)} : ${noms.join(", ")}. ` +
-        `Des plans optimisés jusqu'au dernier mètre carré, dans une gamme à partir de ${fmtPrice(PRICE_FROM)} hors terrain.`
-      : `Les modèles de maison ${libelleChambres(n)} de la gamme Essensya : leurs vues, et le chiffrage pour votre commune.`,
+    description: descriptionPlans(n),
     alternates: { canonical: urlPlans(n) },
     ...(plansPubliables(n) ? {} : { robots: { index: false, follow: true } }),
   });

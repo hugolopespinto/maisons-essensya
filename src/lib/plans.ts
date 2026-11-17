@@ -1,4 +1,6 @@
+import { PRICE_FROM } from "@/data/essensya";
 import { estPubliable, modelesAvecVisuels, type Modele } from "@/data/gamme";
+import { fmtPrice } from "@/lib/format";
 
 /* ════════════════════════════════════════════════════════════════
    LES PLANS PAR NOMBRE DE CHAMBRES — /plans-de-maison/N-chambres
@@ -61,3 +63,15 @@ export const modelesChambresInconnues = (): Modele[] =>
  */
 export const plansPubliables = (n: number): boolean =>
   modelesAChambres(n).some(estPubliable);
+
+/* Partagés avec l'écran Référencement (src/lib/seo.ts), qui affiche ce
+   défaut en gris : la page et le back-office ne peuvent pas diverger. */
+export const titrePlans = (n: number) => `Plans de maison ${libelleChambres(n)}`;
+
+export function descriptionPlans(n: number): string {
+  const noms = modelesAChambres(n).map((m) => m.nom);
+  return noms.length
+    ? `Nos modèles de maison ${libelleChambres(n)} : ${noms.join(", ")}. ` +
+        `Des plans optimisés jusqu'au dernier mètre carré, dans une gamme à partir de ${fmtPrice(PRICE_FROM)} hors terrain.`
+    : `Les modèles de maison ${libelleChambres(n)} de la gamme Essensya : leurs vues, et le chiffrage pour votre commune.`;
+}

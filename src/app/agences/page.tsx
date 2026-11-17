@@ -44,9 +44,9 @@ export const revalidate = 1800;
    chose. Voir la note de fin de src/lib/seo.ts. */
 export async function generateMetadata(): Promise<Metadata> {
   return resolveMetadata("/agences", {
-    title: "Nos agences dans les Landes",
+    title: "Nos agences : Landes et Gironde",
     description:
-      "Nous construisons dans les Landes. Notre équipe connaît le terrain de son secteur — au sens propre — et suit votre projet jusqu'à la remise des clés.",
+      "Constructeur de maisons dans les Landes et en Gironde. Chaque agence connaît le terrain de son secteur et suit votre projet jusqu'à la remise des clés.",
     alternates: { canonical: "/agences" },
   });
 }
