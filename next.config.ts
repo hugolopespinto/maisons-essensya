@@ -103,6 +103,46 @@ function origineStockage(): string {
   }
 }
 
+/* ════════════════════════════════════════════════════════════════
+   UNE SEULE ADRESSE : AVEC OU SANS « www »
+
+   Le domaine du client répond sous ses deux formes (exemple.fr et
+   www.exemple.fr pointent tous deux vers Clever Cloud), mais Google
+   doit n'en connaître qu'une, sinon il indexe le site en double. La
+   forme retenue est celle de NEXT_PUBLIC_SITE_URL ; l'autre y renvoie
+   en 308, chemin et paramètres conservés.
+
+   ⚠ Évaluée AU BUILD, comme toute la config. Rien n'est produit tant
+   que la variable est absente ou désigne une adresse technique
+   (localhost, *.cleverapps.io, *.netlify.app) : le site de test reste
+   accessible tel quel.
+   ════════════════════════════════════════════════════════════════ */
+function redirectionDomaineJumeau() {
+  try {
+    const { protocol, hostname, origin } = new URL(
+      (process.env.NEXT_PUBLIC_SITE_URL || "").trim(),
+    );
+    if (protocol !== "https:") return [];
+    if (!hostname.includes(".") || /^\d+(\.\d+){3}$/.test(hostname)) return [];
+    if (/\.(cleverapps\.io|netlify\.app)$/.test(hostname)) return [];
+    const jumeau = hostname.startsWith("www.")
+      ? hostname.slice(4)
+      : `www.${hostname}`;
+    return [
+      {
+        source: "/:path*",
+        /* `value` est lu comme une expression régulière : on échappe les
+           points pour que « exemple.fr » ne reconnaisse pas « exempleXfr ». */
+        has: [{ type: "host" as const, value: jumeau.replace(/\./g, "\\.") }],
+        destination: `${origin}/:path*`,
+        permanent: true,
+      },
+    ];
+  } catch {
+    return [];
+  }
+}
+
 const GOOGLE_SCRIPTS = [
   "https://www.googletagmanager.com",
   "https://tagmanager.google.com",
@@ -162,6 +202,8 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
+      /* En premier : le domaine se corrige avant tout autre renvoi. */
+      ...redirectionDomaineJumeau(),
       /* Ces trois pages sont devenues des sections de /concept (retour du
          client du 01/11). */
       { source: "/qui-sommes-nous", destination: "/concept#qui-sommes-nous", permanent: true },
