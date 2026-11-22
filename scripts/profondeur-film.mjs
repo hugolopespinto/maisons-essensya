@@ -13,7 +13,7 @@ import { pathToFileURL } from "node:url";
    toutes les `--pas` secondes et le navigateur passe de l'une à l'autre.
 
      npm i --no-save puppeteer-core @huggingface/transformers@3
-     node scripts/profondeur-film.mjs public/film/chantier.mp4 --debut 2 --fin 10
+     node scripts/profondeur-film.mjs public/film/chantier-ORIGINAL.mp4 --debut 2 --fin 10
 
    Sortie :
      · public/film/<nom>-profondeur.webp — la planche, cartes rangées

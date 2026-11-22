@@ -3,19 +3,12 @@ import film from "./film-accueil.json";
 /* ════════════════════════════════════════════════════════════════
    LE FILM D'ARRIVÉE DE L'ACCUEIL
 
-   `film-accueil.json` est écrit par `scripts/profondeur-film.mjs`,
-   jamais à la main : il décrit le film ET sa planche de profondeur, et
-   les deux doivent correspondre à la demi-seconde près. Une planche
-   calculée sur un autre film, ou un autre point de départ, ferait
-   glisser le relief à contretemps de l'image.
+   `film-accueil.json` associe le film à sa planche de profondeur.
+   Les cartes sont espacées de 0,5 s à la lecture et générées à partir
+   des images du chantier via `scripts/profondeur-film.mjs`.
 
-   ⚠ CHANGER DE FILM = RELANCER LE SCRIPT. Remplacer le .mp4 sans
-   régénérer la planche laisse le relief de l'ancien film sur le nouveau.
-
-   ⚠ PLACEHOLDER — `chantier.mp4` est la référence de 10 s fournie par
-   le client (720p, 5 Mo) : la maison filmée n'est PAS une Essensya. Le
-   film définitif doit faire 1920 de large et tenir sous 2 Mo — il est
-   téléchargé en entier pendant l'écran de chargement.
+   Régénérer la planche à chaque changement de film, de point de départ
+   ou de cadence. Garder le MP4 sous 2 Mo pour l'écran de chargement.
    ════════════════════════════════════════════════════════════════ */
 
 export interface FilmAccueil {
@@ -23,8 +16,7 @@ export interface FilmAccueil {
   src: string;
   largeur: number;
   hauteur: number;
-  /** Chaque tour de boucle va de `debut` à `fin`, en secondes. On saute
-      la parcelle vide : elle ne raconte rien. */
+  /** Chaque tour de boucle va de `debut` à `fin`, en secondes. */
   debut: number;
   fin: number;
   profondeur: {

@@ -152,13 +152,6 @@ export default async function HomePage() {
           "Maisons Essensya, constructeur de maisons au prix juste dans les Landes",
         )}
         alt="Maison Essensya modèle Lisbonne, vue de la terrasse"
-        /* ⚠ PLACEHOLDER DE DÉMONSTRATION — À REMPLACER AVANT MISE EN LIGNE.
-           C'est la référence de 10 s fournie par le client, jouée en boucle
-           de 2 s à 10 s pour sauter la parcelle vide. La maison filmée
-           n'est PAS une Essensya, et le fichier pèse 5 Mo en 720p : c'est
-           bon pour montrer l'effet, pas pour le public. Le film définitif
-           doit être en 1920 de large et sous 2 Mo, et sa planche de
-           profondeur régénérée — voir src/data/film-accueil.ts. */
         film={FILM_ACCUEIL}
       />
 

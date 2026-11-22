@@ -1,14 +1,14 @@
 {
-  "src": "/film/chantier.mp4",
-  "largeur": 1280,
-  "hauteur": 720,
-  "debut": 2,
-  "fin": 10,
+  "src": "/film/chantier-V11.mp4",
+  "largeur": 1920,
+  "hauteur": 1080,
+  "debut": 0,
+  "fin": 20,
   "profondeur": {
-    "src": "/film/chantier-profondeur.webp",
+    "src": "/film/chantier-V11-sans-arrondi-profondeur.webp",
     "pas": 0.5,
-    "nombre": 17,
+    "nombre": 41,
     "colonnes": 4,
-    "lignes": 5
+    "lignes": 11
   }
 }
