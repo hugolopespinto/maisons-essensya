@@ -241,7 +241,7 @@ export const PAGES_DEFAUT: PageEditable[] = [
       {
         cle: "etapes.titre",
         label: "Titre de la section « Comment ça marche »",
-        valeur: "Quatre étapes, pas quarante",
+        valeur: "9 étapes, pas une de plus",
       },
       {
         cle: "engagements.surtitre",

@@ -199,7 +199,7 @@ export default async function ConceptPage() {
             <span className="c-label c-label--accent">
               {t("etapes.surtitre", "Comment ça marche")}
             </span>
-            <h2>{t("etapes.titre", "Quatre étapes, pas quarante")}</h2>
+            <h2>{t("etapes.titre", "9 étapes, pas une de plus")}</h2>
           </div>
           <div className="s-steps__list">
             {ESSENSYA_DATA.steps.map((i) => (
