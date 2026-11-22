@@ -46,6 +46,11 @@
 .c-cookies__perso:hover{color:var(--accent);border-color:var(--accent)}
 @media (max-width:760px){
   .c-cookies__inner{flex-direction:column;align-items:stretch;gap:var(--s-3)}
+  /* ⚠ `flex:1 1 380px` visait une largeur minimale en ligne (desktop).
+     En colonne, le même flex-basis s'applique à la hauteur : sans ce
+     reset, le bloc de texte s'étire à 380px de haut et pousse les
+     boutons hors de l'écran sur mobile. */
+  .c-cookies__text{flex:1 1 auto}
   .c-cookies__actions{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-2)}
   .c-cookies__actions .c-btn{justify-content:center}
   .c-cookies__perso{grid-column:1/-1;text-align:center;justify-self:center}
