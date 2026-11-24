@@ -56,7 +56,9 @@ const PHOTOS_JUSTE = [
      affiché juste au-dessus annonce « modèle Pékin ». Tant qu'il n'avait
      pas de visuel, la rangée montrait trois AUTRES modèles sous ce
      prix — un visiteur pouvait croire que 78 000 € les concernait. */
-  { visuel: vue("pekin", "vue-1-exterieur"), alt: "Maison Essensya modèle Pékin, côté terrasse" },
+  /* Depuis les rendus du 24/11, la vue 1 de Pékin montre l'entrée : la
+     terrasse est passée de l'autre côté, en vue 2. */
+  { visuel: vue("pekin", "vue-1-exterieur"), alt: "Maison Essensya modèle Pékin, côté entrée" },
   { visuel: vue("dublin", "vue-2-exterieur"), alt: "Maison Essensya modèle Dublin, côté jardin" },
   { visuel: vue("berlin", "vue-3-interieur"), alt: "Séjour d'une maison Essensya modèle Berlin" },
   /* La maquette répétait le séjour Berlin pour figurer cette case. Une
@@ -289,14 +291,15 @@ export default async function HomePage() {
         items={D.philosophy}
         /* Une photo par carte. Le client a validé les 1, 2 et 4 et fourni
            les 3 et 5 (01/11). La sixième, une terrasse, reste en attendant
-           une vraie photo de l'équipe. */
+           une vraie photo de l'équipe : celle de Pékin, qui était sa vue 4
+           et passe en vue 2 avec les rendus du 24/11. */
         fonds={[
           vue("athenes", "plan-axonometrique"),
           vue("athenes", "vue-4-interieur"),
           FOND_PROCESSUS,
           vue("athenes", "vue-9-interieur"),
           FOND_GARANTIES,
-          vue("pekin", "vue-4-terrasse"),
+          vue("pekin", "vue-2-exterieur"),
         ]}
       />
 

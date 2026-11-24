@@ -43,151 +43,186 @@
         "type": "plan"
       },
       {
-        "cle": "vue-1-avant",
-        "src": "/maisons/ankara/vue-1-avant.webp",
+        "cle": "vue-1-exterieur",
+        "src": "/maisons/ankara/vue-1-exterieur.webp",
         "largeur": 1376,
         "hauteur": 768,
         "empreinte": "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAABQBACdASoUAAsAPu1iqk2ppaQiMAgBMB2JagCdLwBKxhZtPFozE2eyziUAAP7nYjR3EcVJHpspotzJPpUkXk2FklQYbi6o2gNxVO+a+mj6TrVzPJdxaxGawY9rHhQqdexh8/+XTDQREs0iRtxZh6B06uZ0TRhUaAAAAA==",
         "variantes": [
           {
             "largeur": 480,
-            "avif": "/maisons/ankara/vue-1-avant-480.avif",
-            "webp": "/maisons/ankara/vue-1-avant-480.webp"
+            "avif": "/maisons/ankara/vue-1-exterieur-480.avif",
+            "webp": "/maisons/ankara/vue-1-exterieur-480.webp"
           },
           {
             "largeur": 720,
-            "avif": "/maisons/ankara/vue-1-avant-720.avif",
-            "webp": "/maisons/ankara/vue-1-avant-720.webp"
+            "avif": "/maisons/ankara/vue-1-exterieur-720.avif",
+            "webp": "/maisons/ankara/vue-1-exterieur-720.webp"
           },
           {
             "largeur": 1024,
-            "avif": "/maisons/ankara/vue-1-avant-1024.avif",
-            "webp": "/maisons/ankara/vue-1-avant-1024.webp"
+            "avif": "/maisons/ankara/vue-1-exterieur-1024.avif",
+            "webp": "/maisons/ankara/vue-1-exterieur-1024.webp"
           },
           {
             "largeur": 1376,
-            "avif": "/maisons/ankara/vue-1-avant.avif",
-            "webp": "/maisons/ankara/vue-1-avant.webp"
+            "avif": "/maisons/ankara/vue-1-exterieur.avif",
+            "webp": "/maisons/ankara/vue-1-exterieur.webp"
           }
         ],
         "type": "exterieur"
       },
       {
-        "cle": "vue-2-avant",
-        "src": "/maisons/ankara/vue-2-avant.webp",
+        "cle": "vue-2-exterieur",
+        "src": "/maisons/ankara/vue-2-exterieur.webp",
         "largeur": 1376,
         "hauteur": 768,
         "empreinte": "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAADQAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JZgCdAB3wIba0wfH5t8AA/tW28UWugYwR3TcSIRgCSdlTpRk7s7NYUd2b5T4oK7R29XC8+8nn6Ua7emAmCNz42LmjKG2+4qT1EG+H4cvVQ/W7Uq3hQWRstAvPRGWw2drAAA==",
         "variantes": [
           {
             "largeur": 480,
-            "avif": "/maisons/ankara/vue-2-avant-480.avif",
-            "webp": "/maisons/ankara/vue-2-avant-480.webp"
+            "avif": "/maisons/ankara/vue-2-exterieur-480.avif",
+            "webp": "/maisons/ankara/vue-2-exterieur-480.webp"
           },
           {
             "largeur": 720,
-            "avif": "/maisons/ankara/vue-2-avant-720.avif",
-            "webp": "/maisons/ankara/vue-2-avant-720.webp"
+            "avif": "/maisons/ankara/vue-2-exterieur-720.avif",
+            "webp": "/maisons/ankara/vue-2-exterieur-720.webp"
           },
           {
             "largeur": 1024,
-            "avif": "/maisons/ankara/vue-2-avant-1024.avif",
-            "webp": "/maisons/ankara/vue-2-avant-1024.webp"
+            "avif": "/maisons/ankara/vue-2-exterieur-1024.avif",
+            "webp": "/maisons/ankara/vue-2-exterieur-1024.webp"
           },
           {
             "largeur": 1376,
-            "avif": "/maisons/ankara/vue-2-avant.avif",
-            "webp": "/maisons/ankara/vue-2-avant.webp"
+            "avif": "/maisons/ankara/vue-2-exterieur.avif",
+            "webp": "/maisons/ankara/vue-2-exterieur.webp"
           }
         ],
         "type": "exterieur"
       },
       {
-        "cle": "vue-3-sejour",
-        "src": "/maisons/ankara/vue-3-sejour.webp",
+        "cle": "vue-3-interieur",
+        "src": "/maisons/ankara/vue-3-interieur.webp",
         "largeur": 1376,
         "hauteur": 768,
         "empreinte": "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JYwCdAB9OhOaQEC2LbBdYgAD2A08JrVJFn2Rz5meM0YPcD+AwqEurLBn0QCuNl++hCPJBVbzwikijlLIA12MRhoCQyCPGialdmo30UYkMNNwtrvYZAEbpxIBFNZIAAAA=",
         "variantes": [
           {
             "largeur": 480,
-            "avif": "/maisons/ankara/vue-3-sejour-480.avif",
-            "webp": "/maisons/ankara/vue-3-sejour-480.webp"
+            "avif": "/maisons/ankara/vue-3-interieur-480.avif",
+            "webp": "/maisons/ankara/vue-3-interieur-480.webp"
           },
           {
             "largeur": 720,
-            "avif": "/maisons/ankara/vue-3-sejour-720.avif",
-            "webp": "/maisons/ankara/vue-3-sejour-720.webp"
+            "avif": "/maisons/ankara/vue-3-interieur-720.avif",
+            "webp": "/maisons/ankara/vue-3-interieur-720.webp"
           },
           {
             "largeur": 1024,
-            "avif": "/maisons/ankara/vue-3-sejour-1024.avif",
-            "webp": "/maisons/ankara/vue-3-sejour-1024.webp"
+            "avif": "/maisons/ankara/vue-3-interieur-1024.avif",
+            "webp": "/maisons/ankara/vue-3-interieur-1024.webp"
           },
           {
             "largeur": 1376,
-            "avif": "/maisons/ankara/vue-3-sejour.avif",
-            "webp": "/maisons/ankara/vue-3-sejour.webp"
+            "avif": "/maisons/ankara/vue-3-interieur.avif",
+            "webp": "/maisons/ankara/vue-3-interieur.webp"
           }
         ],
         "type": "interieur"
       },
       {
-        "cle": "vue-4-chambre-1",
-        "src": "/maisons/ankara/vue-4-chambre-1.webp",
+        "cle": "vue-4-interieur",
+        "src": "/maisons/ankara/vue-4-interieur.webp",
         "largeur": 1376,
         "hauteur": 768,
         "empreinte": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAAAwBACdASoUAAsAPu1iqU2ppaQiMAgBMB2JQBOmUABHblCzFKw7tAbNYeQA+uN+hyMlPI3UlLUB54oe6G1QphcpjGowlWiDo/zZncfSdDWg6wneRrwEHTJ8BlJxRDP0M9cXF7bGtsMriSgDgQCKAA==",
         "variantes": [
           {
             "largeur": 480,
-            "avif": "/maisons/ankara/vue-4-chambre-1-480.avif",
-            "webp": "/maisons/ankara/vue-4-chambre-1-480.webp"
+            "avif": "/maisons/ankara/vue-4-interieur-480.avif",
+            "webp": "/maisons/ankara/vue-4-interieur-480.webp"
           },
           {
             "largeur": 720,
-            "avif": "/maisons/ankara/vue-4-chambre-1-720.avif",
-            "webp": "/maisons/ankara/vue-4-chambre-1-720.webp"
+            "avif": "/maisons/ankara/vue-4-interieur-720.avif",
+            "webp": "/maisons/ankara/vue-4-interieur-720.webp"
           },
           {
             "largeur": 1024,
-            "avif": "/maisons/ankara/vue-4-chambre-1-1024.avif",
-            "webp": "/maisons/ankara/vue-4-chambre-1-1024.webp"
+            "avif": "/maisons/ankara/vue-4-interieur-1024.avif",
+            "webp": "/maisons/ankara/vue-4-interieur-1024.webp"
           },
           {
             "largeur": 1376,
-            "avif": "/maisons/ankara/vue-4-chambre-1.avif",
-            "webp": "/maisons/ankara/vue-4-chambre-1.webp"
+            "avif": "/maisons/ankara/vue-4-interieur.avif",
+            "webp": "/maisons/ankara/vue-4-interieur.webp"
           }
         ],
         "type": "interieur"
       },
       {
-        "cle": "vue-5-chambre-2",
-        "src": "/maisons/ankara/vue-5-chambre-2.webp",
+        "cle": "vue-5-interieur",
+        "src": "/maisons/ankara/vue-5-interieur.webp",
         "largeur": 1376,
         "hauteur": 768,
         "empreinte": "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAACwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JQBOgA8JCQCNQFrSEAAD+qNHQOj5Vlj1JUgEsVWBBgsWqdj3lsYIRTgwU2NhPKSYkZ28hWp0uWc7elh/VqcUHHKSkxp22C0WqDguIxkJ9qPyEGuaZgAAA",
         "variantes": [
           {
             "largeur": 480,
-            "avif": "/maisons/ankara/vue-5-chambre-2-480.avif",
-            "webp": "/maisons/ankara/vue-5-chambre-2-480.webp"
+            "avif": "/maisons/ankara/vue-5-interieur-480.avif",
+            "webp": "/maisons/ankara/vue-5-interieur-480.webp"
           },
           {
             "largeur": 720,
-            "avif": "/maisons/ankara/vue-5-chambre-2-720.avif",
-            "webp": "/maisons/ankara/vue-5-chambre-2-720.webp"
+            "avif": "/maisons/ankara/vue-5-interieur-720.avif",
+            "webp": "/maisons/ankara/vue-5-interieur-720.webp"
           },
           {
             "largeur": 1024,
-            "avif": "/maisons/ankara/vue-5-chambre-2-1024.avif",
-            "webp": "/maisons/ankara/vue-5-chambre-2-1024.webp"
+            "avif": "/maisons/ankara/vue-5-interieur-1024.avif",
+            "webp": "/maisons/ankara/vue-5-interieur-1024.webp"
           },
           {
             "largeur": 1376,
-            "avif": "/maisons/ankara/vue-5-chambre-2.avif",
-            "webp": "/maisons/ankara/vue-5-chambre-2.webp"
+            "avif": "/maisons/ankara/vue-5-interieur.avif",
+            "webp": "/maisons/ankara/vue-5-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-6-interieur",
+        "src": "/maisons/ankara/vue-6-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 816,
+        "empreinte": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JYwC06CKFmPzsr9SOalEEAAD+w9wpBhag9f15I33OFsRb7S3qjcrE08V9Nkthi0/C28xEbKzDe26zzxZn2+qP0xkAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/ankara/vue-6-interieur-480.avif",
+            "webp": "/maisons/ankara/vue-6-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/ankara/vue-6-interieur-720.avif",
+            "webp": "/maisons/ankara/vue-6-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/ankara/vue-6-interieur-1024.avif",
+            "webp": "/maisons/ankara/vue-6-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/ankara/vue-6-interieur-1440.avif",
+            "webp": "/maisons/ankara/vue-6-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/ankara/vue-6-interieur.avif",
+            "webp": "/maisons/ankara/vue-6-interieur.webp"
           }
         ],
         "type": "interieur"
@@ -238,61 +273,71 @@
         "type": "plan"
       },
       {
-        "cle": "vue-1-avant",
-        "src": "/maisons/athenes/vue-1-avant.webp",
-        "largeur": 1376,
-        "hauteur": 768,
-        "empreinte": "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAABQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JYgC/OCHw7r2Rmp0kv8BHCRkIAP7taVoKy36o1/Z/cUecSvHFMRvkcN5dqDdXsY4VOcJ90Xcid0GbVXvCMLNSg4Ehr3JdpBgZI+k3mgY6TdVgsgIhPtCAAAA=",
+        "cle": "vue-1-exterieur",
+        "src": "/maisons/athenes/vue-1-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 848,
+        "empreinte": "data:image/webp;base64,UklGRpQAAABXRUJQVlA4IIgAAABwBACdASoUAAsAPu1iqU2ppaQiMAgBMB2JagCdGurt/8Bh0igssCGfDqoC0AD94niftVzK8DG133Vp3jN7iDjgUeKqyIFZ6UH7BReXy0CtJuvtKhRMshpl1PhkUFZHRu6IpuYcluH330vGqffq/GrTujukNy4gfR8g8d9AUZPtyUt8uXz61YAA",
         "variantes": [
           {
             "largeur": 480,
-            "avif": "/maisons/athenes/vue-1-avant-480.avif",
-            "webp": "/maisons/athenes/vue-1-avant-480.webp"
+            "avif": "/maisons/athenes/vue-1-exterieur-480.avif",
+            "webp": "/maisons/athenes/vue-1-exterieur-480.webp"
           },
           {
             "largeur": 720,
-            "avif": "/maisons/athenes/vue-1-avant-720.avif",
-            "webp": "/maisons/athenes/vue-1-avant-720.webp"
+            "avif": "/maisons/athenes/vue-1-exterieur-720.avif",
+            "webp": "/maisons/athenes/vue-1-exterieur-720.webp"
           },
           {
             "largeur": 1024,
-            "avif": "/maisons/athenes/vue-1-avant-1024.avif",
-            "webp": "/maisons/athenes/vue-1-avant-1024.webp"
+            "avif": "/maisons/athenes/vue-1-exterieur-1024.avif",
+            "webp": "/maisons/athenes/vue-1-exterieur-1024.webp"
           },
           {
-            "largeur": 1376,
-            "avif": "/maisons/athenes/vue-1-avant.avif",
-            "webp": "/maisons/athenes/vue-1-avant.webp"
+            "largeur": 1440,
+            "avif": "/maisons/athenes/vue-1-exterieur-1440.avif",
+            "webp": "/maisons/athenes/vue-1-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/athenes/vue-1-exterieur.avif",
+            "webp": "/maisons/athenes/vue-1-exterieur.webp"
           }
         ],
         "type": "exterieur"
       },
       {
-        "cle": "vue-2-arriere",
-        "src": "/maisons/athenes/vue-2-arriere.webp",
-        "largeur": 1376,
-        "hauteur": 768,
-        "empreinte": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAADQAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JYgAAUbzXJ6iGaq2jDAAA/t+HPsBVkgs1XJfNUgWMEgGEdcMjlsJ5kor9SIfsAH7SjgVhaBz10pJMAzD/zlPb6CChIdr3wwtJVrSi68P+DlNeAAA=",
+        "cle": "vue-2-exterieur",
+        "src": "/maisons/athenes/vue-2-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 848,
+        "empreinte": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAADwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JbACdAB9EHAUY5orskIxAAP36UKMR8rEBkLF8naAsYOYldxHFpe5YsJzmCCZf6vBcBwgmTlsq56tuK7L3ZHhDMmdA3ilCBz8MaK8rSBrSE5bfCb3aXnS3iyAb/+hMkYRj/gShRQvUhzAA",
         "variantes": [
           {
             "largeur": 480,
-            "avif": "/maisons/athenes/vue-2-arriere-480.avif",
-            "webp": "/maisons/athenes/vue-2-arriere-480.webp"
+            "avif": "/maisons/athenes/vue-2-exterieur-480.avif",
+            "webp": "/maisons/athenes/vue-2-exterieur-480.webp"
           },
           {
             "largeur": 720,
-            "avif": "/maisons/athenes/vue-2-arriere-720.avif",
-            "webp": "/maisons/athenes/vue-2-arriere-720.webp"
+            "avif": "/maisons/athenes/vue-2-exterieur-720.avif",
+            "webp": "/maisons/athenes/vue-2-exterieur-720.webp"
           },
           {
             "largeur": 1024,
-            "avif": "/maisons/athenes/vue-2-arriere-1024.avif",
-            "webp": "/maisons/athenes/vue-2-arriere-1024.webp"
+            "avif": "/maisons/athenes/vue-2-exterieur-1024.avif",
+            "webp": "/maisons/athenes/vue-2-exterieur-1024.webp"
           },
           {
-            "largeur": 1376,
-            "avif": "/maisons/athenes/vue-2-arriere.avif",
-            "webp": "/maisons/athenes/vue-2-arriere.webp"
+            "largeur": 1440,
+            "avif": "/maisons/athenes/vue-2-exterieur-1440.avif",
+            "webp": "/maisons/athenes/vue-2-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/athenes/vue-2-exterieur.avif",
+            "webp": "/maisons/athenes/vue-2-exterieur.webp"
           }
         ],
         "type": "exterieur"
@@ -518,66 +563,111 @@
     "nom": "Berlin",
     "vues": [
       {
-        "cle": "vue-1-avant",
-        "src": "/maisons/berlin/vue-1-avant.webp",
-        "largeur": 1536,
-        "hauteur": 1024,
-        "empreinte": "data:image/webp;base64,UklGRp4AAABXRUJQVlA4IJIAAADQAwCdASoUAA0APu1iqU2ppaOiMAgBMB2JbACdABwlc19sjfxNrKgA/sXlw+WNVzf5CGUPRbd2P5P10b18uP8NGlzTEer4aJ53DcVazxkUlUrox8JVg94FywN8PYUsIrlzcDwqn1B88gdcO+y8djheR+Hp6nWUfli0Edy+19PNT3keqKeE4I/lC3IIz5DFqrAAAA==",
+        "cle": "plan-axonometrique",
+        "src": "/maisons/berlin/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRjABAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSI4AAAABgJpt27Lsfp4XdyLd2cGtwxxOpOkUJA4iGxBpdBbw/Lv/zxM+mSEiJoBsYQwA42VYbQzGx1kpCrfECF1Ufs/rXtGJydt5kV/RXz0AZCHGQkVV5VtX8MBq0N28/Yta2/AQkaX+UJE/EX0kwTYAMtOTqn7rDkwORPC1t0+iPXidwF4CUpN9GuyCiDwGMEy2VlA4IHwAAADQAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JZQAD5IFqY28f92CNrwAA/uoc6mT5AiRyzC/6FbEbQX09BWLQTQHWh3oY61X+zNwdD1YqSrCIjef2Tt3LWZ6zWqtQCsq2dhlMXpNEzABgb/4oMCiBAmTW+D6A0sIsCoPY4VAA",
         "variantes": [
           {
             "largeur": 480,
-            "avif": "/maisons/berlin/vue-1-avant-480.avif",
-            "webp": "/maisons/berlin/vue-1-avant-480.webp"
+            "avif": "/maisons/berlin/plan-axonometrique-480.avif",
+            "webp": "/maisons/berlin/plan-axonometrique-480.webp"
           },
           {
             "largeur": 720,
-            "avif": "/maisons/berlin/vue-1-avant-720.avif",
-            "webp": "/maisons/berlin/vue-1-avant-720.webp"
+            "avif": "/maisons/berlin/plan-axonometrique-720.avif",
+            "webp": "/maisons/berlin/plan-axonometrique-720.webp"
           },
           {
             "largeur": 1024,
-            "avif": "/maisons/berlin/vue-1-avant-1024.avif",
-            "webp": "/maisons/berlin/vue-1-avant-1024.webp"
+            "avif": "/maisons/berlin/plan-axonometrique-1024.avif",
+            "webp": "/maisons/berlin/plan-axonometrique-1024.webp"
           },
           {
             "largeur": 1440,
-            "avif": "/maisons/berlin/vue-1-avant-1440.avif",
-            "webp": "/maisons/berlin/vue-1-avant-1440.webp"
+            "avif": "/maisons/berlin/plan-axonometrique-1440.avif",
+            "webp": "/maisons/berlin/plan-axonometrique-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/berlin/plan-axonometrique-1920.avif",
+            "webp": "/maisons/berlin/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/berlin/plan-axonometrique.avif",
+            "webp": "/maisons/berlin/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
+      {
+        "cle": "vue-1-exterieur",
+        "src": "/maisons/berlin/vue-1-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 1024,
+        "empreinte": "data:image/webp;base64,UklGRqIAAABXRUJQVlA4IJYAAABQBACdASoUAA0APu1iqU2ppaOiMAgBMB2JbACdH8AguhP5bWI8sq+WK5wAAP7F5dMCZjkbWIIj18kwn0aGkiGDBP2edmMp/RrkGknGSVOj0baSVtombHtFmmTy4iWK7AqCgu2aMLOWQU7mj4DWG/CO06Xd9MxKKzRZbQpGuiwi6cQp5qe8j1RTwnBH9d3Qv7o99kfHAAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/berlin/vue-1-exterieur-480.avif",
+            "webp": "/maisons/berlin/vue-1-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/berlin/vue-1-exterieur-720.avif",
+            "webp": "/maisons/berlin/vue-1-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/berlin/vue-1-exterieur-1024.avif",
+            "webp": "/maisons/berlin/vue-1-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/berlin/vue-1-exterieur-1440.avif",
+            "webp": "/maisons/berlin/vue-1-exterieur-1440.webp"
           },
           {
             "largeur": 1536,
-            "avif": "/maisons/berlin/vue-1-avant.avif",
-            "webp": "/maisons/berlin/vue-1-avant.webp"
+            "avif": "/maisons/berlin/vue-1-exterieur.avif",
+            "webp": "/maisons/berlin/vue-1-exterieur.webp"
           }
         ],
         "type": "exterieur"
       },
       {
-        "cle": "vue-2-arriere",
-        "src": "/maisons/berlin/vue-2-arriere.webp",
-        "largeur": 1376,
-        "hauteur": 768,
-        "empreinte": "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAADwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JagCsACICbaxjyJtKvJ0QAOJ4SdggwzVGshqfUK/hLsUTDcxvu5W66uV2e9cc0fAl3ga1JI8mV1ag4aeO2frLNW8xaU/uTQto67Yy061YnJITTUo5zE+jhGEQcMpi4+qIVDgAAAA=",
+        "cle": "vue-2-exterieur",
+        "src": "/maisons/berlin/vue-2-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 848,
+        "empreinte": "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAAAQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JagCdACICcAIU41Hyd++9AADieEnYIMM1RrIan1Cv4S7FEw3Mb7uVuulG7g7YG1cHdePETpv+WGL7wDN084BiDeQcvUgeRKk+pS6+h6BZ5B8ZinIqrO4jKYt0fIHGA+g3hgAA",
         "variantes": [
           {
             "largeur": 480,
-            "avif": "/maisons/berlin/vue-2-arriere-480.avif",
-            "webp": "/maisons/berlin/vue-2-arriere-480.webp"
+            "avif": "/maisons/berlin/vue-2-exterieur-480.avif",
+            "webp": "/maisons/berlin/vue-2-exterieur-480.webp"
           },
           {
             "largeur": 720,
-            "avif": "/maisons/berlin/vue-2-arriere-720.avif",
-            "webp": "/maisons/berlin/vue-2-arriere-720.webp"
+            "avif": "/maisons/berlin/vue-2-exterieur-720.avif",
+            "webp": "/maisons/berlin/vue-2-exterieur-720.webp"
           },
           {
             "largeur": 1024,
-            "avif": "/maisons/berlin/vue-2-arriere-1024.avif",
-            "webp": "/maisons/berlin/vue-2-arriere-1024.webp"
+            "avif": "/maisons/berlin/vue-2-exterieur-1024.avif",
+            "webp": "/maisons/berlin/vue-2-exterieur-1024.webp"
           },
           {
-            "largeur": 1376,
-            "avif": "/maisons/berlin/vue-2-arriere.avif",
-            "webp": "/maisons/berlin/vue-2-arriere.webp"
+            "largeur": 1440,
+            "avif": "/maisons/berlin/vue-2-exterieur-1440.avif",
+            "webp": "/maisons/berlin/vue-2-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/berlin/vue-2-exterieur.avif",
+            "webp": "/maisons/berlin/vue-2-exterieur.webp"
           }
         ],
         "type": "exterieur"
@@ -768,61 +858,101 @@
     "nom": "Dakar",
     "vues": [
       {
-        "cle": "vue-1-avant",
-        "src": "/maisons/dakar/vue-1-avant.webp",
+        "cle": "plan-axonometrique",
+        "src": "/maisons/dakar/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRioBAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSH8AAAABgFvbtqpq73MvtACRpaQMcpeUEqAJz6nF2tDMaYLU9QD/vF9DREwATfEOgMC2APh0EbQAkIjUegs9ZuGCBJzoU1+6j0EC6NHX20ufOgBpQZB56FsfuqzDkfwDyFRv77eeG/BBHk196K6dBP8agtRhXA2DtkGEogS9+x8J8QwGAFZQOCCEAAAA8AMAnQEqFAALAD7tYqlNqaWjojAIATAdiWUAA+MZxfSb4hz+xhsCAAD+6bB0s0SpbXmZXj3qEe+0t88IWHXSeMRoBzOHTdm1Q8AiWGQN1sVVW3qgFb82eZ4gf4yTVhk7Wgo2LLpoHXDXsSKtPg+FnZBI4AY4uj/GtwBhC32egU9RhwgA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/dakar/plan-axonometrique-480.avif",
+            "webp": "/maisons/dakar/plan-axonometrique-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/dakar/plan-axonometrique-720.avif",
+            "webp": "/maisons/dakar/plan-axonometrique-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/dakar/plan-axonometrique-1024.avif",
+            "webp": "/maisons/dakar/plan-axonometrique-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/dakar/plan-axonometrique-1440.avif",
+            "webp": "/maisons/dakar/plan-axonometrique-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/dakar/plan-axonometrique-1920.avif",
+            "webp": "/maisons/dakar/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/dakar/plan-axonometrique.avif",
+            "webp": "/maisons/dakar/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
+      {
+        "cle": "vue-1-exterieur",
+        "src": "/maisons/dakar/vue-1-exterieur.webp",
         "largeur": 1376,
         "hauteur": 768,
         "empreinte": "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAADQAwCdASoUAAsAPu1iqU2ppaQiMAgBMB2JZgCdLwABq1kFzNHIOAAA/sPxSKlv91pzQKLZdtm/IIo/PsTDxP3zumtKGCsip4L8Di1AkO6v4+KqxJo7Em7nE01bd5eiqECDiJtCbiJoJvfjbhExGsgjGLGQAA==",
         "variantes": [
           {
             "largeur": 480,
-            "avif": "/maisons/dakar/vue-1-avant-480.avif",
-            "webp": "/maisons/dakar/vue-1-avant-480.webp"
+            "avif": "/maisons/dakar/vue-1-exterieur-480.avif",
+            "webp": "/maisons/dakar/vue-1-exterieur-480.webp"
           },
           {
             "largeur": 720,
-            "avif": "/maisons/dakar/vue-1-avant-720.avif",
-            "webp": "/maisons/dakar/vue-1-avant-720.webp"
+            "avif": "/maisons/dakar/vue-1-exterieur-720.avif",
+            "webp": "/maisons/dakar/vue-1-exterieur-720.webp"
           },
           {
             "largeur": 1024,
-            "avif": "/maisons/dakar/vue-1-avant-1024.avif",
-            "webp": "/maisons/dakar/vue-1-avant-1024.webp"
+            "avif": "/maisons/dakar/vue-1-exterieur-1024.avif",
+            "webp": "/maisons/dakar/vue-1-exterieur-1024.webp"
           },
           {
             "largeur": 1376,
-            "avif": "/maisons/dakar/vue-1-avant.avif",
-            "webp": "/maisons/dakar/vue-1-avant.webp"
+            "avif": "/maisons/dakar/vue-1-exterieur.avif",
+            "webp": "/maisons/dakar/vue-1-exterieur.webp"
           }
         ],
         "type": "exterieur"
       },
       {
-        "cle": "vue-2-arriere",
-        "src": "/maisons/dakar/vue-2-arriere.webp",
+        "cle": "vue-2-exterieur",
+        "src": "/maisons/dakar/vue-2-exterieur.webp",
         "largeur": 1376,
         "hauteur": 768,
         "empreinte": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAAAwBACdASoUAAsAPu1iqU2ppaQiMAgBMB2JZgCdACP60QVGl0PbJMHMSNgA/uqmvTYegXGs5Aod9Sl6vI/te4fAn6TPuv0ooVqpwcWZrqxny5ZwikmjfpPwMDEZywIg4PLKXEOnwA4pbAAA",
         "variantes": [
           {
             "largeur": 480,
-            "avif": "/maisons/dakar/vue-2-arriere-480.avif",
-            "webp": "/maisons/dakar/vue-2-arriere-480.webp"
+            "avif": "/maisons/dakar/vue-2-exterieur-480.avif",
+            "webp": "/maisons/dakar/vue-2-exterieur-480.webp"
           },
           {
             "largeur": 720,
-            "avif": "/maisons/dakar/vue-2-arriere-720.avif",
-            "webp": "/maisons/dakar/vue-2-arriere-720.webp"
+            "avif": "/maisons/dakar/vue-2-exterieur-720.avif",
+            "webp": "/maisons/dakar/vue-2-exterieur-720.webp"
           },
           {
             "largeur": 1024,
-            "avif": "/maisons/dakar/vue-2-arriere-1024.avif",
-            "webp": "/maisons/dakar/vue-2-arriere-1024.webp"
+            "avif": "/maisons/dakar/vue-2-exterieur-1024.avif",
+            "webp": "/maisons/dakar/vue-2-exterieur-1024.webp"
           },
           {
             "largeur": 1376,
-            "avif": "/maisons/dakar/vue-2-arriere.avif",
-            "webp": "/maisons/dakar/vue-2-arriere.webp"
+            "avif": "/maisons/dakar/vue-2-exterieur.avif",
+            "webp": "/maisons/dakar/vue-2-exterieur.webp"
           }
         ],
         "type": "exterieur"
@@ -830,9 +960,9 @@
       {
         "cle": "vue-3-interieur",
         "src": "/maisons/dakar/vue-3-interieur.webp",
-        "largeur": 1376,
-        "hauteur": 768,
-        "empreinte": "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAADwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JQBOmUABUGw9jWnjJ2axAAP5UUPwiynm5jHgKWOKiiYyudZZ953J5Wj8HMBu1+4T3mjOuhhMY896K927RZw6VN8Hx/2rxGRm+lyVMMLSAHAACTBQfaQAA",
+        "largeur": 1536,
+        "hauteur": 848,
+        "empreinte": "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAAAwBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JQBOmUI4ABFJZDU0dXt6TfgAA/lRQ+oyjWu+MsAmHwaGyzudZZ952clyxkkND+D7DS3nSqsvpaUYENvZn1woDzVbFU3iF52sVdqnpNBxNhwgoDQWA57MtQxwAAA==",
         "variantes": [
           {
             "largeur": 480,
@@ -850,7 +980,12 @@
             "webp": "/maisons/dakar/vue-3-interieur-1024.webp"
           },
           {
-            "largeur": 1376,
+            "largeur": 1440,
+            "avif": "/maisons/dakar/vue-3-interieur-1440.avif",
+            "webp": "/maisons/dakar/vue-3-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
             "avif": "/maisons/dakar/vue-3-interieur.avif",
             "webp": "/maisons/dakar/vue-3-interieur.webp"
           }
@@ -1018,11 +1153,51 @@
     "nom": "Dublin",
     "vues": [
       {
+        "cle": "plan-axonometrique",
+        "src": "/maisons/dublin/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRjwBAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSJIAAAABgBrbtuvmnPPvR8pSCbEHQRUhLKQRyhVohIzMMjc1dQ3GpmbZhjm99/OvISImgFlQkAmFOWLYNSBQHgBK2H1dTpqCggJRh/+R8xfTIZhH4Tz68X/Rw+vd0QjMQNhH/t9F3rloDiMBgBhfR/7fueimAuVBCGd3kfuJFjAWwITOwVt024aKSJkwuNrCWIYMDBYyF1ZQOCCEAAAAsAMAnQEqFAALAD7tYqlNqaWjojAIATAdiWcAA+KI2Q4crGr9DgAA/uz3SiBPm61uhbqxK/B2xr0KZhmqBZxCnDsCoDaeq/yDqQpZcuTtA76QC9JdxeQGmMcbzyq4ifE46R6BUEs/IECsf5ia395527b/6ubBpq843QKTO5v66kz4egAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/dublin/plan-axonometrique-480.avif",
+            "webp": "/maisons/dublin/plan-axonometrique-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/dublin/plan-axonometrique-720.avif",
+            "webp": "/maisons/dublin/plan-axonometrique-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/dublin/plan-axonometrique-1024.avif",
+            "webp": "/maisons/dublin/plan-axonometrique-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/dublin/plan-axonometrique-1440.avif",
+            "webp": "/maisons/dublin/plan-axonometrique-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/dublin/plan-axonometrique-1920.avif",
+            "webp": "/maisons/dublin/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/dublin/plan-axonometrique.avif",
+            "webp": "/maisons/dublin/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
+      {
         "cle": "vue-1-exterieur",
         "src": "/maisons/dublin/vue-1-exterieur.webp",
-        "largeur": 1376,
-        "hauteur": 768,
-        "empreinte": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAAAwBACdASoUAAsAPu1iqU2ppaQiMAgBMB2JZACsACFq3ief6vswx3+YeoAA/ufhrwba3GoSWM0ZRFH5qpxKvn6fIRq9mqEG/veNADK6VJxYvBfjH6FdaJK2h5QhJtAgnLmH+BDikRqt31PoWZ/YBJ9dK0uBHZOvmVkQK8H3AAKYiigA",
+        "largeur": 1536,
+        "hauteur": 848,
+        "empreinte": "data:image/webp;base64,UklGRpQAAABXRUJQVlA4IIgAAABwBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JZgCsMoADPnWWb3lMDdLAE1wPAAD+5+GvBttKhGxi0EFjxnDoInvyijHyswQ1Bu+CwEqbOF8Ku9qGjnMEM9uBOvDeCx8zYymOf+bZXeDQjxuIjiz4lnr1J/5pEP8LRnnrQ6KY05ozu9G9F08M3AAA",
         "variantes": [
           {
             "largeur": 480,
@@ -1040,7 +1215,12 @@
             "webp": "/maisons/dublin/vue-1-exterieur-1024.webp"
           },
           {
-            "largeur": 1376,
+            "largeur": 1440,
+            "avif": "/maisons/dublin/vue-1-exterieur-1440.avif",
+            "webp": "/maisons/dublin/vue-1-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
             "avif": "/maisons/dublin/vue-1-exterieur.avif",
             "webp": "/maisons/dublin/vue-1-exterieur.webp"
           }
@@ -1050,9 +1230,9 @@
       {
         "cle": "vue-2-exterieur",
         "src": "/maisons/dublin/vue-2-exterieur.webp",
-        "largeur": 1376,
-        "hauteur": 768,
-        "empreinte": "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAACwAwCdASoUAAsAPu1iqU2ppaQiMAgBMB2JZAAAW5l49//3PX1vMAD+s7v7Mz0hPEQRN2bumMBDPCPcehCBIzHa/O3wXEkwU9M7Dv8PuQbv4H4vRuT93v9ErphwZAsBIu2sZvCW4PlU9iuilx24GAQAK4AAAA==",
+        "largeur": 1536,
+        "hauteur": 848,
+        "empreinte": "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JZACsACHh9LdatPdsBpyVAAD+xyrlcb9oMICl9Q8FeefRE3HoQgSMx2wDWzi7tl9BwirCNbGrV03Ni8/67oEz3KmiJSBUEES4sPtlKQZqpXgA7YuqGAuZe6Eh+//GAAA=",
         "variantes": [
           {
             "largeur": 480,
@@ -1070,7 +1250,12 @@
             "webp": "/maisons/dublin/vue-2-exterieur-1024.webp"
           },
           {
-            "largeur": 1376,
+            "largeur": 1440,
+            "avif": "/maisons/dublin/vue-2-exterieur-1440.avif",
+            "webp": "/maisons/dublin/vue-2-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
             "avif": "/maisons/dublin/vue-2-exterieur.avif",
             "webp": "/maisons/dublin/vue-2-exterieur.webp"
           }
@@ -1263,11 +1448,51 @@
     "nom": "Hanoi",
     "vues": [
       {
+        "cle": "plan-axonometrique",
+        "src": "/maisons/hanoi/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRkQBAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSIwAAAABcFpt27I8z/v+SHNnBuYgQrTkicYIVBJDkJjBKgPQSCQqSb/vt+9nhoiYADpFAarA7RCiO0qDKg4AFJS2/uM8LwB0UdG7W2Osf1jWQVcKa/9lfGN+9jqGxEDkdr75+b59+zN4JOLE4un/7M/fg0wQD+2L//FvLUgSxEN245sOPCaRVEV/BeV/FAWETlZQOCCSAAAAMAQAnQEqFAALAD7tYqlNqaWjojAIATAdiWcAyJmK8K0WupUb3h/9w8AAAP7qHOMWFZV+/ffcPFY0zM/H2AV6IxFWzXoz/WNaJ2F61zn5267+X8U7JvhQB+uv5psEs9z/VxJnhzKVzEI2Df5NMHHvX/8G/WjZHr/uodz/8nddadP/43ryxtdRkIB619ngoAbagAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/hanoi/plan-axonometrique-480.avif",
+            "webp": "/maisons/hanoi/plan-axonometrique-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/hanoi/plan-axonometrique-720.avif",
+            "webp": "/maisons/hanoi/plan-axonometrique-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/hanoi/plan-axonometrique-1024.avif",
+            "webp": "/maisons/hanoi/plan-axonometrique-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/hanoi/plan-axonometrique-1440.avif",
+            "webp": "/maisons/hanoi/plan-axonometrique-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/hanoi/plan-axonometrique-1920.avif",
+            "webp": "/maisons/hanoi/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/hanoi/plan-axonometrique.avif",
+            "webp": "/maisons/hanoi/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
+      {
         "cle": "vue-1-exterieur",
         "src": "/maisons/hanoi/vue-1-exterieur.webp",
-        "largeur": 1376,
-        "hauteur": 768,
-        "empreinte": "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAAAQBACdASoUAAsAPu1iqk2ppaQiMAgBMB2JZAAAXehI0B+dJY3JXzg+AAD+1bUXx8iB7/iTjEKd7vFPqpcMet2ZGxcOr7tFCjokACmgzl19j7nLquYX3KSnd1g0N6T9p24OGoCjZyUN9VyNdc8mAAAA",
+        "largeur": 1536,
+        "hauteur": 672,
+        "empreinte": "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAAAwBACdASoUAAkAPu1iqU2ppaQiMAgBMB2JZACdFQA5/+x/wE3px5LtmSwA4lCSN6sZmrJlwRcT5XhNbhZB+k+E6kOyvS1ryS8RA0DnASrgfyDninIzOJJHeNGt661eLfkiat0Oezxa36xgzpnrGZNOrZoVpfYA",
         "variantes": [
           {
             "largeur": 480,
@@ -1285,7 +1510,12 @@
             "webp": "/maisons/hanoi/vue-1-exterieur-1024.webp"
           },
           {
-            "largeur": 1376,
+            "largeur": 1440,
+            "avif": "/maisons/hanoi/vue-1-exterieur-1440.avif",
+            "webp": "/maisons/hanoi/vue-1-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
             "avif": "/maisons/hanoi/vue-1-exterieur.avif",
             "webp": "/maisons/hanoi/vue-1-exterieur.webp"
           }
@@ -1295,9 +1525,9 @@
       {
         "cle": "vue-2-exterieur",
         "src": "/maisons/hanoi/vue-2-exterieur.webp",
-        "largeur": 1376,
-        "hauteur": 768,
-        "empreinte": "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAADwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JZAC7ACHhScX5JpgJdsQQAP7gQJ991Nnf527C/vMv8I5L+sUBIJNUdwx9KCDFodn8mQ2oLXU1enIKQAVJlMctg/sr0aod55MrfqiT/tPf3FzKJh66XWP+xa2Ppe4AAAA=",
+        "largeur": 1536,
+        "hauteur": 656,
+        "empreinte": "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAAAQBACdASoUAAkAPu1iqU2ppaOiMAgBMB2JagCdIMgCuOQDjl3HflnHUAD9+cVbhMIJg4URlhkwRZEO8jhQTDOIqkP429FYNc0GQuN2vxrgcQBu2pBV/8t5s+i4xl1E2I7QoLhfPtQEfjf41xkYtmJYYV4AAA==",
         "variantes": [
           {
             "largeur": 480,
@@ -1315,7 +1545,12 @@
             "webp": "/maisons/hanoi/vue-2-exterieur-1024.webp"
           },
           {
-            "largeur": 1376,
+            "largeur": 1440,
+            "avif": "/maisons/hanoi/vue-2-exterieur-1440.avif",
+            "webp": "/maisons/hanoi/vue-2-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
             "avif": "/maisons/hanoi/vue-2-exterieur.avif",
             "webp": "/maisons/hanoi/vue-2-exterieur.webp"
           }
@@ -1471,6 +1706,41 @@
           }
         ],
         "type": "interieur"
+      },
+      {
+        "cle": "vue-8-interieur",
+        "src": "/maisons/hanoi/vue-8-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 1024,
+        "empreinte": "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAACwAwCdASoUAA0APu1iqU2ppaOiMAgBMB2JQBYdhFn10t/X4i4LQADibqYoEKq+C9JrdhWWrcxj3mvRtykFFJL7uUc+kW77EhtKGvoMYq5xKYeVrt4/d4Mtc9KU2HziPGV3I5HUttlFbg06oO6kgAAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/hanoi/vue-8-interieur-480.avif",
+            "webp": "/maisons/hanoi/vue-8-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/hanoi/vue-8-interieur-720.avif",
+            "webp": "/maisons/hanoi/vue-8-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/hanoi/vue-8-interieur-1024.avif",
+            "webp": "/maisons/hanoi/vue-8-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/hanoi/vue-8-interieur-1440.avif",
+            "webp": "/maisons/hanoi/vue-8-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/hanoi/vue-8-interieur.avif",
+            "webp": "/maisons/hanoi/vue-8-interieur.webp"
+          }
+        ],
+        "type": "interieur"
       }
     ]
   },
@@ -1478,11 +1748,51 @@
     "nom": "Jakarta",
     "vues": [
       {
+        "cle": "plan-axonometrique",
+        "src": "/maisons/jakarta/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRigBAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSJ4AAAABgJpt27LleuX/8fRT3aGSYYR/BqyzgyWqdhKRgw1cEsnd3R3e97vxGSJiAvhpHeRmRzsz/O0sFHdNviQ6G2rO/Q3X1H2kED8+NHM//ovPjiy/vsUoJdrXAA5L6cvViqIkJR9aLMGCYUIhkaQYNFaEASyN2wqSYlQfxvLTUrehoKCXVpzld0fVit502II3/O0oXdJ8BZ5/O2r6Mzj+BFZQOCBkAAAAMAQAnQEqFAALAD7tYqlNqaWjojAIATAdiWcAA+QiEhCoJP13whOFyAAAAP7nLiLGl0dTggu+etQ8HkIWn8TCWBAkzQF1qCEY5HGSi8h8xyd8HIadO/w7wi3IOx/94cq2aAAAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/jakarta/plan-axonometrique-480.avif",
+            "webp": "/maisons/jakarta/plan-axonometrique-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/jakarta/plan-axonometrique-720.avif",
+            "webp": "/maisons/jakarta/plan-axonometrique-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/jakarta/plan-axonometrique-1024.avif",
+            "webp": "/maisons/jakarta/plan-axonometrique-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/jakarta/plan-axonometrique-1440.avif",
+            "webp": "/maisons/jakarta/plan-axonometrique-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/jakarta/plan-axonometrique-1920.avif",
+            "webp": "/maisons/jakarta/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/jakarta/plan-axonometrique.avif",
+            "webp": "/maisons/jakarta/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
+      {
         "cle": "vue-1-exterieur",
         "src": "/maisons/jakarta/vue-1-exterieur.webp",
-        "largeur": 1376,
-        "hauteur": 768,
-        "empreinte": "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAwBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JZAC1I/7AwCIQYqsugmcLB3wA/sj3nLJYWU5Rq9g4VHhypq9XoTYO1JCw/sBENKbXRsjwohS7noJt7UdO/jy/FhhD9feEx/OYNS26fRVikOV9NNSN/UwpUSRR40oYoAA=",
+        "largeur": 1536,
+        "hauteur": 672,
+        "empreinte": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAACwAwCdASoUAAkAPu1iqk4ppaQiMAgBMB2JaACdL1yBnxF7nDFOAAD4ssO9yuarwG2m7WPcdZYwXHo4URjm6GBQjzznwDz4MQ2yndaG6Q/ne7w8WfwPIvuyZD498ifuoyJ8uyVwjwaz9eYqDQAAAA==",
         "variantes": [
           {
             "largeur": 480,
@@ -1500,7 +1810,12 @@
             "webp": "/maisons/jakarta/vue-1-exterieur-1024.webp"
           },
           {
-            "largeur": 1376,
+            "largeur": 1440,
+            "avif": "/maisons/jakarta/vue-1-exterieur-1440.avif",
+            "webp": "/maisons/jakarta/vue-1-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
             "avif": "/maisons/jakarta/vue-1-exterieur.avif",
             "webp": "/maisons/jakarta/vue-1-exterieur.webp"
           }
@@ -1510,9 +1825,9 @@
       {
         "cle": "vue-2-exterieur",
         "src": "/maisons/jakarta/vue-2-exterieur.webp",
-        "largeur": 1376,
-        "hauteur": 768,
-        "empreinte": "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JZgAAWsfxj4s3HnIhiOQq4AD+AWxZpUOcCMfqc9Hxmxa3TMOnXdrkJd8E3jG6zCfabqrOCoYv6kh8aroGuGNeAyWhjA7cwtLE3Hw+ntIoT9iv66iA3Hyf+xjln+0cAAA=",
+        "largeur": 1536,
+        "hauteur": 688,
+        "empreinte": "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAwBACdASoUAAkAPu1iqU2ppaQiMAgBMB2JagCdO/8i/4DQHX01+VawFEAA3iNVNqhf87j2lt22I3mLhCvjADhrirqeWBA/RsvIsiutlrBMK0oyFeCcIQcyw9MYUd7w5kaJbgiY981UvjX1nL0c+yfP9VGckTWqgAA=",
         "variantes": [
           {
             "largeur": 480,
@@ -1530,7 +1845,12 @@
             "webp": "/maisons/jakarta/vue-2-exterieur-1024.webp"
           },
           {
-            "largeur": 1376,
+            "largeur": 1440,
+            "avif": "/maisons/jakarta/vue-2-exterieur-1440.avif",
+            "webp": "/maisons/jakarta/vue-2-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
             "avif": "/maisons/jakarta/vue-2-exterieur.avif",
             "webp": "/maisons/jakarta/vue-2-exterieur.webp"
           }
@@ -1723,6 +2043,46 @@
     "nom": "Lima",
     "vues": [
       {
+        "cle": "plan-axonometrique",
+        "src": "/maisons/lima/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRlABAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSJkAAAABgFtt2/Lkft4YLgs4rMEc2mrtlHTaQ+1uG3CYgC1cunjyRHeIiAlQcwAkkhG0lBSh1ZXJLoCEmkAJdnx5+3E8P9kXtJRY+Pfvp4tfhefdUQQEG4WC7Uqp4s+PoRbi3uVyuWpXS35BIRGMPufsarnqkg9JSgLE+Pab7XLR0+0iIDV19G5nJ0i0gkgJBmdeTwi1k5RMQLITNQMAVlA4IJAAAABQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JZwAD43PABYhAzdaV1L8DBgAAAP7mCvDuRGrv6OpuLft0oIF/fn/JW3+9FPE3mOptMYNvM+6WLX6JRM3HpLoNSLg0APbsd0MB/TNxnBn0qWIeBESqN/d7kVOd6miV+P03wnKYh+g4ov/KvfEx55c8u9h2jRQAAAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/lima/plan-axonometrique-480.avif",
+            "webp": "/maisons/lima/plan-axonometrique-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/lima/plan-axonometrique-720.avif",
+            "webp": "/maisons/lima/plan-axonometrique-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/lima/plan-axonometrique-1024.avif",
+            "webp": "/maisons/lima/plan-axonometrique-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/lima/plan-axonometrique-1440.avif",
+            "webp": "/maisons/lima/plan-axonometrique-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/lima/plan-axonometrique-1920.avif",
+            "webp": "/maisons/lima/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/lima/plan-axonometrique.avif",
+            "webp": "/maisons/lima/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
+      {
         "cle": "vue-1-exterieur",
         "src": "/maisons/lima/vue-1-exterieur.webp",
         "largeur": 1376,
@@ -1755,9 +2115,9 @@
       {
         "cle": "vue-2-exterieur",
         "src": "/maisons/lima/vue-2-exterieur.webp",
-        "largeur": 1376,
-        "hauteur": 768,
-        "empreinte": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAAAQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JagC/OB6WJxQz5khSki96AAD2tclmlX07M998hBKiybleFSyeys+7u2aCBDMkG/AY5GHbgRcBmcEdnK+wgZuzmDiOdWn/1DG2LaOeARODybt832m8AtwEMkACotgZFb/euG77VpCiC7gA",
+        "largeur": 1536,
+        "hauteur": 848,
+        "empreinte": "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAADQAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JagAAUkrPtxtOMkcGmiAA/BpiWr/hQOCOnFOtCvnXiJWZ9r6fNZGOKUj5vM1jXBcZUef2Xz5AtVNnOqhM1YV3bYH8Biv/axuoCEwINkSHR+q3fAOirPB2c22J9cfQjeF36NDAAAA=",
         "variantes": [
           {
             "largeur": 480,
@@ -1775,7 +2135,12 @@
             "webp": "/maisons/lima/vue-2-exterieur-1024.webp"
           },
           {
-            "largeur": 1376,
+            "largeur": 1440,
+            "avif": "/maisons/lima/vue-2-exterieur-1440.avif",
+            "webp": "/maisons/lima/vue-2-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
             "avif": "/maisons/lima/vue-2-exterieur.avif",
             "webp": "/maisons/lima/vue-2-exterieur.webp"
           }
@@ -1937,6 +2302,46 @@
   "lisbonne": {
     "nom": "Lisbonne",
     "vues": [
+      {
+        "cle": "plan-axonometrique",
+        "src": "/maisons/lisbonne/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRkgBAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSJwAAAABgFvbtmpl73M+XoFWQAUuEZ8KiFxbcHePoQ5KICSlAYfI/d73NnJ/DxExAUw6yhxEyX/uaDw5roYzBcDp/ffSCArGFIna9Q8FXZz2wiyF7vMYcuWKn4c1IADH1M2rpCyLQWcrzXDS0HSpTFme5Xn+/lJEgYSh/U1BR33vCpqEkwQK6Jf2DcUHzcGZgGN2EV6Oni2YlYCRZnTSmARWUDgghgAAANADAJ0BKhQACwA+7WKpTamlo6IwCAEwHYljAMDdi16ppGrZmtXeKAD+qh9niZNLqt++26Yl2VlrT/f9yW/6Wy8VE6aNkWDK0ccR9ReTQ4aL71c+qvwimUllP/Ui+Pl31iu4pfhTnZNFyzKoMxE8w/vvtf/zNgx32feD2+djBRT/0B8WoYAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/lisbonne/plan-axonometrique-480.avif",
+            "webp": "/maisons/lisbonne/plan-axonometrique-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/lisbonne/plan-axonometrique-720.avif",
+            "webp": "/maisons/lisbonne/plan-axonometrique-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/lisbonne/plan-axonometrique-1024.avif",
+            "webp": "/maisons/lisbonne/plan-axonometrique-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/lisbonne/plan-axonometrique-1440.avif",
+            "webp": "/maisons/lisbonne/plan-axonometrique-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/lisbonne/plan-axonometrique-1920.avif",
+            "webp": "/maisons/lisbonne/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/lisbonne/plan-axonometrique.avif",
+            "webp": "/maisons/lisbonne/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
       {
         "cle": "vue-1-exterieur",
         "src": "/maisons/lisbonne/vue-1-exterieur.webp",
@@ -2183,6 +2588,46 @@
     "nom": "Londres",
     "vues": [
       {
+        "cle": "plan-axonometrique",
+        "src": "/maisons/londres/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRjwBAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSJkAAAABgJpt27LleuVXLNkAWpnB3XUCEo1K+juRTiNSqSTdwJsnl1dufIaImAB+rRvcWmsG6wy/2+7aXtDz1WaPAWcAx6rySwxRCrvL9fw2o/coKYesk/31NgyG4o5ClqSsi3vN4wDchlLSz6TLJgxgHCtvipJS/ljA8tN4eq8UlfQ2i+VPT/uxPvQyieefjsZtPYzg+bczpjaJ5ycAVlA4IHwAAADwAwCdASoUAAsAPu1iqU2ppaQiMAgBMB2JZwAD43naUi36EdyOhZB0AP7qmekvT4UEvi60EIrVmNwzgcGYS51qMH1mr/UpqPbRgx4dxNHAyMsdMv2jIS5QQM3fy5K/QWA9lCznxEXfPwX9Jq570PZdG8iQp2X8NZJJYAAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/londres/plan-axonometrique-480.avif",
+            "webp": "/maisons/londres/plan-axonometrique-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/londres/plan-axonometrique-720.avif",
+            "webp": "/maisons/londres/plan-axonometrique-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/londres/plan-axonometrique-1024.avif",
+            "webp": "/maisons/londres/plan-axonometrique-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/londres/plan-axonometrique-1440.avif",
+            "webp": "/maisons/londres/plan-axonometrique-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/londres/plan-axonometrique-1920.avif",
+            "webp": "/maisons/londres/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/londres/plan-axonometrique.avif",
+            "webp": "/maisons/londres/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
+      {
         "cle": "vue-1-exterieur",
         "src": "/maisons/londres/vue-1-exterieur.webp",
         "largeur": 1376,
@@ -2364,15 +2809,1200 @@
       }
     ]
   },
+  "oslo": {
+    "nom": "Oslo",
+    "vues": [
+      {
+        "cle": "plan-axonometrique",
+        "src": "/maisons/oslo/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRl4BAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSKMAAAABgFpt2/Pkeb73WyBF9Z5sEDojdJDMwMFVjeuwBJYJUN3ikEGiev3ehz5DREwASQbiV4shEADJiNnDpfFuxvDPgPy1+lMb/aP1xfFq/EHDpt50f6P3W7+6G0MADMOvcpc8pQ/XGAwEjvX2ntwld/kojCDW5ZL8/cNdGvkBsLVwcPksSen9Y/gPAFaZ3z55lFLvNzBGALDCxN4yyV9A0mIkAPwAAFZQOCCUAAAAEAQAnQEqFAALAD7tYqlNqaWkIjAIATAdiWcAA+QJ3Ac46/eraiiBDAAA/uRqihS5/2WJPXp41awwMKbUrtV/WkV60kJ/9To3GTWvqk+da7zrSVlnmwM5fO7ah9J9Yp6C2A7Aa2cOJtC9eATMUCjzEiQB/G/TTNmX+0MUaH0oPSA53cpY3fyDpeRiy93D8wDtooAAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/oslo/plan-axonometrique-480.avif",
+            "webp": "/maisons/oslo/plan-axonometrique-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/oslo/plan-axonometrique-720.avif",
+            "webp": "/maisons/oslo/plan-axonometrique-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/oslo/plan-axonometrique-1024.avif",
+            "webp": "/maisons/oslo/plan-axonometrique-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/oslo/plan-axonometrique-1440.avif",
+            "webp": "/maisons/oslo/plan-axonometrique-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/oslo/plan-axonometrique-1920.avif",
+            "webp": "/maisons/oslo/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/oslo/plan-axonometrique.avif",
+            "webp": "/maisons/oslo/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
+      {
+        "cle": "vue-1-exterieur",
+        "src": "/maisons/oslo/vue-1-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 704,
+        "empreinte": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAAAQBACdASoUAAkAPu1iqU2ppaOiMAgBMB2JZACdMoADC43qSe3alTCpAADhfrqGVl92KNu8hCR3grM5lojbntwfkdPjhZ3klIyf9pkVCJQ3XtJi8JQmoVgMMx5kthppkQoMcybFvFEEvHAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/oslo/vue-1-exterieur-480.avif",
+            "webp": "/maisons/oslo/vue-1-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/oslo/vue-1-exterieur-720.avif",
+            "webp": "/maisons/oslo/vue-1-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/oslo/vue-1-exterieur-1024.avif",
+            "webp": "/maisons/oslo/vue-1-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/oslo/vue-1-exterieur-1440.avif",
+            "webp": "/maisons/oslo/vue-1-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/oslo/vue-1-exterieur.avif",
+            "webp": "/maisons/oslo/vue-1-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-2-exterieur",
+        "src": "/maisons/oslo/vue-2-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 688,
+        "empreinte": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAADQAwCdASoUAAkAPu1iqU2ppaOiMAgBMB2JZgCdACHaiaqhs/+IUAAA+K2Nr2neJCeJvRqowllf9RW0/lBFPq/hjh4vPGQWZQMiFrgbjLccmXzqrGg9JXkGGdVvCkE8ceQBr9Y0NHfq/yTm0AA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/oslo/vue-2-exterieur-480.avif",
+            "webp": "/maisons/oslo/vue-2-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/oslo/vue-2-exterieur-720.avif",
+            "webp": "/maisons/oslo/vue-2-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/oslo/vue-2-exterieur-1024.avif",
+            "webp": "/maisons/oslo/vue-2-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/oslo/vue-2-exterieur-1440.avif",
+            "webp": "/maisons/oslo/vue-2-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/oslo/vue-2-exterieur.avif",
+            "webp": "/maisons/oslo/vue-2-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-3-interieur",
+        "src": "/maisons/oslo/vue-3-interieur.webp",
+        "largeur": 1424,
+        "hauteur": 752,
+        "empreinte": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAAAQBACdASoUAAsAPu1iqU2ppaQiMAgBMB2JYwCw7BuPyo/hOgmcD9pGcAD8jshoeOONA3aqJOLYQuHEeZGkAw4qJ/VLI2lYbsdoAtOo0IQ71UQygS/BIl56543nlwGKDVaWl0n6do8J3YAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/oslo/vue-3-interieur-480.avif",
+            "webp": "/maisons/oslo/vue-3-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/oslo/vue-3-interieur-720.avif",
+            "webp": "/maisons/oslo/vue-3-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/oslo/vue-3-interieur-1024.avif",
+            "webp": "/maisons/oslo/vue-3-interieur-1024.webp"
+          },
+          {
+            "largeur": 1424,
+            "avif": "/maisons/oslo/vue-3-interieur.avif",
+            "webp": "/maisons/oslo/vue-3-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-5-interieur",
+        "src": "/maisons/oslo/vue-5-interieur.webp",
+        "largeur": 1376,
+        "hauteur": 768,
+        "empreinte": "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAABwBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JYwCdMoADgvnr60XJa24xvtngAAD+XyGkN0JN5WWf7qR3adD7T98sWRG8WxHGJH9M8cF9osTl2JdlCvex8iE4gzX68WLGJHA72IHEABSG8gtLqLxSwwRWkJUtBgAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/oslo/vue-5-interieur-480.avif",
+            "webp": "/maisons/oslo/vue-5-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/oslo/vue-5-interieur-720.avif",
+            "webp": "/maisons/oslo/vue-5-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/oslo/vue-5-interieur-1024.avif",
+            "webp": "/maisons/oslo/vue-5-interieur-1024.webp"
+          },
+          {
+            "largeur": 1376,
+            "avif": "/maisons/oslo/vue-5-interieur.avif",
+            "webp": "/maisons/oslo/vue-5-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-6-interieur",
+        "src": "/maisons/oslo/vue-6-interieur.webp",
+        "largeur": 1376,
+        "hauteur": 768,
+        "empreinte": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAAAQBACdASoUAAsAPu1iqU2ppaQiMAgBMB2JYwCdACG+MrJ08YYVi5IwAAD+tcjPmfZBL6qs3O1Y0FxNP9iAbceSn5mQQcnkS5dOcofVTvRuSZy7NaLjApyq43kle6H0en2oh4Heju/4Svyc54AAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/oslo/vue-6-interieur-480.avif",
+            "webp": "/maisons/oslo/vue-6-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/oslo/vue-6-interieur-720.avif",
+            "webp": "/maisons/oslo/vue-6-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/oslo/vue-6-interieur-1024.avif",
+            "webp": "/maisons/oslo/vue-6-interieur-1024.webp"
+          },
+          {
+            "largeur": 1376,
+            "avif": "/maisons/oslo/vue-6-interieur.avif",
+            "webp": "/maisons/oslo/vue-6-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-7-interieur",
+        "src": "/maisons/oslo/vue-7-interieur.webp",
+        "largeur": 1376,
+        "hauteur": 768,
+        "empreinte": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADQAwCdASoUAAsAPu1iqk2ppaQiMAgBMB2JQBUeg+pi95eUHl7btQAAzcQ1XHQe5XdqLYP7jo7NFlakfq54vPe57DqTX7hDfXru28NsZ3Lu5QAq0LSwRz/OW1+YomHcMv5KcowkpAfyjkAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/oslo/vue-7-interieur-480.avif",
+            "webp": "/maisons/oslo/vue-7-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/oslo/vue-7-interieur-720.avif",
+            "webp": "/maisons/oslo/vue-7-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/oslo/vue-7-interieur-1024.avif",
+            "webp": "/maisons/oslo/vue-7-interieur-1024.webp"
+          },
+          {
+            "largeur": 1376,
+            "avif": "/maisons/oslo/vue-7-interieur.avif",
+            "webp": "/maisons/oslo/vue-7-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-8-interieur",
+        "src": "/maisons/oslo/vue-8-interieur.webp",
+        "largeur": 1376,
+        "hauteur": 768,
+        "empreinte": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JZQC06BxqwBQZEW7OStoYAAD+kJs1n9vGpyxJD+jYSYX7ilmzj7eFtgjfDF9oQRJNayrbCwG9Cc0+PZsqPOKfTA8woeJ4mkAAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/oslo/vue-8-interieur-480.avif",
+            "webp": "/maisons/oslo/vue-8-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/oslo/vue-8-interieur-720.avif",
+            "webp": "/maisons/oslo/vue-8-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/oslo/vue-8-interieur-1024.avif",
+            "webp": "/maisons/oslo/vue-8-interieur-1024.webp"
+          },
+          {
+            "largeur": 1376,
+            "avif": "/maisons/oslo/vue-8-interieur.avif",
+            "webp": "/maisons/oslo/vue-8-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      }
+    ]
+  },
+  "panama": {
+    "nom": "Panama",
+    "vues": [
+      {
+        "cle": "plan-axonometrique",
+        "src": "/maisons/panama/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRkoBAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSJoAAAABgJpt27Llut9PGr6EJTLNoTKCZog0EkPABO5D6AKulebyvt/96w4RMQFqziTIMtG6KWfgdK4DlKkFKDCy+XF2sjEgyNQiMPr2+RX/quud2T7RLHqe/GenWEUfrvYhQKz8OkW7Sun3oZcgQAwd2DHZ/14jVxMBpq5cxeSPfrJWZBnl0qv/vEWmNijP6Ft/9wx5O0khDwwvF0gSVlA4IIoAAABwBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JZwAD4cPQBgflgghp/zgciOAqAAD+z4OHpAsE3ZnZ9ikki1kOxsJf1CxQPQRf36RG1pOAtydBvHo1cPiiv9qj5g/CaNq9iA6t2e/cY3jbLeG7CUDH9/twP6k7Dp5qKY5G161pDq3gDuxdx/BlJs0AAAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/panama/plan-axonometrique-480.avif",
+            "webp": "/maisons/panama/plan-axonometrique-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/panama/plan-axonometrique-720.avif",
+            "webp": "/maisons/panama/plan-axonometrique-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/panama/plan-axonometrique-1024.avif",
+            "webp": "/maisons/panama/plan-axonometrique-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/panama/plan-axonometrique-1440.avif",
+            "webp": "/maisons/panama/plan-axonometrique-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/panama/plan-axonometrique-1920.avif",
+            "webp": "/maisons/panama/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/panama/plan-axonometrique.avif",
+            "webp": "/maisons/panama/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
+      {
+        "cle": "vue-1-exterieur",
+        "src": "/maisons/panama/vue-1-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 688,
+        "empreinte": "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAAAQBACdASoUAAkAPu1iqU2ppaQiMAgBMB2JaAC7MoADUcCTZEDGg7/wAAD+sgmfp5CU2hTB2z1Nd34do7Oq9QaWJqGQRdufM8l6Tcp6UGZSiJFIPi5jNePOqn8YXD0cS3IlD32lQXKx3R6CPJgazzpf6gA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/panama/vue-1-exterieur-480.avif",
+            "webp": "/maisons/panama/vue-1-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/panama/vue-1-exterieur-720.avif",
+            "webp": "/maisons/panama/vue-1-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/panama/vue-1-exterieur-1024.avif",
+            "webp": "/maisons/panama/vue-1-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/panama/vue-1-exterieur-1440.avif",
+            "webp": "/maisons/panama/vue-1-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/panama/vue-1-exterieur.avif",
+            "webp": "/maisons/panama/vue-1-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-2-exterieur",
+        "src": "/maisons/panama/vue-2-exterieur.webp",
+        "largeur": 1488,
+        "hauteur": 720,
+        "empreinte": "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAAAQBACdASoUAAoAPu1iqU2ppaQiMAgBMB2JZgCdMoADUn/odfVEaFoKwAD+xyreCwR39cujjuzILkOw19cE6Hc1PVHiPH6BFvqR8+ui2gB19m9ttbnfj+0zTXXGPaITWIHYrCPT34xqpI6Ksg55K5lzCY8OMj6zrpAAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/panama/vue-2-exterieur-480.avif",
+            "webp": "/maisons/panama/vue-2-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/panama/vue-2-exterieur-720.avif",
+            "webp": "/maisons/panama/vue-2-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/panama/vue-2-exterieur-1024.avif",
+            "webp": "/maisons/panama/vue-2-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/panama/vue-2-exterieur-1440.avif",
+            "webp": "/maisons/panama/vue-2-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1488,
+            "avif": "/maisons/panama/vue-2-exterieur.avif",
+            "webp": "/maisons/panama/vue-2-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-3-interieur",
+        "src": "/maisons/panama/vue-3-interieur.webp",
+        "largeur": 1424,
+        "hauteur": 752,
+        "empreinte": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADQAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JZQCAAAee5T5168admIAA/ud7594CTsIzdvIR3VD4Fn+r8IterNUwLIwxmEp1MM4HP6aZ7pn1aXcLn4cjro5F8gpGQSthVk3Iv5GRnpWdX2AA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/panama/vue-3-interieur-480.avif",
+            "webp": "/maisons/panama/vue-3-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/panama/vue-3-interieur-720.avif",
+            "webp": "/maisons/panama/vue-3-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/panama/vue-3-interieur-1024.avif",
+            "webp": "/maisons/panama/vue-3-interieur-1024.webp"
+          },
+          {
+            "largeur": 1424,
+            "avif": "/maisons/panama/vue-3-interieur.avif",
+            "webp": "/maisons/panama/vue-3-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-4-interieur",
+        "src": "/maisons/panama/vue-4-interieur.webp",
+        "largeur": 1424,
+        "hauteur": 752,
+        "empreinte": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JZQCsAB6zzjsVNJ9AVbVfAAD90kxT25Hm/AZzwU3SJ15iFb3undCyp+jV/JyWmwaski7h2q/2WzC6AUX8FAjEsomzSOy7TLe7fhTCwXAAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/panama/vue-4-interieur-480.avif",
+            "webp": "/maisons/panama/vue-4-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/panama/vue-4-interieur-720.avif",
+            "webp": "/maisons/panama/vue-4-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/panama/vue-4-interieur-1024.avif",
+            "webp": "/maisons/panama/vue-4-interieur-1024.webp"
+          },
+          {
+            "largeur": 1424,
+            "avif": "/maisons/panama/vue-4-interieur.avif",
+            "webp": "/maisons/panama/vue-4-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-5-interieur",
+        "src": "/maisons/panama/vue-5-interieur.webp",
+        "largeur": 1424,
+        "hauteur": 752,
+        "empreinte": "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAAAQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JZQCsAB9SOnNCsDmONMMAAAD+r5usx+ouPeijVnKU/z9UQNxsaN0plqAqF6EELFGuuhwbCrlLlSneVR/dPsFl2/FhBvwA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/panama/vue-5-interieur-480.avif",
+            "webp": "/maisons/panama/vue-5-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/panama/vue-5-interieur-720.avif",
+            "webp": "/maisons/panama/vue-5-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/panama/vue-5-interieur-1024.avif",
+            "webp": "/maisons/panama/vue-5-interieur-1024.webp"
+          },
+          {
+            "largeur": 1424,
+            "avif": "/maisons/panama/vue-5-interieur.avif",
+            "webp": "/maisons/panama/vue-5-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-6-interieur",
+        "src": "/maisons/panama/vue-6-interieur.webp",
+        "largeur": 1408,
+        "hauteur": 752,
+        "empreinte": "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAACQBACdASoUAAsAPu1iqU2ppaQiMAgBMB2JQBOmUABv9d2xSr1QsGa1gxeRgAAA+oXJN9vqFAVdz8XSqZQN+XPIe3AYtZA83GRA/vOplSbGb72RwPA7t0HQcS5Q0ey2qyWdxSCeCq7Ry3m2QIXkAAAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/panama/vue-6-interieur-480.avif",
+            "webp": "/maisons/panama/vue-6-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/panama/vue-6-interieur-720.avif",
+            "webp": "/maisons/panama/vue-6-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/panama/vue-6-interieur-1024.avif",
+            "webp": "/maisons/panama/vue-6-interieur-1024.webp"
+          },
+          {
+            "largeur": 1408,
+            "avif": "/maisons/panama/vue-6-interieur.avif",
+            "webp": "/maisons/panama/vue-6-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-7-interieur",
+        "src": "/maisons/panama/vue-7-interieur.webp",
+        "largeur": 1360,
+        "hauteur": 784,
+        "empreinte": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAADQAwCdASoUAAwAPu1iqU2ppaOiMAgBMB2JQBOgA+pgi/yxFsnVoAAA94GX1Ei4yh8etNp3hcMtukiRVVIOhGlqX6tb8vPBbtta4ufjkWfEhhOQ1OjTN3tX5VjEUMr711KiOW2qbgAAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/panama/vue-7-interieur-480.avif",
+            "webp": "/maisons/panama/vue-7-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/panama/vue-7-interieur-720.avif",
+            "webp": "/maisons/panama/vue-7-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/panama/vue-7-interieur-1024.avif",
+            "webp": "/maisons/panama/vue-7-interieur-1024.webp"
+          },
+          {
+            "largeur": 1360,
+            "avif": "/maisons/panama/vue-7-interieur.avif",
+            "webp": "/maisons/panama/vue-7-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-8-interieur",
+        "src": "/maisons/panama/vue-8-interieur.webp",
+        "largeur": 1408,
+        "hauteur": 752,
+        "empreinte": "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAACwAwCdASoUAAsAPu1iqU2ppaQiMAgBMB2JYwC7ACLOZCbvwhDrQAD8ja4kTtMoCdkF1uiMPDG9FVW84cNfPpS6si4xyOT9J2VPVIbLO0P6h5Mpn7OaaTLJs74wAAAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/panama/vue-8-interieur-480.avif",
+            "webp": "/maisons/panama/vue-8-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/panama/vue-8-interieur-720.avif",
+            "webp": "/maisons/panama/vue-8-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/panama/vue-8-interieur-1024.avif",
+            "webp": "/maisons/panama/vue-8-interieur-1024.webp"
+          },
+          {
+            "largeur": 1408,
+            "avif": "/maisons/panama/vue-8-interieur.avif",
+            "webp": "/maisons/panama/vue-8-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      }
+    ]
+  },
+  "paris": {
+    "nom": "Paris",
+    "vues": [
+      {
+        "cle": "plan-axonometrique",
+        "src": "/maisons/paris/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRkQBAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSJgAAAABgJpt27Llup/3x2EASH/6E1EX8KRLsIFFOmO402EMqk3gzvveyAszRMQE6HeA2pJE/Vcw0hIQKSpAYvD+5nRtvI9/So1D5+zL/c3FVqOWWPaHc357zk9eJ4Bg+N3v2Xb5/PAqbRJi4Nx2+SwuxTM0JIAY27hy8eeHn5qkigQ9s1u3zr7oICqQGkD/0pm3SPoDRSOBhpqEJFZQOCCGAAAA8AMAnQEqFAALAD7tYqlNqaWjojAIATAdiWkAA+Q59sVWoTeW2sQIgAD+3Vxiqf8wJh7Wiq1t2WrJLnfw0dCt+ZT0LWKDo9MBGogU+PQlp04dhQP5u43MMBhafLDBAV0BCJXY8s1cY9d88myBOyv1T/9/7IFPbU0kBpSVdru8dpS16v3MIAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/paris/plan-axonometrique-480.avif",
+            "webp": "/maisons/paris/plan-axonometrique-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/paris/plan-axonometrique-720.avif",
+            "webp": "/maisons/paris/plan-axonometrique-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/paris/plan-axonometrique-1024.avif",
+            "webp": "/maisons/paris/plan-axonometrique-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/paris/plan-axonometrique-1440.avif",
+            "webp": "/maisons/paris/plan-axonometrique-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/paris/plan-axonometrique-1920.avif",
+            "webp": "/maisons/paris/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/paris/plan-axonometrique.avif",
+            "webp": "/maisons/paris/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
+      {
+        "cle": "vue-1-exterieur",
+        "src": "/maisons/paris/vue-1-exterieur.webp",
+        "largeur": 1520,
+        "hauteur": 704,
+        "empreinte": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAACwAwCdASoUAAkAPu1iqU2ppaQiMAgBMB2JZgC7LwABoPH9dbkxMAD+1GyoqNvicBqWMMS0mj/JhGDQVBDRvtRG0O8UOz6vhc5izQit4QWZF3i1bKubu2jR3epv+wT3vDLR21lqtN4++ShuCcwAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/paris/vue-1-exterieur-480.avif",
+            "webp": "/maisons/paris/vue-1-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/paris/vue-1-exterieur-720.avif",
+            "webp": "/maisons/paris/vue-1-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/paris/vue-1-exterieur-1024.avif",
+            "webp": "/maisons/paris/vue-1-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/paris/vue-1-exterieur-1440.avif",
+            "webp": "/maisons/paris/vue-1-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1520,
+            "avif": "/maisons/paris/vue-1-exterieur.avif",
+            "webp": "/maisons/paris/vue-1-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-2-exterieur",
+        "src": "/maisons/paris/vue-2-exterieur.webp",
+        "largeur": 1408,
+        "hauteur": 752,
+        "empreinte": "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAABQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JYgCdIIjDMlrjeXnWyOA3hkgAAP6xdTy1wpevR8lR02Zznd8GuDSOazuDl6Az1C1WhSk1eq9cO6SQFGUX1GiP6pQ9UOn6WXeVqwfNAXOCQ06JDT4yOV5bhjeZ8XQhQAAAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/paris/vue-2-exterieur-480.avif",
+            "webp": "/maisons/paris/vue-2-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/paris/vue-2-exterieur-720.avif",
+            "webp": "/maisons/paris/vue-2-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/paris/vue-2-exterieur-1024.avif",
+            "webp": "/maisons/paris/vue-2-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1408,
+            "avif": "/maisons/paris/vue-2-exterieur.avif",
+            "webp": "/maisons/paris/vue-2-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-3-interieur",
+        "src": "/maisons/paris/vue-3-interieur.webp",
+        "largeur": 1730,
+        "hauteur": 909,
+        "empreinte": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAADwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JYwC7AA14ksvZ/ydEU0wAAP6NHxGlBP5Ck/ruu6Z5tx8NT8UDEoPmZII3dnI64VsonjtyYmOdstukeng7co6vnTykvrqC2dTp/uAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/paris/vue-3-interieur-480.avif",
+            "webp": "/maisons/paris/vue-3-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/paris/vue-3-interieur-720.avif",
+            "webp": "/maisons/paris/vue-3-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/paris/vue-3-interieur-1024.avif",
+            "webp": "/maisons/paris/vue-3-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/paris/vue-3-interieur-1440.avif",
+            "webp": "/maisons/paris/vue-3-interieur-1440.webp"
+          },
+          {
+            "largeur": 1730,
+            "avif": "/maisons/paris/vue-3-interieur.avif",
+            "webp": "/maisons/paris/vue-3-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-4-interieur",
+        "src": "/maisons/paris/vue-4-interieur.webp",
+        "largeur": 1730,
+        "hauteur": 909,
+        "empreinte": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAADwAwCdASoUAAsAPu1iqU2ppaQiMAgBMB2JYwC06CFKFse9LhLprRjgAP6Us6wiL06YfcwJPMMXtdQSo9f++nhxz9S1MFQg6oBtpEva34ohrOIzTCFHQssFgO1BZEAg4s5frz+YmPBKmiDeAAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/paris/vue-4-interieur-480.avif",
+            "webp": "/maisons/paris/vue-4-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/paris/vue-4-interieur-720.avif",
+            "webp": "/maisons/paris/vue-4-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/paris/vue-4-interieur-1024.avif",
+            "webp": "/maisons/paris/vue-4-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/paris/vue-4-interieur-1440.avif",
+            "webp": "/maisons/paris/vue-4-interieur-1440.webp"
+          },
+          {
+            "largeur": 1730,
+            "avif": "/maisons/paris/vue-4-interieur.avif",
+            "webp": "/maisons/paris/vue-4-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-5-interieur",
+        "src": "/maisons/paris/vue-5-interieur.webp",
+        "largeur": 1408,
+        "hauteur": 752,
+        "empreinte": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAADwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JQBOmUABh+Pz6UlZnCIwAAPrlgi0h2SBe7TSS9jR1My9YaJWYp/R6eP0QAxS7Zq4OXU5H/ZpdFRGAB/vm4cWE9NrHEnwkK115xR0dEJbDKt+dXN0AAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/paris/vue-5-interieur-480.avif",
+            "webp": "/maisons/paris/vue-5-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/paris/vue-5-interieur-720.avif",
+            "webp": "/maisons/paris/vue-5-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/paris/vue-5-interieur-1024.avif",
+            "webp": "/maisons/paris/vue-5-interieur-1024.webp"
+          },
+          {
+            "largeur": 1408,
+            "avif": "/maisons/paris/vue-5-interieur.avif",
+            "webp": "/maisons/paris/vue-5-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-6-interieur",
+        "src": "/maisons/paris/vue-6-interieur.webp",
+        "largeur": 1408,
+        "hauteur": 752,
+        "empreinte": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADQAwCdASoUAAsAPu1iqU2ppaQiMAgBMB2JQBOmUABNm66gIWTMXAAA/pQ0TF2sz+zgXxMsvJWqtnUQaBfawPkpZqq3RR1R7yv5gKGfClPgKDPJUxm539fe+tdVvi37bzgAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/paris/vue-6-interieur-480.avif",
+            "webp": "/maisons/paris/vue-6-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/paris/vue-6-interieur-720.avif",
+            "webp": "/maisons/paris/vue-6-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/paris/vue-6-interieur-1024.avif",
+            "webp": "/maisons/paris/vue-6-interieur-1024.webp"
+          },
+          {
+            "largeur": 1408,
+            "avif": "/maisons/paris/vue-6-interieur.avif",
+            "webp": "/maisons/paris/vue-6-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-7-interieur",
+        "src": "/maisons/paris/vue-7-interieur.webp",
+        "largeur": 1408,
+        "hauteur": 752,
+        "empreinte": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAABQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JQBOmUABshdOcE2BrlgbxDBRAAP61XXHQkNW4jct/o9Z0YU3IgG2W1j54ItYWrFdafUrPDSntHq1LPj2hur0IUU6m4lMbLMcmWz0IGmAAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/paris/vue-7-interieur-480.avif",
+            "webp": "/maisons/paris/vue-7-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/paris/vue-7-interieur-720.avif",
+            "webp": "/maisons/paris/vue-7-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/paris/vue-7-interieur-1024.avif",
+            "webp": "/maisons/paris/vue-7-interieur-1024.webp"
+          },
+          {
+            "largeur": 1408,
+            "avif": "/maisons/paris/vue-7-interieur.avif",
+            "webp": "/maisons/paris/vue-7-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-8-interieur",
+        "src": "/maisons/paris/vue-8-interieur.webp",
+        "largeur": 1344,
+        "hauteur": 800,
+        "empreinte": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAACQAwCdASoUAAwAPu1iqU2ppaOiMAgBMB2JZQAASoXXnMwpubTAAP7D4cjlJftleLpNT1ilSAYF3kIpIODGA+zn3/brlVGeoJ6asQAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/paris/vue-8-interieur-480.avif",
+            "webp": "/maisons/paris/vue-8-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/paris/vue-8-interieur-720.avif",
+            "webp": "/maisons/paris/vue-8-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/paris/vue-8-interieur-1024.avif",
+            "webp": "/maisons/paris/vue-8-interieur-1024.webp"
+          },
+          {
+            "largeur": 1344,
+            "avif": "/maisons/paris/vue-8-interieur.avif",
+            "webp": "/maisons/paris/vue-8-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      }
+    ]
+  },
+  "prague": {
+    "nom": "Prague",
+    "vues": [
+      {
+        "cle": "plan-axonometrique",
+        "src": "/maisons/prague/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRloBAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSJkAAAABgGLb2rLl3Of9f9ydTCeRLDMEJ9FIDpHIDKgsBkAkUjU5dEuev/dzG0NETIBKkRoGyADKzAmNHBz34yiVM2ib232LkrtJVIaNb158PiZhkPyvIsCYPnpP4jiOwjhMTjHAsRBHURQHcfJ1dtiNCUTjNonCKAlOJlARcKwnQZKcTyFrWJnofk0u58E5lQIYaxvCOVUWkLCGagIAVlA4IJoAAABwBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JZQAu/8WuGzyn1t85fQdN02eZ4AD+7PdKIXj2W27ZBr5y54aLQyvecLVv33RnViZjS3c+s6FaPEXzKTz6QQSZ/J4cWrWsNi1OYvYKX7X5rv9QqXBGNnqUbaNOFsEB+R4vX127jy940X6bvAD6vpKQJeh6Fhu7GYQFjm1NcV0GgAAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/prague/plan-axonometrique-480.avif",
+            "webp": "/maisons/prague/plan-axonometrique-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/prague/plan-axonometrique-720.avif",
+            "webp": "/maisons/prague/plan-axonometrique-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/prague/plan-axonometrique-1024.avif",
+            "webp": "/maisons/prague/plan-axonometrique-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/prague/plan-axonometrique-1440.avif",
+            "webp": "/maisons/prague/plan-axonometrique-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/prague/plan-axonometrique-1920.avif",
+            "webp": "/maisons/prague/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/prague/plan-axonometrique.avif",
+            "webp": "/maisons/prague/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
+      {
+        "cle": "vue-1-exterieur",
+        "src": "/maisons/prague/vue-1-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 672,
+        "empreinte": "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAABQBACdASoUAAkAPu1kqk4ppaQiMAgBMB2JYgCdGvAt/8B5IxIhzmE1rW4AAOGE3dAk6/aM+1YbzjdZWe/+H/wzb4JY2HOdfCvPFbpvRoSdC3F7xj8WKloiD6GOcVj7HOxTcAz9xcrqPM8tLsaHKr/niaFuAAAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/prague/vue-1-exterieur-480.avif",
+            "webp": "/maisons/prague/vue-1-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/prague/vue-1-exterieur-720.avif",
+            "webp": "/maisons/prague/vue-1-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/prague/vue-1-exterieur-1024.avif",
+            "webp": "/maisons/prague/vue-1-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/prague/vue-1-exterieur-1440.avif",
+            "webp": "/maisons/prague/vue-1-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/prague/vue-1-exterieur.avif",
+            "webp": "/maisons/prague/vue-1-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-2-exterieur",
+        "src": "/maisons/prague/vue-2-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 640,
+        "empreinte": "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAAAwBACdASoUAAgAPu1iqk2ppaQiMAgBMB2JQBOmUDwAc/+AXJyGqwn6fQAA8RaZyMlgJlOP3nODb0vM/B2/kl98s47wR2bw9YPg8keryEfJ1K1vi3fpMKKlFJGj9V6q1P+kw8jBIsGU16KlSPTAsMTCzhgAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/prague/vue-2-exterieur-480.avif",
+            "webp": "/maisons/prague/vue-2-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/prague/vue-2-exterieur-720.avif",
+            "webp": "/maisons/prague/vue-2-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/prague/vue-2-exterieur-1024.avif",
+            "webp": "/maisons/prague/vue-2-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/prague/vue-2-exterieur-1440.avif",
+            "webp": "/maisons/prague/vue-2-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/prague/vue-2-exterieur.avif",
+            "webp": "/maisons/prague/vue-2-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-3-interieur",
+        "src": "/maisons/prague/vue-3-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 800,
+        "empreinte": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAADQAwCdASoUAAoAPu1iqU2ppaQiMAgBMB2JYwC7ACKRA/ociSm4bXAA/lhS4gEpgt6QVi0OVi5Sx2UJ+Wj32qnV36gDjBGdjpejz2OT9Lx2EGmPRcP+rZxeBOXCSZ5r9Bq5vMI8JRKlFUKMx4AAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/prague/vue-3-interieur-480.avif",
+            "webp": "/maisons/prague/vue-3-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/prague/vue-3-interieur-720.avif",
+            "webp": "/maisons/prague/vue-3-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/prague/vue-3-interieur-1024.avif",
+            "webp": "/maisons/prague/vue-3-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/prague/vue-3-interieur-1440.avif",
+            "webp": "/maisons/prague/vue-3-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/prague/vue-3-interieur.avif",
+            "webp": "/maisons/prague/vue-3-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-4-interieur",
+        "src": "/maisons/prague/vue-4-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 816,
+        "empreinte": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAACwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JQBOgA7F1ibA8MoagAAD3NQLdTkrJ393IHqIdhpV1WFWZ0tjFOS0v7iYjDTl4H02XY8kIIpXR0/Bi4ZDC49wOj8ePlmALAm+vrsr59ZiG6AAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/prague/vue-4-interieur-480.avif",
+            "webp": "/maisons/prague/vue-4-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/prague/vue-4-interieur-720.avif",
+            "webp": "/maisons/prague/vue-4-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/prague/vue-4-interieur-1024.avif",
+            "webp": "/maisons/prague/vue-4-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/prague/vue-4-interieur-1440.avif",
+            "webp": "/maisons/prague/vue-4-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/prague/vue-4-interieur.avif",
+            "webp": "/maisons/prague/vue-4-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-5-interieur",
+        "src": "/maisons/prague/vue-5-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 816,
+        "empreinte": "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAADQAwCdASoUAAsAPu1iqU2ppaQiMAgBMB2JQBOgA9Y8GjIBC2VRAAAA+b0cyqzQG94L4P26rHOFDRdMSxprEaCzHr97WY38PqeCF96pBNCddRXRF/Kp0h42MPyUkTejB/OWpuLxTAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/prague/vue-5-interieur-480.avif",
+            "webp": "/maisons/prague/vue-5-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/prague/vue-5-interieur-720.avif",
+            "webp": "/maisons/prague/vue-5-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/prague/vue-5-interieur-1024.avif",
+            "webp": "/maisons/prague/vue-5-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/prague/vue-5-interieur-1440.avif",
+            "webp": "/maisons/prague/vue-5-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/prague/vue-5-interieur.avif",
+            "webp": "/maisons/prague/vue-5-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-6-interieur",
+        "src": "/maisons/prague/vue-6-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 816,
+        "empreinte": "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAwBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JZACxG1ABrhUXUON7impKsAAA9oCdm9OxJByde8ftF2eQ382SIqDWpaUc7nKLSrtHcXl0BOFHnzzTFZ+rPGRqzeqdW8xIkGC4SYCqnTKyylalumY2uQTO/lWKls9AAAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/prague/vue-6-interieur-480.avif",
+            "webp": "/maisons/prague/vue-6-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/prague/vue-6-interieur-720.avif",
+            "webp": "/maisons/prague/vue-6-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/prague/vue-6-interieur-1024.avif",
+            "webp": "/maisons/prague/vue-6-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/prague/vue-6-interieur-1440.avif",
+            "webp": "/maisons/prague/vue-6-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/prague/vue-6-interieur.avif",
+            "webp": "/maisons/prague/vue-6-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-7-interieur",
+        "src": "/maisons/prague/vue-7-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 800,
+        "empreinte": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAADQAwCdASoUAAoAPu1iqU2ppaOiMAgBMB2JQBOgAsw1/OUoYNz/jAAAy+ERYALhgz/hfVWxbRInFMg05/pwq2aO4vrkN6NyEt2HrrXAVwVygcoDPwYXokOC/jHvWf/LnnuTHaCwUwAAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/prague/vue-7-interieur-480.avif",
+            "webp": "/maisons/prague/vue-7-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/prague/vue-7-interieur-720.avif",
+            "webp": "/maisons/prague/vue-7-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/prague/vue-7-interieur-1024.avif",
+            "webp": "/maisons/prague/vue-7-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/prague/vue-7-interieur-1440.avif",
+            "webp": "/maisons/prague/vue-7-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/prague/vue-7-interieur.avif",
+            "webp": "/maisons/prague/vue-7-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-8-interieur",
+        "src": "/maisons/prague/vue-8-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 816,
+        "empreinte": "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAADwAwCdASoUAAsAPu1iqU2ppaQiMAgBMB2JQBOgAtccOjY2AJoSU3CAAPtkGbsbjC5pLvBN7CV6bsqXTOBgGwbDNd3zoBG4zJ5pdjRwxIBPusNGoUeqfnKyXFZXiy2ek962TEXq4sIz3F8sDa8iPy1pi7OXYAAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/prague/vue-8-interieur-480.avif",
+            "webp": "/maisons/prague/vue-8-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/prague/vue-8-interieur-720.avif",
+            "webp": "/maisons/prague/vue-8-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/prague/vue-8-interieur-1024.avif",
+            "webp": "/maisons/prague/vue-8-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/prague/vue-8-interieur-1440.avif",
+            "webp": "/maisons/prague/vue-8-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/prague/vue-8-interieur.avif",
+            "webp": "/maisons/prague/vue-8-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      }
+    ]
+  },
   "pekin": {
     "nom": "Pékin",
     "vues": [
       {
         "cle": "vue-1-exterieur",
         "src": "/maisons/pekin/vue-1-exterieur.webp",
-        "largeur": 1920,
-        "hauteur": 1080,
-        "empreinte": "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAADwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JZACdH8ADEkQ5T0mT+eJAAPHlPAuoFOiwdb7HUa+efJr50n8COF59yLE+dpxiahG3peNZ1BpFNMy/5poZpeH4VMQZoHP+C78pSp0aWLae60g0uljmfT+7kzx9RcvA6AAAAA==",
+        "largeur": 1714,
+        "hauteur": 918,
+        "empreinte": "data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAADwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JaACdAywBN9x8TaPvl4QAAP1ovjEOMzTI7zrsMZ/2sZ9cJMPSdfuhNh3cgY0oP5BihRsJyBLeqxrFLV5OsvOabgCBnSxMaX55rtJ//p1/IcdDPRLJr1MmA2T/XMIlj1Ft7gYpwaMAAA==",
         "variantes": [
           {
             "largeur": 480,
@@ -2395,7 +4025,7 @@
             "webp": "/maisons/pekin/vue-1-exterieur-1440.webp"
           },
           {
-            "largeur": 1920,
+            "largeur": 1714,
             "avif": "/maisons/pekin/vue-1-exterieur.avif",
             "webp": "/maisons/pekin/vue-1-exterieur.webp"
           }
@@ -2405,9 +4035,9 @@
       {
         "cle": "vue-2-exterieur",
         "src": "/maisons/pekin/vue-2-exterieur.webp",
-        "largeur": 1920,
-        "hauteur": 1080,
-        "empreinte": "data:image/webp;base64,UklGRpoAAABXRUJQVlA4II4AAACwBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JQBOkEUk/xbE7m9RKmg00p+06gkHAAP4xfR3mdLtX3VrAPtWQjzjkltPWzcWiQPR27fMyCD6iiAh910wvr+NaoxL0CK3RIeO7Tupnsu8aQNinEWrx0lv+WMwFithC99KLWcrzPJ1oFqF+3pc4aKlkqtMjmuAA",
+        "largeur": 1725,
+        "hauteur": 912,
+        "empreinte": "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAAAQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JbACdAB6C/SCjYAPDHvuYAADNpiD9lvQx4QLqGVn3CtUOcHx8I6GQWhI+N3nuWsaBUosR39hQjeUz2K23srOtQXkThJ9rLHttN2RoZadIeGu/bsr7cHG69mKoMB+MIqrzao3WUTXrAMiN8gAAAA==",
         "variantes": [
           {
             "largeur": 480,
@@ -2430,7 +4060,7 @@
             "webp": "/maisons/pekin/vue-2-exterieur-1440.webp"
           },
           {
-            "largeur": 1920,
+            "largeur": 1725,
             "avif": "/maisons/pekin/vue-2-exterieur.avif",
             "webp": "/maisons/pekin/vue-2-exterieur.webp"
           }
@@ -2438,74 +4068,1594 @@
         "type": "exterieur"
       },
       {
-        "cle": "vue-3-exterieur",
-        "src": "/maisons/pekin/vue-3-exterieur.webp",
-        "largeur": 1920,
-        "hauteur": 1080,
-        "empreinte": "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAACwBACdASoUAAsAPu1iqU2ppaQiMAgBMB2JYgCdIIIJ/3YABiip/B2qeucbGYAAAN5iGF1dtb1SirKGlLZQLjJ5LsK6aync3nV9STDirvcd4K3fweOFtnE6JbSbzB48GynKnj0TcmS7cZAo3yb+HKRimTknZRyb4/mAnfXGthqs1ntzGAAAAA==",
+        "cle": "vue-3-interieur",
+        "src": "/maisons/pekin/vue-3-interieur.webp",
+        "largeur": 1714,
+        "hauteur": 918,
+        "empreinte": "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAACwBACdASoUAAsAPu1iqU2ppaQiMAgBMB2JQBOmUI7gOgadnCQ3kSWBR2R5GBEAAOJGdrRMs9XmS+cPDggt1WBir6SrGxCMAiCnKC2Kvhx5cjjPK7v9hECgikpIvwmy3h6bzrBqbpwqKIRh98ipdGqnrTgAAA==",
         "variantes": [
           {
             "largeur": 480,
-            "avif": "/maisons/pekin/vue-3-exterieur-480.avif",
-            "webp": "/maisons/pekin/vue-3-exterieur-480.webp"
+            "avif": "/maisons/pekin/vue-3-interieur-480.avif",
+            "webp": "/maisons/pekin/vue-3-interieur-480.webp"
           },
           {
             "largeur": 720,
-            "avif": "/maisons/pekin/vue-3-exterieur-720.avif",
-            "webp": "/maisons/pekin/vue-3-exterieur-720.webp"
+            "avif": "/maisons/pekin/vue-3-interieur-720.avif",
+            "webp": "/maisons/pekin/vue-3-interieur-720.webp"
           },
           {
             "largeur": 1024,
-            "avif": "/maisons/pekin/vue-3-exterieur-1024.avif",
-            "webp": "/maisons/pekin/vue-3-exterieur-1024.webp"
+            "avif": "/maisons/pekin/vue-3-interieur-1024.avif",
+            "webp": "/maisons/pekin/vue-3-interieur-1024.webp"
           },
           {
             "largeur": 1440,
-            "avif": "/maisons/pekin/vue-3-exterieur-1440.avif",
-            "webp": "/maisons/pekin/vue-3-exterieur-1440.webp"
+            "avif": "/maisons/pekin/vue-3-interieur-1440.avif",
+            "webp": "/maisons/pekin/vue-3-interieur-1440.webp"
+          },
+          {
+            "largeur": 1714,
+            "avif": "/maisons/pekin/vue-3-interieur.avif",
+            "webp": "/maisons/pekin/vue-3-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-4-interieur",
+        "src": "/maisons/pekin/vue-4-interieur.webp",
+        "largeur": 1714,
+        "hauteur": 918,
+        "empreinte": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADQAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JQBOgA70AtYYzTYfUwAAA/dVjiw7N0qkH/UMcr94gzTNdudrmUU6w3NyLAQk7AXw6s8SNkoRhrcfNDJOGLhHdwBQypZXasjWY/JA4ngNSQAAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/pekin/vue-4-interieur-480.avif",
+            "webp": "/maisons/pekin/vue-4-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/pekin/vue-4-interieur-720.avif",
+            "webp": "/maisons/pekin/vue-4-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/pekin/vue-4-interieur-1024.avif",
+            "webp": "/maisons/pekin/vue-4-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/pekin/vue-4-interieur-1440.avif",
+            "webp": "/maisons/pekin/vue-4-interieur-1440.webp"
+          },
+          {
+            "largeur": 1714,
+            "avif": "/maisons/pekin/vue-4-interieur.avif",
+            "webp": "/maisons/pekin/vue-4-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-5-interieur",
+        "src": "/maisons/pekin/vue-5-interieur.webp",
+        "largeur": 1714,
+        "hauteur": 918,
+        "empreinte": "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAADQAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JQBYjYAAs0smfcYOnPGgA9x373CzVsZPOuj5WydpLKzhQmLVtJo4A/YqkJe30ZfXNG1Y02jDFC6HHYesSbDzBim129qCgg5uLlZo+mAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/pekin/vue-5-interieur-480.avif",
+            "webp": "/maisons/pekin/vue-5-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/pekin/vue-5-interieur-720.avif",
+            "webp": "/maisons/pekin/vue-5-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/pekin/vue-5-interieur-1024.avif",
+            "webp": "/maisons/pekin/vue-5-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/pekin/vue-5-interieur-1440.avif",
+            "webp": "/maisons/pekin/vue-5-interieur-1440.webp"
+          },
+          {
+            "largeur": 1714,
+            "avif": "/maisons/pekin/vue-5-interieur.avif",
+            "webp": "/maisons/pekin/vue-5-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-6-interieur",
+        "src": "/maisons/pekin/vue-6-interieur.webp",
+        "largeur": 1714,
+        "hauteur": 918,
+        "empreinte": "data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAAAQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JYgCdMoACs/6dUbuzc6sDFAD966zhD7PRFCAFdTllkFcWy4FI1QXmhmJ+hB7jPl0dQgHVOe8ONOCIWFEcWWHlwJ7SM6ZAlmGk7rw26vaElhLf4flgdW1/wvkxkzL+YOUvgSX7IuYAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/pekin/vue-6-interieur-480.avif",
+            "webp": "/maisons/pekin/vue-6-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/pekin/vue-6-interieur-720.avif",
+            "webp": "/maisons/pekin/vue-6-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/pekin/vue-6-interieur-1024.avif",
+            "webp": "/maisons/pekin/vue-6-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/pekin/vue-6-interieur-1440.avif",
+            "webp": "/maisons/pekin/vue-6-interieur-1440.webp"
+          },
+          {
+            "largeur": 1714,
+            "avif": "/maisons/pekin/vue-6-interieur.avif",
+            "webp": "/maisons/pekin/vue-6-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      }
+    ]
+  },
+  "quito": {
+    "nom": "Quito",
+    "vues": [
+      {
+        "cle": "plan-axonometrique",
+        "src": "/maisons/quito/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRlQBAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSJsAAAABgJpt27Llut/nx2EETSxAdWcKh0alkWi2g9sAVA4aiQk4SGR3eOVBPnaIiAnQX5AZBFFZEQLQPWVSBSCgeXj/0tcwVUn1PSvXNyknXyfojwLbp1ueo5fyul6PAIwlfy65uHv0kzaCQLRdeU65eIn+2YsJMFb9y0tJ2e9mCfojum/9fPTM4047QRWI5WnRdzGMTP8gCDWrx0x/AQBWUDggkgAAAFAEAJ0BKhQACwA+7WKpTamlo6IwCAEwHYlnAAPiy8AD04427eFVfRpuCAAA/upEX83eoV+chzmMxB0RfJ2EcUDQEU+GKToNk8ZOo38YwVazz45Kj+vKiLSf28GqHcSmr+zPXL5Og5QEaDUlTs3gvErtZ3vhrQEPAL+vOu/2/Q34YgED440fgS2jnS5rPTs0AAAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/quito/plan-axonometrique-480.avif",
+            "webp": "/maisons/quito/plan-axonometrique-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/quito/plan-axonometrique-720.avif",
+            "webp": "/maisons/quito/plan-axonometrique-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/quito/plan-axonometrique-1024.avif",
+            "webp": "/maisons/quito/plan-axonometrique-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/quito/plan-axonometrique-1440.avif",
+            "webp": "/maisons/quito/plan-axonometrique-1440.webp"
           },
           {
             "largeur": 1920,
-            "avif": "/maisons/pekin/vue-3-exterieur.avif",
-            "webp": "/maisons/pekin/vue-3-exterieur.webp"
+            "avif": "/maisons/quito/plan-axonometrique-1920.avif",
+            "webp": "/maisons/quito/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/quito/plan-axonometrique.avif",
+            "webp": "/maisons/quito/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
+      {
+        "cle": "vue-1-exterieur",
+        "src": "/maisons/quito/vue-1-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 624,
+        "empreinte": "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAADwAwCdASoUAAgAPu1iqU2ppaOiMAgBMB2JZACdEf/gIUGOOtYhAjAAAM4epmHPkGCrESh7+qId9zdrzVvCBZrZxWtHitcM7nK2NtkFdDTb9Kze/df1/aTe4+VhAvlfhpnuLpwGqAaZMBRn/vaRJwAAAAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/quito/vue-1-exterieur-480.avif",
+            "webp": "/maisons/quito/vue-1-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/quito/vue-1-exterieur-720.avif",
+            "webp": "/maisons/quito/vue-1-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/quito/vue-1-exterieur-1024.avif",
+            "webp": "/maisons/quito/vue-1-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/quito/vue-1-exterieur-1440.avif",
+            "webp": "/maisons/quito/vue-1-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/quito/vue-1-exterieur.avif",
+            "webp": "/maisons/quito/vue-1-exterieur.webp"
           }
         ],
         "type": "exterieur"
       },
       {
-        "cle": "vue-4-terrasse",
-        "src": "/maisons/pekin/vue-4-terrasse.webp",
-        "largeur": 1920,
-        "hauteur": 1080,
-        "empreinte": "data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAACwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JZQC/OBcSAySlwEdj4AD9eNl85fM63nl0CY1uevuq1iYPsnGqCEGh22YoPrjnxbruc5OpvU6Yr9DTNSQa91gsfFzPZiH3bOR98P8ngYo8sl9SNvjeyUapwZLMTayf8W8wtHAqFAAAAA==",
+        "cle": "vue-2-exterieur",
+        "src": "/maisons/quito/vue-2-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 736,
+        "empreinte": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAADwAwCdASoUAAoAPu1iqU2ppaOiMAgBMB2JZgCdMoACx+wOssyQhPYgAP3adsyrO5S4JiyCIWnft/qSTv5g4+omGNND2212XIBB8NMSPx1jQ+Xs3YLt2UEcUN+ODadj5+ElkVUDmlSb+ah/WHttJruWuGqCp7Get8brX5YqyLEmNrAA",
         "variantes": [
           {
             "largeur": 480,
-            "avif": "/maisons/pekin/vue-4-terrasse-480.avif",
-            "webp": "/maisons/pekin/vue-4-terrasse-480.webp"
+            "avif": "/maisons/quito/vue-2-exterieur-480.avif",
+            "webp": "/maisons/quito/vue-2-exterieur-480.webp"
           },
           {
             "largeur": 720,
-            "avif": "/maisons/pekin/vue-4-terrasse-720.avif",
-            "webp": "/maisons/pekin/vue-4-terrasse-720.webp"
+            "avif": "/maisons/quito/vue-2-exterieur-720.avif",
+            "webp": "/maisons/quito/vue-2-exterieur-720.webp"
           },
           {
             "largeur": 1024,
-            "avif": "/maisons/pekin/vue-4-terrasse-1024.avif",
-            "webp": "/maisons/pekin/vue-4-terrasse-1024.webp"
+            "avif": "/maisons/quito/vue-2-exterieur-1024.avif",
+            "webp": "/maisons/quito/vue-2-exterieur-1024.webp"
           },
           {
             "largeur": 1440,
-            "avif": "/maisons/pekin/vue-4-terrasse-1440.avif",
-            "webp": "/maisons/pekin/vue-4-terrasse-1440.webp"
+            "avif": "/maisons/quito/vue-2-exterieur-1440.avif",
+            "webp": "/maisons/quito/vue-2-exterieur-1440.webp"
           },
           {
-            "largeur": 1920,
-            "avif": "/maisons/pekin/vue-4-terrasse.avif",
-            "webp": "/maisons/pekin/vue-4-terrasse.webp"
+            "largeur": 1536,
+            "avif": "/maisons/quito/vue-2-exterieur.avif",
+            "webp": "/maisons/quito/vue-2-exterieur.webp"
           }
         ],
         "type": "exterieur"
+      },
+      {
+        "cle": "vue-3-interieur",
+        "src": "/maisons/quito/vue-3-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 816,
+        "empreinte": "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAAAwBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JZgCdABomdPGP7FeArFe7nQAA/sXpABWhqPtx6wd7MZXsxV6ZcJ9ujPhk97VWpJRx9zk2Bj1WfvAcD/8sEObvdG0pLVfx7H0/JX+d5I6FVkhXgELF5VA0/ondl4MqNYQF1PwAAAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/quito/vue-3-interieur-480.avif",
+            "webp": "/maisons/quito/vue-3-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/quito/vue-3-interieur-720.avif",
+            "webp": "/maisons/quito/vue-3-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/quito/vue-3-interieur-1024.avif",
+            "webp": "/maisons/quito/vue-3-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/quito/vue-3-interieur-1440.avif",
+            "webp": "/maisons/quito/vue-3-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/quito/vue-3-interieur.avif",
+            "webp": "/maisons/quito/vue-3-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-4-interieur",
+        "src": "/maisons/quito/vue-4-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 816,
+        "empreinte": "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAABwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JQBOgAbWQ87f3OEAAzjZ1BuBqUhLQoPzzjfFJplHoU4trUnJrtyST68DHNlAwxZdLIkya1OYStQCiUhyz8KKKPVdzCAA2b5pZUHH1lOl/xNv0SpZhblWrAAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/quito/vue-4-interieur-480.avif",
+            "webp": "/maisons/quito/vue-4-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/quito/vue-4-interieur-720.avif",
+            "webp": "/maisons/quito/vue-4-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/quito/vue-4-interieur-1024.avif",
+            "webp": "/maisons/quito/vue-4-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/quito/vue-4-interieur-1440.avif",
+            "webp": "/maisons/quito/vue-4-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/quito/vue-4-interieur.avif",
+            "webp": "/maisons/quito/vue-4-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-5-interieur",
+        "src": "/maisons/quito/vue-5-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 816,
+        "empreinte": "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAADQAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JQBOmUABBOQlBfbd67UAA/oE0s3cTuQWmwBFiJCUmn6OQ7/8SvHL31ZTTiK9jwsDA+Dl7H8bm5xRc6/lImQ3cbGXdF/qVLQRfpeWo0XfZpUpiHNTZyP5Y9zrlDbOSAAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/quito/vue-5-interieur-480.avif",
+            "webp": "/maisons/quito/vue-5-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/quito/vue-5-interieur-720.avif",
+            "webp": "/maisons/quito/vue-5-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/quito/vue-5-interieur-1024.avif",
+            "webp": "/maisons/quito/vue-5-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/quito/vue-5-interieur-1440.avif",
+            "webp": "/maisons/quito/vue-5-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/quito/vue-5-interieur.avif",
+            "webp": "/maisons/quito/vue-5-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-6-interieur",
+        "src": "/maisons/quito/vue-6-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 912,
+        "empreinte": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAAAwBACdASoUAAwAPu1iqU2ppaOiMAgBMB2JQBOmUABsMHua1nZGUzFXXoAA98+M1dXsj0lviSPzInks20qFUSlxjGYeBpvFRV2NsUigKGAW/rBw4YDMu8h2lP6trzQjzY3VMM6V8Mi7dwAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/quito/vue-6-interieur-480.avif",
+            "webp": "/maisons/quito/vue-6-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/quito/vue-6-interieur-720.avif",
+            "webp": "/maisons/quito/vue-6-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/quito/vue-6-interieur-1024.avif",
+            "webp": "/maisons/quito/vue-6-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/quito/vue-6-interieur-1440.avif",
+            "webp": "/maisons/quito/vue-6-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/quito/vue-6-interieur.avif",
+            "webp": "/maisons/quito/vue-6-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-7-interieur",
+        "src": "/maisons/quito/vue-7-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 816,
+        "empreinte": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAADQAwCdASoUAAsAPu1iqU2ppaQiMAgBMB2JQBadAtbPRlDZKnttyAAA8AJh6lY6QTpzEciaHzt+3WrXOOHNEod5Elq8ke4uGPw4JpohlJa8t+qIE8ZnkdrJI0oAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/quito/vue-7-interieur-480.avif",
+            "webp": "/maisons/quito/vue-7-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/quito/vue-7-interieur-720.avif",
+            "webp": "/maisons/quito/vue-7-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/quito/vue-7-interieur-1024.avif",
+            "webp": "/maisons/quito/vue-7-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/quito/vue-7-interieur-1440.avif",
+            "webp": "/maisons/quito/vue-7-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/quito/vue-7-interieur.avif",
+            "webp": "/maisons/quito/vue-7-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-8-interieur",
+        "src": "/maisons/quito/vue-8-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 816,
+        "empreinte": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAADwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JZACdMoACa8+5kajVI7oAAP7hPFL9/b9x7oxdk1hoQIN/xeBeJqVLhS4uiscoITZhUYO6Ad/MCWB9vNSznE3GoMd5YdlCdmmmisSJYAAAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/quito/vue-8-interieur-480.avif",
+            "webp": "/maisons/quito/vue-8-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/quito/vue-8-interieur-720.avif",
+            "webp": "/maisons/quito/vue-8-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/quito/vue-8-interieur-1024.avif",
+            "webp": "/maisons/quito/vue-8-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/quito/vue-8-interieur-1440.avif",
+            "webp": "/maisons/quito/vue-8-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/quito/vue-8-interieur.avif",
+            "webp": "/maisons/quito/vue-8-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      }
+    ]
+  },
+  "rome": {
+    "nom": "Rome",
+    "vues": [
+      {
+        "cle": "plan-axonometrique",
+        "src": "/maisons/rome/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRlgBAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSKkAAAABgJtt27Hnvt/PfVKqsu0ubapsoBVcaYPUKm1jhGxh23m/946GiIgJIEkklRkAfY/4l6SP4YeBseIIgGf+AD569Hn4drQ9VBTifx/tn845K/dxsdxZAQIGtbdySuVSq7OPCXgAso706ayVpNSqAz6JZFpOkrNOTueZMCTAtoPn3nXJ2S/NwZAEDfwCH00z77LqQfAH8AwCAxSOPz7mwvwHGtLzgLxWGJIEAFZQOCCIAAAA8AMAnQEqFAALAD7tYqlNqaWjojAIATAdiWcAAFeRu7Kgp+id1BYAAAD+h/JqQhMYyeYDCbQosZdk0y6Pl3XUrrNyeDqxPAkKfJDy8XT4Ias6fd/I9J6QIWpfaXggBAVLOgv8bz4X5R7vcipzvU0XPJnFfhOeDK5GMfeRD+Y239ryHV2fEhQAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/rome/plan-axonometrique-480.avif",
+            "webp": "/maisons/rome/plan-axonometrique-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/rome/plan-axonometrique-720.avif",
+            "webp": "/maisons/rome/plan-axonometrique-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/rome/plan-axonometrique-1024.avif",
+            "webp": "/maisons/rome/plan-axonometrique-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/rome/plan-axonometrique-1440.avif",
+            "webp": "/maisons/rome/plan-axonometrique-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/rome/plan-axonometrique-1920.avif",
+            "webp": "/maisons/rome/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/rome/plan-axonometrique.avif",
+            "webp": "/maisons/rome/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
+      {
+        "cle": "vue-1-exterieur",
+        "src": "/maisons/rome/vue-1-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 624,
+        "empreinte": "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAAAwBACdASoUAAgAPu1iqU2ppaOiMAgBMB2JZACdAYuQto9fts3R5OQXkyAA4YTIB46UDDSs9cD+f5xMH0BA+wQqilKNor/3ha3PsDTqe3UR9Ufp5r82tUepq6Gx2O4I+tTBI7IPMEjp2BIjSzteQqsAAAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/rome/vue-1-exterieur-480.avif",
+            "webp": "/maisons/rome/vue-1-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/rome/vue-1-exterieur-720.avif",
+            "webp": "/maisons/rome/vue-1-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/rome/vue-1-exterieur-1024.avif",
+            "webp": "/maisons/rome/vue-1-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/rome/vue-1-exterieur-1440.avif",
+            "webp": "/maisons/rome/vue-1-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/rome/vue-1-exterieur.avif",
+            "webp": "/maisons/rome/vue-1-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-2-exterieur",
+        "src": "/maisons/rome/vue-2-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 656,
+        "empreinte": "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAADQAwCdASoUAAkAPu1iqU2ppaOiMAgBMB2JZgCdEf/gOfcwK1H78AAA3PvboZzws+HDCLgcpooJtsGfSt0LnXd3SaA+oadtmYi2HIvyME+o7w3TyAf87d01oM+iothuT5nCUAUVgEmWPD/j9WN7+oAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/rome/vue-2-exterieur-480.avif",
+            "webp": "/maisons/rome/vue-2-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/rome/vue-2-exterieur-720.avif",
+            "webp": "/maisons/rome/vue-2-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/rome/vue-2-exterieur-1024.avif",
+            "webp": "/maisons/rome/vue-2-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/rome/vue-2-exterieur-1440.avif",
+            "webp": "/maisons/rome/vue-2-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/rome/vue-2-exterieur.avif",
+            "webp": "/maisons/rome/vue-2-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-3-interieur",
+        "src": "/maisons/rome/vue-3-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 800,
+        "empreinte": "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAACwAwCdASoUAAoAPu1iqU2ppaOiMAgBMB2JYwCdABThFpgWlj5mgAD+tZty7kFJatKPdbaRdzIgSPcEdTOhPrYPmlUFFErp5LkKhhh/jfplagMtzOMDhY4aNBKW0dxUiD3VPXJbTgMUkJyQieXvBkKAAAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/rome/vue-3-interieur-480.avif",
+            "webp": "/maisons/rome/vue-3-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/rome/vue-3-interieur-720.avif",
+            "webp": "/maisons/rome/vue-3-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/rome/vue-3-interieur-1024.avif",
+            "webp": "/maisons/rome/vue-3-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/rome/vue-3-interieur-1440.avif",
+            "webp": "/maisons/rome/vue-3-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/rome/vue-3-interieur.avif",
+            "webp": "/maisons/rome/vue-3-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-4-interieur",
+        "src": "/maisons/rome/vue-4-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 816,
+        "empreinte": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAAAQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JQBOgA9jGX0o5J0HyHTlkAADv5k7DxkC2gwfOdWUqqrgYdr/rTQiiN+voYEE6gHjAODNSTFwmqBN2HD51mqb6jr2GzgwVXSvwHywVsA79Ak5gAAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/rome/vue-4-interieur-480.avif",
+            "webp": "/maisons/rome/vue-4-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/rome/vue-4-interieur-720.avif",
+            "webp": "/maisons/rome/vue-4-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/rome/vue-4-interieur-1024.avif",
+            "webp": "/maisons/rome/vue-4-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/rome/vue-4-interieur-1440.avif",
+            "webp": "/maisons/rome/vue-4-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/rome/vue-4-interieur.avif",
+            "webp": "/maisons/rome/vue-4-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-5-interieur",
+        "src": "/maisons/rome/vue-5-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 800,
+        "empreinte": "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAAAQBACdASoUAAoAPu1iqU2ppaOiMAgBMB2JYgCdMoACIGPO9kW5YMDgAAD+v7d3gpO2UtGv0peb5wT6/7K5UigMQEOhxfb41OxYYIUjYzT9Ct+9OVdhfQyC3DoqIwBL8foKzNPoSgp3X0oaKaOZnBzm22q7mvSrrcAoAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/rome/vue-5-interieur-480.avif",
+            "webp": "/maisons/rome/vue-5-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/rome/vue-5-interieur-720.avif",
+            "webp": "/maisons/rome/vue-5-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/rome/vue-5-interieur-1024.avif",
+            "webp": "/maisons/rome/vue-5-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/rome/vue-5-interieur-1440.avif",
+            "webp": "/maisons/rome/vue-5-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/rome/vue-5-interieur.avif",
+            "webp": "/maisons/rome/vue-5-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-6-interieur",
+        "src": "/maisons/rome/vue-6-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 800,
+        "empreinte": "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAABQBACdASoUAAoAPu1iqU2ppaQiMAgBMB2JQBOmUABv6H7c5G4h4xm8OdbGAM43d8Ygo4o/tS6uONtmXUliopfeHhejIRGD/nwIsqjdwYN0juQ3b3GqlS6HWtyJWEDP6f/1mb03QLS6azwHZWtgQAAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/rome/vue-6-interieur-480.avif",
+            "webp": "/maisons/rome/vue-6-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/rome/vue-6-interieur-720.avif",
+            "webp": "/maisons/rome/vue-6-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/rome/vue-6-interieur-1024.avif",
+            "webp": "/maisons/rome/vue-6-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/rome/vue-6-interieur-1440.avif",
+            "webp": "/maisons/rome/vue-6-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/rome/vue-6-interieur.avif",
+            "webp": "/maisons/rome/vue-6-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-7-interieur",
+        "src": "/maisons/rome/vue-7-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 816,
+        "empreinte": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAAAQAwCdASoUAAsAPu1iqU2ppaQiMAgBMB2JZQAAJMlG0IAA/mQDIchsvehXZhQQ0B7RyDHzCM2qKlhVbnSDgfTNlyz9vf0AFCkPkpZV9yyDMcwwAAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/rome/vue-7-interieur-480.avif",
+            "webp": "/maisons/rome/vue-7-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/rome/vue-7-interieur-720.avif",
+            "webp": "/maisons/rome/vue-7-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/rome/vue-7-interieur-1024.avif",
+            "webp": "/maisons/rome/vue-7-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/rome/vue-7-interieur-1440.avif",
+            "webp": "/maisons/rome/vue-7-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/rome/vue-7-interieur.avif",
+            "webp": "/maisons/rome/vue-7-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      }
+    ]
+  },
+  "stockholm": {
+    "nom": "Stockholm",
+    "vues": [
+      {
+        "cle": "plan-axonometrique",
+        "src": "/maisons/stockholm/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRkIBAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSJkAAAABgJrtn8Pk+//vYvNEZ4EuebDVsQELgMQxRFcMEIvvqL5G71V17u4nUmaIiAkwM3OqS2MRPBj9fZENXRzN1wHvAyJzSknnm73pGoMDkx+llPL5qPetRQxwGjfKklTyr5YJQGAmKydJKvrtEszAGN8uyklKOsCsDzcm9qWcshaoDCI4TB2q6KWOD8GiYzMH6hFsBLPo2GwD7wMAVlA4IIIAAAAQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JbAAD49mN13R8PY0b/BtFAAD+vJ+SNpc7wkJXcbfrclbzO9tBnk5oYIaSLCIzmY9/MC5sQxNhJw4Bh/m7tJkEIpJOnO12Kmt49+nq7Jx+VI6m2vuMMAHUan3591D9fT0SIWxwAycgAAAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/stockholm/plan-axonometrique-480.avif",
+            "webp": "/maisons/stockholm/plan-axonometrique-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/stockholm/plan-axonometrique-720.avif",
+            "webp": "/maisons/stockholm/plan-axonometrique-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/stockholm/plan-axonometrique-1024.avif",
+            "webp": "/maisons/stockholm/plan-axonometrique-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/stockholm/plan-axonometrique-1440.avif",
+            "webp": "/maisons/stockholm/plan-axonometrique-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/stockholm/plan-axonometrique-1920.avif",
+            "webp": "/maisons/stockholm/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/stockholm/plan-axonometrique.avif",
+            "webp": "/maisons/stockholm/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
+      {
+        "cle": "vue-1-exterieur",
+        "src": "/maisons/stockholm/vue-1-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 736,
+        "empreinte": "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAAAQBACdASoUAAoAPu1iqU2ppaQiMAgBMB2JagCdEf/gNDYc9lzlpZrrqADg/m9NiO6ywi+FWV+GWvX7rFiDB8O7GwV932C/dIKxHMibdJ0bB60SG5PICfxtU7HFC4CitUBtCjWbDxLpE86rRrdMCtiGhC6qtUCHdYtuKcAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/stockholm/vue-1-exterieur-480.avif",
+            "webp": "/maisons/stockholm/vue-1-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/stockholm/vue-1-exterieur-720.avif",
+            "webp": "/maisons/stockholm/vue-1-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/stockholm/vue-1-exterieur-1024.avif",
+            "webp": "/maisons/stockholm/vue-1-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/stockholm/vue-1-exterieur-1440.avif",
+            "webp": "/maisons/stockholm/vue-1-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/stockholm/vue-1-exterieur.avif",
+            "webp": "/maisons/stockholm/vue-1-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-2-exterieur",
+        "src": "/maisons/stockholm/vue-2-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 768,
+        "empreinte": "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAADQBACdASoUAAoAPu1iqU2ppaQiMAgBMB2JaACdMoHCZ+v+A7tufIpeqM2qK2hz8AD94mACZE6pRxWb1IIqyroP7FsCaywnRI4YrTbqrJaPj9ug8iEbMfhJS7HC8sFIQZbveJdSrfYtfiUirlfEEXh1r78HTDbpyFYXYAAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/stockholm/vue-2-exterieur-480.avif",
+            "webp": "/maisons/stockholm/vue-2-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/stockholm/vue-2-exterieur-720.avif",
+            "webp": "/maisons/stockholm/vue-2-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/stockholm/vue-2-exterieur-1024.avif",
+            "webp": "/maisons/stockholm/vue-2-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/stockholm/vue-2-exterieur-1440.avif",
+            "webp": "/maisons/stockholm/vue-2-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/stockholm/vue-2-exterieur.avif",
+            "webp": "/maisons/stockholm/vue-2-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-3-interieur",
+        "src": "/maisons/stockholm/vue-3-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 816,
+        "empreinte": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAAAQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JZQCw7CFJibNOlbGMl+JqAAD9U5M2fyuC7pMpot4lCnUpamUL6a0d2cYdaiHt/gdvRfjLDM2NkOY4yJnmiaawNXnSZBslAf0sugqtdhRFEwgO8AAAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/stockholm/vue-3-interieur-480.avif",
+            "webp": "/maisons/stockholm/vue-3-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/stockholm/vue-3-interieur-720.avif",
+            "webp": "/maisons/stockholm/vue-3-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/stockholm/vue-3-interieur-1024.avif",
+            "webp": "/maisons/stockholm/vue-3-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/stockholm/vue-3-interieur-1440.avif",
+            "webp": "/maisons/stockholm/vue-3-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/stockholm/vue-3-interieur.avif",
+            "webp": "/maisons/stockholm/vue-3-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-4-interieur",
+        "src": "/maisons/stockholm/vue-4-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 800,
+        "empreinte": "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAADQAwCdASoUAAoAPu1iqU2ppaOiMAgBMB2JQBOgAl4Unro0Zn4AmAAA9Ab+Ok/SxIMjyN+qrQ2eUzCcLOrZKni+a0gSkqlNs/qpRl/X0SdlLZGOSOjdZV0hycu+Mrvsbu/NiWZDj4yZAI79QnL48e5M0AA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/stockholm/vue-4-interieur-480.avif",
+            "webp": "/maisons/stockholm/vue-4-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/stockholm/vue-4-interieur-720.avif",
+            "webp": "/maisons/stockholm/vue-4-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/stockholm/vue-4-interieur-1024.avif",
+            "webp": "/maisons/stockholm/vue-4-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/stockholm/vue-4-interieur-1440.avif",
+            "webp": "/maisons/stockholm/vue-4-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/stockholm/vue-4-interieur.avif",
+            "webp": "/maisons/stockholm/vue-4-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-5-interieur",
+        "src": "/maisons/stockholm/vue-5-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 800,
+        "empreinte": "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAADwAwCdASoUAAoAPu1iqU2ppaOiMAgBMB2JYwC/OBtB/6Qgd9GmUdIAAPazvW8Ej7OtaWkpjwQUGEJN3Ourz2PkuuP2KkqvvLhBLy4oS75feLfwksBbHsDn0bQQKt9whf77nWi3oFb0HHADitbGxzAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/stockholm/vue-5-interieur-480.avif",
+            "webp": "/maisons/stockholm/vue-5-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/stockholm/vue-5-interieur-720.avif",
+            "webp": "/maisons/stockholm/vue-5-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/stockholm/vue-5-interieur-1024.avif",
+            "webp": "/maisons/stockholm/vue-5-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/stockholm/vue-5-interieur-1440.avif",
+            "webp": "/maisons/stockholm/vue-5-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/stockholm/vue-5-interieur.avif",
+            "webp": "/maisons/stockholm/vue-5-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-6-interieur",
+        "src": "/maisons/stockholm/vue-6-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 864,
+        "empreinte": "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAADQAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JYwCdABmB7tFYxC7lHEAA/kN6pMKyd7Bt1J7u+VEGBKP8bWyBi3BpOsdKltWFnatC9sTI2/al/arUTXqequ4CN7J3qL0OcqIRVDDsdKPmP+LYhFxFv9ZRYTkF3XAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/stockholm/vue-6-interieur-480.avif",
+            "webp": "/maisons/stockholm/vue-6-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/stockholm/vue-6-interieur-720.avif",
+            "webp": "/maisons/stockholm/vue-6-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/stockholm/vue-6-interieur-1024.avif",
+            "webp": "/maisons/stockholm/vue-6-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/stockholm/vue-6-interieur-1440.avif",
+            "webp": "/maisons/stockholm/vue-6-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/stockholm/vue-6-interieur.avif",
+            "webp": "/maisons/stockholm/vue-6-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-7-interieur",
+        "src": "/maisons/stockholm/vue-7-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 816,
+        "empreinte": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAAAwBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JYwCdMoADa2TOt1F11lXy+AAAzHXdydvHsrHfjburWB6cuRitDGdIDzT6bW2WT516sXN7/i/zQ1ApiBMqDRv+N3415oaInv+Hq1AeqsdqdTIAekS1oTBeTcKxa4qL/9zJS08rFZZ2OwAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/stockholm/vue-7-interieur-480.avif",
+            "webp": "/maisons/stockholm/vue-7-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/stockholm/vue-7-interieur-720.avif",
+            "webp": "/maisons/stockholm/vue-7-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/stockholm/vue-7-interieur-1024.avif",
+            "webp": "/maisons/stockholm/vue-7-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/stockholm/vue-7-interieur-1440.avif",
+            "webp": "/maisons/stockholm/vue-7-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/stockholm/vue-7-interieur.avif",
+            "webp": "/maisons/stockholm/vue-7-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      }
+    ]
+  },
+  "tokyo": {
+    "nom": "Tokyo",
+    "vues": [
+      {
+        "cle": "plan-axonometrique",
+        "src": "/maisons/tokyo/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRjoBAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSI4AAAABgFpt2/Lmft4wTBBJChXDCJwFMkZUHBR3qG92qayurmJuf/5niIgJUBAsaYCJYIgZUD8fklQAkLDS+vbp42lBlNHeXDs/zu/P51kaBZRi/3By/v6dnz9nQiKAUX50/p2/33/nxiQJIMHW+f39c+5nKEoU7hzneVckEYMkU+dUw5KKI3KdBElTPBmJhKIBVlA4IIYAAADwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JaQAD4lonV3qpGqBwzH6AAP7b6zSmZrC9y9f3Nf/OsLGTv0KC62WUa4olWTJncmpezfR2wgqwbk6gaT90hXw+wIEtzRjP4X15TBXJ5oiud3Mv1ecWHm+8uxWWlTC+E2hkOsB4tevK4lWbmAAAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/tokyo/plan-axonometrique-480.avif",
+            "webp": "/maisons/tokyo/plan-axonometrique-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/tokyo/plan-axonometrique-720.avif",
+            "webp": "/maisons/tokyo/plan-axonometrique-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/tokyo/plan-axonometrique-1024.avif",
+            "webp": "/maisons/tokyo/plan-axonometrique-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/tokyo/plan-axonometrique-1440.avif",
+            "webp": "/maisons/tokyo/plan-axonometrique-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/tokyo/plan-axonometrique-1920.avif",
+            "webp": "/maisons/tokyo/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/tokyo/plan-axonometrique.avif",
+            "webp": "/maisons/tokyo/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
+      {
+        "cle": "vue-1-exterieur",
+        "src": "/maisons/tokyo/vue-1-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 832,
+        "empreinte": "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAADQAwCdASoUAAsAPu1iqU2ppaQiMAgBMB2JaACdABttHL3yn7+aloAAzhlhLx+bgpZwKMnsD2t9UlXiwK/Nz8/ysHHeQbWuh4uZgmEV/kzO8XoW74U6k6oEjHVpV8SqQ+YazXqRwVbYDtjg30hck1xeRRXzqcAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/tokyo/vue-1-exterieur-480.avif",
+            "webp": "/maisons/tokyo/vue-1-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/tokyo/vue-1-exterieur-720.avif",
+            "webp": "/maisons/tokyo/vue-1-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/tokyo/vue-1-exterieur-1024.avif",
+            "webp": "/maisons/tokyo/vue-1-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/tokyo/vue-1-exterieur-1440.avif",
+            "webp": "/maisons/tokyo/vue-1-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/tokyo/vue-1-exterieur.avif",
+            "webp": "/maisons/tokyo/vue-1-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-2-exterieur",
+        "src": "/maisons/tokyo/vue-2-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 768,
+        "empreinte": "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAAAQBACdASoUAAoAPu1iqk2ppaQiMAgBMB2JagCdACIjCrGQL4eRNSb9oADNeDlwvz+h18p+I1XyNpwq9x2Y8F3KksSqPMpZRcYAomo83uO2Pxwbpg7DTb44M8L6DiwvaFQVjFkjLw820TZ2eaNMy6v7zl+tdsnYpyAAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/tokyo/vue-2-exterieur-480.avif",
+            "webp": "/maisons/tokyo/vue-2-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/tokyo/vue-2-exterieur-720.avif",
+            "webp": "/maisons/tokyo/vue-2-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/tokyo/vue-2-exterieur-1024.avif",
+            "webp": "/maisons/tokyo/vue-2-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/tokyo/vue-2-exterieur-1440.avif",
+            "webp": "/maisons/tokyo/vue-2-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/tokyo/vue-2-exterieur.avif",
+            "webp": "/maisons/tokyo/vue-2-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-3-interieur",
+        "src": "/maisons/tokyo/vue-3-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 800,
+        "empreinte": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAADwAwCdASoUAAoAPu1iqU2ppaOiMAgBMB2JQBOl65A9sT0mwssp2FAAAP7Zb6HJ1H4+6YdhC8P3V8SWV/29DborCCi9CGz8F7rZR97ODQutcrRp+Zc+9qOGIRqEHQxKtBc5PYqGFKCxmHL8AAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/tokyo/vue-3-interieur-480.avif",
+            "webp": "/maisons/tokyo/vue-3-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/tokyo/vue-3-interieur-720.avif",
+            "webp": "/maisons/tokyo/vue-3-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/tokyo/vue-3-interieur-1024.avif",
+            "webp": "/maisons/tokyo/vue-3-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/tokyo/vue-3-interieur-1440.avif",
+            "webp": "/maisons/tokyo/vue-3-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/tokyo/vue-3-interieur.avif",
+            "webp": "/maisons/tokyo/vue-3-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-4-interieur",
+        "src": "/maisons/tokyo/vue-4-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 816,
+        "empreinte": "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAADwAwCdASoUAAsAPu1iqU2ppaQiMAgBMB2JQBYdgxvA/KPkMvL+e6DYAP597rySXHKqtfNVu0dXDSSkPrlOOVkHfpFSnfMH5WfdH8lOfUpKAMHrvjCaRfrNF2Xpu/xuXQl6Lg2ydiAmghXFHP9Sl799OnSwCOVXcYUDVmfLwk2L1nBsQogAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/tokyo/vue-4-interieur-480.avif",
+            "webp": "/maisons/tokyo/vue-4-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/tokyo/vue-4-interieur-720.avif",
+            "webp": "/maisons/tokyo/vue-4-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/tokyo/vue-4-interieur-1024.avif",
+            "webp": "/maisons/tokyo/vue-4-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/tokyo/vue-4-interieur-1440.avif",
+            "webp": "/maisons/tokyo/vue-4-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/tokyo/vue-4-interieur.avif",
+            "webp": "/maisons/tokyo/vue-4-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-5-interieur",
+        "src": "/maisons/tokyo/vue-5-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 800,
+        "empreinte": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAACwAwCdASoUAAoAPu1iqU2ppaOiMAgBMB2JQBOmUABY4KTBS2SosAD+FllT98l3PbnfkyHK81yoBbrXXlCZzqA95mjSVXRFGASEvyabCoVkkcHvRF8euv88/T9a6oKnkkaYEQH+9ewvIAAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/tokyo/vue-5-interieur-480.avif",
+            "webp": "/maisons/tokyo/vue-5-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/tokyo/vue-5-interieur-720.avif",
+            "webp": "/maisons/tokyo/vue-5-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/tokyo/vue-5-interieur-1024.avif",
+            "webp": "/maisons/tokyo/vue-5-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/tokyo/vue-5-interieur-1440.avif",
+            "webp": "/maisons/tokyo/vue-5-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/tokyo/vue-5-interieur.avif",
+            "webp": "/maisons/tokyo/vue-5-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-6-interieur",
+        "src": "/maisons/tokyo/vue-6-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 944,
+        "empreinte": "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAACwAwCdASoUAAwAPu1iqU2ppaOiMAgBMB2JQAAHwo+C/v1PDgvjgAD+uUbycpP49AZUW8RfQn3qKsIvy7jqNWrnCwyv3pJcaGWK1Fb7h94r/etFkRhpM37Xq6bd3VcCDMz2dJ3q9pBMo2Oje0tDwAAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/tokyo/vue-6-interieur-480.avif",
+            "webp": "/maisons/tokyo/vue-6-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/tokyo/vue-6-interieur-720.avif",
+            "webp": "/maisons/tokyo/vue-6-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/tokyo/vue-6-interieur-1024.avif",
+            "webp": "/maisons/tokyo/vue-6-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/tokyo/vue-6-interieur-1440.avif",
+            "webp": "/maisons/tokyo/vue-6-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/tokyo/vue-6-interieur.avif",
+            "webp": "/maisons/tokyo/vue-6-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      }
+    ]
+  },
+  "vienne": {
+    "nom": "Vienne",
+    "vues": [
+      {
+        "cle": "plan-axonometrique",
+        "src": "/maisons/vienne/plan-axonometrique.webp",
+        "largeur": 2160,
+        "hauteur": 1215,
+        "empreinte": "data:image/webp;base64,UklGRjABAABXRUJQVlA4WAoAAAAQAAAAEwAACgAAQUxQSIsAAAABcFtr25q83//jDgtYSQnZAJdFqBiAQTgZgAomSEfHAtqxgLv8yYf8yQwRMQH0D0gfvGokKlOz1yzEdQCIBMb8uvDM6kK6SJTu/Lb5+Gp7GrJidvhZhNAJ5Lds/+0zEEQEwIcBK1ZvxfOAm0B5snGYFVugf+gjRn+0ZhM+D1ICQMjIQngACemXAOkBAFZQOCB+AAAAEAQAnQEqFAALAD7tYqlNqaWjojAIATAdiWkAA+PxqvZNVjmoMd1SBQAA/uoc6mTwZ5dvm1pZesz4SXuVG9qBQ8qXX/b9tdDGJJiKeVqAYPF7fvD7Oe8ni3z+FZ8PGzxr8v/kLRpmkI/h+D7gF99EU5lnr/8lyzd1mr9O0AAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/vienne/plan-axonometrique-480.avif",
+            "webp": "/maisons/vienne/plan-axonometrique-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/vienne/plan-axonometrique-720.avif",
+            "webp": "/maisons/vienne/plan-axonometrique-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/vienne/plan-axonometrique-1024.avif",
+            "webp": "/maisons/vienne/plan-axonometrique-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/vienne/plan-axonometrique-1440.avif",
+            "webp": "/maisons/vienne/plan-axonometrique-1440.webp"
+          },
+          {
+            "largeur": 1920,
+            "avif": "/maisons/vienne/plan-axonometrique-1920.avif",
+            "webp": "/maisons/vienne/plan-axonometrique-1920.webp"
+          },
+          {
+            "largeur": 2160,
+            "avif": "/maisons/vienne/plan-axonometrique.avif",
+            "webp": "/maisons/vienne/plan-axonometrique.webp"
+          }
+        ],
+        "type": "plan"
+      },
+      {
+        "cle": "vue-1-exterieur",
+        "src": "/maisons/vienne/vue-1-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 720,
+        "empreinte": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADwAwCdASoUAAkAPu1iqU2ppaQiMAgBMB2JaACdMoADQillJlT3mcAAAPjbCT7qkaBe9Y8SmGKqaFcCqmaklCvcgF1QzxB3G7XqpAD+Dydu5sSFfoSHOWyGP6pTH94hFutg10jWfOxNoQAA",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/vienne/vue-1-exterieur-480.avif",
+            "webp": "/maisons/vienne/vue-1-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/vienne/vue-1-exterieur-720.avif",
+            "webp": "/maisons/vienne/vue-1-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/vienne/vue-1-exterieur-1024.avif",
+            "webp": "/maisons/vienne/vue-1-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/vienne/vue-1-exterieur-1440.avif",
+            "webp": "/maisons/vienne/vue-1-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/vienne/vue-1-exterieur.avif",
+            "webp": "/maisons/vienne/vue-1-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-2-exterieur",
+        "src": "/maisons/vienne/vue-2-exterieur.webp",
+        "largeur": 1536,
+        "hauteur": 768,
+        "empreinte": "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAQBACdASoUAAoAPu1iqU2ppaOiMAgBMB2JagCdIExCdBto+kCJoYN0AADOHcrNd0yeCBWGwcJ39C/27z3o8IR3rTS8UZ1oU7usJ4i8naIP0rb7Z7zcFQkWUiQUmF11Odvj9b3BQqeEC6f34ZYfspYLw7e96MMgwAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/vienne/vue-2-exterieur-480.avif",
+            "webp": "/maisons/vienne/vue-2-exterieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/vienne/vue-2-exterieur-720.avif",
+            "webp": "/maisons/vienne/vue-2-exterieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/vienne/vue-2-exterieur-1024.avif",
+            "webp": "/maisons/vienne/vue-2-exterieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/vienne/vue-2-exterieur-1440.avif",
+            "webp": "/maisons/vienne/vue-2-exterieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/vienne/vue-2-exterieur.avif",
+            "webp": "/maisons/vienne/vue-2-exterieur.webp"
+          }
+        ],
+        "type": "exterieur"
+      },
+      {
+        "cle": "vue-3-interieur",
+        "src": "/maisons/vienne/vue-3-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 816,
+        "empreinte": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAABQBACdASoUAAsAPu1iqU2ppaOiMAgBMB2JYwCdACHhQugVRhSZ9NEvKcwAAP6xAuaaTw+pJbTW3nMEkqk8LIQCWXDNZg0u+x5PfAC9kSCgEMSziCA3wNOP6SWXhDTs1fMUpkkvEzgAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/vienne/vue-3-interieur-480.avif",
+            "webp": "/maisons/vienne/vue-3-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/vienne/vue-3-interieur-720.avif",
+            "webp": "/maisons/vienne/vue-3-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/vienne/vue-3-interieur-1024.avif",
+            "webp": "/maisons/vienne/vue-3-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/vienne/vue-3-interieur-1440.avif",
+            "webp": "/maisons/vienne/vue-3-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/vienne/vue-3-interieur.avif",
+            "webp": "/maisons/vienne/vue-3-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-4-interieur",
+        "src": "/maisons/vienne/vue-4-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 800,
+        "empreinte": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAACwAwCdASoUAAoAPu1iqU2ppaOiMAgBMB2JQBWABFfX2NftqHl/wAD6A6qqTKtFD0B42LRUAJg8eCVN0JLJD3UmIlwXThviIQ1CNrxGKHhE3zjkdRfM5rGtbqa73Izlu+QAAA==",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/vienne/vue-4-interieur-480.avif",
+            "webp": "/maisons/vienne/vue-4-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/vienne/vue-4-interieur-720.avif",
+            "webp": "/maisons/vienne/vue-4-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/vienne/vue-4-interieur-1024.avif",
+            "webp": "/maisons/vienne/vue-4-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/vienne/vue-4-interieur-1440.avif",
+            "webp": "/maisons/vienne/vue-4-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/vienne/vue-4-interieur.avif",
+            "webp": "/maisons/vienne/vue-4-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-5-interieur",
+        "src": "/maisons/vienne/vue-5-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 816,
+        "empreinte": "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAABwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JQBOgA+7ArgAAi8AA/rdYHEwZZc5waATSpBIheTmAYwBDBCfSBbDMivFwyE4+AwD24jjEnjm7SKP1Znv4HAtbx1B26XmAEC/ugTEyYnG+OnEnx+e8bitBIAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/vienne/vue-5-interieur-480.avif",
+            "webp": "/maisons/vienne/vue-5-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/vienne/vue-5-interieur-720.avif",
+            "webp": "/maisons/vienne/vue-5-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/vienne/vue-5-interieur-1024.avif",
+            "webp": "/maisons/vienne/vue-5-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/vienne/vue-5-interieur-1440.avif",
+            "webp": "/maisons/vienne/vue-5-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/vienne/vue-5-interieur.avif",
+            "webp": "/maisons/vienne/vue-5-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-6-interieur",
+        "src": "/maisons/vienne/vue-6-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 800,
+        "empreinte": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAACQAwCdASoUAAoAPu1iqU2ppaOiMAgBMB2JYgCdMoRwABoG2hawAMvyVs4HpkNp9bFLiTFFrclDJo0Fm4cYzR19Eb0YRUBLpthqFNxfk42419SjctSZbveyAAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/vienne/vue-6-interieur-480.avif",
+            "webp": "/maisons/vienne/vue-6-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/vienne/vue-6-interieur-720.avif",
+            "webp": "/maisons/vienne/vue-6-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/vienne/vue-6-interieur-1024.avif",
+            "webp": "/maisons/vienne/vue-6-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/vienne/vue-6-interieur-1440.avif",
+            "webp": "/maisons/vienne/vue-6-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/vienne/vue-6-interieur.avif",
+            "webp": "/maisons/vienne/vue-6-interieur.webp"
+          }
+        ],
+        "type": "interieur"
+      },
+      {
+        "cle": "vue-7-interieur",
+        "src": "/maisons/vienne/vue-7-interieur.webp",
+        "largeur": 1536,
+        "hauteur": 928,
+        "empreinte": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAAAwAwCdASoUAAwAPu1iqU2ppaOiMAgBMB2JYwC7ABnD0L/YANtwpOBZ8DncuPK+4ekFolrjJ/vdkuO43zrnJ6/2f48QLdcK/Mt2TYnnm3P0r78v0GPSX04AAAA=",
+        "variantes": [
+          {
+            "largeur": 480,
+            "avif": "/maisons/vienne/vue-7-interieur-480.avif",
+            "webp": "/maisons/vienne/vue-7-interieur-480.webp"
+          },
+          {
+            "largeur": 720,
+            "avif": "/maisons/vienne/vue-7-interieur-720.avif",
+            "webp": "/maisons/vienne/vue-7-interieur-720.webp"
+          },
+          {
+            "largeur": 1024,
+            "avif": "/maisons/vienne/vue-7-interieur-1024.avif",
+            "webp": "/maisons/vienne/vue-7-interieur-1024.webp"
+          },
+          {
+            "largeur": 1440,
+            "avif": "/maisons/vienne/vue-7-interieur-1440.avif",
+            "webp": "/maisons/vienne/vue-7-interieur-1440.webp"
+          },
+          {
+            "largeur": 1536,
+            "avif": "/maisons/vienne/vue-7-interieur.avif",
+            "webp": "/maisons/vienne/vue-7-interieur.webp"
+          }
+        ],
+        "type": "interieur"
       }
     ]
   }

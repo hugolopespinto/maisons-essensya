@@ -85,7 +85,7 @@ export default async function Page() {
             <picture>
               <source type="image/avif" srcSet={srcSet(heroImg, "avif")} sizes="(max-width:860px) 100vw, 45vw" />
               <source type="image/webp" srcSet={srcSet(heroImg, "webp")} sizes="(max-width:860px) 100vw, 45vw" />
-              <img src={heroImg.src} width={heroImg.largeur} height={heroImg.hauteur} alt="Maison contemporaine, façade claire et grandes baies vitrées" />
+              <img src={heroImg.src} width={heroImg.largeur} height={heroImg.hauteur} alt="Maison de plain-pied à toit de tuiles, façade claire et menuiseries sombres" />
             </picture>
           </figure>
         </section>

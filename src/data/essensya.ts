@@ -1,8 +1,10 @@
 import type { EssensyaData } from "@/types";
 /* Le catalogue de la gamme. Import sûr : `gamme.ts` ne dépend que de
-   `visuels.ts`, aucun cycle, et aucun composant client n'importe ce
-   fichier — le catalogue de visuels ne part donc pas dans le bundle. */
+   `visuels.ts` et des textes des modèles, aucun cycle, et aucun
+   composant client n'importe ce fichier — ni le catalogue de visuels ni
+   les textes ne partent donc dans le bundle. */
 import { MODELES } from "./gamme";
+import { vue } from "./visuels";
 
 /* ════════════════════════════════════════════════════════════════
    CONTENU ÉDITORIAL — MAISONS ESSENSYA
@@ -113,7 +115,11 @@ export const REEL = {
        la section « Le plan » en demande un. On montre un intérieur, qui
        parle de volumes à défaut de les coter. À réclamer.
      · `agence` — plus un trou : voir `VISUELS_AGENCES` juste dessous.  */
-const V = (modele: string, vue: string) => `/maisons/${modele}/${vue}.webp`;
+/* ⚠ `vue()`, ET NON UN CHEMIN RECOMPOSÉ. `V` écrivait l'adresse à la
+   main : quand la livraison du 24/11 a renommé « Vue 4 chambre 1 »
+   d'Ankara en « Vue 4 intérieur », le lien serait parti en 404 sans
+   que rien ne le signale. `vue()` lève au build si la vue n'existe plus. */
+const V = (modele: string, cle: string) => vue(modele, cle).src;
 
 /* Les vitrines des cinq agences, d'après les maquettes transmises par le
    client le 23/10/2026 (« Mockup <ville>.jpg »), réduites à 1 600 px en
@@ -136,7 +142,7 @@ const IMG = {
   facadeLg: V("lisbonne", "vue-2-exterieur"),
   sejour: V("lisbonne", "vue-3-interieur"),
   cuisine: V("athenes", "vue-3-interieur"),
-  chambre: V("ankara", "vue-4-chambre-1"),
+  chambre: V("ankara", "vue-4-interieur"),
   terrasse: V("hanoi", "vue-2-exterieur"),
   matiere: V("berlin", "vue-3-interieur"),
   volume: V("dublin", "vue-1-exterieur"),

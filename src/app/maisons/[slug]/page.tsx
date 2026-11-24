@@ -49,14 +49,14 @@ import "@/styles/pages/gamme.css";
    accumuler et remplirait la Search Console d'erreurs. Voir
    `redirects()` dans next.config.ts.
 
-   ⚠ UNE FICHE SUR ONZE EST INDEXÉE, ET C'EST VOULU.
+   ⚠ UNE FICHE SANS RIEN À DIRE N'EST PAS INDEXÉE, ET C'EST VOULU.
    Une fiche qui ne montre que des images est du contenu mince, et dix
    d'un coup, bâties sur le même gabarit, sont le scénario que Google
-   traite le plus sévèrement. Les onze EXISTENT — le client doit pouvoir
-   les regarder et les envoyer — mais seule Ankara, qui porte ses 75 m²
-   depuis le 17/09, est indexée et au sitemap. `estPubliable()`
-   (src/data/gamme.ts) tient la frontière, et chaque modèle la franchit
-   dès que ses caractéristiques arrivent, sans qu'on touche une ligne ici.
+   traite le plus sévèrement. Elle EXISTE — le client doit pouvoir la
+   regarder et l'envoyer — mais reste hors index et hors sitemap tant
+   qu'elle n'a ni surface, ni prix, ni texte rédigé. `estPubliable()`
+   (src/data/gamme.ts) tient la frontière ; les vingt modèles du 24/11
+   la franchissent tous.
 
    ⚠ CETTE PAGE NE MONTRE PAS DE PRIX EN GRAND TANT QU'ELLE N'A PAS LE
    SIEN. Elle affichait le prix d'appel de la gamme — 78 000 €, celui de
@@ -142,7 +142,7 @@ export default async function ModelePage({
       : [];
   const memeTypologie = pairs.length > 0;
   const autres = memeTypologie ? pairs : voisinsDe(m, 3);
-  /* Le texte rédigé du modèle — les onze fiches en ont un depuis le
+  /* Le texte rédigé du modèle — les vingt fiches en ont un, livré le
      14/10. Un modèle ajouté sans le sien garde le gabarit nu. */
   const texte = texteDe(m.slug);
 
@@ -228,8 +228,20 @@ export default async function ModelePage({
 
               « Le plan ↓ » répond à la remarque du client — c'est ce que
               les visiteurs regardent en premier — sans ouvrir la fiche sur
-              un dessin technique. */}
+              un dessin technique.
+
+              La visite virtuelle (demande du client, 24/11) ouvre la
+              rangée, en bouton : c'est la seule action qui quitte la page,
+              d'où le nouvel onglet — le visiteur retrouve la fiche en
+              fermant la visite. Pékin n'en a pas encore : pas de bouton. */}
           <p className="p-head__ancres">
+            {m.visite && (
+              <a href={m.visite} className="c-btn" target="_blank" rel="noopener">
+                Visite virtuelle
+                <span className="u-sr-only"> du modèle {m.nom} (nouvel onglet)</span>{" "}
+                <span className="arrow" aria-hidden="true">↗</span>
+              </a>
+            )}
             {planVue && (
               <a href="#plan" className="c-link">
                 Le plan <span aria-hidden="true">↓</span>
@@ -297,9 +309,10 @@ export default async function ModelePage({
           remarque — c'est ce qu'on regarde en premier — est servie par
           l'ancre « Le plan ↓ », visible dès le premier écran.
 
-          Neuf modèles sur onze n'ont pas de plan : la section n'est alors
-          pas rendue du tout, ni titre, ni cadre, ni ancre. C'est pour ça
-          que toute mention de plan a été retirée ailleurs sur la page. */}
+          Depuis les plans du 24/11, seul Pékin n'en a pas : la section
+          n'est alors pas rendue du tout, ni titre, ni cadre, ni ancre.
+          C'est pour ça que toute mention de plan a été retirée ailleurs
+          sur la page. */}
       {planVue && (
         <section className="g-plan mp-anchor" id="plan">
           <div className="container">
@@ -367,7 +380,7 @@ export default async function ModelePage({
                   <p className="g-texte__specs">{specsModele(m).join(" · ")}</p>
                 )}
                 {/* Même promesse que le bloc « Le dossier », sans le mot
-                    « plan » : neuf modèles sur onze n'en montrent pas. */}
+                    « plan » : Pékin n'en montre pas. */}
                 <p>Le descriptif détaillé et le chiffrage pour votre commune.</p>
                 <a href="#dossier" className="c-btn c-btn--solid">
                   Être rappelé <span className="arrow" aria-hidden="true">→</span>

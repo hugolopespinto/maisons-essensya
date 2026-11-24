@@ -65,8 +65,13 @@
 .p-head .c-pictos{margin-top:var(--s-4);border-top:var(--line);padding-top:var(--s-3)}
 
 /* Les ancres du premier écran. `#prix` et `#dossier` existaient sans
-   qu'aucun lien n'y mène. */
-.p-head__ancres{display:flex;flex-wrap:wrap;gap:var(--s-3) var(--s-4);margin-top:var(--s-4)}
+   qu'aucun lien n'y mène. Le bouton de la visite virtuelle (24/11) ouvre
+   la rangée : plus haut que les liens, il les centre sur lui. */
+.p-head__ancres{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-3) var(--s-4);margin-top:var(--s-4)}
+/* `.p-head p` borne les paragraphes de l'en-tête à 40em, mesure d'un
+   chapô. Cette rangée n'est pas du texte : avec le bouton, la borne
+   renvoyait « Être rappelé » seul sur une deuxième ligne. */
+.p-head .p-head__ancres{max-width:none}
 
 /* ── LE TEXTE DU MODÈLE ──
    La colonne de lecture garde la mesure de .c-prose ; l'encart, à

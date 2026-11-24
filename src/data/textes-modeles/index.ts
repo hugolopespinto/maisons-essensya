@@ -28,12 +28,16 @@ import vienne from "./vienne";
    fichiers voisins sont PRODUITS par ce script : c'est lui qu'on
    relance quand une fiche révisée arrive.
 
-   ── VINGT ET UN TEXTES, ONZE FICHES EN LIGNE ──
+   ── VINGT ET UN TEXTES, VINGT FICHES EN LIGNE ──
    Les textes couvrent les vingt et un modèles du tableau ; seuls ceux
-   du catalogue (src/data/gamme.ts) ont une page. Les dix autres —
-   Monaco, Oslo, Panama, Paris, Prague, Quito, Rome, Stockholm, Tokyo,
-   Vienne — attendent leurs rendus : leur texte est prêt, et leur fiche
-   le portera le jour où ils entreront au catalogue.
+   du catalogue (src/data/gamme.ts) ont une page. Oslo… Vienne y sont
+   entrés le 24/11 avec leurs rendus. Monaco, absent de cette livraison,
+   attend les siens : son texte est prêt, et sa fiche le portera le jour
+   où il entrera au catalogue.
+
+   ⚠ CE MODULE EST LU PAR `estPubliable()` (gamme.ts) : un texte fait
+   entrer la fiche dans l'index. Il ne doit donc jamais importer la
+   gamme, sous peine de cycle.
 
    Un modèle sans texte garde le gabarit nu (H1 « Maison <nom> ») :
    c'est le cas de tout modèle ajouté au catalogue avant sa fiche.

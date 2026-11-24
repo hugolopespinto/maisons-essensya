@@ -5,11 +5,12 @@ import {
   plan as planVisuel,
   type Visuel,
 } from "./visuels";
+import { texteDe } from "./textes-modeles";
 import { fmtSurface } from "@/lib/format";
 import type { IconName } from "@/types";
 
 /* ════════════════════════════════════════════════════════════════
-   LA GAMME — onze modèles, et ce qu'on en sait
+   LA GAMME — vingt modèles, et ce qu'on en sait
 
    Ce fichier remplace la prémisse mono-produit (« une maison, deux
    déclinaisons ») par la réalité livrée : une gamme de modèles nommés
@@ -75,19 +76,40 @@ export interface Modele {
   prixDepart?: number;
   /** Une phrase : pour qui ce modèle est fait. */
   pour?: string;
+  /**
+   * L'adresse de la visite virtuelle du modèle (mon.plan3d.immo), telle
+   * que le client l'a livrée le 24/11 dans « LES VISITES VIRTUELLES DES
+   * MODÈLES ESSENSYA ». Dix-neuf modèles sur vingt : Pékin n'en a pas
+   * encore. Sans adresse, la fiche n'affiche pas le bouton.
+   */
+  visite?: string;
 }
 
-/* ════ LE CATALOGUE ════
-   Les onze modèles livrés avec leurs rendus, et leurs chiffres tels que
-   le tableau du client du 08/10 les donne : chambres, surface habitable,
-   garage. Sa colonne « Garage » porte « Oui » ou « - » : le tiret est lu
-   comme « pas de garage » (`false`), qui ne s'affiche pas.
+/** Les visites virtuelles du client partagent toutes la même adresse,
+ *  au dossier du projet près. */
+const visite3d = (projet: string) =>
+  `https://mon.plan3d.immo/3dhd/upload/${projet}/visitevirtuellehbm/`;
 
-   ⚠ LE TABLEAU COMPTE VINGT ET UN MODÈLES ; SEULS ONZE SONT ICI. Les
-   dix autres (Monaco, Oslo, Panama, Paris, Prague, Quito, Rome,
-   Stockholm, Tokyo, Vienne) n'ont pas encore de photos, et le client a
-   demandé de ne publier que les modèles illustrés. Chacun entre ici,
-   avec sa ligne du tableau, le jour où ses rendus arrivent.
+/* ════ LE CATALOGUE ════
+   Vingt modèles, ceux que le client compte « à date » le 24/11.
+
+   Les onze premiers portent leurs chiffres tels que le tableau du client
+   du 08/10 les donne : chambres, surface habitable, garage. Sa colonne
+   « Garage » porte « Oui » ou « - » : le tiret est lu comme « pas de
+   garage » (`false`), qui ne s'affiche pas.
+
+   Les neuf suivants (Oslo… Vienne) sont entrés le 24/11 avec leurs
+   rendus et leurs plans. ⚠ LEURS CHIFFRES NE VIENNENT PAS DU TABLEAU,
+   qui n'a été recopié que pour les onze premiers et n'est plus
+   disponible : ils sont lus dans le texte que le client a livré pour
+   chacun le 14/10 (src/data/textes-modeles/). Deux exceptions, PROVISOIRES :
+   Panama (« près de 100 m² ») et Prague (« plus de 100 m² ») affichent
+   100 m² en attendant leur surface exacte, demandée au client le 24/11.
+   Le garage suit le texte et le rendu — Paris et Prague en ont un, Rome
+   le cite comme option, il n'est donc pas compté.
+
+   Monaco, vingt et unième modèle du tableau, n'est pas dans la livraison
+   du 24/11 : il reste dehors, son texte attend.
 
    L'ordre est alphabétique et volontairement neutre, comme le tableau.
    Le jour où les prix arriveront, l'entrée de gamme devrait ouvrir la
@@ -95,27 +117,67 @@ export interface Modele {
 
    ⚠ NE PAS COMPLÉTER CES FICHES AU JUGÉ. Les champs absents (prix,
    pièces) attendent le client. Les remplir « en attendant » ferait
-   disparaître le seul signal qui dit qu'ils manquent. */
+   disparaître le seul signal qui dit qu'ils manquent.
+
+   ── LES VISITES VIRTUELLES ──
+   Recopiées du document Word du client (24/11), lien par lien. Chacune a
+   été ouverte : le titre de la page porte bien le nom du modèle. */
 const CATALOGUE: Modele[] = [
   /* Ankara : ses trois pièces viennent de sa fiche du 17/09 ; le tableau
      du 08/10 ne compte pas les pièces. */
-  { slug: "ankara", nom: "Ankara", surface: 75, chambres: 2, pieces: 3, garage: true },
+  { slug: "ankara", nom: "Ankara", surface: 75, chambres: 2, pieces: 3, garage: true,
+    visite: visite3d("202302/prj_62766/_v6/114") },
   /* Athènes : ses cinq pièces viennent de son texte du 14/10 (« ses 4
      chambres, ses 5 pièces »). Berlin écrit « 4 pièces, dont 3 chambres
      et un garage » — le garage compté comme une pièce rend le chiffre
-     ambigu : il attend le client. */
-  { slug: "athenes", nom: "Athènes", surface: 103, chambres: 4, pieces: 5, garage: false },
-  { slug: "berlin", nom: "Berlin", surface: 80, chambres: 3, garage: true },
-  { slug: "dakar", nom: "Dakar", surface: 94, chambres: 3, garage: false },
-  { slug: "dublin", nom: "Dublin", surface: 95, chambres: 3, garage: true },
-  { slug: "hanoi", nom: "Hanoi", surface: 84, chambres: 3, garage: false },
-  { slug: "jakarta", nom: "Jakarta", surface: 90, chambres: 3, garage: false },
-  { slug: "lima", nom: "Lima", surface: 75, chambres: 3, garage: false },
-  { slug: "lisbonne", nom: "Lisbonne", surface: 94, chambres: 3, garage: true },
-  { slug: "londres", nom: "Londres", surface: 75, chambres: 2, garage: false },
-  /* Pékin : le modèle du prix d'appel. Quatre vues extérieures, aucune
-     intérieure — le seul du catalogue dans ce cas. */
+     ambigu : il attend le client. Paris écrit la même chose. */
+  { slug: "athenes", nom: "Athènes", surface: 103, chambres: 4, pieces: 5, garage: false,
+    visite: visite3d("202302/prj_62368/_v4/5760603_0/106") },
+  { slug: "berlin", nom: "Berlin", surface: 80, chambres: 3, garage: true,
+    visite: visite3d("202302/prj_62730/_v6/114") },
+  { slug: "dakar", nom: "Dakar", surface: 94, chambres: 3, garage: false,
+    visite: visite3d("202302/prj_62368/_v4/5760603_1/106") },
+  { slug: "dublin", nom: "Dublin", surface: 95, chambres: 3, garage: true,
+    visite: visite3d("202303/prj_62906/_v4/114") },
+  { slug: "hanoi", nom: "Hanoi", surface: 84, chambres: 3, garage: false,
+    visite: visite3d("202302/prj_62368/_v4/5760603_2/106") },
+  { slug: "jakarta", nom: "Jakarta", surface: 90, chambres: 3, garage: false,
+    visite: visite3d("202404/prj_68144/_v2/114") },
+  { slug: "lima", nom: "Lima", surface: 75, chambres: 3, garage: false,
+    visite: visite3d("202303/prj_63124/_v4/114") },
+  { slug: "lisbonne", nom: "Lisbonne", surface: 94, chambres: 3, garage: true,
+    visite: visite3d("202303/prj_63130/_v3/114") },
+  { slug: "londres", nom: "Londres", surface: 75, chambres: 2, garage: false,
+    visite: visite3d("202404/prj_68146/_v2/114") },
+  /* Oslo : « 100 m² organisés en 4 pièces » (texte du 14/10). */
+  { slug: "oslo", nom: "Oslo", surface: 100, chambres: 3, pieces: 4, garage: false,
+    visite: visite3d("202302/prj_62762/_v6/114") },
+  /* Panama : le texte dit « de près de 100 m² ». 100 m² affichés en
+     attendant la surface exacte, demandée au client (décision du 24/11). */
+  { slug: "panama", nom: "Panama", surface: 100, chambres: 3, garage: false,
+    visite: visite3d("202303/prj_62912/_v5/114") },
+  { slug: "paris", nom: "Paris", surface: 85, chambres: 3, garage: true,
+    visite: visite3d("202303/prj_62910/_v4/114") },
+  /* Pékin : le modèle du prix d'appel. Six vues depuis le 24/11, dont
+     quatre intérieures ; pas encore de plan ni de visite virtuelle. */
   { slug: "pekin", nom: "Pékin", surface: 50, chambres: 1, garage: false },
+  /* Prague : « 5 pièces », « 4 chambres », « garage attenant ». Le texte
+     dit « plus de 100 m² » : 100 m² affichés en attendant la surface
+     exacte, demandée au client (décision du 24/11). */
+  { slug: "prague", nom: "Prague", surface: 100, chambres: 4, pieces: 5, garage: true,
+    visite: visite3d("202302/prj_62628/_v5/114") },
+  { slug: "quito", nom: "Quito", surface: 85, chambres: 3, garage: false,
+    visite: visite3d("202302/prj_62368/_v4/5760603_3/106") },
+  /* Rome : le garage n'est cité que comme adaptation possible du plan. */
+  { slug: "rome", nom: "Rome", surface: 95, chambres: 3, garage: false,
+    visite: visite3d("202303/prj_63128/_v3/114") },
+  { slug: "stockholm", nom: "Stockholm", surface: 86, chambres: 3, garage: false,
+    visite: visite3d("202303/prj_63126/_v3/114") },
+  /* Tokyo : « 66 m², répartie en 3 pièces ». */
+  { slug: "tokyo", nom: "Tokyo", surface: 66, chambres: 2, pieces: 3, garage: false,
+    visite: visite3d("202302/prj_62368/_v4/5760603_4/106") },
+  { slug: "vienne", nom: "Vienne", surface: 93, chambres: 3, garage: false,
+    visite: visite3d("202303/prj_62908/_v4/114") },
 ];
 
 /** Tous les modèles de la gamme, y compris ceux sans visuel. */
@@ -145,7 +207,8 @@ export const facadeDe = (m: Modele): Visuel | null => facade(m.slug);
 export const vuesDe = (m: Modele): Visuel[] =>
   (modeleVisuels(m.slug)?.vues ?? []).filter((v) => v.type !== "plan");
 
-/** Le plan axonométrique du modèle, ou `null` — neuf sur onze aujourd'hui. */
+/** Le plan axonométrique du modèle, ou `null` — Pékin seul depuis les
+ *  plans du 24/11. */
 export const planDe = (m: Modele): Visuel | null => planVisuel(m.slug);
 
 /**
@@ -162,11 +225,20 @@ export const modelesAvecVisuels = (): Modele[] =>
  *
  * Deux conditions, et les deux comptent :
  *   · des images, sans quoi il n'y a rien à montrer ;
- *   · au moins une surface OU un prix, sans quoi il n'y a rien à dire.
+ *   · une surface, un prix OU le texte rédigé du modèle, sans quoi il
+ *     n'y a rien à dire.
  *
  * Une galerie sans un seul chiffre est du contenu mince. Dix pages de
  * ce type publiées le même jour, toutes bâties sur le même gabarit,
  * sont le scénario que Google traite le plus sévèrement.
+ *
+ * ⚠ LE TEXTE COMPTE DEPUIS LE 24/11. La règle date d'avant les textes du
+ * 14/10, quand une fiche sans chiffre n'était qu'une galerie. Une fiche
+ * qui porte deux mille mots écrits pour une requête précise n'est pas
+ * mince, même sans surface : la garder hors index jetterait exactement
+ * ce pour quoi le client l'a fait rédiger. Aucun des vingt modèles n'en
+ * dépend aujourd'hui ; la règle vaut pour le prochain qui arrivera avec
+ * son texte mais sans ses chiffres.
  *
  * Tant que la condition n'est pas remplie, la page peut EXISTER — le
  * client doit pouvoir la regarder — mais elle sort de l'index et du
@@ -174,10 +246,11 @@ export const modelesAvecVisuels = (): Modele[] =>
  * entre sans qu'on touche à une ligne de gabarit.
  */
 export const estPubliable = (m: Modele): boolean =>
-  facade(m.slug) !== null && (m.surface !== undefined || m.prixDepart !== undefined);
+  facade(m.slug) !== null &&
+  (m.surface !== undefined || m.prixDepart !== undefined || texteDe(m.slug) !== null);
 
 /** Les modèles réellement indexables : Ankara depuis le 17/09, les onze
- *  depuis le tableau du 08/10. */
+ *  depuis le tableau du 08/10, les vingt depuis la livraison du 24/11. */
 export const modelesPubliables = (): Modele[] => CATALOGUE.filter(estPubliable);
 
 /**

@@ -1,4 +1,4 @@
-import { mkdir, readdir, writeFile } from "node:fs/promises";
+import { mkdir, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
@@ -57,6 +57,20 @@ const QUALITE = { webp: 78, avif: 50 };
 const INTERIEUR =
   /interieur|sejour|salon|chambre|cuisine|suite|dressing|salle|bain|douche|wc|degagement|buanderie|cellier/;
 
+/* ⚠ LE CLIENT NE NOMME PAS SES PLANS « Plan… ». La livraison du 24/11
+   les appelle « 1axo.png », « Plan_axo.png », « 00_axo_rdc.png »,
+   « 1axo1.png ». Testés sur le seul préfixe « plan », ils passaient en
+   « exterieur » — et « 1axo » précède « Vue 1 » dans l'ordre
+   alphabétique : l'axonométrie devenait la vignette du modèle dans
+   toutes les grilles. « axo » suffit à les reconnaître.
+
+   Leur clé est FIXE, quel que soit le nom du fichier : les pages citent
+   `vue("athenes", "plan-axonometrique")`, et un plan renommé dans la
+   prochaine livraison ne doit pas casser le build. Deux plans dans un
+   même dossier rendraient la même clé : le garde-fou de collision
+   ci-dessous arrête alors le script. */
+const PLAN = /^plan|axo/;
+
 /** « Vue 2 extérieur.png » → « vue-2-exterieur ». */
 const slug = (s) =>
   s
@@ -98,6 +112,11 @@ async function main() {
   for (const modele of modeles) {
     const cle = slug(modele);
     const dossier = path.join(SORTIE, cle);
+    /* Le dossier du modèle repart de zéro : une vue renommée par le
+       client (« Vue 1 avant » devenu « Vue 1 extérieur ») laissait
+       l'ancien fichier sur le disque, servi et déployé sans que rien ne
+       le cite plus. */
+    await rm(dossier, { recursive: true, force: true });
     await mkdir(dossier, { recursive: true });
 
     const vues = (await readdir(path.join(SOURCE, modele)))
@@ -114,7 +133,8 @@ async function main() {
 
     for (const vue of vues) {
       const src = path.join(SOURCE, modele, vue);
-      const base = slug(vue);
+      const estPlan = PLAN.test(slug(vue));
+      const base = estPlan ? "plan-axonometrique" : slug(vue);
       if (vues_.has(base)) {
         throw new Error(
           `Collision de nom dans ${modele} : « ${vue} » produit la clé ` +
@@ -165,7 +185,7 @@ async function main() {
            deviendrait la vignette du modèle dans les grilles, puisque
            « Plan… » précède « Vue 1… » dans l'ordre alphabétique. Le
            catalogue afficherait onze plans au lieu de onze maisons. */
-        type: /^plan/.test(base) ? "plan" : INTERIEUR.test(base) ? "interieur" : "exterieur",
+        type: estPlan ? "plan" : INTERIEUR.test(base) ? "interieur" : "exterieur",
       });
     }
     console.log(`  ${modele.padEnd(12)} ${vues.length} vues`);

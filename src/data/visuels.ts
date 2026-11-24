@@ -80,10 +80,9 @@ export const facade = (cleModele: string): Visuel | null =>
 /**
  * Le plan axonométrique d'un modèle, ou `null`.
  *
- * `null` est le cas général aujourd'hui : le client n'a livré les plans
- * que de deux modèles sur onze, et annonce les autres plus tard. Une
- * section « le plan » doit donc disparaître entièrement quand il manque,
- * pas afficher un cadre vide.
+ * Depuis la livraison du 24/11, dix-neuf modèles sur vingt ont le leur ;
+ * Pékin attend le sien. Une section « le plan » doit donc disparaître
+ * entièrement quand il manque, pas afficher un cadre vide.
  */
 export const plan = (cleModele: string): Visuel | null =>
   MODELES[cleModele]?.vues.find((v) => v.type === "plan") ?? null;
