@@ -13,7 +13,12 @@ import { pathToFileURL } from "node:url";
    toutes les `--pas` secondes et le navigateur passe de l'une à l'autre.
 
      npm i --no-save puppeteer-core @huggingface/transformers@3
-     node scripts/profondeur-film.mjs public/film/chantier-ORIGINAL.mp4 --debut 2 --fin 10
+     node scripts/profondeur-film.mjs public/film/chantier-V11.mp4 --debut 0 --fin 20
+
+   Le film doit être dans public/ : c'est celui que le site servira. Les
+   brouillons (V1 à V10, ORIGINAL) sont rangés dans
+   marque-source/film-brouillons/ : pour en traiter un, le copier
+   d'abord dans public/film/.
 
    Sortie :
      · public/film/<nom>-profondeur.webp — la planche, cartes rangées
