@@ -140,7 +140,7 @@ export default async function Page() {
           <div className="pl-terr__txt">
             <span className="c-label">Le territoire</span>
             <h2>Pourquoi s&apos;installer dans les Landes&nbsp;?</h2>
-            <p dangerouslySetInnerHTML={md(TERRITOIRE.intro)} />
+            <div dangerouslySetInnerHTML={md(TERRITOIRE.intro)} />
             {TERRITOIRE.blocs.map((b) => (
               <div className="pl-bloc" key={b.titre}><h3>{b.titre}</h3><p>{b.texte}</p></div>
             ))}
@@ -181,13 +181,13 @@ export default async function Page() {
               {TERRAIN.points.map((p) => (
                 <li key={p.titre}>
                   <svg viewBox="0 0 28 28" aria-hidden="true"><rect x="2" y="2" width="24" height="24" fill="none" stroke="#2C2E35" strokeWidth="1.5" /><path d="M8 14.5l4 4 8-9" fill="none" stroke="#B12D5B" strokeWidth="2.5" /></svg>
-                  <div><h3>{p.titre}</h3><p dangerouslySetInnerHTML={md(p.texte)} /></div>
+                  <div><h3>{p.titre}</h3><div dangerouslySetInnerHTML={md(p.texte)} /></div>
                 </li>
               ))}
             </ul>
             <div className="pl-offre">
               <h3>Parcelle seule ou offre terrain + maison&nbsp;?</h3>
-              <p dangerouslySetInnerHTML={md(TERRAIN.offre)} />
+              <div dangerouslySetInnerHTML={md(TERRAIN.offre)} />
               <div className="pl-boutons">
                 <Link className="c-btn" href="/annonces?type=terrain">Terrains dans les Landes</Link>
                 <Link className="c-btn" href="/annonces?type=terrain-maison">Terrain + maison</Link>
@@ -278,7 +278,7 @@ export default async function Page() {
             </div>
             <div>
               <h3>La connaissance du terrain et des administrations</h3>
-              <p dangerouslySetInnerHTML={md(LOCAL.connaissance)} />
+              <div dangerouslySetInnerHTML={md(LOCAL.connaissance)} />
             </div>
             <div>
               <h3>Comment comparer les constructeurs&nbsp;?</h3>

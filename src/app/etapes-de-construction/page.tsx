@@ -47,7 +47,7 @@ export default async function Page() {
         <div className="pe-hero__texte">
           <FilAriane items={[{ nom: "Accueil", path: "/" }, { nom: "Les étapes de construction" }]} />
           <h1>{TITRE}</h1>
-          <p className="pe-hero__chapo" dangerouslySetInnerHTML={{ __html: markdownToHtml(CHAPO) }} />
+          <div className="pe-hero__chapo" dangerouslySetInnerHTML={{ __html: markdownToHtml(CHAPO) }} />
           <div className="pe-chiffre"><b>12 à 18 mois</b><span>De la signature du CCMI à la remise des clés</span></div>
         </div>
         <figure className="pe-hero__vis">

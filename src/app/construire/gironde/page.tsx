@@ -190,7 +190,7 @@ export default async function Page() {
             <p>{OFFRE.intro}</p>
           </div>
           <div className="pl-offre">
-            <p dangerouslySetInnerHTML={md(OFFRE.texte)} />
+            <div dangerouslySetInnerHTML={md(OFFRE.texte)} />
             <div className="pl-boutons">
               <Link className="c-btn" href="/annonces?type=terrain-maison">Voir les annonces terrain + maison</Link>
             </div>
@@ -203,7 +203,7 @@ export default async function Page() {
           <div className="pl-tete">
             <span className="c-label">L&apos;architecture</span>
             <h2>Quel type de maison choisir&nbsp;?</h2>
-            <p dangerouslySetInnerHTML={md(STYLES_INTRO)} />
+            <div dangerouslySetInnerHTML={md(STYLES_INTRO)} />
           </div>
           <div className="pl-styles">
             {STYLES.map((s) => (
@@ -263,7 +263,7 @@ export default async function Page() {
           <div className="pl-aides">
             <div>
               <h3>Simuler sa capacité d&apos;emprunt et son apport personnel</h3>
-              <p dangerouslySetInnerHTML={md(SIMULATION)} />
+              <div dangerouslySetInnerHTML={md(SIMULATION)} />
               <h3 style={{ marginTop: "var(--s-3)" }}>Les aides et dispositifs en vigueur</h3>
               <ul className="pl-liste">
                 {AIDES.map((a) => <li key={a.texte} dangerouslySetInnerHTML={md(a.texte)} />)}
@@ -291,7 +291,7 @@ export default async function Page() {
             </div>
             <div className="pl-bloc">
               <h3>Anticiper les spécificités des sols argileux girondins</h3>
-              <p dangerouslySetInnerHTML={md(SOLS_ARGILEUX.texte)} />
+              <div dangerouslySetInnerHTML={md(SOLS_ARGILEUX.texte)} />
               <span className="pl-signer">{SOLS_ARGILEUX.signer}</span>
             </div>
           </div>
