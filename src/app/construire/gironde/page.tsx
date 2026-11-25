@@ -109,26 +109,36 @@ export default async function Page() {
       <section className="section pl-sec" id="gi-territoire">
         <div className="container pl-terr">
           <figure className="pl-carte">
-            <svg viewBox="-20 0 560 480" role="img" aria-label="Schéma de la Gironde : la métropole bordelaise, le bassin d'Arcachon, le vignoble et le sud du département, avec l'agence de Canéjan et sept autres villes">
-              <path d="M-20 60Q30 20 90 70T150 170Q110 230 90 300T40 420Q0 460-20 460Z" fill="#E5E7E8" />
-              <text className="zone" x="-15" y="150">BASSIN D&apos;ARCACHON</text>
-              <text className="zone" x="225" y="40">LE MÉDOC</text>
-              <text className="zone" x="300" y="150">LIBOURNAIS ET ENTRE-DEUX-MERS</text>
-              <text className="zone" x="250" y="430">LE SUD GIRONDE</text>
-              <g fill="#2C2E35">
-                <circle cx="300" cy="190" r="3.5" /><circle cx="235" cy="160" r="3.5" />
-                <circle cx="150" cy="300" r="3.5" /><circle cx="330" cy="330" r="3.5" /><circle cx="380" cy="390" r="3.5" />
-                <circle cx="95" cy="250" r="3.5" /><circle cx="130" cy="205" r="3.5" />
+            {/* Fond réel (côte, estuaire, lacs, Garonne, Dordogne, limites) : public/cartes/gironde.svg.
+                Villes placées sur leurs mairies, même projection (équirectangulaire à 44,9° N, 1,42° O → 0,40° E, 45,67° → 44,14° N). */}
+            <svg viewBox="0 0 500 593" role="img" aria-label="Carte de la Gironde : l'océan Atlantique, le bassin d'Arcachon, le Médoc, l'estuaire, la Garonne et la Dordogne, avec l'agence de Canéjan, Bordeaux et sept autres villes">
+              <image href="/cartes/gironde.svg" width="500" height="593" />
+              <text className="zone" transform="translate(26 400) rotate(-90)">OCÉAN ATLANTIQUE</text>
+              <g className="halo">
+                <text className="zone" x="96" y="135">LE MÉDOC</text>
+                <text className="zone" x="48" y="341">BASSIN D&apos;ARCACHON</text>
+                <text className="zone" x="270" y="246">LE LIBOURNAIS</text>
+                <text className="zone" x="282" y="362">L&apos;ENTRE-DEUX-MERS</text>
+                <text className="zone" x="250" y="503">LE SUD GIRONDE</text>
               </g>
-              <circle cx="265" cy="225" r="7" fill="#B12D5B" />
-              <text x="308" y="193">Mérignac</text>
-              <text x="243" y="157">Saint-Médard-en-Jalles</text>
-              <text x="158" y="297">Biganos</text>
-              <text x="338" y="327">Langon</text>
-              <text x="388" y="387">Bazas</text>
-              <text x="103" y="247">Marcheprime</text>
-              <text x="138" y="202">Belin-Béliet</text>
-              <text className="ag" x="253" y="222" textAnchor="end">Canéjan</text>
+              <g fill="#2C2E35">
+                <circle cx="231" cy="323" r="3.5" /><circle cx="210" cy="320" r="3.5" /><circle cx="193" cy="300" r="3.5" />
+                <circle cx="122" cy="399" r="3.5" /><circle cx="155" cy="379" r="3.5" /><circle cx="173" cy="454" r="3.5" />
+                <circle cx="323" cy="433" r="3.5" /><circle cx="332" cy="480" r="3.5" />
+              </g>
+              <circle cx="211" cy="352" r="7" fill="#B12D5B" />
+              <g className="halo">
+                <text x="238" y="327">Bordeaux</text>
+                <text x="203" y="324" textAnchor="end">Mérignac</text>
+                <text x="186" y="297" textAnchor="end">Saint-Médard-en-Jalles</text>
+                <text x="129" y="403">Biganos</text>
+                <text x="162" y="383">Marcheprime</text>
+                <text x="180" y="458">Belin-Béliet</text>
+                <text x="330" y="437">Langon</text>
+                <text x="339" y="484">Bazas</text>
+                <text className="ag" x="222" y="357">Canéjan</text>
+              </g>
+              <text className="src" x="494" y="587" textAnchor="end">© OpenStreetMap · IGN</text>
             </svg>
             <figcaption><span><i style={{ background: "var(--framboise)" }} />Notre agence de Canéjan</span><span><i style={{ background: "var(--anthracite)" }} />Autres villes</span></figcaption>
           </figure>

@@ -31,6 +31,8 @@
 .pl-carte text{font-family:var(--f-body);font-size:13px;fill:var(--anthracite)}
 .pl-carte .ag{font-weight:700;fill:var(--framboise)}
 .pl-carte .zone{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;fill:var(--pierre)}
+.pl-carte .halo text{paint-order:stroke;stroke:var(--blanc);stroke-width:3px;stroke-linejoin:round}
+.pl-carte .src{font-size:8px;fill:var(--pierre)}
 .pl-carte figcaption{padding:.7rem 1rem;border-top:var(--line);font-size:.82rem;color:var(--pierre);display:flex;gap:1.2rem;flex-wrap:wrap}
 .pl-carte i{display:inline-block;width:.65em;height:.65em;border-radius:50%;margin-right:.4em}
 @media (max-width:860px){.pl-terr{grid-template-columns:minmax(0,1fr);gap:var(--s-4)}}
