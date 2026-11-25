@@ -3,10 +3,10 @@ import FilAriane from "@/components/FilAriane";
 import AgencyCard, { telHref } from "@/components/AgencyCard";
 import AgencesMapLazy from "@/components/AgencesMapLazy";
 import LeadForm from "@/components/LeadForm";
-import { PLACEHOLDER, PRICE_FROM } from "@/data/essensya";
+import { PLACEHOLDER } from "@/data/essensya";
 import { lecteurBlocs } from "@/lib/blocs";
 import { agencesPubliees } from "@/lib/agences";
-import { agencyUrl, fmtPrice, telephonePublie } from "@/lib/format";
+import { agencyUrl, telephonePublie } from "@/lib/format";
 import { getContent } from "@/lib/store";
 import "@/styles/carte.css"; // avant la feuille de page : voir carte.css
 import "@/styles/pages/contact.css";
@@ -56,18 +56,10 @@ export default async function ContactPage() {
         <div className="container">
           <FilAriane items={[{ nom: "Accueil", path: "/" }, { nom: "Contact" }]} />
           <h1>{bloc("hero.titre") || "Parler de votre projet"}</h1>
-          {/* Chapô laissé vide dans le back-office : on garde la phrase
-              d'origine, qui affiche le prix de départ à jour. La figer dans
-              le contenu la ferait mentir au premier changement de tarif. */}
-          {chapo ? (
-            <p style={{ whiteSpace: "pre-line" }}>{chapo}</p>
-          ) : (
-            <p>
-              Une gamme de modèles optimisés, à partir de {fmtPrice(PRICE_FROM)} hors
-              terrain. Dites-nous où vous en êtes : une agence vous répond sous 48 h,
-              sans engagement et sans démarchage.
-            </p>
-          )}
+          {/* Chapô laissé vide dans le back-office : la phrase d'origine,
+              prix de départ à jour, vient de `PHRASES_CALCULEES`
+              (src/lib/blocs.ts) — la même que l'admin montre dans le champ. */}
+          <p style={{ whiteSpace: "pre-line" }}>{chapo}</p>
         </div>
       </section>
 

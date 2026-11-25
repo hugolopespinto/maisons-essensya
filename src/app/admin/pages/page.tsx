@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CHEMIN_PUBLIC, PAGES_DEFAUT, getContentFrais, isWritable } from "@/lib/store";
+import { texteAffiche, texteDeRepli } from "@/lib/blocs";
+import { CHEMIN_PUBLIC, getContentFrais, isWritable } from "@/lib/store";
 import type { PageEditable } from "@/lib/store/types";
 import GuideEcran from "@/components/admin/GuideEcran";
 import { requireAdmin } from "../actions";
@@ -48,12 +49,13 @@ export const metadata: Metadata = {
    qu'un import d'un fichier de route vers un autre. */
 
 
-/** Nombre de blocs dont le texte servi s'écarte de celui livré dans le code. */
+/** Nombre de blocs dont le texte servi s'écarte de celui livré dans le
+ *  code. Même règle que l'écran d'une page : un bloc vidé affiche son
+ *  texte d'origine, il n'est donc pas « modifié ». */
 function compterModifies(page: PageEditable): number {
-  const origine = PAGES_DEFAUT.find((p) => p.cle === page.cle);
-  if (!origine) return 0;
-  const defauts = new Map(origine.blocs.map((b) => [b.cle, b.valeur]));
-  return page.blocs.filter((b) => defauts.get(b.cle) !== b.valeur).length;
+  return page.blocs.filter(
+    (b) => texteAffiche(page.cle, b.cle, b.valeur) !== texteDeRepli(page.cle, b.cle),
+  ).length;
 }
 
 export default async function AdminPagesPage() {

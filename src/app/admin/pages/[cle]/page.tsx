@@ -3,6 +3,8 @@ import Link from "next/link";
 import Script from "next/script";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
+import { normaliserSaisie, texteAffiche, texteDeRepli } from "@/lib/blocs";
+import { MENTIONS } from "@/lib/legal/jetons";
 import { verifierCorps } from "@/lib/legal/verifier";
 import { CHEMIN_PUBLIC, PAGES_DEFAUT, getContentFrais, isWritable, patchContent } from "@/lib/store";
 import { PAGES_LEGALES } from "@/lib/store/pages-legales";
@@ -16,21 +18,20 @@ import { assertAdmin, requireAdmin } from "../../actions";
    Un formulaire par bloc, dans l'ordre où les blocs apparaissent sur la
    page publique. Trois partis pris qui expliquent le reste du fichier.
 
-   ── 1. LE TEXTE D'ORIGINE EST TOUJOURS VISIBLE ──
-   `PAGES_DEFAUT` porte le texte réellement livré. Il est posé en
-   `placeholder` (donc en gris, dès que le champ est vide) et rappelé
-   sous le champ quand le client a écrit autre chose. Sans cela, personne
-   ne sait ce qu'il est en train de remplacer, ni comment y revenir — et
-   « revenir en arrière » devient un ticket de support.
+   ── 1. LE CHAMP CONTIENT CE QUE LA PAGE AFFICHE ──
+   Pas la valeur stockée : le texte réellement à l'écran. Un bloc vide en
+   stockage arrive donc rempli avec son repli — texte livré, ou phrase
+   que le site compose lui-même (`texteDeRepli`, src/lib/blocs.ts, la
+   même fonction que lisent les gabarits). L'ancien écran montrait la
+   valeur brute : un champ vide, sans même un texte gris, sous un chapô
+   pourtant bien en ligne (relevé du 25/11). Le texte d'origine est en
+   outre rappelé sous le champ quand le client a écrit autre chose.
 
-   ── 2. VIDER N'EST PAS RÉTABLIR ──
-   Deux gestes distincts, et la confusion entre les deux coûte cher :
-     · VIDER un champ enregistre une valeur vide. Le gabarit retombe
-       alors sur ce qu'il sait faire tout seul — souvent une phrase qui
-       recompose le prix à jour, ce qu'un texte figé ne ferait pas ;
-     · RÉTABLIR recopie le texte livré dans le champ. La page réaffiche
-       mot pour mot ce qu'elle affichait au premier jour.
-   L'aide de chaque bloc le dit quand la nuance s'applique.
+   ── 2. UN TEXTE RENVOYÉ TEL QUEL NE FIGE RIEN ──
+   Le champ prérempli repart à chaque « Enregistrer ». Une phrase
+   calculée renvoyée sans retouche est donc enregistrée VIDE, comme
+   livrée : elle continue de suivre le prix. Vider un champ et le
+   rétablir reviennent au même — la page réaffiche son texte d'origine.
 
    ── 3. LE COMPTE DE CARACTÈRES SUR LES TITRES ──
    Les blocs d'une seule ligne sont composés en très grand sur le site.
@@ -58,7 +59,7 @@ export const metadata: Metadata = {
 const SEUIL_TITRE = 70;
 
 const txt = (v: FormDataEntryValue | null): string =>
-  typeof v === "string" ? v.trim() : "";
+  typeof v === "string" ? normaliserSaisie(v) : "";
 
 /* Mise à jour du compteur à la frappe. Amélioration progressive : sans
    JavaScript, le nombre rendu par le serveur reste affiché et reste
@@ -104,17 +105,26 @@ export default async function EditionPagePage({
   const inscriptible = await isWritable();
   const route = CHEMIN_PUBLIC[cle];
 
-  const defauts = new Map(definition.blocs.map((b) => [b.cle, b.valeur]));
   /* On itère sur la définition, pas sur le stockage : l'ordre des blocs
-     à l'écran doit être celui de la page publique. */
+     à l'écran doit être celui de la page publique. `affiche` remplit le
+     champ, `repli` est ce que la page montre quand rien n'est saisi.
+
+     Une mention légale obligatoire n'a pas de repli : la page affiche à
+     sa place le pavé « [[À COMPLÉTER : …]] ». Il passe en gris dans le
+     champ, jamais dedans — renvoyé, il serait enregistré comme mention. */
+  const pageLegale = PAGES_LEGALES.some((p) => p.cle === cle);
   const blocs = definition.blocs.map((b) => {
     const stocke = page.blocs.find((x) => x.cle === b.cle);
+    const saisie = typeof stocke?.valeur === "string" ? stocke.valeur : b.valeur;
+    const repli = texteDeRepli(cle, b.cle);
     return {
       ...b,
-      valeur: typeof stocke?.valeur === "string" ? stocke.valeur : b.valeur,
+      affiche: texteAffiche(cle, b.cle, saisie),
+      repli,
+      gris: repli || (pageLegale ? (MENTIONS[b.cle]?.pave ?? "") : ""),
     };
   });
-  const modifies = blocs.filter((b) => defauts.get(b.cle) !== b.valeur).length;
+  const modifies = blocs.filter((b) => b.affiche !== b.repli).length;
 
   /* ════ SERVER ACTION ════ */
   async function enregistrer(formData: FormData) {
@@ -133,8 +143,13 @@ export default async function EditionPagePage({
     const total = Number(formData.get("blocCount") ?? 0) || 0;
     const saisies = new Map<string, string>();
     for (let i = 0; i < total; i += 1) {
-      const k = txt(formData.get(`cle_${i}`));
-      if (k) saisies.set(k, txt(formData.get(`val_${i}`)));
+      const bloc = origine.blocs.find((b) => b.cle === txt(formData.get(`cle_${i}`)));
+      if (!bloc) continue;
+      const saisi = txt(formData.get(`val_${i}`));
+      /* Le champ est arrivé rempli avec le texte de repli : renvoyé sans
+         retouche, on garde la valeur livrée. Pour une phrase calculée,
+         c'est le vide — et c'est ce qui la laisse suivre le prix. */
+      saisies.set(bloc.cle, saisi === texteDeRepli(cle, bloc.cle) ? bloc.valeur : saisi);
     }
 
     /* L'opération voyage dans le `value` du bouton cliqué : un seul
@@ -237,9 +252,9 @@ export default async function EditionPagePage({
           {modifies > 0
             ? `, dont ${modifies} que vous avez modifié${modifies > 1 ? "s" : ""}.`
             : ", tous au texte d'origine."}{" "}
-          Les champs sont dans l&apos;ordre où ils apparaissent sur la page. Le
-          texte gris est celui livré à l&apos;origine : c&apos;est ce que le site
-          affiche tant que vous n&apos;écrivez rien.
+          Les champs sont dans l&apos;ordre où ils apparaissent sur la page, et
+          contiennent le texte qu&apos;elle affiche aujourd&apos;hui. Un champ vidé
+          rend le texte d&apos;origine, rappelé en gris.
         </p>
       </div>
 
@@ -296,11 +311,10 @@ export default async function EditionPagePage({
       ) : null}
 
       {blocs.map((bloc, i) => {
-        const defaut = defauts.get(bloc.cle) ?? "";
-        const modifie = bloc.valeur !== defaut;
+        const modifie = bloc.affiche !== bloc.repli;
         const idChamp = `val_${i}`;
         const idCompteur = `compteur_${i}`;
-        const long = bloc.valeur.length > SEUIL_TITRE;
+        const long = bloc.affiche.length > SEUIL_TITRE;
 
         return (
           <section className="adm-card" key={bloc.cle}>
@@ -324,16 +338,16 @@ export default async function EditionPagePage({
                   name={idChamp}
                   rows={bloc.format === "markdown" ? 20 : 4}
                   data-format={bloc.format}
-                  defaultValue={bloc.valeur}
-                  placeholder={defaut}
+                  defaultValue={bloc.affiche}
+                  placeholder={bloc.gris}
                 />
               ) : (
                 <input
                   id={idChamp}
                   name={idChamp}
                   type="text"
-                  defaultValue={bloc.valeur}
-                  placeholder={defaut}
+                  defaultValue={bloc.affiche}
+                  placeholder={bloc.gris}
                   autoComplete="off"
                   data-compteur={idCompteur}
                   data-seuil={SEUIL_TITRE}
@@ -348,8 +362,8 @@ export default async function EditionPagePage({
                   paragraphe, un nombre de caractères ne veut rien dire. */}
               {!bloc.multiligne ? (
                 <span className="adm-field__aide" id={idCompteur}>
-                  {bloc.valeur.length}{" "}
-                  {bloc.valeur.length > 1 ? "caractères" : "caractère"}
+                  {bloc.affiche.length}{" "}
+                  {bloc.affiche.length > 1 ? "caractères" : "caractère"}
                   {long ? " — c'est long pour un titre" : ""}
                 </span>
               ) : null}
@@ -360,11 +374,7 @@ export default async function EditionPagePage({
               {modifie ? (
                 <span className="adm-field__aide">
                   Texte d&apos;origine :{" "}
-                  {defaut ? (
-                    <>« {defaut} »</>
-                  ) : (
-                    <em>vide — le site composait sa propre phrase</em>
-                  )}
+                  {bloc.repli ? <>« {bloc.repli} »</> : <em>vide</em>}
                 </span>
               ) : null}
             </div>

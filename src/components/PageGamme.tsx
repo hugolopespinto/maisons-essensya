@@ -200,8 +200,9 @@ export default async function PageGamme({
             <div>
               <span className="c-label">{t("gamme.surtitre", "La gamme")}</span>
               <h2 style={PRE_LINE}>
-                {teteVitrine?.titre ??
-                  t("gamme.titre", `${MODELES.length} modèles, un seul parti-pris`)}
+                {/* Vide dans le back-office : « N modèles… », recomposé
+                    par `PHRASES_CALCULEES` (src/lib/blocs.ts). */}
+                {teteVitrine?.titre ?? t("gamme.titre")}
               </h2>
             </div>
             <p style={PRE_LINE}>

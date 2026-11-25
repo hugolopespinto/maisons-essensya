@@ -47,10 +47,11 @@ import { PAGES_LEGALES } from "./pages-legales";
    `src/app/maisons/page.tsx`, `src/app/annonces/page.tsx`,
    `src/app/agences/page.tsx` et `src/app/contact/page.tsx` — rien
    d'inventé. Là où le texte affiché mélange du littéral et une valeur
-   calculée (le prix, le nom de la maison), la valeur est laissée VIDE et
-   l'aide le dit : le gabarit garde alors sa phrase d'origine, prix
-   compris, plutôt qu'une version figée qui mentirait au premier
-   changement de tarif.
+   calculée (le prix, le nombre de modèles), la valeur est laissée VIDE
+   et la phrase est déclarée dans `PHRASES_CALCULEES` (src/lib/blocs.ts) :
+   le gabarit la recompose à chaque rendu, prix compris, plutôt qu'une
+   version figée qui mentirait au premier changement de tarif. Le
+   back-office l'affiche dans le champ, comme n'importe quel texte.
    ────────────────────────────────────────────────────────────────── */
 /**
  * L'adresse publique de chaque page éditable.
@@ -112,7 +113,7 @@ export const PAGES_DEFAUT: PageEditable[] = [
       {
         cle: "juste.mention",
         label: "Mention sous le prix",
-        aide: "Ce que le prix ne comprend pas. Laissé vide, le site affiche la mention rattachée au modèle d'appel, qui suit le tarif. Dès que vous écrivez ici, c'est VOTRE phrase qui s'affiche — et elle cesse de suivre les changements de prix ou de modèle.",
+        aide: "Ce que le prix ne comprend pas. Le texte proposé est la mention rattachée au modèle d'appel : tant que vous n'y touchez pas, il suit le tarif. Dès que vous le réécrivez, c'est VOTRE phrase qui s'affiche — et elle cesse de suivre les changements de prix ou de modèle.",
         /* ⚠ VIDE À DESSEIN, comme l'exige l'avertissement en tête de ce
            fichier. Le gabarit affiche `REEL.mentionPrix`, qui vit à côté
            du prix et du modèle d'appel dans `essensya.ts`. Recopier la
@@ -199,10 +200,14 @@ export const PAGES_DEFAUT: PageEditable[] = [
     cle: "concept",
     label: "Notre concept",
     blocs: [
+      /* ⚠ `experience.titre`, PAS `hero.titre` : la page a été renommée
+         « L'expérience ESSENSYA » sous une nouvelle clé, parce que la base
+         garde en stock l'ancien titre. L'ancienne entrée restait ici, et
+         l'écran proposait de modifier un titre que /concept ne lit plus. */
       {
-        cle: "hero.titre",
+        cle: "experience.titre",
         label: "Titre de la page",
-        valeur: "Le concept Essensya",
+        valeur: "L'expérience ESSENSYA",
       },
       {
         cle: "hero.chapo",
@@ -319,7 +324,7 @@ export const PAGES_DEFAUT: PageEditable[] = [
       {
         cle: "gamme.titre",
         label: "Titre de la section gamme",
-        aide: "Le nombre de modèles est repris automatiquement si vous laissez ce champ vide.",
+        aide: "Tant que vous ne modifiez pas ce titre, le nombre de modèles s'y met à jour tout seul.",
         valeur: "",
         multiligne: true,
       },
@@ -399,8 +404,8 @@ export const PAGES_DEFAUT: PageEditable[] = [
       {
         cle: "hero.chapo",
         label: "Chapô de la page",
-        aide: "Laissé vide, le site garde sa phrase d'origine — celle qui affiche automatiquement le prix de départ à jour.",
-        valeur: "",
+        valeur:
+          "Constructeur de maisons dans le Sud Ouest, Maisons ESSENSYA vous accueille dans ses 5 agences à Canéjan, Parentis-en-Born, Saint-Vincent-de-Tyrosse, Tartas et Hagetmau. Vous souhaitez faire construire en Gironde ? Vous cherchez un constructeur dans les Landes ? Vous voulez une maison neuve au Pays basque ? Les conseillers habitat Maisons ESSENSYA sont à vos côtés pour vous accompagner.",
         multiligne: true,
       },
       {
@@ -409,14 +414,21 @@ export const PAGES_DEFAUT: PageEditable[] = [
         valeur:
           "Votre commune n'est pas dans la liste ? Dites-nous où vous construisez",
       },
-      /* Vide à la livraison, et c'est voulu : un texte de référencement
-         écrit à la place du client parlerait de communes et de services
-         que personne n'a vérifiés. Vide = aucune section sur la page. */
+      /* Volontairement simple : il ne dit que ce que la page affiche déjà
+         (les cinq agences et les zones couvertes). Il vivait dans le
+         gabarit, et l'admin présentait un champ vide sous un texte
+         pourtant bien en ligne. */
       {
         cle: "seo.texte",
         label: "Texte de référencement, sous les agences",
-        aide: "Affiché en bas de la page, après les fiches d'agence. Laissé vide, rien ne s'affiche. Mise en forme : « ## » en début de ligne pour un intertitre (« ### » pour un sous-titre), une ligne vide entre deux paragraphes, « - » en début de ligne pour une liste, **gras**, et [texte du lien](/maisons) pour un lien vers une autre page du site.",
-        valeur: "",
+        aide: "Affiché en bas de la page, après les fiches d'agence. Mise en forme : « ## » en début de ligne pour un intertitre (« ### » pour un sous-titre), une ligne vide entre deux paragraphes, « - » en début de ligne pour une liste, **gras**, et [texte du lien](/maisons) pour un lien vers une autre page du site.",
+        valeur: `## Un constructeur de maisons près de chez vous
+
+Maisons ESSENSYA construit des maisons neuves dans le Sud Ouest, depuis cinq agences : Canéjan en Gironde, Parentis-en-Born, Saint-Vincent-de-Tyrosse, Tartas et Hagetmau dans les Landes.
+
+Chaque agence connaît les communes de son secteur : les terrains disponibles, les règles d'urbanisme locales et les artisans du coin. Vous avez un projet de construction en Gironde, dans les Landes ou au Pays basque ? Un conseiller habitat vous reçoit, étudie votre terrain et vous accompagne de la première visite jusqu'à la remise des clés.
+
+Pour trouver l'agence la plus proche, repérez votre commune sur la carte ou choisissez l'une des fiches ci-dessus, puis prenez rendez-vous.`,
         multiligne: true,
         format: "markdown",
       },
@@ -434,7 +446,7 @@ export const PAGES_DEFAUT: PageEditable[] = [
       {
         cle: "hero.chapo",
         label: "Chapô de la page",
-        aide: "Laissé vide, le site garde sa phrase d'origine — celle qui affiche automatiquement le prix de départ à jour.",
+        aide: "Tant que vous ne modifiez pas cette phrase, le prix de départ s'y met à jour tout seul.",
         valeur: "",
         multiligne: true,
       },

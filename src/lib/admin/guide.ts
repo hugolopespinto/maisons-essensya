@@ -76,7 +76,7 @@ export const GUIDE = {
       {
         nom: "Les blocs de texte d'une page",
         effet:
-          "Chaque bloc est un texte précis de la page, dans l'ordre où il apparaît à l'écran. Le texte gris est celui livré à l'origine : tant que vous n'écrivez rien, c'est lui que le site affiche.",
+          "Chaque bloc est un texte précis de la page, dans l'ordre où il apparaît à l'écran. Le champ contient le texte que la page affiche aujourd'hui : modifiez-le directement.",
         motsCles: "titre chapo paragraphe texte phrase h1",
       },
       {

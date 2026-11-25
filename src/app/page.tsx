@@ -185,7 +185,9 @@ export default async function HomePage() {
                   {t("juste.avantPrix", "La maison, à partir de")}
                 </span>
                 {fmtPrice(REEL.prixEntree)}
-                <small>{t("juste.mention", REEL.mentionPrix)}</small>
+                {/* Vide dans le back-office : `REEL.mentionPrix`, via
+                    `PHRASES_CALCULEES` (src/lib/blocs.ts). */}
+                <small>{t("juste.mention")}</small>
               </p>
             </div>
             <div>

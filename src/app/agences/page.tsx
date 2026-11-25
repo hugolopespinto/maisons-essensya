@@ -4,12 +4,12 @@ import FilAriane from "@/components/FilAriane";
 import AgencyCard from "@/components/AgencyCard";
 import AgencesMapLazy from "@/components/AgencesMapLazy";
 import { agencesPubliees } from "@/lib/agences";
+import { lecteurBlocs } from "@/lib/blocs";
 import { agencyUrl } from "@/lib/format";
 import { markdownToHtml } from "@/lib/markdown";
 import { resolveMetadata } from "@/lib/seo";
 import { jsonLd, listeSchema } from "@/lib/schema";
 import { getContent } from "@/lib/store";
-import type { PageEditable } from "@/lib/store/types";
 import "@/styles/carte.css";
 import "@/styles/prose.css";
 import "@/styles/pages/agences.css";
@@ -51,32 +51,18 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-/** La valeur saisie dans « Pages → Nos agences », ou rien. */
-function bloc(pages: PageEditable[], cle: string): string {
-  const page = pages.find((p) => p.cle === "agences");
-  return page?.blocs.find((b) => b.cle === cle)?.valeur.trim() ?? "";
-}
-
-/* Texte de référencement par défaut, tant que rien n'est saisi dans
-   « Pages → Nos agences ». Volontairement simple : il ne dit que ce que
-   la page affiche déjà (les cinq agences et les zones couvertes). */
-const TEXTE_SEO = `## Un constructeur de maisons près de chez vous
-
-Maisons ESSENSYA construit des maisons neuves dans le Sud Ouest, depuis cinq agences : Canéjan en Gironde, Parentis-en-Born, Saint-Vincent-de-Tyrosse, Tartas et Hagetmau dans les Landes.
-
-Chaque agence connaît les communes de son secteur : les terrains disponibles, les règles d'urbanisme locales et les artisans du coin. Vous avez un projet de construction en Gironde, dans les Landes ou au Pays basque ? Un conseiller habitat vous reçoit, étudie votre terrain et vous accompagne de la première visite jusqu'à la remise des clés.
-
-Pour trouver l'agence la plus proche, repérez votre commune sur la carte ou choisissez l'une des fiches ci-dessus, puis prenez rendez-vous.`;
-
 export default async function AgencesPage() {
   const [content, agences] = await Promise.all([getContent(), agencesPubliees()]);
 
-  const titre = bloc(content.pages, "hero.titre") || "Nos agences";
-  const chapo = bloc(content.pages, "hero.chapo");
-  const lien =
-    bloc(content.pages, "hero.lien") ||
-    "Votre commune n'est pas dans la liste ? Dites-nous où vous construisez";
-  const texteSeo = markdownToHtml(bloc(content.pages, "seo.texte") || TEXTE_SEO);
+  /* Le chapô et le texte de référencement vivaient ici, en repli d'un
+     champ que l'admin montrait vide. Ils sont désormais le texte livré
+     du catalogue (`PAGES_DEFAUT`) : le back-office les affiche dans le
+     champ, et la page y retombe dès qu'on vide celui-ci. */
+  const bloc = lecteurBlocs(content.pages, "agences");
+  const titre = bloc("hero.titre");
+  const chapo = bloc("hero.chapo");
+  const lien = bloc("hero.lien");
+  const texteSeo = markdownToHtml(bloc("seo.texte"));
 
   /* Seules les agences dont les coordonnées ont été saisies vont sur la
      carte — `geo` n'existe que si elles sont vraies (src/lib/agences.ts).
@@ -110,23 +96,7 @@ export default async function AgencesPage() {
           <div>
             <FilAriane items={[{ nom: "Accueil", path: "/" }, { nom: titre }]} />
             <h1>{titre}</h1>
-            {/* Chapô laissé vide dans le back-office : on garde la phrase
-                d'origine, qui affiche le prix de départ À JOUR. Une version
-                figée dans le contenu mentirait au premier changement de
-                tarif — c'est exactement ce que dit l'aide du champ. */}
-            {chapo ? (
-              <p>{chapo}</p>
-            ) : (
-              <p>
-                Constructeur de maisons dans le Sud Ouest, Maisons ESSENSYA vous
-                accueille dans ses 5 agences à Canéjan, Parentis-en-Born,
-                Saint-Vincent-de-Tyrosse, Tartas et Hagetmau. Vous souhaitez faire
-                construire en Gironde ? Vous cherchez un constructeur dans les
-                Landes ? Vous voulez une maison neuve au Pays basque ? Les
-                conseillers habitat Maisons ESSENSYA sont à vos côtés pour vous
-                accompagner.
-              </p>
-            )}
+            <p>{chapo}</p>
             <p style={{ marginTop: "var(--s-3)" }}>
               <Link href="/contact" className="c-link">
                 {lien} <span aria-hidden="true">→</span>
