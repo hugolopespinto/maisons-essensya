@@ -100,32 +100,40 @@ export default async function Page() {
       <section className="section pl-sec" id="pl-territoire">
         <div className="container pl-terr">
           <figure className="pl-carte">
-            <svg viewBox="-44 0 540 560" role="img" aria-label="Schéma des Landes : la côte à l'ouest, l'arrière-pays à l'est, les quatre agences Essensya et huit autres villes">
-              <path d="M-44 0H125L128 51L110 173L103 234L73 387L57 463L37 514L29 560H-44Z" fill="#E5E7E8" />
-              <path d="M125 0L128 51L110 173L103 234L73 387L57 463L37 514L29 560" fill="none" stroke="#62686D" strokeWidth="1.2" />
-              <text className="zone" transform="translate(30 250) rotate(-82)">OCÉAN ATLANTIQUE</text>
-              <text className="zone" x="280" y="50">LA CÔTE ET LES LACS</text>
-              <text className="zone" x="236" y="230">LA FORÊT DE PINS</text>
-              <text className="zone" x="330" y="540">LE PAYS LANDAIS</text>
+            {/* Fond réel (côte, lacs, Adour, Midouze, Douze, Leyre, limites) : public/cartes/landes.svg.
+                Villes placées sur leurs mairies, même projection (équirectangulaire à 44° N, 1,60° O → 0,24° E, 44,60° → 43,40° N). */}
+            <svg viewBox="0 0 500 453" role="img" aria-label="Carte des Landes : la côte et ses lacs à l'ouest, la forêt de pins, l'Adour et la Midouze, avec les quatre agences Essensya et huit autres villes">
+              <image href="/cartes/landes.svg" width="500" height="453" />
+              <text className="zone" transform="translate(34 235) rotate(-90)">OCÉAN ATLANTIQUE</text>
+              <g className="halo">
+                <text className="zone" x="80" y="238">LA CÔTE</text>
+                <text className="zone" x="80" y="252">ET LES LACS</text>
+                <text className="zone" x="232" y="175">LA FORÊT DE PINS</text>
+                <text className="zone" x="140" y="386">LE PAYS LANDAIS</text>
+              </g>
               <g fill="#2C2E35">
-                <circle cx="161" cy="81" r="3.5" /><circle cx="403" cy="336" r="3.5" /><circle cx="202" cy="428" r="3.5" />
-                <circle cx="150" cy="195" r="3.5" /><circle cx="110" cy="320" r="3.5" /><circle cx="82" cy="490" r="3.5" /><circle cx="235" cy="268" r="3.5" /><circle cx="465" cy="400" r="3.5" />
+                <circle cx="118" cy="77" r="3.5" /><circle cx="299" cy="268" r="3.5" /><circle cx="149" cy="337" r="3.5" />
+                <circle cx="101" cy="151" r="3.5" /><circle cx="66" cy="284" r="3.5" /><circle cx="47" cy="356" r="3.5" />
+                <circle cx="187" cy="214" r="3.5" /><circle cx="347" cy="214" r="3.5" />
               </g>
               <g fill="#B12D5B">
-                <circle cx="194" cy="102" r="7" /><circle cx="114" cy="453" r="7" /><circle cx="290" cy="366" r="7" /><circle cx="370" cy="453" r="7" />
+                <circle cx="143" cy="93" r="7" /><circle cx="215" cy="290" r="7" /><circle cx="274" cy="356" r="7" /><circle cx="80" cy="355" r="7" />
               </g>
-              <text x="169" y="78">Biscarrosse</text>
-              <text x="396" y="327" textAnchor="middle">Mont-de-Marsan</text>
-              <text x="194" y="426" textAnchor="end">Dax</text>
-              <text x="158" y="192">Mimizan</text>
-              <text x="118" y="317">Moliets</text>
-              <text x="90" y="487">Hossegor</text>
-              <text x="243" y="265">Morcenx-la-Nouvelle</text>
-              <text x="473" y="397">Roquefort</text>
-              <text className="ag" x="206" y="107">Parentis-en-Born</text>
-              <text className="ag" x="302" y="371">Tartas</text>
-              <text className="ag" x="380" y="472" textAnchor="middle">Hagetmau</text>
-              <text className="ag" x="126" y="458">Saint-Vincent-de-Tyrosse</text>
+              <g className="halo">
+                <text x="125" y="73">Biscarrosse</text>
+                <text x="306" y="272">Mont-de-Marsan</text>
+                <text x="156" y="341">Dax</text>
+                <text x="108" y="155">Mimizan</text>
+                <text x="73" y="288">Moliets</text>
+                <text x="30" y="375">Hossegor</text>
+                <text x="180" y="218" textAnchor="end">Morcenx-la-Nouvelle</text>
+                <text x="354" y="218">Roquefort</text>
+                <text className="ag" x="155" y="98">Parentis-en-Born</text>
+                <text className="ag" x="227" y="295">Tartas</text>
+                <text className="ag" x="286" y="361">Hagetmau</text>
+                <text className="ag" x="91" y="360">Saint-Vincent-de-Tyrosse</text>
+              </g>
+              <text className="src" x="494" y="447" textAnchor="end">© OpenStreetMap · IGN</text>
             </svg>
             <figcaption><span><i style={{ background: "var(--framboise)" }} />Nos 4 agences landaises</span><span><i style={{ background: "var(--anthracite)" }} />Autres villes</span></figcaption>
           </figure>
