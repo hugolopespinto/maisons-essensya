@@ -38,9 +38,20 @@ import "@/styles/pages/plans.css";
    entre dans l'index et le sitemap dès qu'un modèle publiable y figure.
    Sans modèle, pas de diaporama possible : elle garde alors une simple
    page de texte.
+
+   ⚠ PAS DE `dynamicParams = false`, MÊME SI LES QUATRE ADRESSES SONT
+   CONNUES. Il y était, et les quatre pages répondaient 404 après le
+   premier enregistrement dans le back-office (constaté le 25/11 sur
+   Clever Cloud). Les écrans d'admin appellent `revalidatePath("/",
+   "layout")` et le magasin `updateTag` : c'est une expiration
+   IMMÉDIATE, et Next traite alors la page pré-rendue comme absente du
+   cache. Sur une route en `dynamicParams = false`, une page absente
+   vaut 404 — et cette 404 était servie jusqu'au déploiement suivant.
+   Sans la directive, la page est régénérée sur place, comme les fiches
+   modèle. Une adresse inconnue (`/plans-de-maison/9-chambres`) reste en
+   404 : c'est le `notFound()` plus bas qui la refuse.
    ════════════════════════════════════════════════════════════════ */
 
-export const dynamicParams = false;
 export const revalidate = 1800;
 
 export async function generateStaticParams() {
