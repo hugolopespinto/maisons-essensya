@@ -76,19 +76,36 @@
 /* ── LE TEXTE DU MODÈLE ──
    La colonne de lecture garde la mesure de .c-prose ; l'encart, à
    droite, colle sous l'en-tête pendant les deux mille mots. Sous
-   900 px il disparaît plutôt que de tomber sous le texte : le prix et
-   le dossier suivent immédiatement. */
+   900 px il disparaît plutôt que de tomber sous le texte : le
+   formulaire du dossier suit immédiatement. */
 .g-texte{padding:var(--s-6) 0;border-top:var(--line)}
 .g-texte__grille{display:grid;grid-template-columns:minmax(0,1fr) 21rem;gap:var(--s-6);align-items:start}
 /* Un texte qui s'ouvre sur un H2 (Ankara) n'a pas à commencer par le
    filet qui sépare ses parties. */
 .g-texte .c-prose > h2:first-child{border-top:0;padding-top:0}
-.g-texte__encart{position:sticky;top:calc(var(--header-h) + var(--s-3));display:flex;flex-direction:column;align-items:flex-start;gap:var(--s-3);padding:var(--s-4);border:var(--line);border-radius:var(--radius);background:var(--blanc)}
+/* ⚠ L'ENCART PORTE LE FORMULAIRE depuis le 25/11, et le formulaire —
+   cinq champs, deux cases de consentement, deux mentions — est plus haut
+   qu'un écran de portable. Collé sans plafond, son bouton d'envoi
+   restait sous la ligne de flottaison jusqu'à la fin du texte. Plafonné
+   à la hauteur visible, il défile en lui-même quand il déborde ; sur un
+   grand écran, rien ne change. `overscroll-behavior` : arrivé au bout de
+   l'encart, la molette ne fait pas défiler la page à sa place. */
+.g-texte__encart{position:sticky;top:calc(var(--header-h) + var(--s-3));display:flex;flex-direction:column;align-items:flex-start;gap:var(--s-2);padding:var(--s-3);border:var(--line);border-radius:var(--radius);background:var(--blanc);
+  max-height:calc(100vh - var(--header-h) - 2 * var(--s-3));max-height:calc(100dvh - var(--header-h) - 2 * var(--s-3));overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
 .g-texte__specs{font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.1em;text-transform:uppercase;color:var(--pierre)}
-.g-texte__encart p:not(.g-texte__specs){font-size:var(--fs-small);color:var(--pierre)}
+/* `>` : le chapô de l'encart seulement. Sans lui, la règle grossissait
+   aussi les mentions du formulaire et grisait son message de réussite. */
+.g-texte__encart > p:not(.g-texte__specs){font-size:var(--fs-small);color:var(--pierre)}
+/* Le formulaire à 21 rem : une seule colonne, des champs et des écarts
+   resserrés pour que l'essentiel tienne dans un écran. */
+.g-texte__encart .c-form{align-self:stretch;gap:var(--s-2)}
+.g-texte__encart .c-form__row{grid-template-columns:1fr;gap:var(--s-2)}
+.g-texte__encart .c-field{gap:.35rem}
+.g-texte__encart .c-field input,.g-texte__encart .c-field select,.g-texte__encart .c-field textarea{padding:.6rem .8rem}
+.g-texte__encart .c-field select{padding-right:2.2rem;background-position:right .8rem center}
 /* Pleine largeur, marges resserrées : à 21 rem, « Recevoir le dossier »
    passait sur deux lignes avec les marges d'un bouton de section. */
-.g-texte__encart .c-btn{align-self:stretch;justify-content:space-between;padding-inline:var(--s-3)}
+.g-texte__encart .c-btn{width:100%;justify-content:space-between;padding-inline:var(--s-3)}
 @media (max-width:900px){
   .g-texte__grille{grid-template-columns:1fr}
   .g-texte__encart{display:none}

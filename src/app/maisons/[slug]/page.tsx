@@ -82,6 +82,58 @@ const LIBELLE_VUE: Record<Visuel["type"], string> = {
   plan: "plan",
 };
 
+/* Les champs de la demande, communs à l'encart du texte et au bloc
+   « Le dossier » : deux copies à la main auraient fini par diverger, et
+   l'agence recevrait des demandes différentes selon le formulaire
+   rempli. Le modèle consulté est présélectionné — c'est l'information la
+   plus utile à l'agence, et elle est vraie par construction. `prefix`
+   sépare les `id` des deux formulaires, rendus sur la même page. */
+function ChampsDemande({
+  prefix,
+  modele,
+  lignes,
+}: {
+  prefix: string;
+  modele: string;
+  lignes: number;
+}) {
+  return (
+    <>
+      <div className="c-form__row">
+        <div className="c-field">
+          <label htmlFor={`${prefix}-name`}>Prénom &amp; nom</label>
+          <input type="text" id={`${prefix}-name`} name="name" required />
+        </div>
+        <div className="c-field">
+          <label htmlFor={`${prefix}-phone`}>Téléphone</label>
+          <input type="tel" id={`${prefix}-phone`} name="phone" required />
+        </div>
+      </div>
+      <div className="c-form__row">
+        <div className="c-field">
+          <label htmlFor={`${prefix}-email`}>E-mail</label>
+          <input type="email" id={`${prefix}-email`} name="email" />
+        </div>
+        <div className="c-field">
+          <label htmlFor={`${prefix}-modele`}>Modèle qui vous intéresse</label>
+          <select id={`${prefix}-modele`} name="reason" defaultValue={modele}>
+            {MODELES.map((x) => (
+              <option key={x.slug} value={x.nom}>
+                {x.nom}
+              </option>
+            ))}
+            <option value="Je ne sais pas encore">Je ne sais pas encore</option>
+          </select>
+        </div>
+      </div>
+      <div className="c-field">
+        <label htmlFor={`${prefix}-msg`}>Votre message (facultatif)</label>
+        <textarea id={`${prefix}-msg`} name="message" rows={lignes} />
+      </div>
+    </>
+  );
+}
+
 export const revalidate = 1800;
 
 export async function generateStaticParams() {
@@ -359,9 +411,11 @@ export default async function ModelePage({
           savoir plus ? Contactez nos conseillers… »).
 
           Deux mille mots, c'est long : l'encart d'à côté garde le modèle
-          et le dossier à portée de main pendant la lecture. Il disparaît
-          sous 900 px, où il passerait sous le texte — le prix et le
-          dossier suivent de toute façon.
+          et le formulaire à portée de main pendant la lecture. Il portait
+          un bouton « Être rappelé » qui renvoyait au bloc du bas ; le
+          client veut le formulaire lui-même (25/11), avec les champs de
+          celui du bas. Il disparaît sous 900 px, où il passerait sous le
+          texte — le formulaire du dossier suit de toute façon.
 
           `dangerouslySetInnerHTML` sans risque : `markdownToHtml` échappe
           toute la source AVANT d'émettre ses propres balises — voir la
@@ -374,7 +428,10 @@ export default async function ModelePage({
                 className="c-prose"
                 dangerouslySetInnerHTML={{ __html: markdownToHtml(texte.corps) }}
               />
-              <aside className="g-texte__encart" aria-label={`Le modèle ${m.nom} en bref`}>
+              <aside
+                className="g-texte__encart"
+                aria-label={`Être rappelé au sujet du modèle ${m.nom}`}
+              >
                 <span className="c-label c-label--accent">Modèle {m.nom}</span>
                 {specs.length > 0 && (
                   <p className="g-texte__specs">{specsModele(m).join(" · ")}</p>
@@ -382,9 +439,18 @@ export default async function ModelePage({
                 {/* Même promesse que le bloc « Le dossier », sans le mot
                     « plan » : Pékin n'en montre pas. */}
                 <p>Le descriptif détaillé et le chiffrage pour votre commune.</p>
-                <a href="#dossier" className="c-btn c-btn--solid">
-                  Être rappelé <span className="arrow" aria-hidden="true">→</span>
-                </a>
+                {/* Même origine, même événement, même contexte que le
+                    formulaire du dossier : pour l'agence comme pour GTM,
+                    c'est la même demande, posée plus tôt. */}
+                <LeadForm
+                  originKey="model"
+                  gtmEvent="lead_model_request"
+                  submitLabel="Être rappelé"
+                  successMessage="Merci — nous revenons vers vous sous 48 h."
+                  ctx={{ adContent: `Modèle ${m.nom}` }}
+                >
+                  <ChampsDemande prefix={`me-${m.slug}`} modele={m.nom} lignes={2} />
+                </LeadForm>
               </aside>
             </div>
           </div>
@@ -403,9 +469,7 @@ export default async function ModelePage({
                 compris, un chiffrage selon les terrains.
               </p>
             </div>
-            {/* Le formulaire de /maisons : mêmes champs, même bouton. Le
-                modèle consulté est présélectionné — c'est l'information la
-                plus utile à l'agence, et elle est vraie par construction. */}
+            {/* Le formulaire de /maisons : mêmes champs, même bouton. */}
             <LeadForm
               originKey="model"
               gtmEvent="lead_model_request"
@@ -414,37 +478,7 @@ export default async function ModelePage({
               successMessage="Merci — nous revenons vers vous sous 48 h."
               ctx={{ adContent: `Modèle ${m.nom}` }}
             >
-              <div className="c-form__row">
-                <div className="c-field">
-                  <label htmlFor={`md-${m.slug}-name`}>Prénom &amp; nom</label>
-                  <input type="text" id={`md-${m.slug}-name`} name="name" required />
-                </div>
-                <div className="c-field">
-                  <label htmlFor={`md-${m.slug}-phone`}>Téléphone</label>
-                  <input type="tel" id={`md-${m.slug}-phone`} name="phone" required />
-                </div>
-              </div>
-              <div className="c-form__row">
-                <div className="c-field">
-                  <label htmlFor={`md-${m.slug}-email`}>E-mail</label>
-                  <input type="email" id={`md-${m.slug}-email`} name="email" />
-                </div>
-                <div className="c-field">
-                  <label htmlFor={`md-${m.slug}-modele`}>Modèle qui vous intéresse</label>
-                  <select id={`md-${m.slug}-modele`} name="reason" defaultValue={m.nom}>
-                    {MODELES.map((x) => (
-                      <option key={x.slug} value={x.nom}>
-                        {x.nom}
-                      </option>
-                    ))}
-                    <option value="Je ne sais pas encore">Je ne sais pas encore</option>
-                  </select>
-                </div>
-              </div>
-              <div className="c-field">
-                <label htmlFor={`md-${m.slug}-msg`}>Votre message (facultatif)</label>
-                <textarea id={`md-${m.slug}-msg`} name="message" rows={4} />
-              </div>
+              <ChampsDemande prefix={`md-${m.slug}`} modele={m.nom} lignes={4} />
             </LeadForm>
           </div>
         </div>
