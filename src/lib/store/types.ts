@@ -336,10 +336,118 @@ export interface Realisation {
   ordre: number;
 }
 
+/* ════════════════════════════════════════════════════════════════
+   UNE PAGE DE CAMPAGNE — la page d'atterrissage d'un message publicitaire
+
+   Une annonce Meta ou Google promet UNE chose (« votre maison à Tartas »,
+   « prix de lancement », « terrain + maison clés en main »). Le visiteur
+   qui clique doit retrouver exactement cette promesse, et un seul geste
+   possible : laisser ses coordonnées. Renvoyer toutes les campagnes vers
+   l'accueil, c'est lui faire chercher le message qu'il vient de lire.
+
+   D'où une page par message, servie sous /lp/<slug>, sans navigation
+   (`lp-mode`), hors index Google (robots.txt) — et composée ici, sans
+   déploiement, à partir de blocs :
+     · un EN-TÊTE fixe : titre, accroche, image, puces, chiffre ;
+     · un FORMULAIRE configuré une fois pour la page, affiché dans
+       l'en-tête et/ou repris par des blocs « Formulaire » ;
+     · des BLOCS empilés librement : texte, texte + image, image,
+       formulaire, et deux blocs prêts à l'emploi qui lisent les données
+       du site (ce que le prix comprend, nos garanties).
+
+   ⚠ Rangé dans le JSONB `content`, comme les réalisations : aucune
+   migration SQL à lancer, et le journal des versions s'applique seul.
+   ════════════════════════════════════════════════════════════════ */
+
+/** Les types de bloc qu'une page de campagne sait afficher. Le catalogue
+ *  lisible (libellés, champs utilisés) est dans src/lib/campagnes.ts. */
+export type TypeBlocCampagne =
+  | "texte"
+  | "texteImage"
+  | "image"
+  | "formulaire"
+  | "compris"
+  | "garanties";
+
+/** Un bloc. Forme PLATE, commune à tous les types : chaque type n'utilise
+ *  que ses champs (voir `TYPES_BLOC`), les autres restent absents. Le type
+ *  est fixé à l'ajout du bloc ; pour en changer, on en ajoute un autre. */
+export interface BlocCampagne {
+  /** Stable — sert d'ancre dans l'éditeur. */
+  id: string;
+  type: TypeBlocCampagne;
+  surtitre?: string;
+  titre?: string;
+  /** Markdown léger — le même que le blog (src/lib/markdown.ts). */
+  texte?: string;
+  /** Identifiant de média, ou URL. Voir `resoudreMedia()`. */
+  image?: string;
+  imageAlt?: string;
+  legende?: string;
+  /** Bloc « texte et image » : l'image passe à gauche du texte. */
+  imageAGauche?: boolean;
+  fond?: "clair" | "sable" | "sombre";
+}
+
+/** Champs que le formulaire ajoute au trio nom / téléphone / e-mail. Ce
+ *  sont des noms de la liste blanche de /api/leads : un champ qui n'y est
+ *  pas ne partirait jamais au CRM. */
+export type ChampCampagne = "zone" | "message";
+
+export interface FormulaireCampagne {
+  titre?: string;
+  texte?: string;
+  champs: ChampCampagne[];
+  /** Libellé du bouton d'envoi. */
+  bouton?: string;
+  /** Message affiché une fois la demande envoyée. */
+  confirmation?: string;
+}
+
+export interface PageCampagne {
+  /** uuid — l'adresse de l'éditeur, stable quand le slug change. */
+  id: string;
+  /** L'adresse publique : /lp/<slug>. C'est l'URL collée dans l'annonce. */
+  slug: string;
+  /** Nom interne : « Meta — Tartas, novembre ». Jamais affiché au
+   *  visiteur, mais transmis au CRM avec chaque demande : c'est ce qui dit
+   *  à l'agence de quelle campagne vient le prospect. */
+  nom: string;
+  /** Hors ligne = l'adresse rend une page introuvable. */
+  publiee: boolean;
+
+  /* ── En-tête ── */
+  /** Pastille au-dessus du titre (« Prix de lancement »). */
+  surtitre?: string;
+  /** Le H1 : il doit reprendre la promesse de l'annonce. */
+  titre: string;
+  sousTitre?: string;
+  /** Chiffre mis en avant (« 78 000 € »), en TEXTE LIBRE : il ne suit
+   *  pas les changements de tarif du site — l'écran le dit. */
+  chiffre?: string;
+  chiffreNote?: string;
+  /** Une puce par élément, sous le titre. */
+  points: string[];
+  image?: string;
+  imageAlt?: string;
+  /** Le formulaire s'affiche à droite du titre, dès l'arrivée. */
+  formulaireEnTete: boolean;
+
+  formulaire: FormulaireCampagne;
+  blocs: BlocCampagne[];
+  /** Titre de l'onglet et description de partage. La page n'est jamais
+   *  indexée : ce n'est pas du référencement, c'est l'aperçu d'un lien. */
+  seo?: { title?: string; description?: string };
+  /** ISO — dernière modification, pour la liste du back-office. */
+  majLe?: string;
+}
+
 export interface Content {
   /** Version du schéma — permet une migration propre plus tard. */
   v: number;
   seo: SeoEntry[];
+  /** Pages d'atterrissage des campagnes, servies sous /lp/<slug>. */
+  campagnes: PageCampagne[];
   /** Chantiers livrés, affichés sur /realisations. */
   realisations: Realisation[];
   /** Avis clients, affichés sur /avis-clients. */

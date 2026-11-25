@@ -10,6 +10,7 @@ import type {
   Content,
   Media,
   Menus,
+  PageCampagne,
   PageEditable,
   Realisation,
   Reglages,
@@ -607,6 +608,7 @@ async function lireBase(): Promise<Partial<Content>> {
     seo: (parCle.get("seo") as SeoEntry[] | undefined) ?? [],
     realisations: (parCle.get("realisations") as Realisation[] | undefined) ?? [],
     avis: (parCle.get("avis") as Avis[] | undefined) ?? [],
+    campagnes: (parCle.get("campagnes") as PageCampagne[] | undefined) ?? [],
     /* Domaine absent = domaine jamais enregistré : on laisse le
        sélecteur poser les valeurs par défaut, comme pour le fichier. */
     tracking: parCle.get("tracking") as TrackingConfig | undefined,
@@ -675,6 +677,7 @@ type DomaineJson =
   | "seo"
   | "realisations"
   | "avis"
+  | "campagnes"
   | "tracking"
   | "textes"
   | "menus"
@@ -685,6 +688,7 @@ const DOMAINES_JSON: DomaineJson[] = [
   "seo",
   "realisations",
   "avis",
+  "campagnes",
   "tracking",
   "textes",
   "menus",
@@ -960,6 +964,7 @@ export async function write(data: Content): Promise<void> {
   await ecrireDomaine("seo", data.seo, auteur);
   await ecrireDomaine("realisations", data.realisations, auteur);
   await ecrireDomaine("avis", data.avis, auteur);
+  await ecrireDomaine("campagnes", data.campagnes, auteur);
   await ecrireDomaine("tracking", data.tracking, auteur);
   await ecrireDomaine("textes", data.textes, auteur);
   await ecrireDomaine("menus", data.menus, auteur);

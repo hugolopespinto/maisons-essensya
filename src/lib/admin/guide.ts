@@ -198,6 +198,28 @@ export const GUIDE = {
     motsCles: "realisations chantiers maisons livrees photos",
   },
 
+  campagnes: {
+    href: "/admin/campagnes",
+    titre: "Pages de campagne",
+    resume:
+      "Les pages d'atterrissage des annonces publicitaires (landing pages) : une page par message, avec ses textes, ses images et son formulaire, à l'adresse /lp/… collée dans l'annonce. Hors menu et hors Google.",
+    elements: [
+      { nom: "Nom de la campagne", effet: "Jamais affiché au visiteur. Transmis à l'agence avec chaque demande, pour savoir de quelle annonce vient le prospect.", motsCles: "nom campagne annonce suivi crm" },
+      { nom: "Adresse de la page", effet: "L'adresse /lp/… à coller dans l'annonce. À ne plus changer une fois l'annonce diffusée.", motsCles: "adresse url lien slug" },
+      { nom: "Page en ligne", effet: "Décochée, l'adresse renvoie une page introuvable : à faire quand la campagne s'arrête.", motsCles: "publier masquer en ligne hors ligne" },
+      { nom: "En-tête", effet: "Le premier écran : pastille, titre, accroche, chiffre, points forts et image de fond.", motsCles: "titre accroche image fond prix chiffre" },
+      { nom: "Formulaire", effet: "Titre, texte, champs en plus (commune, message), bouton et message de confirmation. Nom, téléphone, e-mail et consentements sont toujours présents.", motsCles: "formulaire contact rappel lead prospect" },
+      { nom: "Blocs", effet: "Les sections sous l'en-tête, dans l'ordre : texte, texte et image, image, formulaire, ce que le prix comprend, nos garanties.", motsCles: "bloc section texte image ajouter" },
+      { nom: "Dupliquer", effet: "Crée une copie hors ligne d'une page, pour préparer la campagne suivante.", motsCles: "copier dupliquer" },
+      { nom: "Aperçu", effet: "La page telle qu'elle paraîtra, formulaires désactivés : un essai n'envoie rien à l'agence.", motsCles: "apercu previsualiser" },
+    ],
+    ailleurs: [
+      { quoi: "L'événement de conversion envoyé à Google Tag Manager (lead_landing_request)", href: "/admin/tracking", ecran: "Tracking" },
+      { quoi: "Les images à utiliser", href: "/admin/medias", ecran: "Médiathèque" },
+    ],
+    motsCles: "landing page atterrissage campagne publicite annonce meta facebook google ads lp",
+  },
+
   avis: {
     href: "/admin/avis",
     titre: "Avis clients",

@@ -468,6 +468,7 @@ Pour trouver l'agence la plus proche, repérez votre commune sur la carte ou cho
 export const EMPTY: Content = {
   v: 1,
   seo: [],
+  campagnes: [],
   realisations: [],
   avis: [],
   tracking: { conversions: [] },
@@ -566,6 +567,7 @@ function normaliser(partiel: Partial<Content>): Content {
        intention — « je n'ai plus de réalisation à montrer ». */
     realisations: partiel.realisations ?? EMPTY.realisations,
     avis: partiel.avis ?? EMPTY.avis,
+    campagnes: partiel.campagnes ?? EMPTY.campagnes,
     menus: {
       header: partiel.menus?.header ?? [],
       footer: partiel.menus?.footer ?? [],

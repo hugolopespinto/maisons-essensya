@@ -12,6 +12,7 @@ import type {
   Avis,
   Media,
   Menus,
+  PageCampagne,
   PageEditable,
   Reglages,
   SeoEntry,
@@ -138,6 +139,7 @@ const DOMAINES = {
   reglages: "Réglages du site",
   pages: "Pages",
   avis: "Avis clients",
+  campagnes: "Pages de campagne",
 } as const;
 
 type Domaine = keyof typeof DOMAINES;
@@ -203,6 +205,7 @@ const FILTRES: { valeur: string; label: string }[] = [
   { valeur: "content:menus", label: "Menus" },
   { valeur: "content:reglages", label: "Réglages du site" },
   { valeur: "content:avis", label: "Avis clients" },
+  { valeur: "content:campagnes", label: "Pages de campagne" },
   { valeur: "article:*", label: "Blog" },
   { valeur: "annonce:*", label: "Annonces" },
   { valeur: "agence:*", label: "Agences" },
@@ -523,7 +526,8 @@ async function restaurerDomaine(domaine: string, snapshot: unknown): Promise<Res
      schéma : on refuse plutôt que d'écrire une valeur que les gabarits
      ne savent pas lire. */
   const liste = Array.isArray(snapshot);
-  const attenduListe = domaine === "seo" || domaine === "pages" || domaine === "avis";
+  const attenduListe =
+    domaine === "seo" || domaine === "pages" || domaine === "avis" || domaine === "campagnes";
   if (attenduListe !== liste) {
     return {
       ok: false,
@@ -542,6 +546,9 @@ async function restaurerDomaine(domaine: string, snapshot: unknown): Promise<Res
       break;
     case "avis":
       await patchContent("avis", snapshot as Avis[]);
+      break;
+    case "campagnes":
+      await patchContent("campagnes", snapshot as PageCampagne[]);
       break;
     case "tracking": {
       const t = objet(snapshot);

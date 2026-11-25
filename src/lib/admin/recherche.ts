@@ -94,7 +94,16 @@ export async function indexRecherche(acces: {
     });
   }
 
-  const { agences, articles } = await getContent();
+  const { agences, articles, campagnes } = await getContent();
+  for (const p of campagnes) {
+    entrees.push({
+      titre: p.nom || p.titre || "Page sans nom",
+      ecran: "Pages de campagne",
+      detail: `/lp/${p.slug}${p.publiee ? "" : " · hors ligne"}`,
+      href: `/admin/campagnes/${encodeURIComponent(p.id)}`,
+      mots: `campagne landing ${p.titre}`,
+    });
+  }
   for (const a of agences) {
     entrees.push({
       titre: a.nom || "Agence sans nom",

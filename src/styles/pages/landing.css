@@ -17,3 +17,48 @@
 .lp-form-card > p{font-size:var(--fs-small);color:var(--pierre);margin-bottom:var(--s-3)}
 .lp-strip{background:var(--sable);padding:var(--s-6) 0}
 
+
+/* ════ 11 bis. PAGES DE CAMPAGNE ÉDITABLES (.lp-bloc) ════
+   Les blocs que le back-office empile sous l'en-tête (src/components/
+   PageCampagneVue.tsx). Trois fonds au choix, pris dans la charte :
+   craie (le fond de page), sable (l'aplat secondaire), anthracite. Le
+   fond sombre porte aussi `.u-sombre`, qui bascule accents et focus sur
+   leurs valeurs contrastées (base.css) : rien à redéfinir ici. */
+.lp-hero--seul .container{grid-template-columns:minmax(0,1fr)}
+.lp-hero--seul h1{max-width:18ch}
+.lp-bloc{padding:var(--s-6) 0}
+.lp-bloc--clair{background:var(--craie)}
+.lp-bloc--sable{background:var(--sable)}
+.lp-bloc--sombre{background:var(--anthracite);color:var(--craie)}
+.lp-bloc--sombre .c-prose a{border-color:var(--pierre)}
+.lp-bloc .c-section-head{margin-bottom:var(--s-4)}
+.lp-bloc .c-section-head h2{max-width:22ch}
+/* La carte du formulaire est en craie : sur un bloc craie, elle se
+   confondait avec le fond. Blanc et filet, comme une fiche posée. */
+.lp-bloc--clair .lp-form-card{background:var(--blanc);border:var(--line)}
+
+/* Texte et image : moitié-moitié, l'image à droite par défaut. */
+.lp-ti{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-5);align-items:center}
+.lp-ti--gauche .lp-ti__media{order:-1}
+.lp-ti__media{margin:0;aspect-ratio:4/3;overflow:hidden;border-radius:var(--radius);background:var(--sable)}
+.lp-ti__media img{width:100%;height:100%;object-fit:cover;display:block}
+@media (max-width:900px){
+  .lp-ti{grid-template-columns:1fr;gap:var(--s-4)}
+  /* Sur mobile, l'image passe toujours AU-DESSUS du texte : un texte
+     suivi d'une image orpheline se lit comme deux blocs sans lien. */
+  .lp-ti__media{order:-1}
+}
+
+.lp-image{margin:0 auto}
+.lp-image img{width:100%;max-height:80svh;object-fit:cover;display:block;border-radius:var(--radius)}
+.lp-image figcaption{margin-top:var(--s-2);font-size:var(--fs-small);color:var(--pierre)}
+
+/* Formulaire repris en bas de page : l'argument à gauche, la carte à droite. */
+.lp-form-bloc{display:grid;grid-template-columns:6fr 5fr;gap:var(--s-5);align-items:start}
+.lp-form-bloc h2{max-width:16ch}
+.lp-form-bloc__texte{margin-top:var(--s-3);max-width:40ch;opacity:.85}
+@media (max-width:900px){.lp-form-bloc{grid-template-columns:1fr;gap:var(--s-4)}}
+
+/* Aperçu du back-office : le formulaire est rendu dans un fieldset
+   désactivé, pour qu'une relecture n'envoie pas de vrai prospect. */
+.lp-apercu{border:0;margin:0;padding:0;min-width:0;opacity:.75}

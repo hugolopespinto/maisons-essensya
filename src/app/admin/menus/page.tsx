@@ -3,12 +3,13 @@ import type { Metadata } from "next";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { AGENCIES, ESSENSYA_DATA } from "@/data/essensya";
+import { AGENCIES } from "@/data/essensya";
 import { MODELES } from "@/data/gamme";
 import { NAVIGATION } from "@/data/navigation";
 import { colonnesPiedDefaut } from "@/data/pied-de-page";
 import { agencesPubliees } from "@/lib/agences";
 import { articlesPublies } from "@/lib/blog";
+import { slugsServis } from "@/lib/campagnes";
 import { agencyUrl, deptUrl, landingUrl } from "@/lib/format";
 import { departementsPubliables } from "@/lib/geo";
 import { getContentFrais, isWritable, patchContent } from "@/lib/store";
@@ -348,7 +349,9 @@ export default async function MenusPage({
     /* Sans elles, le vérificateur signalerait comme lien mort une page de
        zone parfaitement valide — et le client corrigerait un lien juste. */
     ...zones.map((z) => ({ href: deptUrl(z.slug), label: `Terrains — ${z.nom}` })),
-    ...Object.keys(ESSENSYA_DATA.landings).map((slug) => ({
+    /* Les pages réellement servies — celles du back-office en ligne et
+       celles du code pas encore reprises (voir src/lib/campagnes.ts). */
+    ...slugsServis(content.campagnes).map((slug) => ({
       href: landingUrl(slug),
       label: `Page de campagne — ${slug}`,
     })),

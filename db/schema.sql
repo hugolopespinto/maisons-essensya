@@ -266,7 +266,10 @@ insert into public.content (key, value) values
   ('textes',   '{}'::jsonb),
   ('menus',    '{"header":[],"footer":[]}'::jsonb),
   ('reglages', '{}'::jsonb),
-  ('pages',    '[]'::jsonb)
+  ('pages',    '[]'::jsonb),
+  -- Pages de campagne (/lp/<slug>). Facultatif : le premier
+  -- enregistrement depuis le back-office crée la ligne de lui-même.
+  ('campagnes', '[]'::jsonb)
 on conflict (key) do nothing;
 
 -- ════════════════════════════════════════════════════════════════

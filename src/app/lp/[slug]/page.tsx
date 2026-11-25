@@ -1,18 +1,45 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import BodyClass from "@/components/BodyClass";
-import LeadForm, { ContactFields } from "@/components/LeadForm";
-import { MarkedList } from "@/components/SpecList";
-import { Icon } from "@/components/icons";
-import { ESSENSYA_DATA, HOUSE } from "@/data/essensya";
-import { fmtPrice, landingUrl } from "@/lib/format";
+import PageCampagneVue from "@/components/PageCampagneVue";
+import { pageServie, slugsServis } from "@/lib/campagnes";
+import { landingUrl } from "@/lib/format";
+import { getContent } from "@/lib/store";
+import "@/styles/prose.css";
+import "@/styles/pages/gamme.css";
 import "@/styles/pages/landing.css";
 
-const LANDINGS = ESSENSYA_DATA.landings;
+/* ════════════════════════════════════════════════════════════════
+   PAGE DE CAMPAGNE — /lp/<slug>
 
-export function generateStaticParams() {
-  return Object.keys(LANDINGS).map((slug) => ({ slug }));
+   La page d'atterrissage d'UN message publicitaire. Elle se compose dans
+   le back-office (Contenu › Pages de campagne) ; la page livrée dans le
+   code (`ESSENSYA_DATA.landings`) reste servie tant qu'aucune page du
+   back-office ne prend son adresse — voir `pageServie()`.
+
+   ⚠ `revalidate` et non `force-static` : les images viennent de la
+   médiathèque, dont le bucket est privé. `resoudreMedia()` rend des URL
+   signées qui expirent ; une page figée servirait des images mortes.
+   Le back-office appelle `revalidatePath()` à chaque enregistrement.
+
+   Le consentement RGPD n'est pas posé ici : il vit dans <LeadForm>, qui
+   le rend sur tous les formulaires du site. Une page de campagne est
+   justement le genre de page qu'on duplique vite — la case ne doit pas
+   dépendre de la vigilance de celui qui duplique.
+   ════════════════════════════════════════════════════════════════ */
+
+export const revalidate = 1800;
+
+/* Les pages en ligne au moment du build. Une page publiée plus tard est
+   rendue à sa première visite (`dynamicParams`, actif par défaut). */
+export async function generateStaticParams() {
+  const { campagnes } = await getContent();
+  return slugsServis(campagnes).map((slug) => ({ slug }));
 }
+
+/** Une image partageable : une adresse publique, jamais une URL signée
+ *  de la médiathèque — elle expirerait dans le cache des réseaux sociaux. */
+const imagePublique = (v?: string): string | undefined =>
+  v && (v.startsWith("/") || /^https?:\/\//i.test(v)) ? v : undefined;
 
 export async function generateMetadata({
   params,
@@ -20,22 +47,22 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const lp = LANDINGS[slug];
-  if (!lp) return {};
+  const page = pageServie((await getContent()).campagnes, slug);
+  if (!page) return {};
+  const title = page.seo?.title?.trim() || page.titre;
+  const description = (page.seo?.description?.trim() || page.sousTitre?.trim() || "").slice(0, 160);
+  const image = imagePublique(page.image);
   return {
-    title: lp.title,
-    description: lp.subtitle.slice(0, 160),
+    title,
+    ...(description ? { description } : {}),
     alternates: { canonical: landingUrl(slug) },
-    // Une landing d'acquisition n'a pas vocation à être indexée.
+    /* Une page de campagne n'a pas vocation à être indexée : elle double
+       des pages du site pour un public précis, et `/lp/` est déjà exclu
+       par robots.txt. La balise s'impose là où le fichier se négocie. */
     robots: { index: false, follow: false },
-    openGraph: { title: lp.title, images: [lp.image] },
+    openGraph: { title, ...(description ? { description } : {}), ...(image ? { images: [image] } : {}) },
   };
 }
-
-/* Le consentement RGPD n'est plus posé page par page : il vit dans
-   <LeadForm>, qui le rend sur les huit formulaires du site. Une landing
-   d'acquisition est justement le genre de page qu'on duplique vite — la
-   case ne doit pas dépendre de la vigilance de celui qui duplique. */
 
 export default async function LandingPage({
   params,
@@ -43,99 +70,9 @@ export default async function LandingPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const lp = LANDINGS[slug];
-  if (!lp) notFound();
+  const page = pageServie((await getContent()).campagnes, slug);
+  /* Hors ligne, inexistante ou sans titre : 404, sans distinction. */
+  if (!page) notFound();
 
-  return (
-    <main className="page">
-      {/* lp-mode masque la nav : une landing ne doit offrir qu'une sortie. */}
-      <BodyClass name="lp-mode" />
-
-      <section className="lp-hero">
-        <div className="lp-hero__bg">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={lp.image} alt={HOUSE.alt} />
-        </div>
-        <div className="container">
-          <div>
-            {/* Le seul aplat framboise du site : il signale une offre
-                datée, pas une urgence fabriquée. */}
-            <span className="c-offer">Prix de lancement</span>
-            <h1 style={{ marginTop: "var(--s-2)" }}>{lp.title}</h1>
-            <p className="lp-hero__sub">{lp.subtitle}</p>
-            <div className="lp-hero__price">
-              {fmtPrice(lp.price)}
-              <small>{lp.priceNote}</small>
-            </div>
-            <ul className="lp-hero__bullets">
-              {lp.bullets.map((b) => (
-                <li key={b}>{b}</li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="lp-form-card">
-            <h2>{lp.formTitle}</h2>
-            <p>{lp.formText}</p>
-            <LeadForm
-              originKey="landing"
-              gtmEvent="lead_landing_request"
-              submitLabel="Recevoir le dossier"
-              successMessage="Merci — le dossier arrive sous 48 h."
-              ctx={{ adContent: `Landing — ${lp.title}` }}
-            >
-              <ContactFields prefix="lf" />
-            </LeadForm>
-          </div>
-        </div>
-      </section>
-
-      {/* Un prix de lancement n'est crédible que si ses exclusions sont
-          affichées aussi grand que ses inclusions. */}
-      <section className="lp-strip">
-        <div className="container">
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))",
-              gap: "var(--s-5)",
-            }}
-          >
-            <div data-reveal>
-              <span
-                className="c-label c-label--accent"
-                style={{ display: "block", marginBottom: "var(--s-2)" }}
-              >
-                Compris dans le prix
-              </span>
-              <MarkedList items={HOUSE.included} variant="in" />
-            </div>
-            <div data-reveal>
-              <span
-                className="c-label c-label--accent"
-                style={{ display: "block", marginBottom: "var(--s-2)" }}
-              >
-                Non compris
-              </span>
-              <MarkedList items={HOUSE.excluded} variant="out" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="lp-strip" style={{ background: "var(--craie)" }}>
-        <div className="container">
-          <div className="s-trust__grid">
-            {ESSENSYA_DATA.trust.map((t) => (
-              <div className="s-trust__item" data-reveal key={t.title}>
-                <Icon name={t.icon} />
-                <h3>{t.title}</h3>
-                <p>{t.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    </main>
-  );
+  return <PageCampagneVue page={page} />;
 }
