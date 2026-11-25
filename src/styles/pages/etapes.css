@@ -7,10 +7,13 @@
 .ph a:not(.c-btn):hover,.pe-hero a:not(.c-btn):hover{color:var(--framboise-fonce)}
 
 .pe-hero{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:var(--s-4);align-items:stretch;padding-top:calc(var(--header-h) + var(--s-4))}
-.pe-hero__texte{display:grid;gap:var(--s-3);align-content:start;padding-bottom:var(--s-4)}
+/* ⚠ Comme dans construire.css : toute grille à une colonne déclare
+   minmax(0,1fr), sinon le mot le plus long élargit le bloc (les cartes
+   d'étapes se chevauchaient de 40 à 90 px en 1100-1440 px). */
+.pe-hero__texte{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s-3);align-content:start;padding-bottom:var(--s-4);container-type:inline-size}
 .pe-hero__vis{position:relative;margin-right:calc(-1*var(--gutter));min-height:300px}
 .pe-hero__vis img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.pe-hero h1{font-size:clamp(2rem,3.7vw,3.2rem)}
+.pe-hero h1{font-size:clamp(2rem,3.7vw,3.2rem);font-size:min(clamp(2rem,3.7vw,3.2rem),9.5cqi)}
 .pe-hero__chapo{font-size:clamp(1.02rem,1.3vw,1.15rem);max-width:42em}
 .pe-chiffre b{display:block;font:500 clamp(2rem,3.4vw,2.9rem)/1 var(--f-mono);font-variant-numeric:tabular-nums;letter-spacing:-.03em}
 .pe-chiffre span{display:block;margin-top:.5rem;font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase;color:var(--pierre)}
@@ -51,7 +54,7 @@
 .pe-mode p{font-size:.86rem;color:var(--pierre)}
 
 .pe-g{display:grid;grid-template-columns:minmax(0,290px) minmax(0,1fr);gap:var(--s-5);align-items:start;padding-top:var(--s-5)}
-.pe-rail{position:sticky;top:calc(var(--header-h) + var(--s-3));display:grid;gap:var(--s-2)}
+.pe-rail{position:sticky;top:calc(var(--header-h) + var(--s-3));display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s-2)}
 .pe-rail__dessin{background:var(--blanc);border:var(--line)}
 .pe-rail svg{display:block;width:100%;height:auto}
 .pe-rail__leg{padding:.6rem .8rem;border-top:var(--line);font-family:var(--f-mono);font-size:.7rem;letter-spacing:.06em;line-height:1.35;min-height:3.1em}
@@ -70,15 +73,15 @@
   .pe-mobile__j i{display:block;height:100%;width:11.112%;background:var(--framboise);transition:width .4s var(--ease)}
 }
 
-.ph{padding-bottom:var(--s-6);scroll-margin-top:calc(var(--header-h) + var(--s-3));display:grid;gap:var(--s-3)}
+.ph{padding-bottom:var(--s-6);scroll-margin-top:calc(var(--header-h) + var(--s-3));display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s-3)}
 .ph+.ph{padding-top:var(--s-4);border-top:1px solid var(--anthracite)}
-.ph__t{display:grid;gap:.75rem}
+.ph__t{display:grid;grid-template-columns:minmax(0,1fr);gap:.75rem}
 .ph__m{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1rem;font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.14em;text-transform:uppercase}
 .ph__m b{font-weight:500;color:var(--terracotta-texte)}
 .ph__duree{background:var(--anthracite);color:var(--craie);padding:.3rem .6rem}
 .ph__t h2{font-size:clamp(1.5rem,2.7vw,2.25rem)}
 .ph__c{font-size:1.1rem;line-height:1.5;max-width:40em}
-.ph__d{display:grid;gap:var(--s-3)}
+.ph__d{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s-3)}
 .ph__d h3{margin-bottom:.45rem}
 .ph__d p{max-width:44em}
 .ph__d p+p{margin-top:.6rem}
@@ -90,7 +93,7 @@
 .pe-suite li+li{border-left:var(--line)}
 .pe-suite b{display:block;font:500 .72rem/1.3 var(--f-mono);letter-spacing:.06em;color:var(--terracotta-texte);margin-bottom:.25rem}
 .pe-qui{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
-.pe-qui>div{padding:1.1rem 1.25rem;display:grid;gap:.4rem;align-content:start}
+.pe-qui>div{padding:1.1rem 1.25rem;display:grid;grid-template-columns:minmax(0,1fr);gap:.4rem;align-content:start}
 .pe-qui b{font-family:var(--f-mono);font-size:var(--fs-label);font-weight:500;letter-spacing:.16em;text-transform:uppercase}
 .pe-qui p{font-size:.96rem;line-height:1.45}
 .pe-qui__c{background:var(--anthracite);color:var(--craie)}
@@ -103,11 +106,15 @@
 .pe-recep input{width:1.05rem;height:1.05rem;margin:.15rem 0 0;accent-color:var(--framboise)}
 .pe-recep input:checked+span{color:var(--pierre);text-decoration:line-through}
 .pe-recep__c{font-family:var(--f-mono);font-size:.74rem;color:var(--pierre);padding-top:.5rem;border-top:var(--line)}
-.pe-gar{background:var(--blanc);border:var(--line);padding:var(--s-2) 1.25rem}
+.pe-gar{background:var(--blanc);border:var(--line);padding:var(--s-2) 1.25rem;container-type:inline-size}
 .pe-gar__r{display:grid;grid-template-columns:minmax(0,13rem) minmax(0,1fr);gap:var(--s-2);align-items:center;padding:.35rem 0;font-size:.88rem;line-height:1.25}
 .pe-gar__p{height:.9rem;background-image:linear-gradient(to right,var(--beton) 1px,transparent 1px);background-size:10% 100%;border-right:1px solid var(--beton)}
 .pe-gar__p i{display:block;height:100%;background:var(--vert)}
 .pe-gar__e{display:flex;justify-content:space-between;font:400 .7rem/1 var(--f-mono);color:var(--pierre);margin-left:calc(13rem + var(--s-2));padding-top:.3rem}
 @media (max-width:620px){.pe-gar__r{grid-template-columns:minmax(0,1fr);gap:.15rem}.pe-gar__e{margin-left:0}}
+/* La boîte vit dans une demi-colonne : entre 981 et 1100 px de fenêtre, la
+   colonne d'intitulés (13rem) lui laissait 0 à 40 px de barre et l'échelle
+   « 0 / 10 ans » se chevauchait. Sous 20rem de large, intitulé au-dessus. */
+@container (max-width:20rem){.pe-gar__r{grid-template-columns:minmax(0,1fr);gap:.15rem}.pe-gar__e{margin-left:0}}
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}

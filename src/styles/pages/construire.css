@@ -7,8 +7,10 @@
 .pl-hero a:not(.c-btn):hover,.pl-sec a:not(.c-btn):hover,.pl-cta a:not(.c-btn):hover{color:var(--framboise-fonce)}
 
 .pl-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:var(--s-4);align-items:stretch;padding-top:calc(var(--header-h) + var(--s-4))}
-.pl-hero h1{font-size:clamp(2rem,3.7vw,3.2rem)}
-.pl-hero__texte{display:grid;gap:var(--s-3);align-content:start;padding-bottom:var(--s-5)}
+/* Même piège que .pl-tete plus bas : piste bornée, et titre qui suit la
+   largeur du bloc pour que « CONSTRUCTEUR » tienne entier à 320 px. */
+.pl-hero h1{font-size:clamp(2rem,3.7vw,3.2rem);font-size:min(clamp(2rem,3.7vw,3.2rem),9.5cqi)}
+.pl-hero__texte{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s-3);align-content:start;padding-bottom:var(--s-5);container-type:inline-size}
 .pl-hero__chapo{font-size:clamp(1.08rem,1.5vw,1.25rem);line-height:1.5;max-width:36em}
 .pl-muet{color:var(--pierre)}
 .pl-boutons{display:flex;flex-wrap:wrap;gap:var(--s-2)}
@@ -23,9 +25,27 @@
 .pl-sec{scroll-margin-top:calc(var(--header-h) + 60px)}
 
 .pl-terr{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:var(--s-5);align-items:center}
-.pl-terr__txt{display:grid;gap:var(--s-3)}
-.pl-bloc{display:grid;gap:.5rem;align-content:start}
+/* ⚠ Toute grille à une colonne de ces pages déclare minmax(0,1fr). Sans
+   piste déclarée, la colonne implicite prend la largeur du mot le plus long
+   (« CONSTRUCTIBLE », « L'ASSAINISSEMENT »…) et le bloc entier déborde sur
+   son voisin : c'est ce qui faisait chevaucher titres et textes. */
+.pl-terr__txt{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s-3)}
+.pl-bloc{display:grid;grid-template-columns:minmax(0,1fr);gap:.5rem;align-content:start;container-type:inline-size}
 .pl-bloc p{color:var(--pierre)}
+
+/* TITRES H3 — ceux de la maquette validée. Elle pose par défaut
+   h3{1,08rem ; interligne 1,18 ; approche -.005em}, que l'intégration
+   n'avait pas repris : sans taille propre, les titres de cartes sortaient à
+   la taille du site (jusqu'à 2rem) et débordaient de leur colonne. Les h3
+   qui ont leur propre taille dans la maquette la gardent (.pl-q, .pl-qui,
+   .pl-style, .pl-aides, .pl-loc__g, .pl-offre).
+   Le plafond en cqi ne joue que dans les cellules de moins de ~200 px
+   (trois colonnes à 1001 px sur /etapes-de-construction), pour que
+   « (MENUISERIES) » ou « INDISPENSABLE » tiennent entiers.
+   Portée limitée aux sections de ces pages : la feuille reste chargée après
+   une navigation côté client vers une autre page. */
+.pl-sec h3,.ph h3{line-height:1.18;letter-spacing:-.005em}
+.pl-bloc h3,.ruban h3,.part h3,.ph__d h3,.pl-deux h3,.pl-trois h3{font-size:1.08rem;font-size:min(1.08rem,8.5cqi)}
 .pl-carte{background:var(--blanc);border:var(--line)}
 .pl-carte svg{display:block;width:100%;height:auto}
 .pl-carte text{font-family:var(--f-body);font-size:13px;fill:var(--anthracite)}
@@ -42,25 +62,29 @@
 
 .pl-etapes{background:var(--sable)}
 .ruban{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--beton-2);counter-reset:r;list-style:none;margin:0;padding:0}
-.ruban li{padding:var(--s-3) var(--s-2) var(--s-3) 0;display:grid;gap:.5rem;align-content:start}
+.ruban li{padding:var(--s-3) var(--s-2) var(--s-3) 0;display:grid;grid-template-columns:minmax(0,1fr);gap:.5rem;align-content:start}
 .ruban li:not(:nth-child(3n+1)){border-left:1px solid var(--beton-2);padding-left:var(--s-2)}
 .ruban li:nth-child(n+4){border-top:1px solid var(--beton-2)}
 .ruban li::before{counter-increment:r;content:counter(r,decimal-leading-zero);font-family:var(--f-mono);font-size:var(--fs-label);letter-spacing:.2em;color:var(--terracotta-texte)}
 .ruban p{font-size:var(--fs-small);color:var(--pierre)}
 @media (max-width:600px){.ruban{grid-template-columns:minmax(0,1fr)}.ruban li,.ruban li:not(:nth-child(3n+1)){border-left:0;padding-left:0;border-top:1px solid var(--beton-2)}.ruban li:first-child{border-top:0}}
-.pl-qui{margin-top:var(--s-4);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s-4);align-items:center;background:var(--anthracite);color:var(--craie);padding:var(--s-4)}
-.pl-qui h3{font-size:1.3rem;margin-bottom:.6rem}
+.pl-qui{margin-top:var(--s-4);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s-4);align-items:center;background:var(--anthracite);color:var(--craie);padding:var(--s-4);container-type:inline-size}
+/* 8 % de l'encart : « ACCOMPAGNEMENT » tient entier jusqu'à 320 px. */
+.pl-qui h3{font-size:1.3rem;font-size:min(1.3rem,8cqi);margin-bottom:.6rem}
 .pl-qui p{color:var(--sable);max-width:46em}
 @media (max-width:760px){.pl-qui{grid-template-columns:minmax(0,1fr);padding:var(--s-3)}}
 
 .pl-fonc{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:var(--s-5);align-items:start}
-.pl-fonc__tete{position:sticky;top:calc(var(--header-h) + 80px);display:grid;gap:var(--s-2)}
+.pl-fonc__tete{position:sticky;top:calc(var(--header-h) + 80px);display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s-2);container-type:inline-size}
+/* Colonne étroite : « CONSTRUCTIBLE » y mesurait 582 px pour 448 et passait
+   sur les cases à cocher. 9 % de la colonne le fait tenir entier. */
+.pl-fonc__tete h2{font-size:min(var(--fs-h2),9cqi)}
 .pl-q{border-top:1px solid var(--anthracite);list-style:none;margin:0;padding:0}
 .pl-q > li{display:grid;grid-template-columns:2.2rem minmax(0,1fr);gap:var(--s-2);padding:var(--s-3) 0;border-bottom:var(--line)}
 .pl-q svg{width:1.7rem;height:1.7rem;margin-top:.1rem}
 .pl-q h3{font-size:1.2rem;margin-bottom:.5rem}
 .pl-q p{color:var(--pierre)}
-.pl-offre{margin-top:var(--s-3);background:var(--vert-fond);padding:var(--s-3);display:grid;gap:var(--s-2)}
+.pl-offre{margin-top:var(--s-3);background:var(--vert-fond);padding:var(--s-3);display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s-2)}
 .pl-offre h3{font-size:1.2rem}
 @media (max-width:860px){.pl-fonc{grid-template-columns:minmax(0,1fr);gap:var(--s-3)}.pl-fonc__tete{position:static}}
 
@@ -75,7 +99,7 @@
 .coupe text{font-family:var(--f-mono);font-size:13px;letter-spacing:.1em;fill:var(--craie)}
 .coupe .pet{font-size:11px;fill:var(--beton)}
 .parts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:1px solid rgba(242,243,243,.18);list-style:none;margin:0;padding:0}
-.part{padding:var(--s-3) var(--s-3) var(--s-3) 0;display:grid;gap:.6rem;align-content:start;cursor:pointer;transition:background .25s var(--ease);background:none;border:0;color:inherit;text-align:left;font:inherit}
+.part{padding:var(--s-3) var(--s-3) var(--s-3) 0;display:grid;grid-template-columns:minmax(0,1fr);gap:.6rem;align-content:start;cursor:pointer;transition:background .25s var(--ease);background:none;border:0;color:inherit;text-align:left;font:inherit;container-type:inline-size}
 .part + .part{border-left:1px solid rgba(242,243,243,.18);padding-left:var(--s-3)}
 .part p{font-size:var(--fs-small);color:var(--beton)}
 .part:hover h3,.part:focus-visible h3,.part.actif h3{color:var(--terracotta-clair)}
@@ -91,14 +115,14 @@
 .tab td:last-child{color:var(--pierre)}
 .pl-aides{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:var(--s-4);align-items:stretch}
 .pl-aides h3{font-size:1.2rem;margin-bottom:var(--s-2)}
-.pl-liste{display:grid;list-style:none;margin:0;padding:0}
+.pl-liste{display:grid;grid-template-columns:minmax(0,1fr);list-style:none;margin:0;padding:0}
 .pl-liste li{padding:.8rem 0;border-top:var(--line)}
 .pl-liste li:last-child{border-bottom:var(--line)}
-.pl-simu{background:var(--framboise-fond);padding:var(--s-3);display:grid;gap:var(--s-2);align-content:space-between}
+.pl-simu{background:var(--framboise-fond);padding:var(--s-3);display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s-2);align-content:space-between}
 @media (max-width:760px){.pl-aides{grid-template-columns:minmax(0,1fr)}}
 
 .pl-styles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-4)}
-.pl-style{display:grid;gap:var(--s-2);align-content:start}
+.pl-style{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s-2);align-content:start}
 .pl-styles__vis{margin-bottom:var(--s-4)}
 .pl-styles__vis img{width:100%;aspect-ratio:21/9;object-fit:cover;object-position:center 58%;background:var(--sable)}
 .pl-style p{color:var(--pierre);font-size:var(--fs-small)}
@@ -117,10 +141,25 @@
 @media (max-width:1000px){.pl-loc__g{grid-template-columns:minmax(0,1fr)}.pl-agences{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:600px){.pl-agences{grid-template-columns:minmax(0,1fr)}}
 
-/* Tête de section et FAQ en accordéon, partagées avec /etapes-de-construction */
-.pl-tete{display:grid;gap:var(--s-2);margin-bottom:var(--s-4);max-width:56rem}
+/* Tête de section et FAQ en accordéon, partagées avec /etapes-de-construction
+
+   Une grille sans colonnes déclarées taille sa piste sur le mot le plus
+   long. Sur téléphone, « ENVIRONNEMENTALE » (RE2020, Gironde) élargissait
+   ainsi la tête de 58 px au-delà de l'écran à 390 px : titre ET paragraphe
+   coupés à droite. La piste minmax(0,1fr) garde tout dans la colonne, et la
+   taille du titre suit la largeur de la tête (cqi) pour que le mot le plus
+   long tienne entier au lieu d'être coupé en « RÉGLEMENTATIO / N ».
+   7,5 % de la largeur = un mot de 13 em, « ENVIRONNEMENTALE » en fait 12,75.
+   Sans effet au-dessus de ~470 px de fenêtre, où --fs-h2 est la plus petite. */
+.pl-tete{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s-2);margin-bottom:var(--s-4);max-width:56rem;container-type:inline-size}
+.pl-tete h2{font-size:min(var(--fs-h2),7.5cqi)}
 .pl-tete p{max-width:44em}
 .pl-faq{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);gap:var(--s-5);align-items:start}
+/* Sur deux colonnes, le titre de la FAQ vit dans la colonne étroite (≈ 390 px
+   au plus large) : à la taille d'un h2 normal, « CONSTRUCTION » y mesurait
+   556 px et passait sous les questions. 9,5 % de la colonne le fait tenir
+   sur une ligne, avec de la marge. Sur une colonne, la règle commune suffit. */
+@media (min-width:861px){.pl-faq > .pl-tete h2{font-size:clamp(1.5rem,2.6vw,2.4rem);font-size:min(var(--fs-h2),9.5cqi)}}
 .pl-faq__l{border-top:1px solid var(--anthracite)}
 .pl-faq details{border-bottom:var(--line)}
 .pl-faq summary{cursor:pointer;list-style:none;display:grid;grid-template-columns:minmax(0,1fr) 1.2rem;gap:var(--s-2);align-items:center;padding:1.1rem 0;font-weight:600;font-size:1.05rem;line-height:1.35}
@@ -132,9 +171,13 @@
 @media (max-width:860px){.pl-faq{grid-template-columns:minmax(0,1fr);gap:var(--s-3)}}
 
 .pl-cta{background:var(--anthracite);color:var(--craie)}
+/* « CONSTRUCTION », « PERSONNALISÉE » se coupaient en deux à 320-360 px :
+   9 % de la colonne les fait tenir. Sans effet au-dessus de ~400 px. */
+.pl-cta > .container{container-type:inline-size}
+.pl-cta h2{font-size:min(var(--fs-h2),9cqi)}
 .pl-cta .c-label{color:var(--terracotta-clair)}
 .pl-cta__g{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s-4);margin-top:var(--s-4)}
-.pl-cta__c{border-top:1px solid rgba(242,243,243,.3);padding-top:var(--s-3);display:grid;gap:var(--s-3);align-content:space-between}
+.pl-cta__c{border-top:1px solid rgba(242,243,243,.3);padding-top:var(--s-3);display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s-3);align-content:space-between}
 .pl-cta__c p{font-size:1.15rem;line-height:1.45;max-width:26em}
 .pl-cta p.pl-lire{color:var(--sable);margin-top:var(--s-2)}
 @media (max-width:760px){.pl-cta__g{grid-template-columns:minmax(0,1fr)}}
@@ -143,6 +186,8 @@
 .pl-deux{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s-3) var(--s-4)}
 .pl-trois{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-3)}
 @media (max-width:760px){.pl-deux,.pl-trois{grid-template-columns:minmax(0,1fr)}}
+/* Chaque cellule est un conteneur, pour le plafond des h3 (voir TITRES H3). */
+.pl-deux > *,.pl-trois > *{container-type:inline-size}
 .pl-cmp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:var(--line);background:var(--blanc)}
 .pl-cmp div{padding:var(--s-2) 1.1rem;font-size:var(--fs-small)}
 .pl-cmp div+div{border-left:var(--line)}
