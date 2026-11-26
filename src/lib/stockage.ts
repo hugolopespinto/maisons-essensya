@@ -97,6 +97,37 @@ function urlObjet(chemin: string): URL {
   return new URL(`${origineStockage()}/${encodeURIComponent(bucket())}/${cle}`);
 }
 
+/**
+ * Envoie une requête signée au stockage.
+ *
+ * ⚠ JAMAIS `aws().fetch()`, qui passe un objet `Request` à `fetch`. Le
+ * `fetch` de Next (node_modules/next/dist/server/lib/patch-fetch.js)
+ * reconstruit alors la requête avec `body: request.body`, c'est-à-dire
+ * un FLUX : la taille est perdue, le fichier part en
+ * « Transfer-Encoding: chunked », et Cellar refuse tout dépôt sans
+ * longueur (HTTP 411 — MissingContentLength). Constaté en prod le
+ * 25/11/2026 ; le même code passait hors de Next.
+ *
+ * On signe donc avec aws4fetch, puis on appelle `fetch(url, init)` avec
+ * le contenu d'origine : Next transmet un `init` sans toucher au corps,
+ * et le Content-Length part avec. La signature n'en dépend pas : S3
+ * signe ici avec UNSIGNED-PAYLOAD, sans empreinte du corps.
+ */
+async function requeteSignee(
+  url: URL,
+  method: "PUT" | "DELETE",
+  options: { body?: ArrayBuffer; headers?: Record<string, string> } = {},
+): Promise<Response> {
+  const signee = await aws().sign(url.toString(), { method, ...options });
+  return fetch(signee.url, {
+    method,
+    headers: signee.headers,
+    body: options.body,
+    /* Une écriture n'a rien à faire dans le cache de `fetch` de Next. */
+    cache: "no-store",
+  });
+}
+
 /** Message d'erreur lisible à partir d'une réponse S3 (du XML, en général). */
 async function motif(r: Response): Promise<string> {
   const corps = await r.text().catch(() => "");
@@ -125,12 +156,9 @@ export async function deposerObjet(
   contenu: ArrayBuffer,
   type: string,
 ): Promise<void> {
-  const r = await aws().fetch(urlObjet(chemin), {
-    method: "PUT",
+  const r = await requeteSignee(urlObjet(chemin), "PUT", {
     body: contenu,
     headers: { "Content-Type": type },
-    /* Une écriture n'a rien à faire dans le cache de `fetch` de Next. */
-    cache: "no-store",
   });
   if (!r.ok) throw new Error(await motif(r));
 }
@@ -141,6 +169,6 @@ export async function deposerObjet(
  * échouer parce que la première avait abouti.
  */
 export async function retirerObjet(chemin: string): Promise<void> {
-  const r = await aws().fetch(urlObjet(chemin), { method: "DELETE", cache: "no-store" });
+  const r = await requeteSignee(urlObjet(chemin), "DELETE");
   if (!r.ok && r.status !== 404) throw new Error(await motif(r));
 }
